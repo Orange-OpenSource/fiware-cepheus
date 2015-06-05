@@ -72,10 +72,15 @@ public class NgsiControllerTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
+        Conf conf = util.getBasicConf();
+        mockMvc.perform(post("/api/v1/config")
+                .content(this.json(conf))
+                .contentType(contentType))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    public void postNotifyContextBeforeConf() {
+    public void postNotifyContext() {
 
         NotifyContext notifyContext = null;
         try {
@@ -89,9 +94,8 @@ public class NgsiControllerTest {
                     .content(this.json(notifyContext))
                     .contentType(contentType))
                     .andExpect(status().isOk());
-            Assert.fail("expected Exception for postNotifyContextBeforeConf");
         } catch (Exception e) {
-            assertThat(e.getMessage(), CoreMatchers.containsString("Event type named 'TempSensor' has not been defined or is not a Map event type, the name 'TempSensor' has not been defined as an event type"));
+            Assert.fail("Not expected URISyntaxException for postNotifyContextBeforeConf");
         }
     }
 
@@ -112,9 +116,8 @@ public class NgsiControllerTest {
                     .content(this.json(updateContext))
                     .contentType(contentType))
                     .andExpect(status().isOk());
-            Assert.fail("expected Exception for postUpdateContextBeforeConf");
         } catch (Exception e) {
-            assertThat(e.getMessage(), CoreMatchers.containsString("Event type named 'TempSensor' has not been defined or is not a Map event type, the name 'TempSensor' has not been defined as an event type"));
+            Assert.fail("expected Exception for postUpdateContextBeforeConf");
         }
     }
 
