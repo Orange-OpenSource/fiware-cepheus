@@ -1,10 +1,8 @@
 package com.orange.newespr4fastdata.controller;
 
 import com.orange.newespr4fastdata.Application;
-import com.orange.newespr4fastdata.model.cep.Attribute;
+import com.orange.newespr4fastdata.model.NotifyContext;
 import com.orange.newespr4fastdata.model.cep.Conf;
-import com.orange.newespr4fastdata.model.cep.EventTypeIn;
-import com.orange.newespr4fastdata.model.cep.EventTypeOut;
 import com.orange.newespr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,21 +21,18 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.Random;
 
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 /**
- * Created by pborscia on 03/06/2015.
+ * Created by pborscia on 05/06/2015.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-public class AdminControllerTest {
+public class ControllerIntegrationTest {
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -72,13 +67,29 @@ public class AdminControllerTest {
     }
 
     @Test
-    public void postConfOK() throws Exception {
-        Conf conf = util.getBasicConf();
+    public void postConfAndEvent() throws Exception {
 
+
+        Conf conf = util.getBasicConf();
         mockMvc.perform(post("/api/v1/config")
                 .content(this.json(conf))
                 .contentType(contentType))
                 .andExpect(status().isCreated());
+
+        Random random = new Random(15);
+
+        for (int i=1; i<100 ; i++) {
+
+            float value = random.nextFloat();
+            NotifyContext notifyContext = util.createNotifyContextTempSensor(value);
+
+            mockMvc.perform(post("/api/v1/ngsi/notifyContext")
+                    .content(this.json(notifyContext))
+                    .contentType(contentType))
+                    .andExpect(status().isOk());
+        }
+
+
     }
 
     protected String json(Object o) throws IOException {
@@ -87,4 +98,5 @@ public class AdminControllerTest {
                 o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
     }
+
 }

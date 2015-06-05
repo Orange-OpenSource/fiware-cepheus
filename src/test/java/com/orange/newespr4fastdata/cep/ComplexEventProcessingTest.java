@@ -3,6 +3,7 @@ package com.orange.newespr4fastdata.cep;
 import com.orange.newespr4fastdata.Application;
 import com.orange.newespr4fastdata.exception.EventTypeNotFoundException;
 import com.orange.newespr4fastdata.model.cep.*;
+import com.orange.newespr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,10 +24,12 @@ public class ComplexEventProcessingTest {
 
     private ComplexEventProcessing complexEventProcessing = new ComplexEventProcessing();
 
+    private Util util = new Util();
+
     @Test
     public void reInitBasicConfOK(){
 
-        complexEventProcessing.reInitConf(getBasicConf());
+        complexEventProcessing.reInitConf(util.getBasicConf());
 
 
         try {
@@ -45,49 +48,6 @@ public class ComplexEventProcessingTest {
         this.sendXtemperature();
 
 
-    }
-
-
-    private Conf getBasicConf(){
-        Conf conf = new Conf();
-        conf.setHost("http://localhost:8080");
-        //eventIN
-        List<EventTypeIn> eventTypeIns = new ArrayList<EventTypeIn>();
-        conf.setEventTypeIns(eventTypeIns);
-        EventTypeIn eventTypeIn = new EventTypeIn();
-        eventTypeIns.add(eventTypeIn);
-        eventTypeIn.setProvider("http://iotAgent");
-        eventTypeIn.setId("S.*");
-        eventTypeIn.setType("TempSensor");
-        eventTypeIn.setIsPattern(true);
-        List<Attribute> attributes = new ArrayList<Attribute>();
-        Attribute attributeTemp = new Attribute();
-        attributeTemp.setName("temp");
-        attributeTemp.setType("float");
-        attributes.add(attributeTemp);
-        eventTypeIn.setAttributes(attributes);
-        //eventOUT
-        List<EventTypeOut> eventTypeOuts = new ArrayList<EventTypeOut>();
-        conf.setEventTypeOuts(eventTypeOuts);
-        EventTypeOut eventTypeOut = new EventTypeOut();
-        eventTypeOuts.add(eventTypeOut);
-        eventTypeOut.setBroker("http://orion");
-        eventTypeOut.setId("OUT1");
-        eventTypeOut.setType("TempSensorAvg");
-        eventTypeOut.setIsPattern(false);
-        List<Attribute> outAttributes = new ArrayList<Attribute>();
-        Attribute attributeAvgTemp = new Attribute();
-        attributeAvgTemp.setName("avgTemp");
-        attributeAvgTemp.setType("double");
-        outAttributes.add(attributeAvgTemp);
-        eventTypeOut.setAttributes(outAttributes);
-
-        //rules
-        List<String> rules = new ArrayList<String>();
-        rules.add("INSERT INTO TempSensorAvg SELECT 'OUT1' as id, avg(TempSensor.temp) as avgTemp FROM TempSensor.win:time(2 seconds) WHERE TempSensor.id = 'S1' ");
-        conf.setRules(rules);
-
-        return conf;
     }
 
     private void sendXtemperature() {
