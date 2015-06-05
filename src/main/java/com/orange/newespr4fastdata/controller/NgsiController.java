@@ -55,12 +55,17 @@ public class NgsiController {
             eventIn.setEventTypeName(contextElement.getEntityId().getType());
 
             eventIn.setAttributesMap(createAttributeMapFromContextElement(contextElementResponse.getContextElement()));
+
+            eventIns.add(eventIn);
         }
         return eventIns;
     }
 
     private Map createAttributeMapFromContextElement(ContextElement contextElement){
         HashMap<String, Object> attributesMap = new HashMap<String, Object>();
+
+        //add id in attributes
+        attributesMap.put("id",contextElement.getEntityId().getId());
 
         List<ContextAttribute> contextAttributes = contextElement.getContextAttributeList();
         for(ContextAttribute contextAttribute : contextAttributes){

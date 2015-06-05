@@ -7,6 +7,7 @@ import com.orange.newespr4fastdata.model.cep.EventType;
 import com.orange.newespr4fastdata.model.cep.Conf;
 import com.orange.newespr4fastdata.model.cep.EventIn;
 import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.Properties;
 @ComponentScan
 public class ComplexEventProcessing {
 
-    private static Logger logger = Logger.getLogger(ComplexEventProcessing.class);
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(ComplexEventProcessing.class);
 
     private static EPServiceProvider epServiceProvider = null;
 
@@ -51,7 +52,7 @@ public class ComplexEventProcessing {
 
     public void sendEventInEsper(EventIn eventIn){
 
-        logger.debug(eventIn.toString());
+        logger.info("Event In sended to Esper {}", eventIn.toString());
         this.epServiceProvider.getEPRuntime().sendEvent(eventIn.getAttributesMap(),eventIn.getEventTypeName());
 
     }
