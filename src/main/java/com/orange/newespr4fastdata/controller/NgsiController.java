@@ -45,6 +45,20 @@ public class NgsiController {
         return new ResponseEntity<StatusCode>(StatusCode.CODE_200, httpHeaders, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/updateContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateContext(@RequestBody final UpdateContext update) {
+
+        //check
+
+        //send event in Esper
+        List<EventIn> eventIns = createEventInFromUpdateContext(update);
+        for(EventIn eventIn : eventIns){
+            complexEventProcessing.sendEventInEsper(eventIn);
+        }
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        return new ResponseEntity<StatusCode>(StatusCode.CODE_200, httpHeaders, HttpStatus.OK);
+    }
 
     private List<EventIn> createEventInFromNotifyContext(NotifyContext notifyContext){
         List<EventIn> eventIns = new ArrayList<EventIn>();
@@ -84,5 +98,19 @@ public class NgsiController {
             default : return value;
         }
 
+    }
+
+    private List<EventIn> createEventInFromUpdateContext(UpdateContext updateContext){
+        List<EventIn> eventIns = new ArrayList<EventIn>();
+
+        for (ContextElement contextElement : updateContext.getContextElements()){
+            EventIn eventIn = new EventIn();
+            eventIn.setEventTypeName(contextElement.getEntityId().getType());
+
+            eventIn.setAttributesMap(createAttributeMapFromContextElement(contextElement));
+
+            eventIns.add(eventIn);
+        }
+        return eventIns;
     }
 }

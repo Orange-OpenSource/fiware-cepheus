@@ -2,6 +2,7 @@ package com.orange.newespr4fastdata.controller;
 
 import com.orange.newespr4fastdata.Application;
 import com.orange.newespr4fastdata.model.NotifyContext;
+import com.orange.newespr4fastdata.model.UpdateContext;
 import com.orange.newespr4fastdata.model.cep.Conf;
 import com.orange.newespr4fastdata.util.Util;
 import org.junit.Assert;
@@ -64,17 +65,17 @@ public class ControllerIntegrationTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-    }
-
-    @Test
-    public void postConfAndEvent() throws Exception {
-
-
         Conf conf = util.getBasicConf();
         mockMvc.perform(post("/api/v1/config")
                 .content(this.json(conf))
                 .contentType(contentType))
                 .andExpect(status().isCreated());
+
+    }
+
+    @Test
+    public void postConfAndNotifyContext() throws Exception {
+        //Config effectué dans le setup
 
         Random random = new Random(15);
 
@@ -89,6 +90,24 @@ public class ControllerIntegrationTest {
                     .andExpect(status().isOk());
         }
 
+    }
+
+    @Test
+    public void postConfAndUpdateContext() throws Exception {
+        //Config effectué dans le setup
+
+        Random random = new Random(15);
+
+        for (int i=1; i<100 ; i++) {
+
+            float value = random.nextFloat();
+            UpdateContext updateContext = util.createUpdateContextTempSensor(value);
+
+            mockMvc.perform(post("/api/v1/ngsi/updateContext")
+                    .content(this.json(updateContext))
+                    .contentType(contentType))
+                    .andExpect(status().isOk());
+        }
 
     }
 

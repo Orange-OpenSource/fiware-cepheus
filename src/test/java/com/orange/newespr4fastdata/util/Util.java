@@ -100,4 +100,16 @@ public class Util {
 
     }
 
+    public UpdateContext createUpdateContextTempSensor(float randomValue) throws URISyntaxException {
+
+        UpdateContext updateContext = new UpdateContext();
+        updateContext.setUpdateAction(UpdateAction.UPDATE);
+
+        List<ContextElement> contextElements = new ArrayList<ContextElement>();
+        contextElements.add(createTemperatureContextElement(randomValue));
+        updateContext.setContextElements(contextElements);
+
+        return updateContext;
+    }
+
 }

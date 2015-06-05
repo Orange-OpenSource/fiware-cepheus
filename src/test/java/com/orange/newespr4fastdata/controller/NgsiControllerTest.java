@@ -4,6 +4,7 @@ import com.orange.newespr4fastdata.Application;
 import com.orange.newespr4fastdata.model.*;
 import com.orange.newespr4fastdata.model.cep.*;
 import com.orange.newespr4fastdata.util.Util;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -73,33 +75,49 @@ public class NgsiControllerTest {
     }
 
     @Test
-    public void postNotifyContextBeforeConf() throws Exception {
+    public void postNotifyContextBeforeConf() {
 
-        NotifyContext notifyContext = util.createNotifyContextTempSensor(0);
+        NotifyContext notifyContext = null;
+        try {
+            notifyContext = util.createNotifyContextTempSensor(0);
+        } catch (URISyntaxException e) {
+            Assert.fail("Not expected URISyntaxException for postNotifyContextBeforeConf");
+        }
 
-        mockMvc.perform(post("/api/v1/ngsi/notifyContext")
-                .content(this.json(notifyContext))
-                .contentType(contentType))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void postXNotifyContext() throws Exception {
-
-
-        Random random = new Random(15);
-
-        for (int i=1; i<100 ; i++) {
-
-            float value = random.nextFloat();
-            NotifyContext notifyContext = util.createNotifyContextTempSensor(value);
-
+        try {
             mockMvc.perform(post("/api/v1/ngsi/notifyContext")
                     .content(this.json(notifyContext))
                     .contentType(contentType))
                     .andExpect(status().isOk());
+            Assert.fail("expected Exception for postNotifyContextBeforeConf");
+        } catch (Exception e) {
+            assertThat(e.getMessage(), CoreMatchers.containsString("Event type named 'TempSensor' has not been defined or is not a Map event type, the name 'TempSensor' has not been defined as an event type"));
         }
     }
+
+
+    @Test
+    public void postUpdateContextBeforeConf() {
+
+        UpdateContext updateContext = null;
+        try {
+            updateContext = util.createUpdateContextTempSensor(0);
+        } catch (URISyntaxException e) {
+            Assert.fail("Not expected URISyntaxException for postUpdateContextBeforeConf");
+        }
+
+
+        try {
+            mockMvc.perform(post("/api/v1/ngsi/updateContext")
+                    .content(this.json(updateContext))
+                    .contentType(contentType))
+                    .andExpect(status().isOk());
+            Assert.fail("expected Exception for postUpdateContextBeforeConf");
+        } catch (Exception e) {
+            assertThat(e.getMessage(), CoreMatchers.containsString("Event type named 'TempSensor' has not been defined or is not a Map event type, the name 'TempSensor' has not been defined as an event type"));
+        }
+    }
+
 
 
     protected String json(Object o) throws IOException {
