@@ -4,8 +4,15 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.StatementAwareUpdateListener;
+import com.orange.newespr4fastdata.model.UpdateContext;
+import com.orange.newespr4fastdata.model.UpdateContextResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Created by pborscia on 04/06/2015.
@@ -13,6 +20,9 @@ import org.slf4j.LoggerFactory;
 public class EventSinkListener  implements StatementAwareUpdateListener {
 
     private static Logger logger = LoggerFactory.getLogger(EventSinkListener.class);
+
+    @Autowired
+    private Sender sender;
 
     @Override
     public void update(EventBean[] eventBeans, EventBean[] eventBeans1, EPStatement epStatement, EPServiceProvider epServiceProvider) {
@@ -38,9 +48,17 @@ public class EventSinkListener  implements StatementAwareUpdateListener {
                 logger.info("property {} value {} ", propertyName, eventBean.get(propertyName));
             }
 
+            //send to context broker
+            /*UpdateContext updateContext = new UpdateContext();
+            UpdateContextResponse updateContextResponse = sender.postMessage(updateContext,"URI broker")*/
+
+
+
         }
 
 
     }
+
+
 
 }
