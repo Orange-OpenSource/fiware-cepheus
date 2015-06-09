@@ -5,6 +5,7 @@ import com.orange.newespr4fastdata.model.UpdateContextResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -24,6 +25,12 @@ public class Sender {
     private static Logger logger = LoggerFactory.getLogger(Sender.class);
 
     RestTemplate restTemplate;
+
+    @Value("${sender.readtimeout}")
+    private int readTimeout;
+
+    @Value("${sender.connectTimeout}")
+    private int connectTimeout;
 
     public Sender() {
         restTemplate = new RestTemplate(this.clientHttpRequestFactory());
@@ -53,8 +60,8 @@ public class Sender {
 
     private ClientHttpRequestFactory clientHttpRequestFactory() {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setReadTimeout(2000);
-        factory.setConnectTimeout(2000);
+        factory.setReadTimeout(this.readTimeout);
+        factory.setConnectTimeout(this.connectTimeout);
         return factory;
     }
 }
