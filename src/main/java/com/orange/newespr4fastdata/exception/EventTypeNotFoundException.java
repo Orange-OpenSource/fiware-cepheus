@@ -5,12 +5,13 @@ package com.orange.newespr4fastdata.exception;
  */
 public class EventTypeNotFoundException extends Exception {
 
-    private String message = "The event type does not exist.";
+    private final String message = "The event type does not exist.";
 
-    public EventTypeNotFoundException() {}
+    public EventTypeNotFoundException() {
+    }
 
     public EventTypeNotFoundException(String message) {
-        this.message = message;
+        message = message;
     }
 
     @Override

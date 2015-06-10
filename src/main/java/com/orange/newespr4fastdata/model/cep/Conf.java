@@ -12,12 +12,6 @@ public class Conf {
     private List<EventTypeOut> eventTypeOuts;
     private List<String> rules;
 
-
-
-    public void Conf() {
-
-    }
-
     public Conf() {
     }
 

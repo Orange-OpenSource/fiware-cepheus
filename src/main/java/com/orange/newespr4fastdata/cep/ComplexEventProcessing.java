@@ -6,7 +6,6 @@ import com.orange.newespr4fastdata.model.cep.Attribute;
 import com.orange.newespr4fastdata.model.cep.EventType;
 import com.orange.newespr4fastdata.model.cep.Conf;
 import com.orange.newespr4fastdata.model.cep.EventIn;
-import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -67,7 +66,7 @@ public class ComplexEventProcessing {
 
         if (eventType != null){
             for (String name : eventType.getPropertyNames()) {
-                if (!name.equals("id")) {
+                if (!("id".equals(name))) {
                     Attribute attribute = new Attribute();
 
                     attribute.setName(name);
