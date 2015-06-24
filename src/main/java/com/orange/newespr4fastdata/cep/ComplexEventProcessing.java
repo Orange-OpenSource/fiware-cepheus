@@ -21,8 +21,7 @@ public class ComplexEventProcessing {
 
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ComplexEventProcessing.class);
 
-    private static EPServiceProvider epServiceProvider = null;
-
+    private EPServiceProvider epServiceProvider;
 
     public ComplexEventProcessing() {
         epServiceProvider = EPServiceProviderManager.getDefaultProvider(new com.espertech.esper.client.Configuration());
@@ -31,21 +30,14 @@ public class ComplexEventProcessing {
     public void reInitConf(Configuration configuration) {
         ConfigurationOperations configurationOperations = epServiceProvider.getEPAdministrator().getConfiguration();
 
-
         this.createEventType(configuration.getEventTypeIns(),configurationOperations);
-
         this.createEventType(configuration.getEventTypeOuts(),configurationOperations);
 
-        for (String rule: configuration.getRules()){
+        for (String rule: configuration.getRules()) {
             EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(rule);
             EventSinkListener eventSinkListener = new EventSinkListener();
             statement.addListener(eventSinkListener);
-
         }
-
-
-
-
     }
 
     public void sendEventInEsper(EventIn eventIn){
@@ -85,7 +77,7 @@ public class ComplexEventProcessing {
         return attributes;
     }
 
-    public static EPServiceProvider getEpServiceProvider() {
+    public EPServiceProvider getEpServiceProvider() {
         return epServiceProvider;
     }
 
