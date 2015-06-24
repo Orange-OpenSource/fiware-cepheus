@@ -22,16 +22,20 @@ public class ComplexEventProcessing {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(ComplexEventProcessing.class);
 
     private EPServiceProvider epServiceProvider;
+    private Configuration configuration;
 
     public ComplexEventProcessing() {
         epServiceProvider = EPServiceProviderManager.getDefaultProvider(new com.espertech.esper.client.Configuration());
     }
 
-    public void reInitConf(Configuration configuration) {
+    public void setConfiguration(Configuration configuration) {
+
+        this.configuration = configuration;
+
         ConfigurationOperations configurationOperations = epServiceProvider.getEPAdministrator().getConfiguration();
 
-        this.createEventType(configuration.getEventTypeIns(),configurationOperations);
-        this.createEventType(configuration.getEventTypeOuts(),configurationOperations);
+        this.createEventType(configuration.getEventTypeIns(), configurationOperations);
+        this.createEventType(configuration.getEventTypeOuts(), configurationOperations);
 
         for (String rule: configuration.getRules()) {
             EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(rule);
@@ -40,21 +44,16 @@ public class ComplexEventProcessing {
         }
     }
 
-    public void sendEventInEsper(EventIn eventIn){
-
+    public void sendEventInEsper(EventIn eventIn) {
         logger.info("Event In sended to Esper {}", eventIn.toString());
         this.epServiceProvider.getEPRuntime().sendEvent(eventIn.getAttributesMap(),eventIn.getEventTypeName());
-
     }
-
 
 
     public List<Attribute> getEventTypeAttributes(String eventTypeName) throws EventTypeNotFoundException {
         List<Attribute> attributes = new ArrayList<Attribute>();
 
         com.espertech.esper.client.EventType eventType = this.getEpServiceProvider().getEPAdministrator().getConfiguration().getEventType(eventTypeName);
-
-
         if (eventType != null){
             for (String name : eventType.getPropertyNames()) {
                 if (!("id".equals(name))) {
@@ -66,13 +65,10 @@ public class ComplexEventProcessing {
                     attributes.add(attribute);
 
                 }
-
             }
         } else {
             throw new EventTypeNotFoundException("The event type does not exist.");
         }
-
-
 
         return attributes;
     }

@@ -29,7 +29,7 @@ public class ComplexEventProcessingTest {
     @Test
     public void reInitBasicConfOK(){
 
-        complexEventProcessing.reInitConf(util.getBasicConf());
+        complexEventProcessing.setConfiguration(util.getBasicConf());
 
 
         try {

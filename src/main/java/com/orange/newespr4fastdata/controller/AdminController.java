@@ -14,15 +14,13 @@ public class AdminController {
 
     private static ComplexEventProcessing complexEventProcessing;
 
-
     public AdminController() {
         this.complexEventProcessing = new ComplexEventProcessing();
-
     }
 
     @RequestMapping(value = "/config", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> configuration(@RequestBody final Configuration configuration) {
-        complexEventProcessing.reInitConf(configuration);
+        complexEventProcessing.setConfiguration(configuration);
         HttpHeaders httpHeaders = new HttpHeaders();
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
     }
