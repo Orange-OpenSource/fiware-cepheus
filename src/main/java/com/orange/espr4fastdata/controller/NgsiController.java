@@ -1,7 +1,7 @@
 package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.cep.ComplexEventProcessing;
-import com.orange.espr4fastdata.model.*;
+import com.orange.espr4fastdata.model.ngsi.*;
 import com.orange.espr4fastdata.model.cep.EventIn;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

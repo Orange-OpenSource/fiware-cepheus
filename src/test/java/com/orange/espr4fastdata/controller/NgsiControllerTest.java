@@ -1,8 +1,9 @@
 package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.model.*;
-import com.orange.espr4fastdata.model.cep.*;
+import com.orange.espr4fastdata.model.ngsi.NotifyContext;
+import com.orange.espr4fastdata.model.ngsi.UpdateContext;
+import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Before;

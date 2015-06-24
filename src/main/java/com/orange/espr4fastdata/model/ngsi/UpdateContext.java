@@ -1,4 +1,4 @@
-package com.orange.espr4fastdata.model;
+package com.orange.espr4fastdata.model.ngsi;
 
 import java.util.List;
 

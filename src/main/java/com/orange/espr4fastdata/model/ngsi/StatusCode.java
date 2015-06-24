@@ -1,4 +1,4 @@
-package com.orange.espr4fastdata.model;
+package com.orange.espr4fastdata.model.ngsi;
 
 /**
  * Created by pborscia on 04/06/2015.

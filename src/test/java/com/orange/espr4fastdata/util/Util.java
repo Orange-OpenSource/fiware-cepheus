@@ -1,7 +1,7 @@
 package com.orange.espr4fastdata.util;
 
 
-import com.orange.espr4fastdata.model.*;
+import com.orange.espr4fastdata.model.ngsi.*;
 import com.orange.espr4fastdata.model.cep.Attribute;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.model.cep.EventTypeIn;

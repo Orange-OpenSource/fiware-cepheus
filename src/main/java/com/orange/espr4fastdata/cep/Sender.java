@@ -1,7 +1,7 @@
 package com.orange.espr4fastdata.cep;
 
-import com.orange.espr4fastdata.model.UpdateContext;
-import com.orange.espr4fastdata.model.UpdateContextResponse;
+import com.orange.espr4fastdata.model.ngsi.UpdateContext;
+import com.orange.espr4fastdata.model.ngsi.UpdateContextResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

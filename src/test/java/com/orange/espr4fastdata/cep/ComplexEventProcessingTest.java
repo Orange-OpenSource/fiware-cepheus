@@ -2,7 +2,7 @@ package com.orange.espr4fastdata.cep;
 
 import com.orange.espr4fastdata.Application;
 import com.orange.espr4fastdata.exception.EventTypeNotFoundException;
-import com.orange.espr4fastdata.model.cep.*;
+import com.orange.espr4fastdata.model.cep.EventIn;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
