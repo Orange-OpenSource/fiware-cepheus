@@ -4,7 +4,6 @@ import com.orange.newespr4fastdata.Application;
 import com.orange.newespr4fastdata.model.*;
 import com.orange.newespr4fastdata.model.cep.*;
 import com.orange.newespr4fastdata.util.Util;
-import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,13 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
 
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -72,9 +66,9 @@ public class NgsiControllerTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        Conf conf = util.getBasicConf();
+        Configuration configuration = util.getBasicConf();
         mockMvc.perform(post("/api/v1/config")
-                .content(this.json(conf))
+                .content(this.json(configuration))
                 .contentType(contentType))
                 .andExpect(status().isCreated());
     }

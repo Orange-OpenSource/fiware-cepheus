@@ -1,10 +1,7 @@
 package com.orange.newespr4fastdata.controller;
 
 import com.orange.newespr4fastdata.Application;
-import com.orange.newespr4fastdata.model.cep.Attribute;
-import com.orange.newespr4fastdata.model.cep.Conf;
-import com.orange.newespr4fastdata.model.cep.EventTypeIn;
-import com.orange.newespr4fastdata.model.cep.EventTypeOut;
+import com.orange.newespr4fastdata.model.cep.Configuration;
 import com.orange.newespr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,8 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 
 
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -73,10 +68,10 @@ public class AdminControllerTest {
 
     @Test
     public void postConfOK() throws Exception {
-        Conf conf = util.getBasicConf();
+        Configuration configuration = util.getBasicConf();
 
         mockMvc.perform(post("/api/v1/config")
-                .content(this.json(conf))
+                .content(this.json(configuration))
                 .contentType(contentType))
                 .andExpect(status().isCreated());
     }

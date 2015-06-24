@@ -3,7 +3,7 @@ package com.orange.newespr4fastdata.controller;
 import com.orange.newespr4fastdata.Application;
 import com.orange.newespr4fastdata.model.NotifyContext;
 import com.orange.newespr4fastdata.model.UpdateContext;
-import com.orange.newespr4fastdata.model.cep.Conf;
+import com.orange.newespr4fastdata.model.cep.Configuration;
 import com.orange.newespr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,9 +65,9 @@ public class ControllerIntegrationTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        Conf conf = util.getBasicConf();
+        Configuration configuration = util.getBasicConf();
         mockMvc.perform(post("/api/v1/config")
-                .content(this.json(conf))
+                .content(this.json(configuration))
                 .contentType(contentType))
                 .andExpect(status().isCreated());
 

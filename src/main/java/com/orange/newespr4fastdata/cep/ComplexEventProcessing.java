@@ -4,7 +4,7 @@ import com.espertech.esper.client.*;
 import com.orange.newespr4fastdata.exception.EventTypeNotFoundException;
 import com.orange.newespr4fastdata.model.cep.Attribute;
 import com.orange.newespr4fastdata.model.cep.EventType;
-import com.orange.newespr4fastdata.model.cep.Conf;
+import com.orange.newespr4fastdata.model.cep.Configuration;
 import com.orange.newespr4fastdata.model.cep.EventIn;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
@@ -25,19 +25,18 @@ public class ComplexEventProcessing {
 
 
     public ComplexEventProcessing() {
-        this.epServiceProvider = EPServiceProviderManager.getDefaultProvider(new Configuration());
-
+        epServiceProvider = EPServiceProviderManager.getDefaultProvider(new com.espertech.esper.client.Configuration());
     }
 
-    public void reInitConf(Conf conf) {
+    public void reInitConf(Configuration configuration) {
         ConfigurationOperations configurationOperations = epServiceProvider.getEPAdministrator().getConfiguration();
 
 
-        this.createEventType(conf.getEventTypeIns(),configurationOperations);
+        this.createEventType(configuration.getEventTypeIns(),configurationOperations);
 
-        this.createEventType(conf.getEventTypeOuts(),configurationOperations);
+        this.createEventType(configuration.getEventTypeOuts(),configurationOperations);
 
-        for (String rule:conf.getRules()){
+        for (String rule: configuration.getRules()){
             EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(rule);
             EventSinkListener eventSinkListener = new EventSinkListener();
             statement.addListener(eventSinkListener);

@@ -5,14 +5,14 @@ import java.util.List;
 /**
  * Created by pborscia on 03/06/2015.
  */
-public class Conf {
+public class Configuration {
 
     private String host;
     private List<EventTypeIn> eventTypeIns;
     private List<EventTypeOut> eventTypeOuts;
     private List<String> rules;
 
-    public Conf() {
+    public Configuration() {
     }
 
     public String getHost() {

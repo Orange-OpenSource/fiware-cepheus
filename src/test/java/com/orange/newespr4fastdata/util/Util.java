@@ -3,7 +3,7 @@ package com.orange.newespr4fastdata.util;
 
 import com.orange.newespr4fastdata.model.*;
 import com.orange.newespr4fastdata.model.cep.Attribute;
-import com.orange.newespr4fastdata.model.cep.Conf;
+import com.orange.newespr4fastdata.model.cep.Configuration;
 import com.orange.newespr4fastdata.model.cep.EventTypeIn;
 import com.orange.newespr4fastdata.model.cep.EventTypeOut;
 
@@ -20,12 +20,12 @@ public class Util {
     public Util() {
     }
 
-    public Conf getBasicConf(){
-        Conf conf = new Conf();
-        conf.setHost("http://localhost:8080");
+    public Configuration getBasicConf(){
+        Configuration configuration = new Configuration();
+        configuration.setHost("http://localhost:8080");
         //eventIN
         List<EventTypeIn> eventTypeIns = new ArrayList<EventTypeIn>();
-        conf.setEventTypeIns(eventTypeIns);
+        configuration.setEventTypeIns(eventTypeIns);
         EventTypeIn eventTypeIn = new EventTypeIn();
         eventTypeIns.add(eventTypeIn);
         eventTypeIn.setProvider("http://iotAgent");
@@ -40,7 +40,7 @@ public class Util {
         eventTypeIn.setAttributes(attributes);
         //eventOUT
         List<EventTypeOut> eventTypeOuts = new ArrayList<EventTypeOut>();
-        conf.setEventTypeOuts(eventTypeOuts);
+        configuration.setEventTypeOuts(eventTypeOuts);
         EventTypeOut eventTypeOut = new EventTypeOut();
         eventTypeOuts.add(eventTypeOut);
         eventTypeOut.setBroker("http://orion");
@@ -57,9 +57,9 @@ public class Util {
         //rules
         List<String> rules = new ArrayList<String>();
         rules.add("INSERT INTO TempSensorAvg SELECT 'OUT1' as id, avg(TempSensor.temp) as avgTemp FROM TempSensor.win:time(2 seconds) WHERE TempSensor.id = 'S1' ");
-        conf.setRules(rules);
+        configuration.setRules(rules);
 
-        return conf;
+        return configuration;
     }
 
     public NotifyContext createNotifyContextTempSensor(float randomValue) throws URISyntaxException {

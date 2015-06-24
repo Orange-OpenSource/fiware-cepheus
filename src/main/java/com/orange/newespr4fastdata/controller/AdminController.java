@@ -1,7 +1,7 @@
 package com.orange.newespr4fastdata.controller;
 
 import com.orange.newespr4fastdata.cep.ComplexEventProcessing;
-import com.orange.newespr4fastdata.model.cep.Conf;
+import com.orange.newespr4fastdata.model.cep.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,8 +21,8 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/config", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> configuration(@RequestBody final Conf conf) {
-        complexEventProcessing.reInitConf(conf);
+    public ResponseEntity<?> configuration(@RequestBody final Configuration configuration) {
+        complexEventProcessing.reInitConf(configuration);
         HttpHeaders httpHeaders = new HttpHeaders();
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
     }
