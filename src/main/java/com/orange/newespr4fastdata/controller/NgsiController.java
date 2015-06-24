@@ -38,7 +38,7 @@ public class NgsiController {
         //send event in Esper
         List<EventIn> eventIns = createEventInFromNotifyContext(notify);
         for(EventIn eventIn : eventIns){
-            complexEventProcessing.sendEventInEsper(eventIn);
+            complexEventProcessing.processEvent(eventIn);
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -53,7 +53,7 @@ public class NgsiController {
         //send event in Esper
         List<EventIn> eventIns = createEventInFromUpdateContext(update);
         for(EventIn eventIn : eventIns){
-            complexEventProcessing.sendEventInEsper(eventIn);
+            complexEventProcessing.processEvent(eventIn);
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();

@@ -64,7 +64,7 @@ public class ComplexEventProcessingTest {
             eventIn.setAttributesMap(attributesMap);
             eventIn.setEventTypeName("TempSensor");
 
-            complexEventProcessing.sendEventInEsper(eventIn);
+            complexEventProcessing.processEvent(eventIn);
 
         }
 

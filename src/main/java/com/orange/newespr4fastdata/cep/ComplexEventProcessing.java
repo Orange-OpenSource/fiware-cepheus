@@ -44,7 +44,7 @@ public class ComplexEventProcessing {
         }
     }
 
-    public void sendEventInEsper(EventIn eventIn) {
+    public void processEvent(EventIn eventIn) {
         logger.info("Event In sended to Esper {}", eventIn.toString());
         this.epServiceProvider.getEPRuntime().sendEvent(eventIn.getAttributesMap(),eventIn.getEventTypeName());
     }
