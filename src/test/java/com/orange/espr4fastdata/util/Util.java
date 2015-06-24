@@ -10,7 +10,9 @@ import com.orange.espr4fastdata.model.cep.EventTypeOut;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by pborscia on 05/06/2015.
@@ -32,7 +34,7 @@ public class Util {
         eventTypeIn.setId("S.*");
         eventTypeIn.setType("TempSensor");
         eventTypeIn.setIsPattern(true);
-        List<Attribute> attributes = new ArrayList<Attribute>();
+        Set<Attribute> attributes = new HashSet<Attribute>();
         Attribute attributeTemp = new Attribute();
         attributeTemp.setName("temp");
         attributeTemp.setType("float");
@@ -47,7 +49,7 @@ public class Util {
         eventTypeOut.setId("OUT1");
         eventTypeOut.setType("TempSensorAvg");
         eventTypeOut.setIsPattern(false);
-        List<Attribute> outAttributes = new ArrayList<Attribute>();
+        Set<Attribute> outAttributes = new HashSet<>();
         Attribute attributeAvgTemp = new Attribute();
         attributeAvgTemp.setName("avgTemp");
         attributeAvgTemp.setType("double");
@@ -57,7 +59,7 @@ public class Util {
         //rules
         List<String> rules = new ArrayList<String>();
         rules.add("INSERT INTO TempSensorAvg SELECT 'OUT1' as id, avg(TempSensor.temp) as avgTemp FROM TempSensor.win:time(2 seconds) WHERE TempSensor.id = 'S1' ");
-        configuration.setRules(rules);
+        configuration.setStatements(rules);
 
         return configuration;
     }

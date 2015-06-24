@@ -1,8 +1,8 @@
 package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.cep.ComplexEventProcessing;
+import com.orange.espr4fastdata.model.Event;
 import com.orange.espr4fastdata.model.ngsi.*;
-import com.orange.espr4fastdata.model.cep.EventIn;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,9 +36,9 @@ public class NgsiController {
         //check
 
         //send event in Esper
-        List<EventIn> eventIns = createEventInFromNotifyContext(notify);
-        for(EventIn eventIn : eventIns){
-            complexEventProcessing.processEvent(eventIn);
+        List<Event> events = createEventInFromNotifyContext(notify);
+        for(Event event : events){
+            complexEventProcessing.processEvent(event);
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -51,28 +51,28 @@ public class NgsiController {
         //check
 
         //send event in Esper
-        List<EventIn> eventIns = createEventInFromUpdateContext(update);
-        for(EventIn eventIn : eventIns){
-            complexEventProcessing.processEvent(eventIn);
+        List<Event> events = createEventInFromUpdateContext(update);
+        for(Event event : events){
+            complexEventProcessing.processEvent(event);
         }
 
         HttpHeaders httpHeaders = new HttpHeaders();
         return new ResponseEntity<StatusCode>(StatusCode.CODE_200, httpHeaders, HttpStatus.OK);
     }
 
-    private List<EventIn> createEventInFromNotifyContext(NotifyContext notifyContext){
-        List<EventIn> eventIns = new ArrayList<EventIn>();
+    private List<Event> createEventInFromNotifyContext(NotifyContext notifyContext){
+        List<Event> events = new ArrayList<Event>();
 
         for (ContextElementResponse contextElementResponse : notifyContext.getContextElementResponseList()){
             ContextElement contextElement = contextElementResponse.getContextElement();
-            EventIn eventIn = new EventIn();
-            eventIn.setEventTypeName(contextElement.getEntityId().getType());
+            Event event = new Event();
+            event.setType(contextElement.getEntityId().getType());
 
-            eventIn.setAttributesMap(createAttributeMapFromContextElement(contextElementResponse.getContextElement()));
+            event.setAttributes(createAttributeMapFromContextElement(contextElementResponse.getContextElement()));
 
-            eventIns.add(eventIn);
+            events.add(event);
         }
-        return eventIns;
+        return events;
     }
 
     private Map createAttributeMapFromContextElement(ContextElement contextElement){
@@ -97,20 +97,19 @@ public class NgsiController {
             case "double" : return Double.valueOf(value);
             default : return value;
         }
-
     }
 
-    private List<EventIn> createEventInFromUpdateContext(UpdateContext updateContext){
-        List<EventIn> eventIns = new ArrayList<EventIn>();
+    private List<Event> createEventInFromUpdateContext(UpdateContext updateContext){
+        List<Event> events = new ArrayList<Event>();
 
         for (ContextElement contextElement : updateContext.getContextElements()){
-            EventIn eventIn = new EventIn();
-            eventIn.setEventTypeName(contextElement.getEntityId().getType());
+            Event event = new Event();
+            event.setType(contextElement.getEntityId().getType());
 
-            eventIn.setAttributesMap(createAttributeMapFromContextElement(contextElement));
+            event.setAttributes(createAttributeMapFromContextElement(contextElement));
 
-            eventIns.add(eventIn);
+            events.add(event);
         }
-        return eventIns;
+        return events;
     }
 }

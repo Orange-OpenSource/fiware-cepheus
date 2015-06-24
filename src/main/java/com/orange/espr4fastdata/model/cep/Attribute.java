@@ -10,6 +10,11 @@ public class Attribute {
     public Attribute() {
     }
 
+    public Attribute(String name, String type) {
+        this.name = name;
+        this.type = type;
+    }
+
     public String getName() {
         return name;
     }
@@ -24,5 +29,9 @@ public class Attribute {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean equals(Attribute a) {
+        return name.equals(a.name) && type.equals(a.type);
     }
 }

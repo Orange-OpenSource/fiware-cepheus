@@ -2,7 +2,7 @@ package com.orange.espr4fastdata.cep;
 
 import com.orange.espr4fastdata.Application;
 import com.orange.espr4fastdata.exception.EventTypeNotFoundException;
-import com.orange.espr4fastdata.model.cep.EventIn;
+import com.orange.espr4fastdata.model.Event;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
@@ -56,15 +56,15 @@ public class ComplexEventProcessingTest {
 
         for (int i=1; i<100 ; i++) {
 
-            EventIn eventIn = new EventIn();
+            Event event = new Event();
             HashMap<String, Object> attributesMap = new HashMap<String, Object>();
             float value = (float) (15.5 + random.nextFloat());
             attributesMap.put("id","S1");
             attributesMap.put("temp",value);
-            eventIn.setAttributesMap(attributesMap);
-            eventIn.setEventTypeName("TempSensor");
+            event.setAttributes(attributesMap);
+            event.setType("TempSensor");
 
-            complexEventProcessing.processEvent(eventIn);
+            complexEventProcessing.processEvent(event);
 
         }
 

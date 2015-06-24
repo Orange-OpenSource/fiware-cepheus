@@ -1,13 +1,13 @@
 package com.orange.espr4fastdata.model.cep;
 
-import java.util.List;
+import java.util.*;
 
 public class EventType {
 
     private String id;
     private String type;
-    private Boolean isPattern;
-    private List<Attribute> attributes;
+    private boolean isPattern;
+    private Set<Attribute> attributes; // using a set to handle equals on unordered attributes
 
     public EventType() {
     }
@@ -24,11 +24,19 @@ public class EventType {
         return type;
     }
 
+    public Set<Attribute> getAttributes() {
+        if (attributes == null)
+        {
+            attributes = new HashSet<Attribute>();
+        }
+        return attributes;
+    }
+
     public void setType(String type) {
         this.type = type;
     }
 
-    public Boolean getIsPattern() {
+    public boolean isPattern() {
         return isPattern;
     }
 
@@ -36,11 +44,19 @@ public class EventType {
         this.isPattern = isPattern;
     }
 
-    public List<Attribute> getAttributes() {
+    public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
+    }
+
+    public Map<String, String> getAttributesMap() {
+        Map<String, String> attributes = new HashMap<String, String>();
+        for (Attribute attribute : this.attributes) {
+            attributes.put(attribute.getName(), attribute.getType());
+        }
         return attributes;
     }
 
-    public void setAttributes(List<Attribute> attributes) {
-        this.attributes = attributes;
+    public boolean equals(EventType e) {
+        return (type.equals(e.type) && isPattern == e.isPattern && id.equals(e.id) && attributes.equals(e.attributes));
     }
 }

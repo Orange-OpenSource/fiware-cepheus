@@ -10,7 +10,7 @@ public class Configuration {
     private String host;
     private List<EventTypeIn> eventTypeIns;
     private List<EventTypeOut> eventTypeOuts;
-    private List<String> rules;
+    private List<String> statements;
 
     public Configuration() {
     }
@@ -39,11 +39,11 @@ public class Configuration {
         this.eventTypeOuts = eventTypeOuts;
     }
 
-    public List<String> getRules() {
-        return rules;
+    public List<String> getStatements() {
+        return statements;
     }
 
-    public void setRules(List<String> rules) {
-        this.rules = rules;
+    public void setStatements(List<String> statements) {
+        this.statements = statements;
     }
 }
