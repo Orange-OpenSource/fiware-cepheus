@@ -1,10 +1,13 @@
 package com.orange.espr4fastdata.model.cep;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by pborscia on 03/06/2015.
  */
 public class EventTypeIn extends EventType {
-    private String provider;
+    private Set<String> providers;
 
     public EventTypeIn() {
         super();
@@ -14,11 +17,18 @@ public class EventTypeIn extends EventType {
         super(id, type, isPattern);
     }
 
-    public String getProvider() {
-        return provider;
+    public Set<String> getProviders() {
+        return providers;
     }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
+    public void setProviders(Set<String> providers) {
+        this.providers = providers;
+    }
+
+    public void addProvider(String provider) {
+        if (providers == null) {
+            providers = new HashSet<>();
+        }
+        providers.add(provider);
     }
 }
