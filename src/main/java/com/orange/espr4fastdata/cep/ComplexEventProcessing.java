@@ -6,6 +6,7 @@ import com.orange.espr4fastdata.model.cep.Attribute;
 import com.orange.espr4fastdata.model.cep.EventType;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.model.Event;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 
@@ -17,7 +18,7 @@ import java.util.*;
 @ComponentScan
 public class ComplexEventProcessing {
 
-    private static org.slf4j.Logger logger = LoggerFactory.getLogger(ComplexEventProcessing.class);
+    private static Logger logger = LoggerFactory.getLogger(ComplexEventProcessing.class);
 
     private EPServiceProvider epServiceProvider;
     private Configuration configuration;
