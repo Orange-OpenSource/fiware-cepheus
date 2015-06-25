@@ -1,18 +1,12 @@
 package com.orange.espr4fastdata.util;
 
 
+import com.orange.espr4fastdata.model.cep.*;
 import com.orange.espr4fastdata.model.ngsi.*;
-import com.orange.espr4fastdata.model.cep.Attribute;
-import com.orange.espr4fastdata.model.cep.Configuration;
-import com.orange.espr4fastdata.model.cep.EventTypeIn;
-import com.orange.espr4fastdata.model.cep.EventTypeOut;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by pborscia on 05/06/2015.
@@ -26,38 +20,18 @@ public class Util {
         Configuration configuration = new Configuration();
         configuration.setHost("http://localhost:8080");
         //eventIN
-        List<EventTypeIn> eventTypeIns = new ArrayList<EventTypeIn>();
-        configuration.setEventTypeIns(eventTypeIns);
-        EventTypeIn eventTypeIn = new EventTypeIn();
-        eventTypeIns.add(eventTypeIn);
-        eventTypeIn.setProvider("http://iotAgent");
-        eventTypeIn.setId("S.*");
-        eventTypeIn.setType("TempSensor");
-        eventTypeIn.setIsPattern(true);
-        Set<Attribute> attributes = new HashSet<Attribute>();
-        Attribute attributeTemp = new Attribute();
-        attributeTemp.setName("temp");
-        attributeTemp.setType("float");
-        attributes.add(attributeTemp);
-        eventTypeIn.setAttributes(attributes);
+        EventTypeIn eventTypeIn = new EventTypeIn("S.*", "TempSensor", true);
+        eventTypeIn.addProvider("http://iotAgent");
+        eventTypeIn.addAttribute(new Attribute("temp", "float"));
+        configuration.setEventTypeIns(Collections.singletonList(eventTypeIn));
         //eventOUT
-        List<EventTypeOut> eventTypeOuts = new ArrayList<EventTypeOut>();
-        configuration.setEventTypeOuts(eventTypeOuts);
-        EventTypeOut eventTypeOut = new EventTypeOut();
-        eventTypeOuts.add(eventTypeOut);
-        eventTypeOut.setBroker("http://orion");
-        eventTypeOut.setId("OUT1");
-        eventTypeOut.setType("TempSensorAvg");
-        eventTypeOut.setIsPattern(false);
-        Set<Attribute> outAttributes = new HashSet<>();
-        Attribute attributeAvgTemp = new Attribute();
-        attributeAvgTemp.setName("avgTemp");
-        attributeAvgTemp.setType("double");
-        outAttributes.add(attributeAvgTemp);
-        eventTypeOut.setAttributes(outAttributes);
+        EventTypeOut eventTypeOut = new EventTypeOut("OUT1", "TempSensorAvg", false);
+        eventTypeOut.addBroker(new Broker("http://orion", false));
+        eventTypeOut.addAttribute(new Attribute("avgTemp", "double"));
+        configuration.setEventTypeOuts(Collections.singletonList(eventTypeOut));
 
         //rules
-        List<String> rules = new ArrayList<String>();
+        List<String> rules = new ArrayList<>();
         rules.add("INSERT INTO TempSensorAvg SELECT 'OUT1' as id, avg(TempSensor.temp) as avgTemp FROM TempSensor.win:time(2 seconds) WHERE TempSensor.id = 'S1' ");
         configuration.setStatements(rules);
 
@@ -66,67 +40,36 @@ public class Util {
 
     public NotifyContext createNotifyContextTempSensor(float randomValue) throws URISyntaxException {
 
-        NotifyContext notifyContext = new NotifyContext();
-        notifyContext.setSubscriptionId("1");
-        notifyContext.setOriginator(new URI("http://iotAgent"));
-        List<ContextElementResponse> contextElementResponses = new ArrayList<ContextElementResponse>();
+        NotifyContext notifyContext = new NotifyContext("1", new URI("http://iotAgent"));
         ContextElementResponse contextElementResponse = new ContextElementResponse();
         contextElementResponse.setContextElement(createTemperatureContextElement(randomValue));
-        contextElementResponses.add(contextElementResponse);
-        notifyContext.setContextElementResponseList(contextElementResponses);
+        notifyContext.setContextElementResponseList(Collections.singletonList(contextElementResponse));
 
         return notifyContext;
     }
 
     public ContextElement createTemperatureContextElement(float randomValue) {
-
         ContextElement contextElement = new ContextElement();
-
-        EntityId entityId = new EntityId();
-        entityId.setId("S1");
-        entityId.setType("TempSensor");
-        entityId.setIsPattern(false);
-        contextElement.setEntityId(entityId);
-
-        List<ContextAttribute> contextAttributes = new ArrayList<ContextAttribute>();
-        ContextAttribute contextAttribute = new ContextAttribute();
-        contextAttribute.setName("temp");
-        contextAttribute.setType("float");
-        float value = (float) (15.5 + randomValue);
-        contextAttribute.setContextValue(Float.toString(value));
-        contextAttributes.add(contextAttribute);
-        contextElement.setContextAttributeList(contextAttributes);
-
+        contextElement.setEntityId(new EntityId("S1", "TempSensor", false));
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", Double.toString(15.5 + randomValue));
+        contextElement.setContextAttributeList(Collections.singletonList(contextAttribute));
         return contextElement;
-
-
     }
 
     public UpdateContext createUpdateContextTempSensor(float randomValue) throws URISyntaxException {
-
-        UpdateContext updateContext = new UpdateContext();
-        updateContext.setUpdateAction(UpdateAction.UPDATE);
-
-        List<ContextElement> contextElements = new ArrayList<ContextElement>();
-        contextElements.add(createTemperatureContextElement(randomValue));
-        updateContext.setContextElements(contextElements);
-
+        UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
+        updateContext.setContextElements(Collections.singletonList(createTemperatureContextElement(randomValue)));
         return updateContext;
     }
 
     public UpdateContextResponse createUpdateContextResponseTempSensor() throws URISyntaxException {
+        ContextElementResponse contextElementResponse = new ContextElementResponse();
+        contextElementResponse.setContextElement(createTemperatureContextElement(0));
+        contextElementResponse.setStatusCode(StatusCode.CODE_200);
 
         UpdateContextResponse updateContextResponse = new UpdateContextResponse();
         updateContextResponse.setErrorCode(StatusCode.CODE_200);
-        List<ContextElementResponse> contextElementResponses = new ArrayList<ContextElementResponse>();
-        ContextElementResponse contextElementResponse = new ContextElementResponse();
-        ContextElement contextElement = createTemperatureContextElement(0);
-        contextElementResponse.setContextElement(contextElement);
-        contextElementResponse.setStatusCode(StatusCode.CODE_200);
-        contextElementResponses.add(contextElementResponse);
-        updateContextResponse.setContextElementResponses(contextElementResponses);
-
-
+        updateContextResponse.setContextElementResponses(Collections.singletonList(contextElementResponse));
         return updateContextResponse;
     }
 
