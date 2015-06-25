@@ -37,10 +37,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @WebAppConfiguration
 public class NgsiControllerTest {
 
-    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
-
     private MockMvc mockMvc;
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
@@ -70,7 +66,7 @@ public class NgsiControllerTest {
         Configuration configuration = util.getBasicConf();
         mockMvc.perform(post("/api/v1/config")
                 .content(this.json(configuration))
-                .contentType(contentType))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
 
@@ -87,7 +83,7 @@ public class NgsiControllerTest {
         try {
             mockMvc.perform(post("/api/v1/ngsi/notifyContext")
                     .content(this.json(notifyContext))
-                    .contentType(contentType))
+                    .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         } catch (Exception e) {
             Assert.fail("Not expected URISyntaxException for postNotifyContextBeforeConf");
@@ -109,7 +105,7 @@ public class NgsiControllerTest {
         try {
             mockMvc.perform(post("/api/v1/ngsi/updateContext")
                     .content(this.json(updateContext))
-                    .contentType(contentType))
+                    .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         } catch (Exception e) {
             Assert.fail("expected Exception for postUpdateContextBeforeConf");
