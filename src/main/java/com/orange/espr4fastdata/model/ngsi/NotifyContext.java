@@ -15,6 +15,11 @@ public class NotifyContext {
     public NotifyContext() {
     }
 
+    public NotifyContext(String subscriptionId, URI originator) {
+        this.subscriptionId = subscriptionId;
+        this.originator = originator;
+    }
+
     public String getSubscriptionId() {
         return subscriptionId;
     }

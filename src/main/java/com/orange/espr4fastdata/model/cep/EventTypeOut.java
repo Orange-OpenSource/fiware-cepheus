@@ -10,6 +10,10 @@ public class EventTypeOut extends EventType {
         super();
     }
 
+    public EventTypeOut(String id, String type, boolean isPattern) {
+        super(id, type, isPattern);
+    }
+
     public String getBroker() {
         return broker;
     }

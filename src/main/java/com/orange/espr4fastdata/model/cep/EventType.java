@@ -12,6 +12,12 @@ public class EventType {
     public EventType() {
     }
 
+    public EventType(String id, String type, boolean isPattern) {
+        this.id = id;
+        this.type = type;
+        this.isPattern = isPattern;
+    }
+
     public String getId() {
         return id;
     }
@@ -27,7 +33,7 @@ public class EventType {
     public Set<Attribute> getAttributes() {
         if (attributes == null)
         {
-            attributes = new HashSet<Attribute>();
+            attributes = new HashSet<>();
         }
         return attributes;
     }
@@ -58,5 +64,12 @@ public class EventType {
 
     public boolean equals(EventType e) {
         return (type.equals(e.type) && isPattern == e.isPattern && id.equals(e.id) && attributes.equals(e.attributes));
+    }
+
+    public void addAttribute(Attribute attribute) {
+        if (attributes == null) {
+            attributes = new HashSet<>();
+        }
+        attributes.add(attribute);
     }
 }

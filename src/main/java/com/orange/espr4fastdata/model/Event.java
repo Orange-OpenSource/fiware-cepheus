@@ -12,6 +12,11 @@ public class Event {
     public Event() {
     }
 
+    public Event(String type, Map attributes) {
+        this.type = type;
+        this.attributes = attributes;
+    }
+
     public Map getAttributes() { return attributes; }
 
     public void setAttributes(Map attributes) { this.attributes = attributes; }

@@ -12,6 +12,12 @@ public class EntityId {
     public EntityId() {
     }
 
+    public EntityId(String id, String type, boolean isPattern) {
+        this.id = id;
+        this.type = type;
+        this.isPattern = isPattern;
+    }
+
     public String getId() {
         return id;
     }

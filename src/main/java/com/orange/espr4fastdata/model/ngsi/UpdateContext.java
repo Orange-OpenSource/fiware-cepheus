@@ -14,6 +14,10 @@ public class UpdateContext {
     public UpdateContext() {
     }
 
+    public UpdateContext(UpdateAction updateAction) {
+        this.updateAction = updateAction;
+    }
+
     public List<ContextElement> getContextElements() {
         return contextElements;
     }

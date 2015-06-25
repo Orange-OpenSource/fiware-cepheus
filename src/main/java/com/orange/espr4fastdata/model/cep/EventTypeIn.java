@@ -10,6 +10,10 @@ public class EventTypeIn extends EventType {
         super();
     }
 
+    public EventTypeIn(String id, String type, boolean isPattern) {
+        super(id, type, isPattern);
+    }
+
     public String getProvider() {
         return provider;
     }

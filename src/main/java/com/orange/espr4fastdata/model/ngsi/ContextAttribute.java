@@ -15,6 +15,12 @@ public class ContextAttribute {
     public ContextAttribute() {
     }
 
+    public ContextAttribute(String name, String type, String contextValue) {
+        this.name = name;
+        this.type = type;
+        this.contextValue = contextValue;
+    }
+
     public String getName() {
         return name;
     }
