@@ -16,7 +16,7 @@ import java.util.*;
  * Created by pborscia on 03/06/2015.
  */
 @ComponentScan
-public class ComplexEventProcessing {
+public class ComplexEventProcessing implements  ComplexEventProcessor {
 
     private static Logger logger = LoggerFactory.getLogger(ComplexEventProcessing.class);
 
@@ -55,6 +55,7 @@ public class ComplexEventProcessing {
             this.configuration = configuration;
         } catch (Exception e) {
             // TODO reset all esper internal state, reset previous configuration
+            throw new ConfigurationException("Failed to apply new configuration", e);
         }
     }
 
@@ -105,18 +106,22 @@ public class ComplexEventProcessing {
         List<? extends  EventType> eventTypesToAdd = new LinkedList<>(newList);
         eventTypesToAdd.removeAll(oldList);
 
+        // List all statements depending on the event types to remove
+        Set<String> statementsToDelete = new HashSet<>();
         for (EventType eventType : eventTypesToRemove) {
-            String eventTypeName = eventType.getType();
-            // Delete all statements depending on the old event type
-            for (String statementName : operations.getEventTypeNameUsedBy(eventTypeName)) {
-                EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(statementName);
-                if (statement != null) {
-                    statement.stop();
-                    statement.destroy();
-                }
+            statementsToDelete.addAll(operations.getEventTypeNameUsedBy(eventType.getType()));
+        }
+        // Delete all the statements depending on the event types to remove
+        for (String statementName : statementsToDelete) {
+            EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(statementName);
+            if (statement != null) {
+                statement.stop();
+                statement.destroy();
             }
-            // Remove event type
-            operations.removeEventType(eventTypeName, false);
+        }
+        // Finally remove the event types
+        for (EventType eventType : eventTypesToRemove) {
+            operations.removeEventType(eventType.getType(), false);
         }
 
         for (EventType eventType : eventTypesToAdd) {
