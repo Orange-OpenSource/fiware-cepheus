@@ -13,17 +13,17 @@ import org.springframework.context.annotation.ComponentScan;
 import java.util.*;
 
 /**
- * Created by pborscia on 03/06/2015.
+ * ComplexEventProcessor implementation using EsperTech Esper CEP
  */
 @ComponentScan
-public class ComplexEventProcessing implements  ComplexEventProcessor {
+public class EsperEventProcessor implements ComplexEventProcessor {
 
-    private static Logger logger = LoggerFactory.getLogger(ComplexEventProcessing.class);
+    private static Logger logger = LoggerFactory.getLogger(EsperEventProcessor.class);
 
     private EPServiceProvider epServiceProvider;
     private Configuration configuration;
 
-    public ComplexEventProcessing() {
+    public EsperEventProcessor() {
         epServiceProvider = EPServiceProviderManager.getDefaultProvider(new com.espertech.esper.client.Configuration());
     }
 

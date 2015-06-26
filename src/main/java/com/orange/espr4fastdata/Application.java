@@ -1,6 +1,6 @@
 package com.orange.espr4fastdata;
 
-import com.orange.espr4fastdata.cep.ComplexEventProcessing;
+import com.orange.espr4fastdata.cep.EsperEventProcessor;
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,6 +15,6 @@ public class Application {
 
     @Bean
     public ComplexEventProcessor getComplexEventProcessor() {
-        return new ComplexEventProcessing();
+        return new EsperEventProcessor();
     }
 }

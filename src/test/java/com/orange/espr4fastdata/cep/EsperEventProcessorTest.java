@@ -19,27 +19,27 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-public class ComplexEventProcessingTest {
+public class EsperEventProcessorTest {
 
 
-    private ComplexEventProcessing complexEventProcessing = new ComplexEventProcessing();
+    private EsperEventProcessor esperEventProcessor = new EsperEventProcessor();
 
     private Util util = new Util();
 
     @Test
     public void reInitBasicConfOK(){
 
-        complexEventProcessing.setConfiguration(util.getBasicConf());
+        esperEventProcessor.setConfiguration(util.getBasicConf());
 
 
         try {
-            assertEquals(1,complexEventProcessing.getEventTypeAttributes("TempSensor").size());
-            assertEquals("temp",complexEventProcessing.getEventTypeAttributes("TempSensor").get(0).getName());
-            assertEquals("float",complexEventProcessing.getEventTypeAttributes("TempSensor").get(0).getType());
+            assertEquals(1, esperEventProcessor.getEventTypeAttributes("TempSensor").size());
+            assertEquals("temp", esperEventProcessor.getEventTypeAttributes("TempSensor").get(0).getName());
+            assertEquals("float", esperEventProcessor.getEventTypeAttributes("TempSensor").get(0).getType());
 
-            assertEquals(1,complexEventProcessing.getEventTypeAttributes("TempSensorAvg").size());
-            assertEquals("avgTemp",complexEventProcessing.getEventTypeAttributes("TempSensorAvg").get(0).getName());
-            assertEquals("double",complexEventProcessing.getEventTypeAttributes("TempSensorAvg").get(0).getType());
+            assertEquals(1, esperEventProcessor.getEventTypeAttributes("TempSensorAvg").size());
+            assertEquals("avgTemp", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get(0).getName());
+            assertEquals("double", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get(0).getType());
 
         } catch (EventTypeNotFoundException e) {
             Assert.fail("Not expected EventTypeNotFoundException");
@@ -64,7 +64,7 @@ public class ComplexEventProcessingTest {
             event.setAttributes(attributesMap);
             event.setType("TempSensor");
 
-            complexEventProcessing.processEvent(event);
+            esperEventProcessor.processEvent(event);
 
         }
 
