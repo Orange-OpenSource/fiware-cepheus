@@ -20,7 +20,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
 
     private static Logger logger = LoggerFactory.getLogger(EsperEventProcessor.class);
 
-    private EPServiceProvider epServiceProvider;
+    private final EPServiceProvider epServiceProvider;
     private Configuration configuration;
 
     public EsperEventProcessor() {
@@ -60,7 +60,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     }
 
     public void processEvent(Event event) {
-        logger.info("Event sent to Esper {}", event.toString());
+        logger.debug("Event sent to Esper {}", event.toString());
         this.epServiceProvider.getEPRuntime().sendEvent(event.getAttributes(), event.getType());
     }
 
@@ -68,7 +68,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     public List<Attribute> getEventTypeAttributes(String eventTypeName) throws EventTypeNotFoundException {
         List<Attribute> attributes = new ArrayList<Attribute>();
 
-        com.espertech.esper.client.EventType eventType = this.getEpServiceProvider().getEPAdministrator().getConfiguration().getEventType(eventTypeName);
+        com.espertech.esper.client.EventType eventType = epServiceProvider.getEPAdministrator().getConfiguration().getEventType(eventTypeName);
         if (eventType != null){
             for (String name : eventType.getPropertyNames()) {
                 if (!("id".equals(name))) {
@@ -86,10 +86,6 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         }
 
         return attributes;
-    }
-
-    public EPServiceProvider getEpServiceProvider() {
-        return epServiceProvider;
     }
 
     /**
