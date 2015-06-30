@@ -50,6 +50,7 @@ public class NgsiController {
             responses.add(new ContextElementResponse(element, statusCode));
         }
 
+        //TODO send back a NotifyContextResponse
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -74,7 +75,8 @@ public class NgsiController {
         return response;
     }
 
-    @ExceptionHandler(EventProcessingException.class)
+    //TODO handle responses for all exceptions
+    @ExceptionHandler(Exception.class)
     @ResponseStatus(value=HttpStatus.BAD_REQUEST,reason="Event processing error")
     public ModelAndView handleEventProcessingError(HttpServletRequest req, Exception exception) {
         logger.error("Request: configuration error", exception);
