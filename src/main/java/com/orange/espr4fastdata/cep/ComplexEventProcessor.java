@@ -20,7 +20,7 @@ public interface ComplexEventProcessor {
     /**
      * Supply an event to the CEP
      * @param event
-     * @throws EventProcessingException when the event could not be processed sucessfully
+     * @throws EventProcessingException when the event could not be processed successfully
      */
     void processEvent(Event event) throws EventProcessingException;
 }
