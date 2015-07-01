@@ -1,5 +1,7 @@
 package com.orange.espr4fastdata.controller;
 
+import com.orange.espr4fastdata.exception.PersistenceException;
+import com.orange.espr4fastdata.persistence.Persistence;
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import com.orange.espr4fastdata.exception.ConfigurationException;
 import com.orange.espr4fastdata.model.cep.Configuration;
@@ -25,16 +27,28 @@ public class AdminController {
 
     private final ComplexEventProcessor complexEventProcessor;
 
+    private final Persistence persistence;
+
     @Autowired
-    public AdminController(ComplexEventProcessor complexEventProcessor) {
+    public AdminController(ComplexEventProcessor complexEventProcessor, Persistence persistence) {
         this.complexEventProcessor = complexEventProcessor;
+        this.persistence = persistence;
+
     }
 
     @RequestMapping(value = "/config", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> configuration(@RequestBody final Configuration configuration) throws ConfigurationException {
+    public ResponseEntity<?> configuration(@RequestBody final Configuration configuration) throws PersistenceException {
         logger.debug("Updating configuration: {}", configuration);
 
-        complexEventProcessor.setConfiguration(configuration);
+        try {
+            complexEventProcessor.setConfiguration(configuration);
+
+            persistence.saveConfiguration(configuration);
+
+        } catch (ConfigurationException e) {
+            logger.error("Impossible to set configuration");
+        }
+
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

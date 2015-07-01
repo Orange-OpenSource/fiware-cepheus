@@ -1,15 +1,21 @@
 package com.orange.espr4fastdata.cep;
 
 import com.espertech.esper.client.*;
-import com.orange.espr4fastdata.exception.EventTypeNotFoundException;
+import com.espertech.esper.client.ConfigurationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.*;
+import com.orange.espr4fastdata.exception.*;
 import com.orange.espr4fastdata.model.cep.Attribute;
 import com.orange.espr4fastdata.model.cep.EventType;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.model.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -22,6 +28,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
 
     private final EPServiceProvider epServiceProvider;
     private Configuration configuration;
+
 
     public EsperEventProcessor() {
         epServiceProvider = EPServiceProviderManager.getDefaultProvider(new com.espertech.esper.client.Configuration());

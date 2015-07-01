@@ -7,9 +7,12 @@ import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.File;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -22,7 +25,8 @@ import static org.junit.Assert.assertEquals;
 public class EsperEventProcessorTest {
 
 
-    private EsperEventProcessor esperEventProcessor = new EsperEventProcessor();
+    @Autowired
+    private EsperEventProcessor esperEventProcessor;
 
     private Util util = new Util();
 
@@ -49,6 +53,7 @@ public class EsperEventProcessorTest {
 
 
     }
+
 
     private void sendXtemperature() {
 

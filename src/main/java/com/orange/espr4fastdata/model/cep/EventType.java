@@ -1,5 +1,7 @@
 package com.orange.espr4fastdata.model.cep;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.*;
 
 public class EventType {
@@ -42,6 +44,7 @@ public class EventType {
         this.type = type;
     }
 
+    @JsonProperty("isPattern")
     public boolean isPattern() {
         return isPattern;
     }
@@ -50,16 +53,9 @@ public class EventType {
         this.isPattern = isPattern;
     }
 
+    @JsonProperty("attributes")
     public void setAttributes(Set<Attribute> attributes) {
         this.attributes = attributes;
-    }
-
-    public Map<String, String> getAttributesMap() {
-        Map<String, String> attributes = new HashMap<String, String>();
-        for (Attribute attribute : this.attributes) {
-            attributes.put(attribute.getName(), attribute.getType());
-        }
-        return attributes;
     }
 
     public boolean equals(EventType e) {
