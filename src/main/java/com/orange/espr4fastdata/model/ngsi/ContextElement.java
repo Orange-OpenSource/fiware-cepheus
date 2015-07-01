@@ -1,11 +1,14 @@
 package com.orange.espr4fastdata.model.ngsi;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 import java.util.List;
 
 /**
  * Created by pborscia on 04/06/2015.
  */
 public class ContextElement {
+    @JsonUnwrapped
     private EntityId entityId;
     private String attributeDomainName;
     private List<ContextAttribute> contextAttributeList;
