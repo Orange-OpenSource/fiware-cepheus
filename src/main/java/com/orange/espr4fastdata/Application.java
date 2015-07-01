@@ -23,12 +23,12 @@ public class Application {
     @Bean
     public ComplexEventProcessor getComplexEventProcessor() throws ConfigurationException, PersistenceException {
         ComplexEventProcessor complexEventProcessor = new EsperEventProcessor();
-        Configuration configuration = null;
 
-        configuration = getPersistence().loadConfiguration();
+        if (getPersistence().checkConfigurationDirectory()) {
+            Configuration configuration = getPersistence().loadConfiguration();
 
-        if (configuration != null) {
             complexEventProcessor.setConfiguration(configuration);
+
         }
         return complexEventProcessor;
     }

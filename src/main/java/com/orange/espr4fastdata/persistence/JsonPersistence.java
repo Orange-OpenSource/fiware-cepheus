@@ -30,43 +30,40 @@ public class JsonPersistence implements Persistence {
 
     }
 
-    /**
-     * Load persited configuration to the CEP
-     * @throws PersistenceException when the configuration could not be loaded successfully
-     */
-    public Configuration loadConfiguration() throws PersistenceException {
-
-        File confFile = null;
-
-        logger.debug("Load Configuration from {}", this.ConfigurationFileDirectory );
+    @Override
+    public Boolean checkConfigurationDirectory() {
 
         if (this.ConfigurationFileDirectory == null) {
             logger.warn("Configuration File path is null ");
-            return null;
+            return false;
         } else {
-            confFile = new File(this.ConfigurationFileDirectory);
+            File confFile = new File(this.ConfigurationFileDirectory);
             if (!confFile.exists()) {
                 logger.warn("Configuration File {} doesn't exist", this.ConfigurationFileDirectory);
-                return null;
+                return false;
             }
         }
+        return true;
+    }
+
+    @Override
+    public Configuration loadConfiguration() throws PersistenceException {
+
+        logger.debug("Load Configuration from {}", this.ConfigurationFileDirectory );
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
 
         try {
             mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-            return mapper.readValue(confFile, Configuration.class );
+            return mapper.readValue(new File(this.ConfigurationFileDirectory), Configuration.class );
 
         } catch (IOException e) {
             throw new PersistenceException("Failed to load configuration", e);
         }
     }
 
-    /**
-     * Save configuration
-     * @throws PersistenceException when the configuration could not be saved successfully
-     */
+    @Override
     public void saveConfiguration(Configuration configuration) throws PersistenceException {
         logger.debug("SAVE Configuration in {}", this.ConfigurationFileDirectory );
 

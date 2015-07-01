@@ -13,6 +13,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by pborscia on 30/06/2015.
@@ -25,6 +27,35 @@ public class PersistenceTest {
     Persistence persistence;
 
     private Util util = new Util();
+
+    @Test
+    public void checkFileReturnFalse(){
+
+        File confFile = new File("target/esper4fastdata.json");
+        if (confFile.exists()) {
+            confFile.delete();
+        }
+
+        assertFalse(persistence.checkConfigurationDirectory());
+
+    }
+
+    @Test
+    public void checkFileReturnTrue(){
+
+        File confFile = new File("target/esper4fastdata.json");
+        if (!confFile.exists()) {
+            try {
+                persistence.saveConfiguration(util.getBasicConf());
+            } catch (PersistenceException e) {
+                Assert.fail("Not expected PersistenceException");
+            }
+        }
+
+        assertTrue(persistence.checkConfigurationDirectory());
+
+    }
+
 
     @Test
     public void saveloadConfiguration(){
@@ -47,6 +78,18 @@ public class PersistenceTest {
         } catch (PersistenceException e) {
             Assert.fail("Not expected PersistenceException");
         }
+
+    }
+
+    @Test(expected=PersistenceException.class)
+    public void loadConfigurationThrowException() throws PersistenceException {
+
+        File confFile = new File("target/esper4fastdata.json");
+        if (confFile.exists()) {
+            confFile.delete();
+        }
+
+        persistence.loadConfiguration();
 
     }
 }
