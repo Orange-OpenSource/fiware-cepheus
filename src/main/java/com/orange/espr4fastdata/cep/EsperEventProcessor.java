@@ -12,8 +12,11 @@ import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.model.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.*;
@@ -29,10 +32,22 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     private final EPServiceProvider epServiceProvider;
     private Configuration configuration;
 
-
     public EsperEventProcessor() {
         epServiceProvider = EPServiceProviderManager.getDefaultProvider(new com.espertech.esper.client.Configuration());
     }
+
+    //@Bean
+    //public EventSinkListener getEventSinkListener() {
+    //    return new EventSinkListener();
+    //}
+
+    @Autowired
+    public EventSinkListener eventSinkListener;
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
 
     public void setConfiguration(Configuration configuration) {
         Configuration previousConfiguration = this.configuration;
@@ -55,11 +70,12 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             // Update EPL statements
             for (String eplStatement : configuration.getStatements()) {
                 EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(eplStatement);
-                EventSinkListener eventSinkListener = new EventSinkListener();
                 statement.addListener(eventSinkListener);
             }
 
             this.configuration = configuration;
+            eventSinkListener.setConfiguration(configuration);
+
         } catch (Exception e) {
             // TODO reset all esper internal state, reset previous configuration
             throw new ConfigurationException("Failed to apply new configuration", e);

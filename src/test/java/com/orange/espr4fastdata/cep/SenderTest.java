@@ -1,5 +1,6 @@
 package com.orange.espr4fastdata.cep;
 
+import com.orange.espr4fastdata.model.cep.Broker;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,8 @@ public class SenderTest {
         //@SuppressWarnings("unused")
 
         Sender sender = new Sender();
-        sender.postMessage(util.createUpdateContextTempSensor(0),"/updateContext");
+        Broker broker = new Broker("/updateContext",false);
+        sender.postMessage(util.createUpdateContextTempSensor(0),broker);
 
     }
 

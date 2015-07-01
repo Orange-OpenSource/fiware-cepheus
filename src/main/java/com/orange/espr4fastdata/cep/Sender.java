@@ -1,5 +1,6 @@
 package com.orange.espr4fastdata.cep;
 
+import com.orange.espr4fastdata.model.cep.Broker;
 import com.orange.espr4fastdata.model.ngsi.UpdateContext;
 import com.orange.espr4fastdata.model.ngsi.UpdateContextResponse;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,7 +19,7 @@ import java.util.Collections;
 /**
  * Created by pborscia on 08/06/2015.
  */
-@ComponentScan
+@Component
 public class Sender {
 
     private static Logger logger = LoggerFactory.getLogger(Sender.class);
@@ -36,13 +38,13 @@ public class Sender {
 
     }
 
-    public UpdateContextResponse postMessage(UpdateContext updateContext, String brokerURI) {
+    public UpdateContextResponse postMessage(UpdateContext updateContext, Broker broker) {
 
 
         UpdateContextResponse updateContextResponse = null;
         try {
 
-            updateContextResponse = restTemplate.postForObject(brokerURI,updateContext,UpdateContextResponse.class);
+            updateContextResponse = restTemplate.postForObject(broker.getUrl(),updateContext,UpdateContextResponse.class);
 
             logger.info("UpdateContextResponse received {} ", updateContextResponse);
 
