@@ -5,26 +5,32 @@ import com.orange.espr4fastdata.model.ngsi.UpdateContext;
 import com.orange.espr4fastdata.model.ngsi.UpdateContextResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.awt.*;
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
  * Created by pborscia on 08/06/2015.
  */
-@Component
+@Service
 public class Sender {
 
     private static Logger logger = LoggerFactory.getLogger(Sender.class);
 
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
     @Value("${sender.readtimeout}")
     private int readTimeout;
@@ -34,7 +40,10 @@ public class Sender {
 
     public Sender() {
         restTemplate = new RestTemplate(this.clientHttpRequestFactory());
-        restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(new ServiceNamePathInterceptor()));
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+        //TODO replace by authent interceptor
+        //restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(new ServiceNamePathInterceptor()));
 
     }
 
@@ -44,18 +53,32 @@ public class Sender {
         UpdateContextResponse updateContextResponse = null;
         try {
 
-            updateContextResponse = restTemplate.postForObject(broker.getUrl(),updateContext,UpdateContextResponse.class);
+            // Set the Content-Type header, ServiceName and ServicePath
+            HttpHeaders requestHeaders = new HttpHeaders();
+            requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+            requestHeaders.add("Fiware-Service", broker.getServiceName());
+            requestHeaders.add("Fiware-ServicePath", broker.getServicePath());
 
-            logger.info("UpdateContextResponse received {} ", updateContextResponse);
+            HttpEntity<UpdateContext> requestEntity = new HttpEntity<UpdateContext>(updateContext, requestHeaders);
+
+            ResponseEntity<UpdateContextResponse> responseEntity = restTemplate.exchange(broker.getUrl(), HttpMethod.POST,requestEntity,UpdateContextResponse.class);
+
+            logger.debug("Status Code of UpdateContextResponse : {} from broker : {}", responseEntity.getStatusCode(), broker.getUrl());
+
+            logger.debug("UpdateContextResponse received {} ", responseEntity.getBody());
 
         } catch (HttpStatusCodeException e) {
             logger.warn("POST FAILED with HttpStatusCode: {} ", e.getStatusCode()
                     + "|" + e.getStatusText());
         } catch (RuntimeException e) {
-            logger.error("POST FAILED ");
+            logger.error("POST FAILED {}",e);
 
         }
         return updateContextResponse;
+    }
+
+    public RestTemplate getRestTemplate(){
+        return this.restTemplate;
     }
 
     private ClientHttpRequestFactory clientHttpRequestFactory() {

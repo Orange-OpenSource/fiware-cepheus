@@ -5,7 +5,7 @@ package com.orange.espr4fastdata.model.ngsi;
  */
 public enum UpdateAction {
 
-    UPDATE("update"),APPEND("append"),DELETE("delete");
+    UPDATE("UPDATE"),APPEND("APPEND"),DELETE("DELETE");
 
     private String label;
 

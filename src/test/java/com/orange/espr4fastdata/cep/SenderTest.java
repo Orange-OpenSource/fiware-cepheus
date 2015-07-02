@@ -1,14 +1,26 @@
 package com.orange.espr4fastdata.cep;
 
 import com.orange.espr4fastdata.model.cep.Broker;
+import com.orange.espr4fastdata.model.ngsi.UpdateAction;
 import com.orange.espr4fastdata.util.Util;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mock.http.MockHttpOutputMessage;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+
+import static org.hamcrest.CoreMatchers.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
@@ -19,30 +31,96 @@ public class SenderTest {
 
 
     private MockRestServiceServer mockServer;
-    private RestTemplate restTemplate;
+
+    private Sender sender;
 
     private Util util = new Util();
 
+
     @Before
     public void setup() {
-        this.restTemplate = new RestTemplate();
-        this.mockServer = MockRestServiceServer.createServer(this.restTemplate);
+        sender = new Sender();
+        this.mockServer = MockRestServiceServer.createServer(sender.getRestTemplate());
+
     }
 
     @Test
-    public void performPost() throws Exception {
-        //String responseBody = "{\"name\" : \"Ludwig van Beethoven\", \"someDouble\" : \"1.6035\"}";
-        //Resource responseBody = new ClassPathResource("ludwig.json", this.getClass());
-        String responseBody = util.createUpdateContextResponseTempSensor().toString();
+    public void performPostWith200() throws Exception {
 
-        this.mockServer.expect(requestTo("/updateContext")).andExpect(method(HttpMethod.POST))
+        String requestJson = this.json(util.createUpdateContextTempSensor(0));
+        String responseBody = this.json(util.createUpdateContextResponseTempSensor());
+
+        this.mockServer.expect(requestTo(getBroker().getUrl())).andExpect(method(HttpMethod.POST))
+                .andExpect(header("Fiware-Service", getBroker().getServiceName()))
+                .andExpect(header("Fiware-ServicePath", getBroker().getServicePath()))
+                .andExpect(jsonPath("$.updateAction").value(UpdateAction.UPDATE.getLabel()))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
         //@SuppressWarnings("unused")
 
-        Sender sender = new Sender();
-        Broker broker = new Broker("/updateContext",false);
-        sender.postMessage(util.createUpdateContextTempSensor(0),broker);
+        sender.postMessage(util.createUpdateContextTempSensor(0),getBroker());
 
+        this.mockServer.verify();
+
+    }
+    //{"contextElements":[{"id":"S1","type":"TempSensor","isPattern":false,"attributeDomainName":null,"contextAttributeList":[{"name":"temp","type":"float","contextValue":"15.5","metadata":null}],"contextMetadataList":null}],"updateAction":"UPDATE"}
+
+    @Test
+    public void performPostWith404() throws Exception {
+
+        String responseBody = this.json(util.createUpdateContextResponseTempSensor());
+
+        this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
+        //@SuppressWarnings("unused")
+
+        sender.postMessage(util.createUpdateContextTempSensor(0),getBroker());
+
+        this.mockServer.verify();
+
+    }
+
+    @Test
+    public void performPostWith500() throws Exception {
+
+        String responseBody = this.json(util.createUpdateContextResponseTempSensor());
+
+        this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
+                .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
+        //@SuppressWarnings("unused")
+
+        sender.postMessage(util.createUpdateContextTempSensor(0),getBroker());
+
+        this.mockServer.verify();
+
+    }
+
+
+    protected String json(Object o) throws IOException {
+        HttpMessageConverter mappingJackson2HttpMessageConverter = null;
+
+        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+
+        for(HttpMessageConverter hmc : sender.getRestTemplate().getMessageConverters()) {
+            if (hmc instanceof MappingJackson2HttpMessageConverter) {
+                mappingJackson2HttpMessageConverter = hmc;
+            }
+        }
+
+        Assert.assertNotNull("the JSON message converter must not be null",
+                mappingJackson2HttpMessageConverter);
+
+        mappingJackson2HttpMessageConverter.write(
+                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+
+        return mockHttpOutputMessage.getBodyAsString();
+    }
+
+    private Broker getBroker() {
+        Broker broker = new Broker("http://localhost/updateContext",false);
+        broker.setServiceName("My tenant");
+        broker.setServicePath("/*");
+
+        return broker;
     }
 
 
