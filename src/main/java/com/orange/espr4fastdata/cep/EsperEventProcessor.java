@@ -24,7 +24,7 @@ import java.util.*;
 /**
  * ComplexEventProcessor implementation using EsperTech Esper CEP
  */
-@ComponentScan
+@Component
 public class EsperEventProcessor implements ComplexEventProcessor {
 
     private static Logger logger = LoggerFactory.getLogger(EsperEventProcessor.class);
@@ -32,17 +32,13 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     private final EPServiceProvider epServiceProvider;
     private Configuration configuration;
 
+    @Autowired
+    public EventSinkListener eventSinkListener;
+
     public EsperEventProcessor() {
         epServiceProvider = EPServiceProviderManager.getDefaultProvider(new com.espertech.esper.client.Configuration());
     }
 
-    //@Bean
-    //public EventSinkListener getEventSinkListener() {
-    //    return new EventSinkListener();
-    //}
-
-    @Autowired
-    public EventSinkListener eventSinkListener;
 
     public Configuration getConfiguration() {
         return configuration;

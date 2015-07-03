@@ -7,6 +7,7 @@ import com.orange.espr4fastdata.exception.PersistenceException;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.persistence.JsonPersistence;
 import com.orange.espr4fastdata.persistence.Persistence;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -20,24 +21,29 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    @Bean
+    /*@Bean
     public ComplexEventProcessor getComplexEventProcessor() throws ConfigurationException, PersistenceException {
         ComplexEventProcessor complexEventProcessor = new EsperEventProcessor();
 
-        if (getPersistence().checkConfigurationDirectory()) {
-            Configuration configuration = getPersistence().loadConfiguration();
+        if (persistence.checkConfigurationDirectory()) {
+            Configuration configuration = persistence.loadConfiguration();
 
             complexEventProcessor.setConfiguration(configuration);
 
         }
         return complexEventProcessor;
-    }
+    }*/
 
-    @Bean
-    public Persistence getPersistence() {
-        return new JsonPersistence();
-    }
 
+
+    @Autowired
+    public ComplexEventProcessor complexEventProcessor;
+
+    @Autowired
+    public Persistence persistence;
+
+    @Autowired
+    public Init initEspr4fastdata;
 
 
 }

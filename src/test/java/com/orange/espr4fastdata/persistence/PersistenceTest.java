@@ -1,6 +1,9 @@
-package com.orange.espr4fastdata;
+package com.orange.espr4fastdata.persistence;
 
+import com.orange.espr4fastdata.Application;
+import com.orange.espr4fastdata.cep.EsperEventProcessor;
 import com.orange.espr4fastdata.exception.PersistenceException;
+import com.orange.espr4fastdata.persistence.JsonPersistence;
 import com.orange.espr4fastdata.persistence.Persistence;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
@@ -23,8 +26,9 @@ import static org.junit.Assert.assertTrue;
 @SpringApplicationConfiguration(classes = Application.class)
 public class PersistenceTest {
 
+
     @Autowired
-    Persistence persistence;
+    private Persistence persistence;
 
     private Util util = new Util();
 

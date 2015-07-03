@@ -1,6 +1,8 @@
 package com.orange.espr4fastdata.cep;
 
 import com.orange.espr4fastdata.Application;
+import com.orange.espr4fastdata.exception.ConfigurationException;
+import com.orange.espr4fastdata.exception.EventProcessingException;
 import com.orange.espr4fastdata.exception.EventTypeNotFoundException;
 import com.orange.espr4fastdata.model.Event;
 import com.orange.espr4fastdata.util.Util;
@@ -33,7 +35,9 @@ public class EsperEventProcessorTest {
     @Test
     public void reInitBasicConfOK(){
 
-        esperEventProcessor.setConfiguration(util.getBasicConf());
+
+            esperEventProcessor.setConfiguration(util.getBasicConf());
+
 
 
         try {
@@ -69,7 +73,9 @@ public class EsperEventProcessorTest {
             event.setAttributes(attributesMap);
             event.setType("TempSensor");
 
-            esperEventProcessor.processEvent(event);
+
+                esperEventProcessor.processEvent(event);
+
 
         }
 
