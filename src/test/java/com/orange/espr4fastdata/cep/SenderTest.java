@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.ResponseCreator;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.web.client.RestTemplate;
 
@@ -47,7 +50,6 @@ public class SenderTest {
     @Test
     public void performPostWith200() throws Exception {
 
-        String requestJson = this.json(util.createUpdateContextTempSensor(0));
         String responseBody = this.json(util.createUpdateContextResponseTempSensor());
 
         this.mockServer.expect(requestTo(getBroker().getUrl())).andExpect(method(HttpMethod.POST))
@@ -94,6 +96,17 @@ public class SenderTest {
 
     }
 
+    @Test
+    public void performPostWithTimeout() throws Exception {
+
+
+        this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
+                .andRespond(TimeoutResponseCreator.withTimeout());
+
+        sender.postMessage(util.createUpdateContextTempSensor(0),getBroker());
+
+    }
+
 
     protected String json(Object o) throws IOException {
         HttpMessageConverter mappingJackson2HttpMessageConverter = null;
@@ -124,6 +137,21 @@ public class SenderTest {
     }
 
 
+    public static class TimeoutResponseCreator implements ResponseCreator {
 
+        @Override
+        public ClientHttpResponse createResponse(ClientHttpRequest request) throws IOException {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        public static TimeoutResponseCreator withTimeout() {
+            return new TimeoutResponseCreator();
+        }
+    }
 
 }

@@ -9,12 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.*;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,7 +31,7 @@ public class Sender {
 
     private static Logger logger = LoggerFactory.getLogger(Sender.class);
 
-    private RestTemplate restTemplate;
+    private AsyncRestTemplate restTemplate;
 
     @Value("${sender.readtimeout}")
     private int readTimeout;
@@ -39,7 +40,7 @@ public class Sender {
     private int connectTimeout;
 
     public Sender() {
-        restTemplate = new RestTemplate(this.clientHttpRequestFactory());
+        restTemplate = new AsyncRestTemplate(this.clientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
         //TODO replace by authent interceptor
@@ -61,11 +62,27 @@ public class Sender {
 
             HttpEntity<UpdateContext> requestEntity = new HttpEntity<UpdateContext>(updateContext, requestHeaders);
 
-            ResponseEntity<UpdateContextResponse> responseEntity = restTemplate.exchange(broker.getUrl(), HttpMethod.POST,requestEntity,UpdateContextResponse.class);
+            ListenableFuture<ResponseEntity<UpdateContextResponse>> futureEntity = restTemplate.exchange(broker.getUrl(), HttpMethod.POST,requestEntity,UpdateContextResponse.class);
 
-            logger.debug("Status Code of UpdateContextResponse : {} from broker : {}", responseEntity.getStatusCode(), broker.getUrl());
+            futureEntity
+                    .addCallback(new ListenableFutureCallback<ResponseEntity>() {
+                        @Override
+                        public void onSuccess(ResponseEntity result) {
+                            logger.debug("Response received (async callable)");
+                            logger.debug("Status Code of UpdateContextResponse : {} UpdateContextResponse received : {}", result.getStatusCode(), result.getBody());
 
-            logger.debug("UpdateContextResponse received {} ", responseEntity.getBody());
+                            //TODO : anything else ??
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            logger.warn("Failed Response received: {} ", t.getCause()
+                                    + "|" + t.getMessage());
+                            //TODO : anything else ??
+                        }
+                    });
+
+
 
         } catch (HttpStatusCodeException e) {
             logger.warn("POST FAILED with HttpStatusCode: {} ", e.getStatusCode()
@@ -77,14 +94,16 @@ public class Sender {
         return updateContextResponse;
     }
 
-    public RestTemplate getRestTemplate(){
+    public AsyncRestTemplate getRestTemplate(){
         return this.restTemplate;
     }
 
-    private ClientHttpRequestFactory clientHttpRequestFactory() {
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setReadTimeout(this.readTimeout);
-        factory.setConnectTimeout(this.connectTimeout);
+    private AsyncClientHttpRequestFactory clientHttpRequestFactory() {
+        HttpComponentsAsyncClientHttpRequestFactory factory = new HttpComponentsAsyncClientHttpRequestFactory();
+        factory.setReadTimeout(2000);
+        factory.setConnectTimeout(2000);
+        factory.setConnectionRequestTimeout(2000);
+
         return factory;
     }
 }
