@@ -21,21 +21,6 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    /*@Bean
-    public ComplexEventProcessor getComplexEventProcessor() throws ConfigurationException, PersistenceException {
-        ComplexEventProcessor complexEventProcessor = new EsperEventProcessor();
-
-        if (persistence.checkConfigurationDirectory()) {
-            Configuration configuration = persistence.loadConfiguration();
-
-            complexEventProcessor.setConfiguration(configuration);
-
-        }
-        return complexEventProcessor;
-    }*/
-
-
-
     @Autowired
     public ComplexEventProcessor complexEventProcessor;
 

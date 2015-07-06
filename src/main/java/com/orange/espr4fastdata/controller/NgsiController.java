@@ -34,24 +34,27 @@ public class NgsiController {
     }
 
     @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> notifyContext(@RequestBody final NotifyContext notify) throws EventProcessingException {
+    public ResponseEntity<NotifyContextResponse> notifyContext(@RequestBody final NotifyContext notify) throws EventProcessingException {
 
         List<ContextElementResponse> responses = new LinkedList<>();
 
+        StatusCode statusCode = StatusCode.CODE_500;
+
         for (ContextElementResponse response : notify.getContextElementResponseList()) {
             ContextElement element = response.getContextElement();
-            StatusCode statusCode = StatusCode.CODE_200;
+            statusCode = StatusCode.CODE_200;
             try {
                 Event event = eventFromContextElement(element);
                 complexEventProcessor.processEvent(event);
             } catch (EventProcessingException e) {
-                statusCode = StatusCode.CODE_400;
+                statusCode = StatusCode.CODE_500;
             }
-            responses.add(new ContextElementResponse(element, statusCode));
         }
 
-        //TODO send back a NotifyContextResponse
-        return new ResponseEntity<>(HttpStatus.OK);
+        NotifyContextResponse notifyContextResponse = new NotifyContextResponse();
+        notifyContextResponse.setResponseCode(statusCode);
+
+        return new ResponseEntity<NotifyContextResponse>(notifyContextResponse, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/updateContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
