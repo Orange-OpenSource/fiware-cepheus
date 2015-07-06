@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
@@ -90,6 +91,26 @@ public class NgsiControllerTest {
         }
     }
 
+
+    @Test
+    public void postNotifyContextWithEmptySubscriptionId() {
+
+        NotifyContext notifyContext = null;
+        try {
+            notifyContext = new NotifyContext("", new URI("http://iotAgent"));
+        } catch (URISyntaxException e) {
+            Assert.fail("Not expected URISyntaxException for postNotifyContextBeforeConf");
+        }
+
+        try {
+            mockMvc.perform(post("/api/v1/ngsi/notifyContext")
+                    .content(this.json(notifyContext))
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isBadRequest());
+        } catch (Exception e) {
+            Assert.fail("Not expected URISyntaxException for postNotifyContextBeforeConf");
+        }
+    }
 
     @Test
     public void postUpdateContextBeforeConf() {

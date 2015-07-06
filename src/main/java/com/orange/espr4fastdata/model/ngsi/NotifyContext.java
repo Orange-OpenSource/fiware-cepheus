@@ -1,5 +1,7 @@
 package com.orange.espr4fastdata.model.ngsi;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.net.URI;
 import java.util.List;
 
@@ -8,8 +10,11 @@ import java.util.List;
  */
 public class NotifyContext {
 
+    @JsonProperty(required = true)
     private String subscriptionId;
+    @JsonProperty(required = true)
     private URI originator;
+
     private List<ContextElementResponse> contextElementResponseList;
 
     public NotifyContext() {

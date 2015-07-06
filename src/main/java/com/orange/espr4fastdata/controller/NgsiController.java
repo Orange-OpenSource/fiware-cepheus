@@ -7,14 +7,13 @@ import com.orange.espr4fastdata.model.ngsi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.*;
 
 /**
@@ -33,26 +32,28 @@ public class NgsiController {
         this.complexEventProcessor = complexEventProcessor;
     }
 
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.setValidator(new NgsiValidator());
+    }
+
     @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<NotifyContextResponse> notifyContext(@RequestBody final NotifyContext notify) throws EventProcessingException {
+    public ResponseEntity<NotifyContextResponse> notifyContext(@Valid @RequestBody final NotifyContext notify) throws EventProcessingException {
+
+        checkNotifyContext(notify);
 
         List<ContextElementResponse> responses = new LinkedList<>();
 
-        StatusCode statusCode = StatusCode.CODE_500;
-
         for (ContextElementResponse response : notify.getContextElementResponseList()) {
+
             ContextElement element = response.getContextElement();
-            statusCode = StatusCode.CODE_200;
-            try {
-                Event event = eventFromContextElement(element);
-                complexEventProcessor.processEvent(event);
-            } catch (EventProcessingException e) {
-                statusCode = StatusCode.CODE_500;
-            }
+            Event event = eventFromContextElement(element);
+            complexEventProcessor.processEvent(event);
+
         }
 
         NotifyContextResponse notifyContextResponse = new NotifyContextResponse();
-        notifyContextResponse.setResponseCode(statusCode);
+        notifyContextResponse.setResponseCode(StatusCode.CODE_200);
 
         return new ResponseEntity<NotifyContextResponse>(notifyContextResponse, HttpStatus.OK);
     }
@@ -76,19 +77,6 @@ public class NgsiController {
         UpdateContextResponse response = new UpdateContextResponse();
         response.setContextElementResponses(responses);
         return response;
-    }
-
-    //TODO handle responses for all exceptions
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(value=HttpStatus.BAD_REQUEST,reason="Event processing error")
-    public ModelAndView handleEventProcessingError(HttpServletRequest req, Exception exception) {
-        logger.error("Request: configuration error", exception);
-
-        ModelAndView mav = new ModelAndView();
-        mav.addObject("exception", exception);
-        mav.addObject("url", req.getRequestURL());
-        mav.setViewName("error");
-        return mav;
     }
 
     /**
@@ -149,5 +137,9 @@ public class NgsiController {
         } catch (NumberFormatException e) {
             throw new EventProcessingException("Failed to parse value "+value+" for attribute "+name);
         }
+    }
+
+    private void checkNotifyContext(NotifyContext notifyContext) {
+
     }
 }
