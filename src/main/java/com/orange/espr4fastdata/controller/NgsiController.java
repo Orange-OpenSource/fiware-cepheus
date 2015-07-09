@@ -11,6 +11,7 @@ package com.orange.espr4fastdata.controller;
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import com.orange.espr4fastdata.exception.EventProcessingException;
 import com.orange.espr4fastdata.exception.MissingRequestParameterException;
+import com.orange.espr4fastdata.exception.TypeNotFoundException;
 import com.orange.espr4fastdata.model.Event;
 import com.orange.espr4fastdata.model.ngsi.*;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public class NgsiController {
     }
 
     @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<NotifyContextResponse> notifyContext(@Valid @RequestBody final NotifyContext notify) throws EventProcessingException {
+    public ResponseEntity<NotifyContextResponse> notifyContext(@Valid @RequestBody final NotifyContext notify) throws EventProcessingException, TypeNotFoundException {
 
 
         List<ContextElementResponse> responses = new LinkedList<>();
@@ -67,7 +68,7 @@ public class NgsiController {
     }
 
     @RequestMapping(value = "/updateContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UpdateContextResponse updateContext(@RequestBody final UpdateContext update) throws EventProcessingException, MissingRequestParameterException {
+    public UpdateContextResponse updateContext(@RequestBody final UpdateContext update) throws EventProcessingException, MissingRequestParameterException, TypeNotFoundException {
 
         checkUpdateContext(update);
 
@@ -80,7 +81,8 @@ public class NgsiController {
                 complexEventProcessor.processEvent(event);
                 statusCode = new StatusCode(CodeEnum.CODE_200);
             } catch (EventProcessingException e) {
-                statusCode = new StatusCode(CodeEnum.CODE_400);
+                statusCode = new StatusCode(CodeEnum.CODE_472,"");
+                statusCode.setDetail(e.getMessage());
             }
             responses.add(new ContextElementResponse(element, statusCode));
         }
@@ -96,11 +98,16 @@ public class NgsiController {
      * @return an event to process
      * @throws EventProcessingException if the conversion fails
      */
-    private Event eventFromContextElement(ContextElement contextElement) throws EventProcessingException {
+    private Event eventFromContextElement(ContextElement contextElement) throws EventProcessingException, TypeNotFoundException {
 
         String type = contextElement.getEntityId().getType();
 
         //TODO check type exists at Configuration level, check all attributes have the correct associated type
+        /*if (!complexEventProcessor.typeExistsInConfiguration(type)) {
+            UpdateContextResponse updateContextResponse = new UpdateContextResponse();
+
+            throw new TypeNotFoundException(type, updateContextResponse);
+        }*/
 
         // Add all ContextElement attributes and the reserve 'id' attribute
         HashMap<String, Object> attributes = new HashMap<>();
@@ -165,5 +172,42 @@ public class NgsiController {
             throw new MissingRequestParameterException("contextElements", "List<ContextElement>");
         }
 
+        for (ContextElement contextElement : updateContext.getContextElements()) {
+            checkContextElement(contextElement);
+        }
+
     }
+
+    private void checkContextElement(ContextElement contextElement) throws MissingRequestParameterException {
+
+        if (contextElement.getEntityId() == null) {
+            throw new MissingRequestParameterException("entityId", "EntityId");
+        }
+
+        checkEntityId(contextElement.getEntityId());
+
+
+    }
+
+    private void checkEntityId(EntityId entityId) throws MissingRequestParameterException {
+
+        if ((entityId.getId() == null) || (entityId.getId().isEmpty())) {
+            throw new MissingRequestParameterException("id", "string");
+        }
+
+        if ((entityId.getType() == null) || (entityId.getType().isEmpty())) {
+            throw new MissingRequestParameterException("type", "string");
+        }
+
+        if (entityId.getIsPattern() == null)  {
+            entityId.setIsPattern(false);
+        }
+    }
+
+    private void checkTypeExistsInConfiguration(String type) {
+
+
+    }
+
+
 }

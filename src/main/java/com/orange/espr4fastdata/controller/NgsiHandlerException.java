@@ -9,6 +9,7 @@
 package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.exception.MissingRequestParameterException;
+import com.orange.espr4fastdata.exception.TypeNotFoundException;
 import com.orange.espr4fastdata.model.ngsi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class NgsiHandlerException extends ResponseEntityExceptionHandler {
 
 
     //@ExceptionHandler({Exception.class, Throwable.class})
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler({MissingRequestParameterException.class})
     public ResponseEntity<Object> missingParameter(HttpServletRequest req, Exception exception) {
 
         logger.info("Exception levee {}",exception);
@@ -44,6 +45,18 @@ public class NgsiHandlerException extends ResponseEntityExceptionHandler {
 
     }
 
+    @ExceptionHandler({TypeNotFoundException.class})
+    public ResponseEntity<Object> invalidParameter(HttpServletRequest req, Exception exception) {
+
+        logger.info("Exception levee {}",exception);
+
+
+        TypeNotFoundException typeNotFoundException = (TypeNotFoundException) exception;
+
+        Object entity = entityForPath(req.getRequestURI(), new StatusCode(CodeEnum.CODE_472, typeNotFoundException.getTypeName()));
+        return new ResponseEntity<Object>(entity, HttpStatus.OK);
+
+    }
 
     /**
      * Response for request error. NGSI requests require custom responses.

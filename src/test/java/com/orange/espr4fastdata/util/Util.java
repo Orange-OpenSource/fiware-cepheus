@@ -73,4 +73,18 @@ public class Util {
         return updateContextResponse;
     }
 
+    public ContextElement createPressureContextElement() {
+        ContextElement contextElement = new ContextElement();
+        contextElement.setEntityId(new EntityId("P1", "PressureSensor", false));
+        ContextAttribute contextAttribute = new ContextAttribute("pressure", "int", "999");
+        contextElement.setContextAttributeList(Collections.singletonList(contextAttribute));
+        return contextElement;
+    }
+
+    public UpdateContext createUpdateContextPressureSensor() throws URISyntaxException {
+        UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
+        updateContext.setContextElements(Collections.singletonList(createPressureContextElement()));
+        return updateContext;
+    }
+
 }

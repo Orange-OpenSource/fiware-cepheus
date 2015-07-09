@@ -86,9 +86,27 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         }
     }
 
-    public void processEvent(Event event) {
+    public void processEvent(Event event) throws EventProcessingException {
         logger.debug("Event sent to Esper {}", event.toString());
-        this.epServiceProvider.getEPRuntime().sendEvent(event.getAttributes(), event.getType());
+
+        try {
+            this.epServiceProvider.getEPRuntime().sendEvent(event.getAttributes(), event.getType());
+        } catch (com.espertech.esper.client.EPException e) {
+            throw new EventProcessingException(e.getMessage());
+        }
+
+
+    }
+
+    @Override
+    public Boolean typeExistsInConfiguration(String type) {
+        for (EventType eventType : configuration.getEventTypeIns()){
+            if (eventType.getType().equals(type)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

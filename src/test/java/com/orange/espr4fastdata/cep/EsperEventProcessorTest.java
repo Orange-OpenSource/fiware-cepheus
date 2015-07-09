@@ -13,6 +13,7 @@ import com.orange.espr4fastdata.exception.ConfigurationException;
 import com.orange.espr4fastdata.exception.EventProcessingException;
 import com.orange.espr4fastdata.exception.EventTypeNotFoundException;
 import com.orange.espr4fastdata.model.Event;
+import com.orange.espr4fastdata.model.ngsi.UpdateContext;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -66,6 +68,22 @@ public class EsperEventProcessorTest {
 
     }
 
+    @Test
+    public void typeExistsInConfigurationTest(){
+
+        esperEventProcessor.setConfiguration(util.getBasicConf());
+
+        Assert.assertTrue(esperEventProcessor.typeExistsInConfiguration("TempSensor"));
+    }
+
+    @Test
+    public void typeNotExistsInConfigurationTest(){
+
+        esperEventProcessor.setConfiguration(util.getBasicConf());
+
+        Assert.assertFalse(esperEventProcessor.typeExistsInConfiguration("PressureSensor"));
+    }
+
 
     private void sendXtemperature() {
 
@@ -82,7 +100,11 @@ public class EsperEventProcessorTest {
             event.setType("TempSensor");
 
 
+            try {
                 esperEventProcessor.processEvent(event);
+            } catch (EventProcessingException e) {
+                Assert.fail("Not expected EventProcessingException");
+            }
 
 
         }

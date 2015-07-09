@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.util.Collections;
 
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
@@ -147,6 +148,31 @@ public class NgsiControllerTest {
     }
 
     @Test
+    public void postUpdateContextWithTypeNotExistsInConfiguration(){
+
+        UpdateContext updateContext = null;
+        try {
+            updateContext = util.createUpdateContextPressureSensor();
+        } catch (URISyntaxException e) {
+            Assert.fail("Not expected Exception for postUpdateContextWithEmptyContextElements : " + e);
+        }
+
+        try {
+            mockMvc.perform(post("/api/v1/ngsi/updateContext")
+                    .content(this.json(updateContext))
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value(CodeEnum.CODE_472.getLabel()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.reasonPhrase").value(CodeEnum.CODE_472.getShortPhrase()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.detail").value("Event type named 'PressureSensor' has not been defined or is not a Map event type, the name 'PressureSensor' has not been defined as an event type"));
+
+        } catch (Exception e) {
+            Assert.fail("Not expected Exception for postUpdateContextWithEmptyContextElements : " + e);
+        }
+    }
+
+    @Test
     public void postUpdateContextBeforeConf() {
 
         UpdateContext updateContext = null;
@@ -175,7 +201,6 @@ public class NgsiControllerTest {
                 o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
     }
-
 
 
 

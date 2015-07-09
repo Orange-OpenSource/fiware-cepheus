@@ -13,17 +13,21 @@ package com.orange.espr4fastdata.exception;
  */
 public class EventTypeNotFoundException extends Exception {
 
-    private final String message = "The event type does not exist.";
 
-    public EventTypeNotFoundException() {
-    }
+    private final String typeName;
 
-    public EventTypeNotFoundException(String message) {
-        message = message;
+    public EventTypeNotFoundException(String typeName) {
+        super("");
+        this.typeName = typeName;
+
     }
 
     @Override
     public String getMessage() {
-        return message;
+        return "The EventType '" + this.typeName + "' is not present in CEP ";
+    }
+
+    public String getTypeName() {
+        return typeName;
     }
 }
