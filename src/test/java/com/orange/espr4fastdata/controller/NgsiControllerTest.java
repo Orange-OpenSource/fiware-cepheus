@@ -9,8 +9,7 @@
 package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.model.ngsi.NotifyContext;
-import com.orange.espr4fastdata.model.ngsi.UpdateContext;
+import com.orange.espr4fastdata.model.ngsi.*;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
@@ -26,6 +25,8 @@ import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
 import static org.junit.Assert.assertThat;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -116,8 +118,32 @@ public class NgsiControllerTest {
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
         } catch (Exception e) {
-            Assert.fail("Not expected URISyntaxException for postNotifyContextBeforeConf");
+            Assert.fail("Not expected Exception for postNotifyContextBeforeConf");
         }
+    }
+
+    @Test
+    public void postUpdateContextWithEmptyContextElements() {
+
+        UpdateContext updateContext = null;
+
+        updateContext = new UpdateContext(UpdateAction.UPDATE);
+
+
+        try {
+            mockMvc.perform(post("/api/v1/ngsi/updateContext")
+                    .content(this.json(updateContext))
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter contextElements of type List<ContextElement> is missing in the request"));
+
+        } catch (Exception e) {
+            Assert.fail("Not expected Exception for postUpdateContextWithEmptyContextElements : " + e);
+        }
+
     }
 
     @Test

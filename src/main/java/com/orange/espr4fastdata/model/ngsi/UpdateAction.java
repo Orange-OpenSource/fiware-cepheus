@@ -28,4 +28,17 @@ public enum UpdateAction {
     public void setLabel(String label) {
         this.label = label;
     }
+
+    public Boolean isDelete() {
+        return label.equals("DELETE");
+    }
+
+    public Boolean isUpdate() {
+        return label.equals("UPDATE");
+    }
+
+    public Boolean isAppend() {
+        return label.equals("APPEND");
+    }
+
 }

@@ -8,6 +8,7 @@
 
 package com.orange.espr4fastdata.controller;
 
+import com.orange.espr4fastdata.exception.EventProcessingException;
 import com.orange.espr4fastdata.model.ngsi.NotifyContext;
 import com.orange.espr4fastdata.model.ngsi.UpdateContext;
 import org.springframework.validation.Errors;
@@ -30,6 +31,8 @@ public class NgsiValidator implements Validator {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "originator", "originator.empty");
 
         NotifyContext notifyContext = (NotifyContext) target;
+
+
 
     }
 }

@@ -65,10 +65,10 @@ public class Util {
     public UpdateContextResponse createUpdateContextResponseTempSensor() throws URISyntaxException {
         ContextElementResponse contextElementResponse = new ContextElementResponse();
         contextElementResponse.setContextElement(createTemperatureContextElement(0));
-        contextElementResponse.setStatusCode(StatusCode.CODE_200);
+        contextElementResponse.setStatusCode(new StatusCode(CodeEnum.CODE_200));
 
         UpdateContextResponse updateContextResponse = new UpdateContextResponse();
-        updateContextResponse.setErrorCode(StatusCode.CODE_200);
+        updateContextResponse.setErrorCode(new StatusCode(CodeEnum.CODE_200));
         updateContextResponse.setContextElementResponses(Collections.singletonList(contextElementResponse));
         return updateContextResponse;
     }

@@ -8,16 +8,14 @@
 
 package com.orange.espr4fastdata.controller;
 
-import com.orange.espr4fastdata.exception.EventProcessingException;
-import com.orange.espr4fastdata.model.ngsi.NotifyContext;
-import com.orange.espr4fastdata.model.ngsi.NotifyContextResponse;
-import com.orange.espr4fastdata.model.ngsi.StatusCode;
-import com.orange.espr4fastdata.model.ngsi.UpdateContextResponse;
+import com.orange.espr4fastdata.exception.MissingRequestParameterException;
+import com.orange.espr4fastdata.model.ngsi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,14 +23,23 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Created by pborscia on 06/07/2015.
  */
-@ControllerAdvice("com.orange.espr4fastdata.controller.NgsiController")
+@ControllerAdvice("com.orange.espr4fastdata.controller")
 public class NgsiHandlerException extends ResponseEntityExceptionHandler {
 
 
-    @ExceptionHandler({EventProcessingException.class})
-    public ResponseEntity<Object> badRequest(HttpServletRequest req, Exception exception) {
+    private static Logger logger = LoggerFactory.getLogger(NgsiHandlerException.class);
 
-        Object entity = entityForPath(req.getRequestURI(), StatusCode.CODE_400);
+
+    //@ExceptionHandler({Exception.class, Throwable.class})
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<Object> missingParameter(HttpServletRequest req, Exception exception) {
+
+        logger.info("Exception levee {}",exception);
+
+
+        MissingRequestParameterException missing = (MissingRequestParameterException) exception;
+
+        Object entity = entityForPath(req.getRequestURI(), new StatusCode(CodeEnum.CODE_471, missing.getParameterName(), missing.getParameterType()));
         return new ResponseEntity<Object>(entity, HttpStatus.OK);
 
     }

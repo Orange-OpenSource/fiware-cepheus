@@ -10,6 +10,7 @@ package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import com.orange.espr4fastdata.exception.EventProcessingException;
+import com.orange.espr4fastdata.exception.MissingRequestParameterException;
 import com.orange.espr4fastdata.model.Event;
 import com.orange.espr4fastdata.model.ngsi.*;
 import org.slf4j.Logger;
@@ -48,7 +49,6 @@ public class NgsiController {
     @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotifyContextResponse> notifyContext(@Valid @RequestBody final NotifyContext notify) throws EventProcessingException {
 
-        checkNotifyContext(notify);
 
         List<ContextElementResponse> responses = new LinkedList<>();
 
@@ -61,23 +61,26 @@ public class NgsiController {
         }
 
         NotifyContextResponse notifyContextResponse = new NotifyContextResponse();
-        notifyContextResponse.setResponseCode(StatusCode.CODE_200);
+        notifyContextResponse.setResponseCode(new StatusCode(CodeEnum.CODE_200));
 
         return new ResponseEntity<NotifyContextResponse>(notifyContextResponse, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/updateContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UpdateContextResponse updateContext(@RequestBody final UpdateContext update) throws EventProcessingException {
+    public UpdateContextResponse updateContext(@RequestBody final UpdateContext update) throws EventProcessingException, MissingRequestParameterException {
+
+        checkUpdateContext(update);
 
         List<ContextElementResponse> responses = new LinkedList<>();
 
         for (ContextElement element : update.getContextElements()) {
-            StatusCode statusCode = StatusCode.CODE_200;
+            StatusCode statusCode;
             try {
                 Event event = eventFromContextElement(element);
                 complexEventProcessor.processEvent(event);
+                statusCode = new StatusCode(CodeEnum.CODE_200);
             } catch (EventProcessingException e) {
-                statusCode = StatusCode.CODE_400;
+                statusCode = new StatusCode(CodeEnum.CODE_400);
             }
             responses.add(new ContextElementResponse(element, statusCode));
         }
@@ -147,7 +150,20 @@ public class NgsiController {
         }
     }
 
-    private void checkNotifyContext(NotifyContext notifyContext) {
+    private void checkUpdateContext(UpdateContext updateContext) throws MissingRequestParameterException {
+
+        if (updateContext.getUpdateAction() == null) {
+            throw new MissingRequestParameterException("updateAction", "UpdateAction");
+            //throw new MissingServletRequestParameterException("updateAction", "UpdateAction");
+        }
+
+        if ((updateContext.getContextElements() == null) && (!updateContext.getUpdateAction().isDelete())) {
+            throw new MissingRequestParameterException("contextElements", "List<ContextElement>");
+        }
+
+        if (updateContext.getContextElements().isEmpty() && (!updateContext.getUpdateAction().isDelete())) {
+            throw new MissingRequestParameterException("contextElements", "List<ContextElement>");
+        }
 
     }
 }
