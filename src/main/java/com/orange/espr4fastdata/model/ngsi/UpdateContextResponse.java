@@ -8,12 +8,15 @@
 
 package com.orange.espr4fastdata.model.ngsi;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
 /**
  * Created by pborscia on 05/06/2015.
  */
 public class UpdateContextResponse {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     StatusCode errorCode;
     List<ContextElementResponse> contextElementResponses;
 

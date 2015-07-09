@@ -163,6 +163,7 @@ public class NgsiControllerTest {
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andDo(MockMvcResultHandlers.print())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value(CodeEnum.CODE_472.getLabel()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.reasonPhrase").value(CodeEnum.CODE_472.getShortPhrase()))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.detail").value("Event type named 'PressureSensor' has not been defined or is not a Map event type, the name 'PressureSensor' has not been defined as an event type"));
