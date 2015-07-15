@@ -115,15 +115,18 @@ public class NgsiController {
         attributes.put("id", contextElement.getEntityId().getId());
         for(ContextAttribute contextAttribute : contextElement.getContextAttributeList()) {
             String name = contextAttribute.getName();
-            String value = contextAttribute.getContextValue();
+            Object value = contextAttribute.getValue().get("value");
+
             if (value == null) {
                 throw new EventProcessingException("Value cannot be null for attribute "+name);
             }
-            attributes.put(name, valueForType(value, contextAttribute.getType(), name));
+            //attributes.put(name, valueForType(value, contextAttribute.getType(), name));
+            attributes.put(name, value);
         }
 
         return new Event(type, attributes);
     }
+
 
     /**
      * @param value the value to convert
@@ -204,10 +207,6 @@ public class NgsiController {
         }
     }
 
-    private void checkTypeExistsInConfiguration(String type) {
-
-
-    }
 
 
 }

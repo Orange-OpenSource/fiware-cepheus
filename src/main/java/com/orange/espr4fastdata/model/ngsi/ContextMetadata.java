@@ -8,15 +8,30 @@
 
 package com.orange.espr4fastdata.model.ngsi;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by pborscia on 04/06/2015.
  */
 public class ContextMetadata {
     private String name;
     private String type;
-    private String value;
+    private Map<String,Object> value = new HashMap<String,Object>();
 
     public ContextMetadata() {
+    }
+
+    @JsonCreator
+    public ContextMetadata(@JsonProperty("name") String name, @JsonProperty("type") String type)
+    {
+        this.name = name;
+        this.type = type;
     }
 
     public String getName() {
@@ -35,12 +50,19 @@ public class ContextMetadata {
         this.type = type;
     }
 
-    public String getValue() {
+    public Object get(String name) {
+        return value.get(name);
+    }
+
+    // "any getter" needed for serialization
+    @JsonAnyGetter
+    public Map<String,Object> any() {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    @JsonAnySetter
+    public void set(String name, Object value1) {
+        value.put(name, value1);
     }
 
     @Override

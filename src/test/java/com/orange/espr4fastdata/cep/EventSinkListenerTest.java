@@ -57,7 +57,7 @@ public class EventSinkListenerTest {
         assertEquals(1,updateContext.getContextElements().get(0).getContextAttributeList().size());
         assertEquals("avgTemp",updateContext.getContextElements().get(0).getContextAttributeList().get(0).getName());
         assertEquals("double",updateContext.getContextElements().get(0).getContextAttributeList().get(0).getType());
-        assertEquals("10.25",updateContext.getContextElements().get(0).getContextAttributeList().get(0).getContextValue());
+        assertEquals(10.25,updateContext.getContextElements().get(0).getContextAttributeList().get(0).getValue().get("value"));
 
     }
 

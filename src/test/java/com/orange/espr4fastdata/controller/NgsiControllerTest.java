@@ -154,7 +154,7 @@ public class NgsiControllerTest {
         try {
             updateContext = util.createUpdateContextPressureSensor();
         } catch (URISyntaxException e) {
-            Assert.fail("Not expected Exception for postUpdateContextWithEmptyContextElements : " + e);
+            Assert.fail("Not expected Exception for postUpdateContextWithTypeNotExistsInConfiguration : " + e);
         }
 
         try {
@@ -169,9 +169,36 @@ public class NgsiControllerTest {
                     .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.detail").value("Event type named 'PressureSensor' has not been defined or is not a Map event type, the name 'PressureSensor' has not been defined as an event type"));
 
         } catch (Exception e) {
-            Assert.fail("Not expected Exception for postUpdateContextWithEmptyContextElements : " + e);
+            Assert.fail("Not expected Exception for postUpdateContextWithTypeNotExistsInConfiguration : " + e);
         }
     }
+
+    // Esper don't control attribute type => we need TODO
+    /*@Test
+    public void postUpdateContextWithAttributNotExistsInConfiguration(){
+
+        UpdateContext updateContext = null;
+        try {
+            updateContext = util.createUpdateContextTempSensorWithWrongAttribut(0);
+        } catch (URISyntaxException e) {
+            Assert.fail("Not expected Exception for postUpdateContextWithAttributNotExistsInConfiguration : " + e);
+        }
+
+        try {
+            mockMvc.perform(post("/api/v1/ngsi/updateContext")
+                    .content(this.json(updateContext))
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value(CodeEnum.CODE_472.getLabel()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.reasonPhrase").value(CodeEnum.CODE_472.getShortPhrase()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.detail").value("Event type named 'PressureSensor' has not been defined or is not a Map event type, the name 'PressureSensor' has not been defined as an event type"));
+
+        } catch (Exception e) {
+            Assert.fail("Not expected Exception for postUpdateContextWithAttributNotExistsInConfiguration : " + e);
+        }
+    }*/
 
     @Test
     public void postUpdateContextBeforeConf() {

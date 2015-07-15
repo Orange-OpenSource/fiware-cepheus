@@ -76,7 +76,7 @@ public class EventSinkListener  implements StatementAwareUpdateListener {
                 UpdateContext updateContext = getUpdateContext(eventBean, eventTypeOut);
 
                 for (Broker broker: eventTypeOut.getBrokers()) {
-                    //UpdateContextResponse updateContextResponse = sender.postMessage(updateContext, broker);
+                    UpdateContextResponse updateContextResponse = sender.postMessage(updateContext, broker);
                 }
             }
 
@@ -102,7 +102,9 @@ public class EventSinkListener  implements StatementAwareUpdateListener {
 
             for (Attribute attribute:eventTypeOut.getAttributes()){
 
-                ContextAttribute contextAttribute = new ContextAttribute(attribute.getName(), attribute.getType(), String.valueOf(eventBean.get(attribute.getName())));
+                //ContextAttribute contextAttribute = new ContextAttribute(attribute.getName(), attribute.getType(), String.valueOf(eventBean.get(attribute.getName())));
+                ContextAttribute contextAttribute = new ContextAttribute(attribute.getName(), attribute.getType());
+                contextAttribute.set("value", eventBean.get(attribute.getName()));
                 contextElement.setContextAttributeList(Collections.singletonList(contextAttribute));
             }
 

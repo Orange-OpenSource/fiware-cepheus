@@ -8,6 +8,7 @@
 
 package com.orange.espr4fastdata.model;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orange.espr4fastdata.Application;
@@ -17,6 +18,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -40,5 +43,77 @@ public class ContextElementTest {
 
         assertFalse(json.contains("EntityId"));
     }
+
+    @Test
+    public void deserializationContextElement() throws IOException {
+
+        String json = "{\n" +
+                "           \"type\": \"T1\",\n" +
+                "           \"isPattern\": \"false\",\n" +
+                "           \"id\": \"E1\",\n" +
+                "           \"attributes\": [\n" +
+                "           {\n" +
+                "               \"name\": \"A\",\n" +
+                "               \"type\": \"T\",\n" +
+                "               \"value\": [ \"22\" , \n" +
+                "                          {\n" +
+                "                             \"x\": [ \"x1\", \"x2\"], \n" +
+                "                             \"y\": \"3\" \n" +
+                "                          }, \n" +
+                "                          [ \"z1\", \"z2\" ] \n" +
+                "                        ]\n" +
+                "           },\n" +
+                "           {\n" +
+                "               \"name\": \"B\",\n" +
+                "               \"type\": \"T\",\n" +
+                "               \"value\": {\n" +
+                "                  \"x\": { \n" +
+                "                          \"x1\": \"a\", \n" +
+                "                          \"x2\": \"b\" \n" +
+                "                  },\n" +
+                "                  \"y\": [ \"y1\", \"y2\" ]\n" +
+                "               }\n" +
+                "           }\n" +
+                "           ]\n" +
+                "       }";
+
+        ObjectMapper mapper = new ObjectMapper();
+
+
+        ContextElement contextElement = mapper.readValue(json, ContextElement.class);
+
+        assertEquals("E1", contextElement.getEntityId().getId());
+
+        assertEquals("A", contextElement.getContextAttributeList().get(0).getName());
+
+    }
+
+    @Test
+    public void deserializationSimpleContextElement() throws IOException {
+
+        String json = "{\n" +
+                "           \"type\": \"T1\",\n" +
+                "           \"isPattern\": \"false\",\n" +
+                "           \"id\": \"E1\",\n" +
+                "           \"attributes\": [\n" +
+                "           {\n" +
+                "               \"name\": \"A\",\n" +
+                "               \"type\": \"T\",\n" +
+                "               \"value\": \"22\" \n" +
+                "           }\n" +
+                "           ]\n" +
+                "       }";
+
+        ObjectMapper mapper = new ObjectMapper();
+
+
+        ContextElement contextElement = mapper.readValue(json, ContextElement.class);
+
+        assertEquals("E1", contextElement.getEntityId().getId());
+
+        assertEquals("A", contextElement.getContextAttributeList().get(0).getName());
+
+    }
+
 
 }

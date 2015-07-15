@@ -8,66 +8,82 @@
 
 package com.orange.espr4fastdata.model.ngsi;
 
+import com.fasterxml.jackson.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pborscia on 04/06/2015.
  */
 public class ContextAttribute {
 
+
     private String name;
+
     private String type;
-    private String contextValue;
-    private List<ContextMetadata> metadata;
 
-    public ContextAttribute() {
-    }
+    private Map<String,Object> value = new HashMap<String,Object>();
 
-    public ContextAttribute(String name, String type, String contextValue) {
+    // Could alternatively add setters, but since these are mandatory
+    @JsonCreator
+    public ContextAttribute(@JsonProperty("name") String name, @JsonProperty("type") String type)
+    {
         this.name = name;
         this.type = type;
-        this.contextValue = contextValue;
     }
+
+    /**
+     *
+     * @return
+     * The name
+     */
 
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param name
+     * The name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @return
+     * The type
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     *
+     * @param type
+     * The type
+     */
     public void setType(String type) {
         this.type = type;
     }
 
-    public String getContextValue() {
-        return contextValue;
+    public Object get(String name) {
+        return value.get(name);
     }
 
-    public void setContextValue(String contextValue) {
-        this.contextValue = contextValue;
+    // "any getter" needed for serialization
+    @JsonAnyGetter
+    public Map<String,Object> getValue() {
+        return value;
     }
 
-    public List<ContextMetadata> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(List<ContextMetadata> metadata) {
-        this.metadata = metadata;
-    }
-
-    @Override
-    public String toString() {
-        return "ContextAttribute{" +
-                "name='" + name + '\'' +
-                ", type='" + type + '\'' +
-                ", contextValue='" + contextValue + '\'' +
-                ", metadata=" + metadata +
-                '}';
+    @JsonAnySetter
+    public void set(String name, Object value1) {
+        value.put(name, value1);
     }
 }
