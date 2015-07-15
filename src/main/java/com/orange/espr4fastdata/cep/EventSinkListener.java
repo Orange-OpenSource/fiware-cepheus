@@ -20,7 +20,6 @@ import com.orange.espr4fastdata.model.ngsi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -28,44 +27,36 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by pborscia on 04/06/2015.
+ * An update listener that triggers NGSI /updateContext requests on events
  */
 @Component
-public class EventSinkListener  implements StatementAwareUpdateListener {
+public class EventSinkListener implements StatementAwareUpdateListener {
 
     private static Logger logger = LoggerFactory.getLogger(EventSinkListener.class);
 
     @Autowired
     private Sender sender;
 
-
     private Configuration configuration;
 
-
     @Override
-    public void update(EventBean[] eventBeans, EventBean[] eventBeans1, EPStatement epStatement, EPServiceProvider epServiceProvider) {
+    public void update(EventBean[] added, EventBean[] removed, EPStatement epStatement, EPServiceProvider epServiceProvider) {
 
-        int eventBeansSize = -1;
-        int eventBeans1Size = -1;
-
-        if (eventBeans != null) {
-            eventBeansSize = eventBeans.length;
+        // ignore updates for removed events
+        if (added == null) {
+            return;
         }
 
-        if (eventBeans1 != null){
-            eventBeans1Size = eventBeans1.length;
-        }
+        logger.debug("UPDATE for {} ({})", epStatement.getText(), added.length);
 
+        for (EventBean eventBean : added) {
 
-        logger.debug("TRIGGER LEVE for {}, size eventBeans {}, size eventBeans1 {}", epStatement.getName(), eventBeansSize, eventBeans1Size);
-
-
-        for (int i=0; i<eventBeansSize; i++) {
-            EventBean eventBean = eventBeans[i];
-            logger.debug("EventType {} eventBean {}", eventBeans[i].getEventType().getName(), eventBeans[i].toString());
-
-            for (String propertyName : eventBean.getEventType().getPropertyNames()) {
-                logger.info("property {} value {} ", propertyName, eventBean.get(propertyName));
+            // Debug some information about the event
+            if (logger.isDebugEnabled()) {
+                logger.debug("EventType {} eventBean {}", eventBean.getEventType().getName(), eventBean.toString());
+                for (String propertyName : eventBean.getEventType().getPropertyNames()) {
+                    logger.debug("property {} value {} ", propertyName, eventBean.get(propertyName));
+                }
             }
 
             //send to context broker
@@ -79,11 +70,7 @@ public class EventSinkListener  implements StatementAwareUpdateListener {
                     UpdateContextResponse updateContextResponse = sender.postMessage(updateContext, broker);
                 }
             }
-
-
         }
-
-
     }
 
     public void setConfiguration(Configuration configuration) {
@@ -111,7 +98,6 @@ public class EventSinkListener  implements StatementAwareUpdateListener {
             contextElements.add(contextElement);
 
             return updateContext;
-
     }
 
     private EventTypeOut getEventTypeOut(String eventBeanType) {
