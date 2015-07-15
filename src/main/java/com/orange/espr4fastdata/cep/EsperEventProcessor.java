@@ -98,17 +98,6 @@ public class EsperEventProcessor implements ComplexEventProcessor {
 
     }
 
-    @Override
-    public Boolean typeExistsInConfiguration(String type) {
-        for (EventType eventType : configuration.getEventTypeIns()){
-            if (eventType.getType().equals(type)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 
     public List<Attribute> getEventTypeAttributes(String eventTypeName) throws EventTypeNotFoundException {
         List<Attribute> attributes = new ArrayList<Attribute>();

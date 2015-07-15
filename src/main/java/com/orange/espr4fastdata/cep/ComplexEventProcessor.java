@@ -32,10 +32,4 @@ public interface ComplexEventProcessor {
      */
     void processEvent(Event event) throws EventProcessingException;
 
-    /**
-     * Check if type exists in configuration level
-     * @param type
-     * @throws EventProcessingException when the event could not be processed successfully
-     */
-    Boolean typeExistsInConfiguration(String type);
 }

@@ -68,22 +68,6 @@ public class EsperEventProcessorTest {
 
     }
 
-    @Test
-    public void typeExistsInConfigurationTest(){
-
-        esperEventProcessor.setConfiguration(util.getBasicConf());
-
-        Assert.assertTrue(esperEventProcessor.typeExistsInConfiguration("TempSensor"));
-    }
-
-    @Test
-    public void typeNotExistsInConfigurationTest(){
-
-        esperEventProcessor.setConfiguration(util.getBasicConf());
-
-        Assert.assertFalse(esperEventProcessor.typeExistsInConfiguration("PressureSensor"));
-    }
-
 
     private void sendXtemperature() {
 
