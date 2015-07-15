@@ -10,9 +10,6 @@ package com.orange.espr4fastdata.cep;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.ConfigurationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.*;
 import com.orange.espr4fastdata.exception.*;
 import com.orange.espr4fastdata.model.cep.Attribute;
 import com.orange.espr4fastdata.model.cep.EventType;
@@ -21,12 +18,11 @@ import com.orange.espr4fastdata.model.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 /**
@@ -47,17 +43,15 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         epServiceProvider = EPServiceProviderManager.getDefaultProvider(new com.espertech.esper.client.Configuration());
     }
 
-
-    public Configuration getConfiguration() {
-        return configuration;
-    }
-
-
+    /**
+     * Apply a new configuration to the Esper CEP
+     * @param configuration the new configuration to apply
+     */
     public void setConfiguration(Configuration configuration) {
         Configuration previousConfiguration = this.configuration;
         ConfigurationOperations operations = epServiceProvider.getEPAdministrator().getConfiguration();
         try {
-            List<? extends  EventType> previousEventTypes = new LinkedList<>();
+            Collection<? extends  EventType> previousEventTypes = new LinkedList<>();
 
             // Update incoming event types
             if (previousConfiguration != null) {
@@ -71,11 +65,8 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             }
             this.updateEventTypes(previousEventTypes, configuration.getEventTypeOuts(), operations);
 
-            // Update EPL statements
-            for (String eplStatement : configuration.getStatements()) {
-                EPStatement statement = epServiceProvider.getEPAdministrator().createEPL(eplStatement);
-                statement.addListener(eventSinkListener);
-            }
+            // Update the statements
+            this.updateStatements(configuration.getStatements());
 
             this.configuration = configuration;
             eventSinkListener.setConfiguration(configuration);
@@ -86,6 +77,11 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         }
     }
 
+    /**
+     * Make Esper process an event
+     * @param event
+     * @throws EventProcessingException
+     */
     public void processEvent(Event event) throws EventProcessingException {
         logger.debug("Event sent to Esper {}", event.toString());
 
@@ -94,11 +90,14 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         } catch (com.espertech.esper.client.EPException e) {
             throw new EventProcessingException(e.getMessage());
         }
-
-
     }
 
-
+    /**
+     * Return a list of Attribute for a given even type. This is mainly usefull for testing.
+     * @param eventTypeName
+     * @return
+     * @throws EventTypeNotFoundException
+     */
     public List<Attribute> getEventTypeAttributes(String eventTypeName) throws EventTypeNotFoundException {
         List<Attribute> attributes = new ArrayList<Attribute>();
 
@@ -106,13 +105,8 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         if (eventType != null){
             for (String name : eventType.getPropertyNames()) {
                 if (!("id".equals(name))) {
-                    Attribute attribute = new Attribute();
-
-                    attribute.setName(name);
-                    attribute.setType(eventType.getPropertyType(name).getSimpleName().toLowerCase());
-
-                    attributes.add(attribute);
-
+                    String type = eventType.getPropertyType(name).getSimpleName().toLowerCase();
+                    attributes.add(new Attribute(name, type));
                 }
             }
         } else {
@@ -129,7 +123,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
      * @param newList the new list of event types
      * @param operations the CEP configuration
      */
-    private void updateEventTypes(List<? extends EventType> oldList, List<? extends EventType> newList, ConfigurationOperations operations) {
+    private void updateEventTypes(Collection<? extends EventType> oldList, Collection<? extends EventType> newList, ConfigurationOperations operations) {
         List<? extends EventType> eventTypesToRemove = new LinkedList<>(oldList);
         eventTypesToRemove.removeAll(newList);
 
@@ -165,5 +159,56 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             // Add event type
             operations.addEventType(eventTypeName, properties);
         }
+    }
+
+    /**
+     * Update the EPL statements by adding new statements, and removing unused statements
+     * @param statements
+     * @throws NoSuchAlgorithmException
+     */
+    private void updateStatements(Collection<String> statements) throws NoSuchAlgorithmException {
+        // Keep a list of MD5 hash of all added statements
+        Set<String> hashes = new HashSet<>();
+
+        // Update EPL statements
+        for (String eplStatement : statements) {
+            String hash = MD5(eplStatement);
+            hashes.add(hash);
+
+            // Create statement if does not already exist
+            EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(hash);
+            if (statement == null) {
+                statement = epServiceProvider.getEPAdministrator().createEPL(eplStatement, hash);
+                statement.addListener(eventSinkListener);
+            }
+
+        }
+
+        // Removed unused statements
+        for (String hash : epServiceProvider.getEPAdministrator().getStatementNames()) {
+            if (!hashes.contains(hash)) {
+                EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(hash);
+                if (statement != null) {
+                    statement.destroy();
+                }
+            }
+        }
+    }
+
+    /**
+     * Generate the MD5 hash of a message
+     * @param message
+     * @return the hash
+     * @throws NoSuchAlgorithmException
+     */
+    private String MD5(String message) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] array = md.digest(message.getBytes());
+        return new BigInteger(1, array).toString(16);
+        /*StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < array.length; ++i) {
+            sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+        }
+        return sb.toString();*/
     }
 }
