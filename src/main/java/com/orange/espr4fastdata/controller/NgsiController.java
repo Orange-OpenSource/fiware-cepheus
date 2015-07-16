@@ -105,7 +105,7 @@ public class NgsiController {
         attributes.put("id", contextElement.getEntityId().getId());
         for(ContextAttribute contextAttribute : contextElement.getContextAttributeList()) {
             String name = contextAttribute.getName();
-            Object value = contextAttribute.getValue().get("value");
+            Object value = contextAttribute.getValue();
 
             if (value == null) {
                 throw new EventProcessingException("Value cannot be null for attribute "+name);

@@ -54,9 +54,7 @@ public class Util {
     public ContextElement createTemperatureContextElement(float randomValue) {
         ContextElement contextElement = new ContextElement();
         contextElement.setEntityId(new EntityId("S1", "TempSensor", false));
-        //ContextAttribute contextAttribute = new ContextAttribute("temp", "float", Double.toString(15.5 + randomValue));
-        ContextAttribute contextAttribute = new ContextAttribute("temp", "float");
-        contextAttribute.set("value", 15.5 + randomValue);
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", 15.5 + randomValue);
         contextElement.setContextAttributeList(Collections.singletonList(contextAttribute));
         return contextElement;
     }
@@ -81,9 +79,7 @@ public class Util {
     public ContextElement createPressureContextElement() {
         ContextElement contextElement = new ContextElement();
         contextElement.setEntityId(new EntityId("P1", "PressureSensor", false));
-        //ContextAttribute contextAttribute = new ContextAttribute("pressure", "int", "999");
-        ContextAttribute contextAttribute = new ContextAttribute("pressure", "int");
-        contextAttribute.set("value", 999);
+        ContextAttribute contextAttribute = new ContextAttribute("pressure", "int", 999);
         contextElement.setContextAttributeList(Collections.singletonList(contextAttribute));
         return contextElement;
     }
@@ -97,9 +93,7 @@ public class Util {
     public ContextElement createWrongAttributTemperatureContextElement(float randomValue) {
         ContextElement contextElement = new ContextElement();
         contextElement.setEntityId(new EntityId("S1", "TempSensor", false));
-        //ContextAttribute contextAttribute = new ContextAttribute("pressure", "string", "low");
-        ContextAttribute contextAttribute = new ContextAttribute("pressure", "string");
-        contextAttribute.set("value", "low");
+        ContextAttribute contextAttribute = new ContextAttribute("pressure", "string", "low");
         contextElement.setContextAttributeList(Collections.singletonList(contextAttribute));
         return contextElement;
     }

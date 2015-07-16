@@ -20,6 +20,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -85,6 +86,8 @@ public class ContextElementTest {
         assertEquals("E1", contextElement.getEntityId().getId());
 
         assertEquals("A", contextElement.getContextAttributeList().get(0).getName());
+        assertEquals(3, ((List<?>)contextElement.getContextAttributeList().get(0).getValue()).size());
+
 
     }
 
