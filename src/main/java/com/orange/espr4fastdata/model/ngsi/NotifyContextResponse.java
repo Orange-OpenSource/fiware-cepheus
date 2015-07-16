@@ -13,27 +13,27 @@ package com.orange.espr4fastdata.model.ngsi;
  */
 public class NotifyContextResponse {
 
-    private StatusCode ResponseCode;
+    private StatusCode responseCode;
 
     public NotifyContextResponse() {
     }
 
     public NotifyContextResponse(StatusCode responseCode) {
-        ResponseCode = responseCode;
+        this.responseCode = responseCode;
     }
 
     public StatusCode getResponseCode() {
-        return ResponseCode;
+        return responseCode;
     }
 
     public void setResponseCode(StatusCode responseCode) {
-        ResponseCode = responseCode;
+        this.responseCode = responseCode;
     }
 
     @Override
     public String toString() {
         return "NotifyContextResponse{" +
-                "ResponseCode=" + ResponseCode +
+                "responseCode=" + responseCode +
                 '}';
     }
 }

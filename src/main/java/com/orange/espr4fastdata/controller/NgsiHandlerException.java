@@ -87,8 +87,7 @@ public class NgsiHandlerException extends ResponseEntityExceptionHandler {
         }*/
 
         if (path.contains("/notifyContext")) {
-            NotifyContextResponse r = new NotifyContextResponse();
-            r.setResponseCode(statusCode);
+            NotifyContextResponse r = new NotifyContextResponse(statusCode);
             return r;
         } else if (path.contains("/updateContext")) {
             UpdateContextResponse r = new UpdateContextResponse();
@@ -97,8 +96,7 @@ public class NgsiHandlerException extends ResponseEntityExceptionHandler {
         }
 
         // All other non NGSI requests send back NotifyContextResponse
-        NotifyContextResponse r = new NotifyContextResponse();
-        r.setResponseCode(statusCode);
+        NotifyContextResponse r = new NotifyContextResponse(statusCode);
         return r;
     }
 }

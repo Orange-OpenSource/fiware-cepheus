@@ -45,6 +45,7 @@ public class Util {
         NotifyContext notifyContext = new NotifyContext("1", new URI("http://iotAgent"));
         ContextElementResponse contextElementResponse = new ContextElementResponse();
         contextElementResponse.setContextElement(createTemperatureContextElement(randomValue));
+        contextElementResponse.setStatusCode(new StatusCode(CODE_200));
         notifyContext.setContextElementResponseList(Collections.singletonList(contextElementResponse));
 
         return notifyContext;

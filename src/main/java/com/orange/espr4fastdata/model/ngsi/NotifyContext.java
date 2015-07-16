@@ -23,6 +23,7 @@ public class NotifyContext {
     @JsonProperty(required = true)
     private URI originator;
 
+    @JsonProperty("contextResponses")
     private List<ContextElementResponse> contextElementResponseList;
 
     public NotifyContext() {

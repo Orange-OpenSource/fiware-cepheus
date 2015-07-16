@@ -110,16 +110,46 @@ public class NgsiControllerTest {
         try {
             notifyContext = new NotifyContext("", new URI("http://iotAgent"));
         } catch (URISyntaxException e) {
-            Assert.fail("Not expected URISyntaxException for postNotifyContextBeforeConf");
+            Assert.fail("Not expected URISyntaxException for postNotifyContextWithEmptySubscriptionId");
         }
 
         try {
             mockMvc.perform(post("/api/v1/ngsi/notifyContext")
                     .content(this.json(notifyContext))
                     .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value("The parameter subscriptionId of type string is missing in the request"));
+
         } catch (Exception e) {
-            Assert.fail("Not expected Exception for postNotifyContextBeforeConf");
+            Assert.fail("Not expected Exception for postNotifyContextWithEmptySubscriptionId");
+        }
+    }
+
+    @Test
+    public void postNotifyContextWithEmptyOriginator() {
+
+        NotifyContext notifyContext = null;
+        try {
+            notifyContext = new NotifyContext("SubscriptionId", new URI(""));
+        } catch (URISyntaxException e) {
+            Assert.fail("Not expected URISyntaxException for postNotifyContextWithEmptyOriginator");
+        }
+
+        try {
+            mockMvc.perform(post("/api/v1/ngsi/notifyContext")
+                    .content(this.json(notifyContext))
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value("The parameter originator of type URI is missing in the request"));
+
+        } catch (Exception e) {
+            Assert.fail("Not expected Exception for postNotifyContextWithEmptyOriginator");
         }
     }
 

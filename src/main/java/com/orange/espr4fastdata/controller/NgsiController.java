@@ -42,13 +42,9 @@ public class NgsiController {
         this.complexEventProcessor = complexEventProcessor;
     }
 
-    @InitBinder
-    protected void initBinder(WebDataBinder binder) {
-        binder.setValidator(new NgsiValidator());
-    }
 
     @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<NotifyContextResponse> notifyContext(@Valid @RequestBody final NotifyContext notify) throws EventProcessingException, TypeNotFoundException, MissingRequestParameterException {
+    public ResponseEntity<NotifyContextResponse> notifyContext(@RequestBody final NotifyContext notify) throws EventProcessingException, TypeNotFoundException, MissingRequestParameterException {
 
         checkNotifyContext(notify);
 
@@ -102,13 +98,6 @@ public class NgsiController {
     private Event eventFromContextElement(ContextElement contextElement) throws EventProcessingException, TypeNotFoundException {
 
         String type = contextElement.getEntityId().getType();
-
-        //TODO check type exists at Configuration level, check all attributes have the correct associated type
-        /*if (!complexEventProcessor.typeExistsInConfiguration(type)) {
-            UpdateContextResponse updateContextResponse = new UpdateContextResponse();
-
-            throw new TypeNotFoundException(type, updateContextResponse);
-        }*/
 
         // Add all ContextElement attributes and the reserve 'id' attribute
         HashMap<String, Object> attributes = new HashMap<>();
@@ -183,11 +172,11 @@ public class NgsiController {
 
     private void checkNotifyContext(NotifyContext notifyContext) throws MissingRequestParameterException {
 
-        if (notifyContext.getSubscriptionId() == null) {
+        if ((notifyContext.getSubscriptionId() == null) || (notifyContext.getSubscriptionId().isEmpty())) {
             throw new MissingRequestParameterException("subscriptionId", "string");
         }
 
-        if (notifyContext.getOriginator() == null) {
+        if ((notifyContext.getOriginator() == null) || (notifyContext.getOriginator().toString().isEmpty())){
             throw new MissingRequestParameterException("originator", "URI");
         }
 

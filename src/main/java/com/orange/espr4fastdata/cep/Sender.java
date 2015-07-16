@@ -8,12 +8,11 @@
 
 package com.orange.espr4fastdata.cep;
 
+import com.orange.espr4fastdata.exception.SenderException;
 import com.orange.espr4fastdata.model.cep.Broker;
 import com.orange.espr4fastdata.model.ngsi.UpdateContext;
 import com.orange.espr4fastdata.model.ngsi.UpdateContextResponse;
-import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
@@ -21,10 +20,8 @@ import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.*;
 import org.springframework.http.client.*;
@@ -35,16 +32,11 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
-
-import java.awt.*;
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Created by pborscia on 08/06/2015.
  */
-@Component
+@Service
 @Configuration
 public class Sender {
 
@@ -60,6 +52,7 @@ public class Sender {
     @Value("${sender.defaultReadTimeoutMilliseconds}")
     private int defaultReadTimeoutMilliseconds;
 
+    PoolingNHttpClientConnectionManager connectionManager;
 
     public UpdateContextResponse postMessage(UpdateContext updateContext, Broker broker) {
 
@@ -75,7 +68,14 @@ public class Sender {
 
             HttpEntity<UpdateContext> requestEntity = new HttpEntity<>(updateContext, requestHeaders);
 
-            ListenableFuture<ResponseEntity<UpdateContextResponse>> futureEntity = asyncRestTemplate().exchange(broker.getUrl(), HttpMethod.POST, requestEntity, UpdateContextResponse.class);
+            logger.info("POOL STATS {} ", connectionManager.getTotalStats().toString());
+
+            ListenableFuture<ResponseEntity<UpdateContextResponse>> futureEntity = null;
+            try {
+                futureEntity = asyncRestTemplate().exchange(broker.getUrl(), HttpMethod.POST, requestEntity, UpdateContextResponse.class);
+            } catch (SenderException e) {
+                logger.error("Unable to send http request {} cause {}", e.getMessage(), e.getCause());
+            }
 
             futureEntity
                     .addCallback(new ListenableFutureCallback<ResponseEntity>() {
@@ -107,7 +107,7 @@ public class Sender {
     }
 
     @Bean
-    public AsyncRestTemplate asyncRestTemplate() {
+    public AsyncRestTemplate asyncRestTemplate() throws SenderException {
         AsyncRestTemplate restTemplate = new AsyncRestTemplate(
                 clientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -118,14 +118,14 @@ public class Sender {
     }
 
     @Bean
-    public AsyncClientHttpRequestFactory clientHttpRequestFactory() {
+    public AsyncClientHttpRequestFactory clientHttpRequestFactory() throws SenderException {
         HttpComponentsAsyncClientHttpRequestFactory factory = new HttpComponentsAsyncClientHttpRequestFactory(asyncHttpClient());
 
         return factory;
     }
 
     @Bean
-    public CloseableHttpAsyncClient asyncHttpClient() {
+    public CloseableHttpAsyncClient asyncHttpClient() throws SenderException {
         try {
 
             logger.info("sender.defaultMaxTotalConnections : {}", defaultMaxTotalConnections);
@@ -133,11 +133,12 @@ public class Sender {
             logger.info("sender.defaultReadTimeoutMilliseconds : {}", defaultReadTimeoutMilliseconds);
 
 
-            PoolingNHttpClientConnectionManager connectionManager = new PoolingNHttpClientConnectionManager(
+            connectionManager = new PoolingNHttpClientConnectionManager(
                     new DefaultConnectingIOReactor(IOReactorConfig.DEFAULT));
             connectionManager.setMaxTotal(defaultMaxTotalConnections);
             connectionManager
                     .setDefaultMaxPerRoute(defaultMaxConnectionsPerRoute);
+
 
             RequestConfig config = RequestConfig.custom()
                     .setConnectTimeout(defaultReadTimeoutMilliseconds)
@@ -148,9 +149,8 @@ public class Sender {
                     .setDefaultRequestConfig(config).build();
             return httpclient;
         } catch (Exception e) {
-            logger.error("Sender Configuration Exception {}", e.getMessage());
-            return null;
-            //throw Throwables.propagate(e);
+            throw new SenderException(e.getMessage(),e.getCause());
+
         }
     }
 }
