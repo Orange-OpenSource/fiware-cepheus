@@ -132,7 +132,6 @@ public class Sender {
             logger.info("sender.defaultMaxConnectionsPerRoute : {}", defaultMaxConnectionsPerRoute);
             logger.info("sender.defaultReadTimeoutMilliseconds : {}", defaultReadTimeoutMilliseconds);
 
-
             connectionManager = new PoolingNHttpClientConnectionManager(
                     new DefaultConnectingIOReactor(IOReactorConfig.DEFAULT));
             connectionManager.setMaxTotal(defaultMaxTotalConnections);
@@ -142,6 +141,8 @@ public class Sender {
 
             RequestConfig config = RequestConfig.custom()
                     .setConnectTimeout(defaultReadTimeoutMilliseconds)
+                    .setSocketTimeout(defaultReadTimeoutMilliseconds)
+                    .setConnectionRequestTimeout(defaultReadTimeoutMilliseconds)
                     .build();
 
             CloseableHttpAsyncClient httpclient = HttpAsyncClientBuilder

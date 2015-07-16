@@ -163,7 +163,7 @@ public class SenderTest {
         @Override
         public ClientHttpResponse createResponse(ClientHttpRequest request) throws IOException {
             try {
-                Thread.sleep(3000);
+                Thread.sleep(4000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
