@@ -8,13 +8,17 @@
 
 package com.orange.espr4fastdata.cep;
 
+import com.orange.espr4fastdata.Application;
 import com.orange.espr4fastdata.model.cep.Broker;
 import com.orange.espr4fastdata.model.ngsi.UpdateAction;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,9 +28,11 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.ResponseCreator;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
+import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -35,23 +41,30 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
+import javax.inject.Inject;
+
 /**
  * Created by pborscia on 08/06/2015.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = Application.class)
 public class SenderTest {
 
 
     private MockRestServiceServer mockServer;
 
+    @Autowired
     private Sender sender;
+
+    @Inject
+    private AsyncRestTemplate asyncRestTemplate;
 
     private Util util = new Util();
 
 
     @Before
     public void setup() {
-        sender = new Sender();
-        this.mockServer = MockRestServiceServer.createServer(sender.getRestTemplate());
+        this.mockServer = MockRestServiceServer.createServer(asyncRestTemplate);
 
     }
 
@@ -107,11 +120,11 @@ public class SenderTest {
     @Test
     public void performPostWithTimeout() throws Exception {
 
-
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(TimeoutResponseCreator.withTimeout());
 
         sender.postMessage(util.createUpdateContextTempSensor(0),getBroker());
+
 
     }
 
@@ -121,7 +134,7 @@ public class SenderTest {
 
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
 
-        for(HttpMessageConverter hmc : sender.getRestTemplate().getMessageConverters()) {
+        for(HttpMessageConverter hmc : asyncRestTemplate.getMessageConverters()) {
             if (hmc instanceof MappingJackson2HttpMessageConverter) {
                 mappingJackson2HttpMessageConverter = hmc;
             }
@@ -150,7 +163,7 @@ public class SenderTest {
         @Override
         public ClientHttpResponse createResponse(ClientHttpRequest request) throws IOException {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

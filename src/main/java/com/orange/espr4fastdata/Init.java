@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by pborscia on 03/07/2015.
+ * This Bean is created to load Configuration and setter the Complex Event Processor
  */
 @Component
 public class Init {

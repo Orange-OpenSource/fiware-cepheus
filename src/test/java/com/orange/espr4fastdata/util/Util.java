@@ -8,6 +8,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import static com.orange.espr4fastdata.model.ngsi.CodeEnum.CODE_200;
+
 /**
  * Created by pborscia on 05/06/2015.
  */
@@ -67,7 +69,7 @@ public class Util {
     public UpdateContextResponse createUpdateContextResponseTempSensor() throws URISyntaxException {
         ContextElementResponse contextElementResponse = new ContextElementResponse();
         contextElementResponse.setContextElement(createTemperatureContextElement(0));
-        contextElementResponse.setStatusCode(new StatusCode(CodeEnum.CODE_200));
+        contextElementResponse.setStatusCode(new StatusCode(CODE_200));
 
         UpdateContextResponse updateContextResponse = new UpdateContextResponse();
         updateContextResponse.setErrorCode(new StatusCode(CodeEnum.CODE_200));

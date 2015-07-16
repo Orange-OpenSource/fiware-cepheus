@@ -48,8 +48,9 @@ public class NgsiController {
     }
 
     @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<NotifyContextResponse> notifyContext(@Valid @RequestBody final NotifyContext notify) throws EventProcessingException, TypeNotFoundException {
+    public ResponseEntity<NotifyContextResponse> notifyContext(@Valid @RequestBody final NotifyContext notify) throws EventProcessingException, TypeNotFoundException, MissingRequestParameterException {
 
+        checkNotifyContext(notify);
 
         List<ContextElementResponse> responses = new LinkedList<>();
 
@@ -164,7 +165,6 @@ public class NgsiController {
 
         if (updateContext.getUpdateAction() == null) {
             throw new MissingRequestParameterException("updateAction", "UpdateAction");
-            //throw new MissingServletRequestParameterException("updateAction", "UpdateAction");
         }
 
         if ((updateContext.getContextElements() == null) && (!updateContext.getUpdateAction().isDelete())) {
@@ -181,6 +181,41 @@ public class NgsiController {
 
     }
 
+    private void checkNotifyContext(NotifyContext notifyContext) throws MissingRequestParameterException {
+
+        if (notifyContext.getSubscriptionId() == null) {
+            throw new MissingRequestParameterException("subscriptionId", "string");
+        }
+
+        if (notifyContext.getOriginator() == null) {
+            throw new MissingRequestParameterException("originator", "URI");
+        }
+
+        if (notifyContext.getContextElementResponseList() == null)  {
+            throw new MissingRequestParameterException("contextElementResponse", "List<ContextElementResponse>");
+        }
+
+
+        for (ContextElementResponse contextElementResponse : notifyContext.getContextElementResponseList()) {
+            checkContextElementResponse(contextElementResponse);
+        }
+
+    }
+
+    private void checkContextElementResponse(ContextElementResponse contextElementResponse) throws MissingRequestParameterException {
+
+
+        if (contextElementResponse.getStatusCode() == null) {
+            throw new MissingRequestParameterException("statusCode", "StatusCode");
+        }
+
+        if (contextElementResponse.getContextElement() == null) {
+            throw new MissingRequestParameterException("contextElement", "ContextElement");
+        }
+
+        checkContextElement(contextElementResponse.getContextElement());
+
+    }
     private void checkContextElement(ContextElement contextElement) throws MissingRequestParameterException {
 
         if (contextElement.getEntityId() == null) {
@@ -191,6 +226,8 @@ public class NgsiController {
 
 
     }
+
+
 
     private void checkEntityId(EntityId entityId) throws MissingRequestParameterException {
 

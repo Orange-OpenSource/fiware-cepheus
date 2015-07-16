@@ -8,6 +8,9 @@
 
 package com.orange.espr4fastdata.model.ngsi;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Created by pborscia on 04/06/2015.
  */
@@ -20,7 +23,10 @@ public class StatusCode {
 
     private String detail;
 
+    public StatusCode() {
+    }
 
+    @JsonIgnore
     public StatusCode(CodeEnum code, String... paramDetail) {
         this.code = code.getLabel();
         this.reasonPhrase = code.getShortPhrase();
