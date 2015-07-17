@@ -113,5 +113,32 @@ public class Util {
     }
 
 
+    public SubscribeContext createSubscribeContextTemperature() throws URISyntaxException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+
+        List<EntityId> entityIdList = new ArrayList<>();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        entityIdList.add(entityId);
+        subscribeContext.setEntityIdList(entityIdList);
+
+        List<String> attributes = new ArrayList<>();
+        attributes.add("temperature");
+        subscribeContext.setAttributeList(attributes);
+
+
+        subscribeContext.setReference(new URI("http://localhost:1028/accumulate"));
+
+        subscribeContext.setDuration("P1M");
+
+        List<NotifyCondition> notifyConditionList = new ArrayList<>();
+        List<String> condValues = new ArrayList<>();
+        condValues.add("PT10S");
+        NotifyCondition notifyCondition = new NotifyCondition(NotifyConditionEnum.ONTIMEINTERVAL,condValues);
+        notifyConditionList.add(notifyCondition);
+        subscribeContext.setNotifyConditionList(notifyConditionList);
+
+        return subscribeContext;
+    }
+
 
 }
