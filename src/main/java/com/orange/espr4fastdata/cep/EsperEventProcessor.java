@@ -9,8 +9,9 @@
 package com.orange.espr4fastdata.cep;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.ConfigurationException;
-import com.orange.espr4fastdata.exception.*;
+import com.orange.espr4fastdata.exception.ConfigurationException;
+import com.orange.espr4fastdata.exception.EventProcessingException;
+import com.orange.espr4fastdata.exception.EventTypeNotFoundException;
 import com.orange.espr4fastdata.model.cep.Attribute;
 import com.orange.espr4fastdata.model.cep.EventType;
 import com.orange.espr4fastdata.model.cep.Configuration;
@@ -47,7 +48,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
      * Apply a new configuration to the Esper CEP
      * @param configuration the new configuration to apply
      */
-    public void setConfiguration(Configuration configuration) {
+    public void setConfiguration(Configuration configuration) throws ConfigurationException {
         Configuration previousConfiguration = this.configuration;
         ConfigurationOperations operations = epServiceProvider.getEPAdministrator().getConfiguration();
         try {
