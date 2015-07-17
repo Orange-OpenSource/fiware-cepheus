@@ -30,7 +30,7 @@ import java.util.*;
  * Controller for the NGSI 9/10 requests
  */
 @RestController
-@RequestMapping("/api/v1/ngsi")
+@RequestMapping("/v1")
 public class NgsiController {
 
     private static Logger logger = LoggerFactory.getLogger(AdminController.class);

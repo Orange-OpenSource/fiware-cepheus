@@ -93,7 +93,7 @@ public class ControllerIntegrationTest {
             float value = random.nextFloat();
             NotifyContext notifyContext = util.createNotifyContextTempSensor(value);
 
-            mockMvc.perform(post("/api/v1/ngsi/notifyContext")
+            mockMvc.perform(post("/v1/notifyContext")
                     .content(this.json(notifyContext))
                     .contentType(contentType))
                     .andExpect(status().isOk());
@@ -112,7 +112,7 @@ public class ControllerIntegrationTest {
             float value = random.nextFloat();
             UpdateContext updateContext = util.createUpdateContextTempSensor(value);
 
-            mockMvc.perform(post("/api/v1/ngsi/updateContext")
+            mockMvc.perform(post("/v1/updateContext")
                     .content(this.json(updateContext))
                     .contentType(contentType))
                     .andExpect(status().isOk());

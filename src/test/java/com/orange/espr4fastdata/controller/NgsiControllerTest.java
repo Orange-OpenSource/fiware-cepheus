@@ -93,7 +93,7 @@ public class NgsiControllerTest {
         }
 
         try {
-            mockMvc.perform(post("/api/v1/ngsi/notifyContext")
+            mockMvc.perform(post("/v1/notifyContext")
                     .content(this.json(notifyContext))
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
@@ -114,7 +114,7 @@ public class NgsiControllerTest {
         }
 
         try {
-            mockMvc.perform(post("/api/v1/ngsi/notifyContext")
+            mockMvc.perform(post("/v1/notifyContext")
                     .content(this.json(notifyContext))
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -139,7 +139,7 @@ public class NgsiControllerTest {
         }
 
         try {
-            mockMvc.perform(post("/api/v1/ngsi/notifyContext")
+            mockMvc.perform(post("/v1/notifyContext")
                     .content(this.json(notifyContext))
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -162,7 +162,7 @@ public class NgsiControllerTest {
 
 
         try {
-            mockMvc.perform(post("/api/v1/ngsi/updateContext")
+            mockMvc.perform(post("/v1/updateContext")
                     .content(this.json(updateContext))
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -188,7 +188,7 @@ public class NgsiControllerTest {
         }
 
         try {
-            mockMvc.perform(post("/api/v1/ngsi/updateContext")
+            mockMvc.perform(post("/v1/updateContext")
                     .content(this.json(updateContext))
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
@@ -203,32 +203,6 @@ public class NgsiControllerTest {
         }
     }
 
-    // Esper don't control attribute type => we need TODO
-    /*@Test
-    public void postUpdateContextWithAttributNotExistsInConfiguration(){
-
-        UpdateContext updateContext = null;
-        try {
-            updateContext = util.createUpdateContextTempSensorWithWrongAttribut(0);
-        } catch (URISyntaxException e) {
-            Assert.fail("Not expected Exception for postUpdateContextWithAttributNotExistsInConfiguration : " + e);
-        }
-
-        try {
-            mockMvc.perform(post("/api/v1/ngsi/updateContext")
-                    .content(this.json(updateContext))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andDo(MockMvcResultHandlers.print())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value(CodeEnum.CODE_472.getLabel()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.reasonPhrase").value(CodeEnum.CODE_472.getShortPhrase()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.detail").value("Event type named 'PressureSensor' has not been defined or is not a Map event type, the name 'PressureSensor' has not been defined as an event type"));
-
-        } catch (Exception e) {
-            Assert.fail("Not expected Exception for postUpdateContextWithAttributNotExistsInConfiguration : " + e);
-        }
-    }*/
 
     @Test
     public void postUpdateContextBeforeConf() {
@@ -242,7 +216,7 @@ public class NgsiControllerTest {
 
 
         try {
-            mockMvc.perform(post("/api/v1/ngsi/updateContext")
+            mockMvc.perform(post("/v1/updateContext")
                     .content(this.json(updateContext))
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
