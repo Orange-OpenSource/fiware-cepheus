@@ -133,7 +133,7 @@ public class EventSinkListenerTest {
     }
 
     /**
-     * Check that when no update is triggered when some event beans fire the update
+     * Check that when no update is triggered when some removed event beans fire the update
      */
     @Test
     public void noUpdateOnRemovedEventBeans() {
@@ -146,6 +146,23 @@ public class EventSinkListenerTest {
         attributes.add(new ContextAttribute("avgTemp", "double", 10.25));
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
         eventSinkListener.update(null, beans, statement, provider);
+
+        verify(sender, never()).postMessage(any(), any());
+    }
+
+    /**
+     * Check that when no update is triggered when no attributes are updated by the event
+     */
+    @Test
+    public void noUpdateWhenNoAttributes() {
+
+        when(statement.getText()).thenReturn("statement");
+
+        // Trigger remove event update
+        List<ContextAttribute> attributes = new LinkedList<>();
+        attributes.add(new ContextAttribute("id", "string", "OUT1"));
+        EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
+        eventSinkListener.update(beans, null, statement, provider);
 
         verify(sender, never()).postMessage(any(), any());
     }
@@ -230,7 +247,7 @@ public class EventSinkListenerTest {
                         return attribute.getValue();
                     }
                 }
-                throw new PropertyAccessException(s);
+                return null;
             }
 
             @Override public Object getUnderlying() {

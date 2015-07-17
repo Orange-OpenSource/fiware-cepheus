@@ -36,17 +36,6 @@ public class EventSinkListener implements StatementAwareUpdateListener {
     private Map<String, EventTypeOut> outgoingEvents;
 
     /**
-     * An inner class exception because Esper's PropertyAccessException does not expose the property !
-     */
-    private class PropertyAccessException extends Exception {
-        public String property;
-
-        public PropertyAccessException(String property) {
-            this.property = property;
-        }
-    }
-
-    /**
      * Called by Esper CEP engine when a new event is added or removed from a statement.
      * This will trigger asynchronous updateContext request to broker for corresponding ContextElements
      */
