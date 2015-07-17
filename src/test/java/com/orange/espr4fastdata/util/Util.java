@@ -1,6 +1,7 @@
 package com.orange.espr4fastdata.util;
 
 
+import com.orange.espr4fastdata.model.Event;
 import com.orange.espr4fastdata.model.cep.*;
 import com.orange.espr4fastdata.model.ngsi.*;
 
@@ -18,7 +19,7 @@ public class Util {
     public Util() {
     }
 
-    public Configuration getBasicConf(){
+    public Configuration getBasicConf() {
         Configuration configuration = new Configuration();
         configuration.setHost("http://localhost:8080");
         //eventIN
@@ -38,6 +39,13 @@ public class Util {
         configuration.setStatements(rules);
 
         return configuration;
+    }
+
+    public Event buildBasicEvent(Object value) {
+        HashMap<String, Object> attributes = new HashMap<String, Object>();
+        attributes.put("id", "S1");
+        attributes.put("temp", value);
+        return new Event("TempSensor", attributes);
     }
 
     public NotifyContext createNotifyContextTempSensor(float randomValue) throws URISyntaxException {
