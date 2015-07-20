@@ -45,10 +45,10 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     }
 
     /**
-     * Apply a new configuration to the Esper CEP
+     * Apply a new configuration to the Esper CEP.
      * @param configuration the new configuration to apply
      */
-    public void setConfiguration(Configuration configuration) throws ConfigurationException {
+    public synchronized void setConfiguration(Configuration configuration) throws ConfigurationException {
         Configuration previousConfiguration = this.configuration;
         ConfigurationOperations operations = epServiceProvider.getEPAdministrator().getConfiguration();
         try {
@@ -71,11 +71,51 @@ public class EsperEventProcessor implements ComplexEventProcessor {
 
             this.configuration = configuration;
             eventSinkListener.setConfiguration(configuration);
-
         } catch (Exception e) {
-            // TODO reset all esper internal state, reset previous configuration
+            // Try to restore the previous configuration (if any)
+            restoreConfiguration();
+
             throw new ConfigurationException("Failed to apply new configuration", e);
         }
+    }
+
+    /**
+     * Restores the active configuration by wiping out the complete set of active statements and event types.
+     * This operation will lock the entire CEP engine.
+     * @return true if the restoration was successful, false if the CEP failed to reinitialize from the active configuration
+     */
+    private boolean restoreConfiguration() {
+        // Cannot restore when no previous configuration is defined
+        Configuration previousConfiguration = this.configuration;
+        if (previousConfiguration == null) {
+            return false;
+        }
+
+        epServiceProvider.getEngineInstanceWideLock().writeLock().lock();
+
+        try {
+            ConfigurationOperations operations = epServiceProvider.getEPAdministrator().getConfiguration();
+
+            // Cleanup previous configuration
+            epServiceProvider.getEPAdministrator().destroyAllStatements();
+            for (com.espertech.esper.client.EventType eventType : operations.getEventTypes()) {
+                operations.removeEventType(eventType.getName(), true);
+            }
+
+            // Adding back in/out events, then statements
+            this.updateEventTypes(Collections.emptyList(), previousConfiguration.getEventTypeIns(), operations);
+            this.updateEventTypes(Collections.emptyList(), previousConfiguration.getEventTypeOuts(), operations);
+            this.updateStatements(previousConfiguration.getStatements());
+
+        } catch (Exception e) {
+            logger.error("Failed to restore active configuration", e);
+            this.configuration = null;
+            return false;
+        } finally {
+            epServiceProvider.getEngineInstanceWideLock().writeLock().unlock();
+        }
+
+        return true;
     }
 
     /**
@@ -94,7 +134,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     }
 
     /**
-     * Return a list of Attribute for a given even type. This is mainly usefull for testing.
+     * Return a list of Attribute for a given even type. This is mainly useful for testing.
      * @param eventTypeName
      * @return
      * @throws EventTypeNotFoundException
@@ -113,8 +153,22 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         } else {
             throw new EventTypeNotFoundException("The event type does not exist.");
         }
-
         return attributes;
+    }
+
+    /**
+     * Return the list of EPL statements. This is mainly useful for testing.
+     * @return a list of EPL statements
+     */
+    public List<String> getStatements() {
+        List<String> statements = new LinkedList<>();
+        for (String statementName : epServiceProvider.getEPAdministrator().getStatementNames()) {
+            EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(statementName);
+            if (statement != null) {
+                statements.add(statement.getText());
+            }
+        }
+        return statements;
     }
 
     /**
