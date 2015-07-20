@@ -8,7 +8,9 @@
 
 package com.orange.espr4fastdata.controller;
 
+import com.orange.espr4fastdata.exception.MissingRequestParameterException;
 import com.orange.espr4fastdata.exception.PersistenceException;
+import com.orange.espr4fastdata.model.ngsi.StatusCode;
 import com.orange.espr4fastdata.persistence.Persistence;
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import com.orange.espr4fastdata.exception.ConfigurationException;
@@ -28,14 +30,14 @@ import javax.servlet.http.HttpServletRequest;
  * Controller for management of the CEP
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/v1/admin")
 public class AdminController {
 
     private static Logger logger = LoggerFactory.getLogger(AdminController.class);
 
-    private final ComplexEventProcessor complexEventProcessor;
+    private ComplexEventProcessor complexEventProcessor;
 
-    private final Persistence persistence;
+    private Persistence persistence;
 
     @Autowired
     public AdminController(ComplexEventProcessor complexEventProcessor, Persistence persistence) {
@@ -45,31 +47,47 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/config", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> configuration(@RequestBody final Configuration configuration) throws PersistenceException {
+    public ResponseEntity<?> configuration(@RequestBody final Configuration configuration) throws ConfigurationException, PersistenceException {
         logger.debug("Updating configuration: {}", configuration);
 
-        try {
-            complexEventProcessor.setConfiguration(configuration);
+        complexEventProcessor.setConfiguration(configuration);
 
-            persistence.saveConfiguration(configuration);
-
-        } catch (ConfigurationException e) {
-            logger.error("Impossible to set configuration");
-        }
-
+        persistence.saveConfiguration(configuration);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @ExceptionHandler(ConfigurationException.class)
-    @ResponseStatus(value=HttpStatus.BAD_REQUEST,reason="Configuration error")
-    public ModelAndView handleError(HttpServletRequest req, Exception exception) {
-        logger.error("Request: configuration error", exception);
+    public ResponseEntity<StatusCode> configurationExceptionHandler(HttpServletRequest req, ConfigurationException exception) {
+        logger.error("Configuration error", exception);
 
-        ModelAndView mav = new ModelAndView();
-        mav.addObject("exception", exception);
-        mav.addObject("url", req.getRequestURL());
-        mav.setViewName("error");
-        return mav;
+        StatusCode statusCode = new StatusCode();
+        statusCode.setCode("400");
+        statusCode.setReasonPhrase(exception.getMessage());
+        if (exception.getCause() != null) {
+            statusCode.setDetail(exception.getCause().getMessage());
+        }
+        return new ResponseEntity<>(statusCode, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PersistenceException.class)
+    public ResponseEntity<StatusCode> persistenceExceptionHandler(HttpServletRequest req, PersistenceException exception) {
+        logger.error("Persistance error", exception);
+
+        StatusCode statusCode = new StatusCode();
+        statusCode.setCode("500");
+        statusCode.setReasonPhrase(exception.getMessage());
+        if (exception.getCause() != null) {
+            statusCode.setDetail(exception.getCause().getMessage());
+        }
+        return new ResponseEntity<>(statusCode, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
+    }
+
+    public void setComplexEventProcessor(ComplexEventProcessor complexEventProcessor) {
+        this.complexEventProcessor = complexEventProcessor;
     }
 }

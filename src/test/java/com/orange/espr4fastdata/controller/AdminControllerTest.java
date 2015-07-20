@@ -9,12 +9,17 @@
 package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.Application;
+import com.orange.espr4fastdata.exception.PersistenceException;
 import com.orange.espr4fastdata.model.cep.Configuration;
+import com.orange.espr4fastdata.persistence.Persistence;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
@@ -27,15 +32,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
-
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Created by pborscia on 03/06/2015.
+ * Test the Admin controller
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -48,9 +53,15 @@ public class AdminControllerTest {
 
     private Util util = new Util();
 
+    @Mock
+    public Persistence persistence;
+
+    @Autowired
+    @InjectMocks
+    private AdminController adminController;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
-
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
@@ -66,18 +77,44 @@ public class AdminControllerTest {
 
     @Before
     public void setup() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        //this.mockMvc = MockMvcBuilders.standaloneSetup(adminController).build();
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-
     }
 
     @Test
     public void postConfOK() throws Exception {
         Configuration configuration = util.getBasicConf();
 
-        mockMvc.perform(post("/api/v1/config")
+        mockMvc.perform(post("/v1/admin/config")
                 .content(this.json(configuration))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void configurationErrorHandling() throws Exception {
+        Configuration configuration = util.getBasicConf();
+        configuration.getStatements().add("THIS IS NOT A VALID EPL STATEMENT");
+
+        mockMvc.perform(post("/v1/admin/config").content(this.json(configuration)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.reasonPhrase").exists())
+                .andExpect(jsonPath("$.detail").exists());
+    }
+
+    @Test
+    public void persistenceErrorHandling() throws Exception {
+
+        doThrow(new PersistenceException("ERROR")).when(persistence).saveConfiguration(any(Configuration.class));
+
+        Configuration configuration = util.getBasicConf();
+
+        mockMvc.perform(post("/v1/admin/config").content(this.json(configuration)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value("500"))
+                .andExpect(jsonPath("$.reasonPhrase").value("ERROR"));
     }
 
     protected String json(Object o) throws IOException {
