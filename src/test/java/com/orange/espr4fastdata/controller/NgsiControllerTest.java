@@ -76,7 +76,7 @@ public class NgsiControllerTest {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
         Configuration configuration = util.getBasicConf();
-        mockMvc.perform(post("/api/v1/config")
+        mockMvc.perform(post("/v1/admin/config")
                 .content(this.json(configuration))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
