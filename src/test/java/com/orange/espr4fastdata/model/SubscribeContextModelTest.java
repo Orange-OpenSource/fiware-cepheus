@@ -20,7 +20,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 /**
  * Created by pborscia on 17/07/2015.
  */
-public class SubscribeContextTest {
+public class SubscribeContextModelTest {
 
     Util util = new Util();
 
