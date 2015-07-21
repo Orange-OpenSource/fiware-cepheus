@@ -1,10 +1,11 @@
-# Espr4Fastdata : Gateway Data Handling GE  [![Build Status](https://travis-ci.org/Orange-OpenSource/EspR4FastData.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/EspR4FastData)
+# Espr4Fastdata
+
+[![Build Status](https://travis-ci.org/Orange-OpenSource/EspR4FastData.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/EspR4FastData)
 
 This is the code repository for Espr4FastData, the reference implementation of the Gateway Data Handling GE.
 
-This project is part of [FIWARE](http://www.fiware.org). Check also the [FIWARE Catalogue entry for Espr4FastData](http://catalogue.fiware.org/enablers/gateway-data-handling-ge-espr4fastdata)
-
-The specifications of the new version 4.4.3 is [here](https://stackedit.io/viewer#!provider=gist&gistId=2e53077e1ddf7de404d2&filename=espr_prop.md).
+This project is part of [FIWARE](http://www.fiware.org).
+Check also the [FIWARE Catalogue entry for Espr4FastData](http://catalogue.fiware.org/enablers/gateway-data-handling-ge-espr4fastdata)
 
 ## Overall description
 
@@ -38,17 +39,16 @@ You can publish the Docker image in your Docker repository :
 
 	mvn clean docker:push
 
-
-
 ## Running
 
-Espr4FastData is a SpringBoot application. You can running as a service.
+Espr4FastData is a SpringBoot application. You can run it as a service.
+
+	java -jar espR4FastData.jar
 
 ### Configuration file
 
 The configuration file directory is stored in application.properties.
-It 's json file
-Which typical content is:
+It's a simple json file which typical content is:
 
     {
 	  "in": [
@@ -96,8 +96,10 @@ Which typical content is:
 	  ]
 	}
 
+## User guide
+
+The complete user manual can be found under [docs](docs/manual.md)
 
 ## License
 
 Espr4FastData is licensed under GNU General Public License Version 2.
-
