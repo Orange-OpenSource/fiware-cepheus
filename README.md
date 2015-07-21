@@ -1,4 +1,4 @@
-# Espr4Fastdata : Gateway Data Handling GE
+# Espr4Fastdata : Gateway Data Handling GE  [![Build Status](https://travis-ci.org/Orange-OpenSource/EspR4FastData.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/EspR4FastData)
 
 This is the code repository for Espr4FastData, the reference implementation of the Gateway Data Handling GE.
 
