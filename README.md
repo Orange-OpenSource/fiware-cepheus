@@ -98,7 +98,7 @@ It's a simple json file which typical content is:
 
 ## User guide
 
-The complete user manual can be found under [docs](docs/manual.md)
+The complete user manual can be found [here](doc/manual.md)
 
 ## License
 
