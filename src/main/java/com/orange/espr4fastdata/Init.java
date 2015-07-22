@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * This Bean is created to load Configuration and setter the Complex Event Processor
+ * This Bean is created to load a persisted Configuration into the Complex Event Processor on startup
  */
 @Component
 public class Init {
@@ -31,20 +31,19 @@ public class Init {
     private final Persistence persistence;
 
     @Autowired
-    public Init(ComplexEventProcessor complexEventProcessor, Persistence persistence) throws PersistenceException, ConfigurationException {
+    public Init(ComplexEventProcessor complexEventProcessor, Persistence persistence) {
 
         this.complexEventProcessor = complexEventProcessor;
         this.persistence = persistence;
 
-        if (this.persistence.checkConfigurationDirectory()) {
-            Configuration configuration = null;
-
-            configuration = this.persistence.loadConfiguration();
-
-            this.complexEventProcessor.setConfiguration(configuration);
-
-
+        // Try restoring the persisted configuration if any
+        try {
+            if (persistence.checkConfigurationDirectory()) {
+                Configuration configuration = persistence.loadConfiguration();
+                complexEventProcessor.setConfiguration(configuration);
+            }
+        } catch(PersistenceException | ConfigurationException e) {
+            logger.error("Failed to load or apply persisted configuration", e);
         }
     }
-
 }
