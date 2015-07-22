@@ -8,16 +8,23 @@
 
 package com.orange.espr4fastdata.model.cep;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 /**
- * Created by pborscia on 03/06/2015.
+ * Configuration is exposed though a REST enpoint and defines the complete behavior of the CEP engine
  */
 public class Configuration {
 
     private String host;
+
+    @JsonProperty("in")
     private List<EventTypeIn> eventTypeIns;
+
+    @JsonProperty("out")
     private List<EventTypeOut> eventTypeOuts;
+
     private List<String> statements;
 
     public Configuration() {
