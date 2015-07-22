@@ -65,7 +65,6 @@ public class PersistenceTest {
         }
 
         assertTrue(persistence.checkConfigurationDirectory());
-
     }
 
 

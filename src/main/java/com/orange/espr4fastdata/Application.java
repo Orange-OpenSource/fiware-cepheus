@@ -31,14 +31,18 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    @Autowired
-    public ComplexEventProcessor complexEventProcessor;
+    @Bean
+    public ComplexEventProcessor complexEventProcessor() {
+        return new EsperEventProcessor();
+    }
 
-    @Autowired
-    public Persistence persistence;
+    @Bean
+    public Persistence persistence() {
+        return new JsonPersistence();
+    }
 
-    @Autowired
-    public Init initEspr4fastdata;
-
-
+    @Bean
+    public Init init(ComplexEventProcessor complexEventProcessor, Persistence persistence) {
+        return new Init(complexEventProcessor, persistence);
+    }
 }

@@ -12,26 +12,27 @@ import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import com.orange.espr4fastdata.exception.ConfigurationException;
 import com.orange.espr4fastdata.exception.PersistenceException;
 import com.orange.espr4fastdata.persistence.Persistence;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.*;
 
-import static com.orange.espr4fastdata.InitNoConfTest.TestConfig;
-
 /**
  * Test the Init bean.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {Application.class, TestConfig.class})
+@SpringApplicationConfiguration(classes = {Application.class, InitNoConfTest.TestConfig.class})
 public class InitNoConfTest {
 
-    @org.springframework.context.annotation.Configuration
+    @SpringBootApplication
     static class TestConfig {
 
         @Bean
@@ -40,22 +41,36 @@ public class InitNoConfTest {
         }
 
         @Bean
-        public Persistence persistence() throws PersistenceException {
+        public Persistence persistence() {
             Persistence p = Mockito.mock(Persistence.class);
             when(p.checkConfigurationDirectory()).thenReturn(false);
-            when(p.loadConfiguration()).thenReturn(null);
+            try {
+                when(p.loadConfiguration()).thenReturn(null);
+            } catch (PersistenceException e) {
+            }
             return p;
         }
     }
 
-    @Autowired public Init init;
+    @Autowired
+    public Init init;
 
-    @Autowired public ComplexEventProcessor complexEventProcessor;
+    @Autowired
+    public ComplexEventProcessor complexEventProcessor;
+
+    @Autowired
+    public Persistence persistence;
 
     /**
      * Check that CEP engine is not called when no configuration avail
      */
     @Test public void initTest() throws ConfigurationException {
         verify(complexEventProcessor, never()).setConfiguration(anyObject());
+    }
+
+    @After
+    public void resetMock() {
+        reset(complexEventProcessor);
+        reset(persistence);
     }
 }

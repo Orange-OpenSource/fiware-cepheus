@@ -8,20 +8,23 @@
 
 package com.orange.espr4fastdata.controller;
 
+import com.espertech.esper.client.EventBean;
 import com.orange.espr4fastdata.Application;
+import com.orange.espr4fastdata.Init;
+import com.orange.espr4fastdata.cep.ComplexEventProcessor;
+import com.orange.espr4fastdata.exception.ConfigurationException;
 import com.orange.espr4fastdata.exception.PersistenceException;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.persistence.Persistence;
 import com.orange.espr4fastdata.util.Util;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -33,19 +36,35 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.Assert.assertEquals;
+
 
 /**
  * Test the Admin controller
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(classes = {Application.class, AdminControllerTest.TestConfig.class})
 @WebAppConfiguration
 public class AdminControllerTest {
+
+    @SpringBootApplication
+    static class TestConfig {
+
+        @Bean
+        public ComplexEventProcessor complexEventProcessor() {
+            return Mockito.mock(ComplexEventProcessor.class);
+        };
+
+        @Bean
+        public Persistence persistence() {
+            return Mockito.mock(Persistence.class);
+        }
+    }
 
     private MockMvc mockMvc;
 
@@ -53,15 +72,14 @@ public class AdminControllerTest {
 
     private Util util = new Util();
 
-    @Mock
-    public Persistence persistence;
-
-    @Autowired
-    @InjectMocks
-    private AdminController adminController;
-
     @Autowired
     private WebApplicationContext webApplicationContext;
+
+    @Autowired
+    private ComplexEventProcessor complexEventProcessor;
+
+    @Autowired
+    private Persistence persistence;
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
@@ -77,29 +95,49 @@ public class AdminControllerTest {
 
     @Before
     public void setup() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        //this.mockMvc = MockMvcBuilders.standaloneSetup(adminController).build();
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
+    }
+
+    @After
+    public void resetMocks() {
+        reset(complexEventProcessor);
+        reset(persistence);
     }
 
     @Test
     public void checkConfigurationNotFound() throws Exception {
+        when(complexEventProcessor.getConfiguration()).thenReturn(null);
 
-
+        mockMvc.perform(get("/v1/admin/config")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     public void postConfOK() throws Exception {
         Configuration configuration = util.getBasicConf();
 
-        mockMvc.perform(get("/v1/admin/config")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-
-        mockMvc.perform(post("/v1/admin/config")
-                .content(this.json(configuration))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/v1/admin/config").content(this.json(configuration)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
+
+        ArgumentCaptor<Configuration> configurationArg = ArgumentCaptor.forClass(Configuration.class);
+        verify(complexEventProcessor).setConfiguration(configurationArg.capture());
+
+        Configuration capturedConfiguration = configurationArg.getValue();
+        assertEquals(1, capturedConfiguration.getEventTypeIns().size());
+        assertEquals("S.*", capturedConfiguration.getEventTypeIns().get(0).getId());
+        assertEquals(1, capturedConfiguration.getEventTypeOuts().size());
+        assertEquals("OUT1", capturedConfiguration.getEventTypeOuts().get(0).getId());
+
+        ArgumentCaptor<Configuration> configurationArg2 = ArgumentCaptor.forClass(Configuration.class);
+        verify(persistence).saveConfiguration(configurationArg2.capture());
+        assertEquals(capturedConfiguration, configurationArg2.getValue());
+    }
+
+    @Test
+    public void getConfiguration() throws Exception {
+        Configuration configuration = util.getBasicConf();
+        when(complexEventProcessor.getConfiguration()).thenReturn(configuration);
 
         mockMvc.perform(get("/v1/admin/config")
                 .accept(MediaType.APPLICATION_JSON))
@@ -112,13 +150,14 @@ public class AdminControllerTest {
     @Test
     public void configurationErrorHandling() throws Exception {
         Configuration configuration = util.getBasicConf();
-        configuration.getStatements().add("THIS IS NOT A VALID EPL STATEMENT");
+
+        doThrow(new ConfigurationException("ERROR", new Exception("DETAIL ERROR"))).when(complexEventProcessor).setConfiguration(any(Configuration.class));
 
         mockMvc.perform(post("/v1/admin/config").content(this.json(configuration)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.reasonPhrase").exists())
-                .andExpect(jsonPath("$.detail").exists());
+                .andExpect(jsonPath("$.reasonPhrase").value("ERROR"))
+                .andExpect(jsonPath("$.detail").value("DETAIL ERROR"));
     }
 
     @Test
