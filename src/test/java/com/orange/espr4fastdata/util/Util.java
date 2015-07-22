@@ -140,5 +140,15 @@ public class Util {
         return subscribeContext;
     }
 
+    public SubscribeContextResponse createSubscribeContextResponseTemperature() {
+        SubscribeContextResponse subscribeContextResponse = new SubscribeContextResponse();
+
+        SubscribeResponse subscribeResponse = new SubscribeResponse();
+        subscribeResponse.setDuration("P1M");
+        subscribeResponse.setSubscriptionId("12345678");
+        subscribeContextResponse.setSubscribeResponse(subscribeResponse);
+        return subscribeContextResponse;
+    }
+
 
 }

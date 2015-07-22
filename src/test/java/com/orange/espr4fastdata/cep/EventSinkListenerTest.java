@@ -18,6 +18,7 @@ import com.orange.espr4fastdata.model.ngsi.ContextElement;
 import com.orange.espr4fastdata.model.ngsi.UpdateAction;
 import com.orange.espr4fastdata.model.ngsi.UpdateContext;
 import com.orange.espr4fastdata.util.Util;
+import com.orange.ngsi.client.UpdateContextRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +42,7 @@ import static org.junit.Assert.assertFalse;
 public class EventSinkListenerTest {
 
     @Mock
-    public Sender sender;
+    public UpdateContextRequest updateContextRequest;
 
     @Mock
     public EPStatement statement;
@@ -87,9 +88,9 @@ public class EventSinkListenerTest {
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
         eventSinkListener.update(beans, null, statement, provider);
 
-        // Capture updateContext when postMessage is called on sender,
+        // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
-        verify(sender).postMessage(updateContextArg.capture(), eq(broker));
+        verify(updateContextRequest).postUpdateContextRequest(updateContextArg.capture(), eq(broker));
 
         // Check updateContext is valid
         UpdateContext updateContext = updateContextArg.getValue();
@@ -123,9 +124,9 @@ public class EventSinkListenerTest {
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
         eventSinkListener.update(beans, null, statement, provider);
 
-        // Capture updateContext when postMessage is called on sender,
+        // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
-        verify(sender).postMessage(updateContextArg.capture(), eq(broker));
+        verify(updateContextRequest).postUpdateContextRequest(updateContextArg.capture(), eq(broker));
 
         // Check id correspond to the one set in configuration
         ContextElement contextElement = updateContextArg.getValue().getContextElements().get(0);
@@ -147,7 +148,7 @@ public class EventSinkListenerTest {
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
         eventSinkListener.update(null, beans, statement, provider);
 
-        verify(sender, never()).postMessage(any(), any());
+        verify(updateContextRequest, never()).postUpdateContextRequest(any(), any());
     }
 
     /**
@@ -164,7 +165,7 @@ public class EventSinkListenerTest {
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
         eventSinkListener.update(beans, null, statement, provider);
 
-        verify(sender, never()).postMessage(any(), any());
+        verify(updateContextRequest, never()).postUpdateContextRequest(any(), any());
     }
 
     /**

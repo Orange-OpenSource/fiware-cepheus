@@ -6,7 +6,7 @@
  * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
  */
 
-package com.orange.espr4fastdata.cep;
+package com.orange.ngsi.client;
 
 import com.orange.espr4fastdata.Application;
 import com.orange.espr4fastdata.model.cep.Broker;
@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,17 +26,13 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.ResponseCreator;
-import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.web.client.AsyncRestTemplate;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
@@ -48,13 +43,13 @@ import javax.inject.Inject;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-public class SenderTest {
+public class UpdateContextRequestTest {
 
 
     private MockRestServiceServer mockServer;
 
     @Autowired
-    private Sender sender;
+    private UpdateContextRequest updateContextRequest;
 
     @Inject
     private AsyncRestTemplate asyncRestTemplate;
@@ -80,7 +75,7 @@ public class SenderTest {
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
         //@SuppressWarnings("unused")
 
-        sender.postMessage(util.createUpdateContextTempSensor(0),getBroker());
+        updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
 
         this.mockServer.verify();
 
@@ -96,7 +91,7 @@ public class SenderTest {
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
         //@SuppressWarnings("unused")
 
-        sender.postMessage(util.createUpdateContextTempSensor(0),getBroker());
+        updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
 
         this.mockServer.verify();
 
@@ -111,7 +106,7 @@ public class SenderTest {
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
         //@SuppressWarnings("unused")
 
-        sender.postMessage(util.createUpdateContextTempSensor(0),getBroker());
+        updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
 
         this.mockServer.verify();
 
@@ -123,7 +118,7 @@ public class SenderTest {
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(TimeoutResponseCreator.withTimeout());
 
-        sender.postMessage(util.createUpdateContextTempSensor(0),getBroker());
+        updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
 
 
     }

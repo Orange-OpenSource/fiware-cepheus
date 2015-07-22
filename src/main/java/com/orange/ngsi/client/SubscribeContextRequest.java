@@ -1,30 +1,24 @@
-package com.orange.espr4fastdata.cep;
+package com.orange.ngsi.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.orange.espr4fastdata.model.ngsi.SubscribeContext;
-import com.orange.espr4fastdata.model.ngsi.SubscribeContextResponse;
-import com.orange.espr4fastdata.model.ngsi.UpdateContext;
+import com.orange.espr4fastdata.exception.SubscribeContextRequestException;
+import com.orange.espr4fastdata.model.ngsi.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -35,6 +29,7 @@ import java.util.Set;
 @Configuration
 public class SubscribeContextRequest {
 
+    private static Logger logger = LoggerFactory.getLogger(SubscribeContextRequest.class);
 
     @Value("${subscribeContextRequest.defaultMaxTotalConnections}")
     private int defaultMaxTotalConnections;
@@ -45,7 +40,7 @@ public class SubscribeContextRequest {
     @Value("${subscribeContextRequest.defaultReadTimeoutMilliseconds}")
     private int defaultReadTimeoutMilliseconds;
 
-    public void postMessage(SubscribeContext subscribeContext, String provider) throws URISyntaxException {
+    public SubscribeResponse postSubscribeContextRequest(SubscribeContext subscribeContext, String provider) throws URISyntaxException, SubscribeContextRequestException {
 
         // Set the Content-Type header, ServiceName and ServicePath
         HttpHeaders requestHeaders = new HttpHeaders();
@@ -55,9 +50,33 @@ public class SubscribeContextRequest {
 
         URI providerURI = new URI(provider);
 
-        SubscribeContextResponse subscribeContextResponse = restTemplate().postForObject(providerURI, requestEntity, SubscribeContextResponse.class);
+        //SubscribeContextResponse subscribeContextResponse = restTemplate().postForObject(providerURI, requestEntity, SubscribeContextResponse.class);
 
-        //TODO : treat ERROR
+        try {
+            ResponseEntity<SubscribeContextResponse> result = restTemplate().exchange(providerURI, HttpMethod.POST, requestEntity, SubscribeContextResponse.class);
+
+
+            SubscribeContextResponse subscribeContextResponse = result.getBody();
+            SubscribeError subscribeError = subscribeContextResponse.getSubscribeError();
+
+            if (subscribeError == null) {
+
+                 String message = "SubscribeError received: " + subscribeError.getErrorCode().getCode() + " | " + subscribeError.getErrorCode().getDetail();
+                 logger.warn(message);
+                 throw new SubscribeContextRequestException(message);
+
+            }
+
+            return result.getBody().getSubscribeResponse();
+
+        } catch (Exception e) {
+
+            String message = "Failed Response received: " + e.getMessage();
+            logger.error(message);
+            throw new SubscribeContextRequestException(message);
+        }
+
+
     }
 
     @Bean
@@ -67,8 +86,7 @@ public class SubscribeContextRequest {
 
     @Bean
     public RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplate(httpRequestFactory());
-        return restTemplate;
+        return new RestTemplate(httpRequestFactory());
     }
 
     @Bean

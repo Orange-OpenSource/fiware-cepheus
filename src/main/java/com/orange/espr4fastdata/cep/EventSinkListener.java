@@ -12,6 +12,7 @@ import com.espertech.esper.client.*;
 import com.orange.espr4fastdata.model.cep.*;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.model.ngsi.*;
+import com.orange.ngsi.client.UpdateContextRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
     private static Logger logger = LoggerFactory.getLogger(EventSinkListener.class);
 
     @Autowired
-    private Sender sender;
+    private UpdateContextRequest updateContextRequest;
 
     /**
      * All outgoing outgoingEvents accessible by type
@@ -68,7 +69,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
                 UpdateContext updateContext = buildUpdateContextRequest(eventBean, eventTypeOut);
                 if (updateContext != null) {
                     for (Broker broker : eventTypeOut.getBrokers()) {
-                        sender.postMessage(updateContext, broker);
+                        updateContextRequest.postUpdateContextRequest(updateContext, broker);
                     }
                 }
             }

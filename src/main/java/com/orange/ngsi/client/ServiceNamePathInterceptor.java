@@ -6,7 +6,7 @@
  * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
  */
 
-package com.orange.espr4fastdata.cep;
+package com.orange.ngsi.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
