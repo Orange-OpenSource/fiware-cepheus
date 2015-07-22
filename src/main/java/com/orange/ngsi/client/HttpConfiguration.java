@@ -22,13 +22,13 @@ import org.springframework.web.client.AsyncRestTemplate;
 @Configuration
 public class HttpConfiguration {
 
-    @Value("${sender.defaultMaxTotalConnections}")
+    @Value("${httpConfiguration.defaultMaxTotalConnections}")
     private int defaultMaxTotalConnections;
 
-    @Value("${sender.defaultMaxConnectionsPerRoute}")
+    @Value("${httpConfiguration.defaultMaxConnectionsPerRoute}")
     private int defaultMaxConnectionsPerRoute;
 
-    @Value("${sender.defaultReadTimeoutMilliseconds}")
+    @Value("${httpConfiguration.defaultReadTimeoutMilliseconds}")
     private int defaultReadTimeoutMilliseconds;
 
     PoolingNHttpClientConnectionManager connectionManager;

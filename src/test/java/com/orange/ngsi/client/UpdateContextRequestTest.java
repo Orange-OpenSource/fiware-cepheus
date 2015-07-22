@@ -73,7 +73,6 @@ public class UpdateContextRequestTest {
                 .andExpect(header("Fiware-ServicePath", getBroker().getServicePath()))
                 .andExpect(jsonPath("$.updateAction").value(UpdateAction.UPDATE.getLabel()))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
-        //@SuppressWarnings("unused")
 
         updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
 
@@ -85,11 +84,8 @@ public class UpdateContextRequestTest {
     @Test
     public void performPostWith404() throws Exception {
 
-        String responseBody = this.json(util.createUpdateContextResponseTempSensor());
-
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
-        //@SuppressWarnings("unused")
 
         updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
 
@@ -100,11 +96,8 @@ public class UpdateContextRequestTest {
     @Test
     public void performPostWith500() throws Exception {
 
-        String responseBody = this.json(util.createUpdateContextResponseTempSensor());
-
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
-        //@SuppressWarnings("unused")
 
         updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
 
@@ -119,7 +112,6 @@ public class UpdateContextRequestTest {
                 .andRespond(TimeoutResponseCreator.withTimeout());
 
         updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
-
 
     }
 
