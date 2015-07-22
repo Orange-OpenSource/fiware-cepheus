@@ -79,6 +79,10 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         }
     }
 
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
     /**
      * Restores the active configuration by wiping out the complete set of active statements and event types.
      * This operation will lock the entire CEP engine.

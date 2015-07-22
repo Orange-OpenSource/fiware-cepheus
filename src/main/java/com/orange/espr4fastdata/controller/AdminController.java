@@ -43,7 +43,6 @@ public class AdminController {
     public AdminController(ComplexEventProcessor complexEventProcessor, Persistence persistence) {
         this.complexEventProcessor = complexEventProcessor;
         this.persistence = persistence;
-
     }
 
     @RequestMapping(value = "/config", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -55,6 +54,17 @@ public class AdminController {
         persistence.saveConfiguration(configuration);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @RequestMapping(value = "/config", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Configuration> configuration() {
+
+        Configuration configuration = complexEventProcessor.getConfiguration();
+        if (configuration == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(configuration, HttpStatus.OK);
     }
 
     @ExceptionHandler(ConfigurationException.class)

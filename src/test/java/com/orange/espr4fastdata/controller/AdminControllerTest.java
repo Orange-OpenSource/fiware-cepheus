@@ -36,7 +36,7 @@ import java.io.IOException;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -83,13 +83,30 @@ public class AdminControllerTest {
     }
 
     @Test
+    public void checkConfigurationNotFound() throws Exception {
+
+
+    }
+
+    @Test
     public void postConfOK() throws Exception {
         Configuration configuration = util.getBasicConf();
+
+        mockMvc.perform(get("/v1/admin/config")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
 
         mockMvc.perform(post("/v1/admin/config")
                 .content(this.json(configuration))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/v1/admin/config")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.in[0].id").value(configuration.getEventTypeIns().get(0).getId()))
+                .andExpect(jsonPath("$.out[0].id").value(configuration.getEventTypeOuts().get(0).getId()))
+                .andExpect(jsonPath("$.statements[0]").value(configuration.getStatements().get(0)));
     }
 
     @Test

@@ -26,6 +26,11 @@ public interface ComplexEventProcessor {
     void setConfiguration(Configuration configuration) throws ConfigurationException;
 
     /**
+     * @return the active configuration or null
+     */
+    Configuration getConfiguration();
+
+    /**
      * Supply an event to the CEP
      * @param event
      * @throws EventProcessingException when the event could not be processed successfully
