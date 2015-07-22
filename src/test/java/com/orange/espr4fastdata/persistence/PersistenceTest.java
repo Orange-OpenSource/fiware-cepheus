@@ -43,13 +43,9 @@ public class PersistenceTest {
     @Test
     public void checkFileReturnFalse(){
 
-        File confFile = new File("target/esper4fastdata.json");
-        if (confFile.exists()) {
-            confFile.delete();
-        }
+        util.clearPersistedConfiguration();
 
         assertFalse(persistence.checkConfigurationDirectory());
-
     }
 
     @Test
@@ -71,10 +67,7 @@ public class PersistenceTest {
     @Test
     public void saveloadConfiguration(){
 
-        File confFile = new File("target/esper4fastdata.json");
-        if (confFile.exists()) {
-            confFile.delete();
-        }
+        util.clearPersistedConfiguration();
 
         try {
             persistence.saveConfiguration(util.getBasicConf());
@@ -82,25 +75,20 @@ public class PersistenceTest {
             Assert.fail("Not expected PersistenceException");
         }
 
-        assertEquals(true,confFile.exists());
+        assertEquals(true, new File("target/esper4fastdata.json").exists());
 
         try {
             persistence.loadConfiguration();
         } catch (PersistenceException e) {
             Assert.fail("Not expected PersistenceException");
         }
-
     }
 
     @Test(expected=PersistenceException.class)
     public void loadConfigurationThrowException() throws PersistenceException {
 
-        File confFile = new File("target/esper4fastdata.json");
-        if (confFile.exists()) {
-            confFile.delete();
-        }
+        util.clearPersistedConfiguration();
 
         persistence.loadConfiguration();
-
     }
 }

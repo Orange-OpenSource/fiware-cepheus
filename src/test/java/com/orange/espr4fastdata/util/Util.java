@@ -5,6 +5,7 @@ import com.orange.espr4fastdata.model.Event;
 import com.orange.espr4fastdata.model.cep.*;
 import com.orange.espr4fastdata.model.ngsi.*;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -148,6 +149,13 @@ public class Util {
         subscribeResponse.setSubscriptionId("12345678");
         subscribeContextResponse.setSubscribeResponse(subscribeResponse);
         return subscribeContextResponse;
+    }
+
+    public void clearPersistedConfiguration() {
+        File confFile = new File("target/esper4fastdata.json");
+        if (confFile.exists()) {
+            confFile.delete();
+        }
     }
 
 
