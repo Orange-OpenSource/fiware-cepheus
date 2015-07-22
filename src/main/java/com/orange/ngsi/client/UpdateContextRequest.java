@@ -9,8 +9,8 @@
 package com.orange.ngsi.client;
 
 import com.orange.espr4fastdata.model.cep.Broker;
-import com.orange.espr4fastdata.model.ngsi.UpdateContext;
-import com.orange.espr4fastdata.model.ngsi.UpdateContextResponse;
+import com.orange.ngsi.model.UpdateContext;
+import com.orange.ngsi.model.UpdateContextResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

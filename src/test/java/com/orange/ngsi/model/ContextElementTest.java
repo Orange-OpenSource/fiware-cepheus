@@ -6,13 +6,12 @@
  * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
  */
 
-package com.orange.espr4fastdata.model;
+package com.orange.ngsi.model;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.model.ngsi.ContextElement;
+import com.orange.ngsi.model.ContextElement;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Test;
 import org.junit.runner.RunWith;

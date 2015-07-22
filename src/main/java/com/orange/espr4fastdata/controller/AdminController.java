@@ -8,9 +8,8 @@
 
 package com.orange.espr4fastdata.controller;
 
-import com.orange.espr4fastdata.exception.MissingRequestParameterException;
 import com.orange.espr4fastdata.exception.PersistenceException;
-import com.orange.espr4fastdata.model.ngsi.StatusCode;
+import com.orange.ngsi.model.StatusCode;
 import com.orange.espr4fastdata.persistence.Persistence;
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import com.orange.espr4fastdata.exception.ConfigurationException;
@@ -22,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 

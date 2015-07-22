@@ -9,8 +9,8 @@
 package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.model.ngsi.NotifyContext;
-import com.orange.espr4fastdata.model.ngsi.UpdateContext;
+import com.orange.ngsi.model.NotifyContext;
+import com.orange.ngsi.model.UpdateContext;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
@@ -30,7 +30,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.rmi.UnexpectedException;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;

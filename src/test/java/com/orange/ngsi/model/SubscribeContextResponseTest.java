@@ -1,7 +1,7 @@
-package com.orange.espr4fastdata.model;
+package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.orange.espr4fastdata.model.ngsi.SubscribeContextResponse;
+import com.orange.ngsi.model.SubscribeContextResponse;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Test;
 

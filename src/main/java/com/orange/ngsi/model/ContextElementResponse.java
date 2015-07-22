@@ -6,7 +6,7 @@
  * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
  */
 
-package com.orange.espr4fastdata.model.ngsi;
+package com.orange.ngsi.model;
 
 import javax.validation.constraints.NotNull;
 

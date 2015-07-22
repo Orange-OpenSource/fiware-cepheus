@@ -3,14 +3,14 @@ package com.orange.espr4fastdata.util;
 
 import com.orange.espr4fastdata.model.Event;
 import com.orange.espr4fastdata.model.cep.*;
-import com.orange.espr4fastdata.model.ngsi.*;
+import com.orange.ngsi.model.*;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-import static com.orange.espr4fastdata.model.ngsi.CodeEnum.CODE_200;
+import static com.orange.ngsi.model.CodeEnum.CODE_200;
 
 /**
  * Created by pborscia on 05/06/2015.

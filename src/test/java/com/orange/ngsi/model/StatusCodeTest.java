@@ -6,11 +6,11 @@
  * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
  */
 
-package com.orange.espr4fastdata.model;
+package com.orange.ngsi.model;
 
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.model.ngsi.CodeEnum;
-import com.orange.espr4fastdata.model.ngsi.StatusCode;
+import com.orange.ngsi.model.CodeEnum;
+import com.orange.ngsi.model.StatusCode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,11 +1,8 @@
 package com.orange.ngsi.client;
 
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.exception.SubscribeContextRequestException;
-import com.orange.espr4fastdata.model.ngsi.UpdateAction;
 import com.orange.espr4fastdata.util.Util;
 
-import com.orange.ngsi.client.SubscribeContextRequest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +18,6 @@ import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.AsyncRestTemplate;
-import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 

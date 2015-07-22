@@ -10,7 +10,10 @@ package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.exception.MissingRequestParameterException;
 import com.orange.espr4fastdata.exception.TypeNotFoundException;
-import com.orange.espr4fastdata.model.ngsi.*;
+import com.orange.ngsi.model.CodeEnum;
+import com.orange.ngsi.model.NotifyContextResponse;
+import com.orange.ngsi.model.StatusCode;
+import com.orange.ngsi.model.UpdateContextResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

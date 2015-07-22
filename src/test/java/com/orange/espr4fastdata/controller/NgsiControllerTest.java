@@ -9,9 +9,12 @@
 package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.model.ngsi.*;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.util.Util;
+import com.orange.ngsi.model.CodeEnum;
+import com.orange.ngsi.model.NotifyContext;
+import com.orange.ngsi.model.UpdateAction;
+import com.orange.ngsi.model.UpdateContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +35,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.util.Collections;
 
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;

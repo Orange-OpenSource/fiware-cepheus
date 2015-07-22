@@ -1,4 +1,4 @@
-package com.orange.espr4fastdata.model.ngsi;
+package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

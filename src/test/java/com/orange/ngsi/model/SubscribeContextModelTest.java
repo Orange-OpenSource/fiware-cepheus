@@ -1,11 +1,14 @@
-package com.orange.espr4fastdata.model;
+package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jayway.jsonpath.JsonPath;
-import com.orange.espr4fastdata.model.ngsi.*;
 import com.orange.espr4fastdata.util.Util;
+import com.orange.ngsi.model.EntityId;
+import com.orange.ngsi.model.NotifyCondition;
+import com.orange.ngsi.model.NotifyConditionEnum;
+import com.orange.ngsi.model.SubscribeContext;
 import org.junit.Assert;
 import org.junit.Test;
 

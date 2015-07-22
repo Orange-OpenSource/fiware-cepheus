@@ -13,17 +13,15 @@ import com.orange.espr4fastdata.exception.EventProcessingException;
 import com.orange.espr4fastdata.exception.MissingRequestParameterException;
 import com.orange.espr4fastdata.exception.TypeNotFoundException;
 import com.orange.espr4fastdata.model.Event;
-import com.orange.espr4fastdata.model.ngsi.*;
+import com.orange.ngsi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.*;
 
 /**
