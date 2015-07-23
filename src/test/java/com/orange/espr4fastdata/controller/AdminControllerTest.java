@@ -58,7 +58,7 @@ public class AdminControllerTest {
         @Bean
         public ComplexEventProcessor complexEventProcessor() {
             return Mockito.mock(ComplexEventProcessor.class);
-        };
+        }
 
         @Bean
         public Persistence persistence() {
@@ -68,9 +68,10 @@ public class AdminControllerTest {
 
     private MockMvc mockMvc;
 
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-
     private Util util = new Util();
+
+    @Autowired
+    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -80,18 +81,6 @@ public class AdminControllerTest {
 
     @Autowired
     private Persistence persistence;
-
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        for(HttpMessageConverter hmc : converters) {
-            if (hmc instanceof MappingJackson2HttpMessageConverter) {
-                this.mappingJackson2HttpMessageConverter = hmc;
-            }
-        }
-
-        Assert.assertNotNull("the JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
 
     @Before
     public void setup() throws Exception {

@@ -41,7 +41,7 @@ public class InitTest {
         @Bean
         public ComplexEventProcessor complexEventProcessor() {
             return Mockito.mock(ComplexEventProcessor.class);
-        };
+        }
 
         @Bean
         public Persistence persistence() {

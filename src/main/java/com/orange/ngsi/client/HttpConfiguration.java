@@ -1,6 +1,5 @@
 package com.orange.ngsi.client;
 
-import com.orange.espr4fastdata.exception.SenderException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;

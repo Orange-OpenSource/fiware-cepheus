@@ -18,14 +18,13 @@ import com.orange.espr4fastdata.model.cep.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by pborscia on 30/06/2015.
+ * Persistence implementation using a JSON file
  */
 @Component
 public class JsonPersistence implements Persistence {
@@ -34,10 +33,6 @@ public class JsonPersistence implements Persistence {
 
     @Value("${file.directory:/tmp/esper4fastdatajson}")
     private String ConfigurationFileDirectory;
-
-    public void JsonPersistence() {
-
-    }
 
     @Override
     public Boolean checkConfigurationDirectory() {

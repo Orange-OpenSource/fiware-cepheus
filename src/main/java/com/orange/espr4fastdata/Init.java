@@ -26,15 +26,8 @@ public class Init {
 
     private static Logger logger = LoggerFactory.getLogger(Init.class);
 
-    private final ComplexEventProcessor complexEventProcessor;
-
-    private final Persistence persistence;
-
     @Autowired
     public Init(ComplexEventProcessor complexEventProcessor, Persistence persistence) {
-
-        this.complexEventProcessor = complexEventProcessor;
-        this.persistence = persistence;
 
         // Try restoring the persisted configuration if any
         try {

@@ -5,10 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jayway.jsonpath.JsonPath;
 import com.orange.espr4fastdata.util.Util;
-import com.orange.ngsi.model.EntityId;
-import com.orange.ngsi.model.NotifyCondition;
-import com.orange.ngsi.model.NotifyConditionEnum;
-import com.orange.ngsi.model.SubscribeContext;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,8 +13,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 
 /**
  * Created by pborscia on 17/07/2015.

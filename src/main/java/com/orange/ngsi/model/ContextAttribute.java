@@ -8,15 +8,8 @@
 
 package com.orange.ngsi.model;
 
-import com.fasterxml.jackson.annotation.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
- * Created by pborscia on 04/06/2015.
+ * Context Attribute
  */
 public class ContextAttribute {
 

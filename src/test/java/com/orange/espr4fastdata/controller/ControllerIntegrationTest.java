@@ -49,25 +49,14 @@ public class ControllerIntegrationTest {
 
     private MockMvc mockMvc;
 
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     private Util util = new Util();
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
-
+    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        for(HttpMessageConverter hmc : converters) {
-            if (hmc instanceof MappingJackson2HttpMessageConverter) {
-                this.mappingJackson2HttpMessageConverter = hmc;
-            }
-        }
-
-        Assert.assertNotNull("the JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
+    private WebApplicationContext webApplicationContext;
 
     @Before
     public void setup() throws Exception {
@@ -125,5 +114,4 @@ public class ControllerIntegrationTest {
                 o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
     }
-
 }

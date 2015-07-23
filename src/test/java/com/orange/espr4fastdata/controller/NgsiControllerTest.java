@@ -52,25 +52,13 @@ public class NgsiControllerTest {
 
     private MockMvc mockMvc;
 
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
-
     private Util util = new Util();
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-
     @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        for(HttpMessageConverter hmc : converters) {
-            if (hmc instanceof MappingJackson2HttpMessageConverter) {
-                this.mappingJackson2HttpMessageConverter = hmc;
-            }
-        }
-
-        Assert.assertNotNull("the JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
+    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Before
     public void setup() throws Exception {
@@ -226,15 +214,10 @@ public class NgsiControllerTest {
         }
     }
 
-
-
     protected String json(Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         this.mappingJackson2HttpMessageConverter.write(
                 o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
     }
-
-
-
 }

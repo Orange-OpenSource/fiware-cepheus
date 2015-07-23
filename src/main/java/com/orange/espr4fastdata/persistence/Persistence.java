@@ -21,18 +21,18 @@ public interface Persistence {
      * check configuration file
      * @return true if configuration file exists else false
      */
-    public Boolean checkConfigurationDirectory();
+    Boolean checkConfigurationDirectory();
 
     /**
      * Load persited configuration to the CEP
      * @throws PersistenceException when the configuration could not be loaded successfully
      */
-    public Configuration loadConfiguration() throws PersistenceException;
+    Configuration loadConfiguration() throws PersistenceException;
 
     /**
      * Save configuration
      * @param configuration
      * @throws PersistenceException when the configuration could not be saved successfully
      */
-    public void saveConfiguration(Configuration configuration) throws PersistenceException;
+    void saveConfiguration(Configuration configuration) throws PersistenceException;
 }
