@@ -52,19 +52,21 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         Configuration previousConfiguration = this.configuration;
         ConfigurationOperations operations = epServiceProvider.getEPAdministrator().getConfiguration();
         try {
-            Collection<? extends  EventType> previousEventTypes = new LinkedList<>();
+            Collection<EventType> previousEventTypes = Collections.emptyList();
 
             // Update incoming event types
+            Collection<EventType> newEventTypes = Collections.unmodifiableList(configuration.getEventTypeIns());
             if (previousConfiguration != null) {
-                previousEventTypes = previousConfiguration.getEventTypeIns();
+                previousEventTypes = Collections.unmodifiableList(previousConfiguration.getEventTypeIns());
             }
-            this.updateEventTypes(previousEventTypes, configuration.getEventTypeIns(), operations);
+            this.updateEventTypes(previousEventTypes, newEventTypes, operations);
 
             // Update outgoing event types
+            newEventTypes = Collections.unmodifiableList(configuration.getEventTypeOuts());
             if (previousConfiguration != null) {
-                previousEventTypes = previousConfiguration.getEventTypeOuts();
+                previousEventTypes = Collections.unmodifiableList(previousConfiguration.getEventTypeOuts());
             }
-            this.updateEventTypes(previousEventTypes, configuration.getEventTypeOuts(), operations);
+            this.updateEventTypes(previousEventTypes, newEventTypes, operations);
 
             // Update the statements
             this.updateStatements(configuration.getStatements());
@@ -107,8 +109,10 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             }
 
             // Adding back in/out events, then statements
-            this.updateEventTypes(Collections.emptyList(), previousConfiguration.getEventTypeIns(), operations);
-            this.updateEventTypes(Collections.emptyList(), previousConfiguration.getEventTypeOuts(), operations);
+            Collection<EventType> inEventTypes = Collections.unmodifiableList(previousConfiguration.getEventTypeIns());
+            Collection<EventType> outEventTypes = Collections.unmodifiableList(previousConfiguration.getEventTypeOuts());
+            this.updateEventTypes(Collections.emptyList(), inEventTypes, operations);
+            this.updateEventTypes(Collections.emptyList(), outEventTypes, operations);
             this.updateStatements(previousConfiguration.getStatements());
 
         } catch (Exception e) {
@@ -182,11 +186,11 @@ public class EsperEventProcessor implements ComplexEventProcessor {
      * @param newList the new list of event types
      * @param operations the CEP configuration
      */
-    private void updateEventTypes(Collection<? extends EventType> oldList, Collection<? extends EventType> newList, ConfigurationOperations operations) {
-        List<? extends EventType> eventTypesToRemove = new LinkedList<>(oldList);
+    private void updateEventTypes(Collection<EventType> oldList, Collection<EventType> newList, ConfigurationOperations operations) {
+        List<EventType> eventTypesToRemove = new LinkedList<>(oldList);
         eventTypesToRemove.removeAll(newList);
 
-        List<? extends  EventType> eventTypesToAdd = new LinkedList<>(newList);
+        List<EventType> eventTypesToAdd = new LinkedList<>(newList);
         eventTypesToAdd.removeAll(oldList);
 
         // List all statements depending on the event types to remove
