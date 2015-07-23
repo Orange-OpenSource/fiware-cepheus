@@ -18,6 +18,7 @@ import com.orange.espr4fastdata.exception.EventTypeNotFoundException;
 import com.orange.espr4fastdata.model.cep.Attribute;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.util.Util;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +55,15 @@ public class EsperEventProcessorTest {
         MockitoAnnotations.initMocks(this);
     }
 
+    @After
+    public void resetEmptyConfiguration() throws ConfigurationException {
+        Configuration emptyConfiguration = new Configuration();
+        emptyConfiguration.setEventTypeIns(Collections.emptyList());
+        emptyConfiguration.setEventTypeOuts(Collections.emptyList());
+        emptyConfiguration.setStatements(Collections.emptyList());
+        esperEventProcessor.setConfiguration(emptyConfiguration);
+    }
+
     @Test
     public void checkBasicConf() throws ConfigurationException, EventTypeNotFoundException {
         esperEventProcessor.setConfiguration(util.getBasicConf());
@@ -82,7 +92,6 @@ public class EsperEventProcessorTest {
         esperEventProcessor.setConfiguration(configuration);
     }
 
-
     /**
      * Check that a Configuration exception is thrown when an unknown event type 'BAD' is referenced in a statement
      * @throws ConfigurationException
@@ -104,11 +113,7 @@ public class EsperEventProcessorTest {
     public void checkEventTypeRemoval() throws ConfigurationException {
         esperEventProcessor.setConfiguration(util.getBasicConf());
 
-        Configuration emptyConfiguration = new Configuration();
-        emptyConfiguration.setEventTypeIns(Collections.emptyList());
-        emptyConfiguration.setEventTypeOuts(Collections.emptyList());
-        emptyConfiguration.setStatements(Collections.emptyList());
-        esperEventProcessor.setConfiguration(emptyConfiguration);
+        resetEmptyConfiguration();
 
         try {
             esperEventProcessor.getEventTypeAttributes("TempSensor");
@@ -123,6 +128,8 @@ public class EsperEventProcessorTest {
         } catch (EventTypeNotFoundException e) {
             // ok
         }
+
+        assertEquals(0, esperEventProcessor.getStatements().size());
     }
 
     /**
