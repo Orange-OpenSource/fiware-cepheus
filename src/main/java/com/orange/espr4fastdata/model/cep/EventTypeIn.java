@@ -12,10 +12,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Created by pborscia on 03/06/2015.
+ * An incoming event
  */
 public class EventTypeIn extends EventType {
-    private Set<String> providers;
+
+    private Set<Provider> providers;
 
     public EventTypeIn() {
         super();
@@ -25,18 +26,18 @@ public class EventTypeIn extends EventType {
         super(id, type, isPattern);
     }
 
-    public Set<String> getProviders() {
+    public Set<Provider> getProviders() {
         return providers;
     }
 
-    public void setProviders(Set<String> providers) {
+    public void setProviders(Set<Provider> providers) {
         this.providers = providers;
     }
 
-    public void addProvider(String provider) {
+    public void addProvider(String providerUrl) {
         if (providers == null) {
             providers = new HashSet<>();
         }
-        providers.add(provider);
+        providers.add(new Provider(providerUrl));
     }
 }
