@@ -56,16 +56,17 @@ public class EsperEventProcessorTest {
 
     @Test
     public void checkBasicConf() throws ConfigurationException, EventTypeNotFoundException {
-            esperEventProcessor.setConfiguration(util.getBasicConf());
+        esperEventProcessor.setConfiguration(util.getBasicConf());
 
-            assertEquals(1, esperEventProcessor.getEventTypeAttributes("TempSensor").size());
-            assertEquals("temp", esperEventProcessor.getEventTypeAttributes("TempSensor").get(0).getName());
-            assertEquals("float", esperEventProcessor.getEventTypeAttributes("TempSensor").get(0).getType());
+        esperEventProcessor.setConfiguration(util.getBasicConf());
 
-            assertEquals(1, esperEventProcessor.getEventTypeAttributes("TempSensorAvg").size());
-            assertEquals("avgTemp", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get(0).getName());
-            assertEquals("double", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get(0).getType());
+        assertEquals(1, esperEventProcessor.getEventTypeAttributes("TempSensor").size());
+        assertEquals("temp", esperEventProcessor.getEventTypeAttributes("TempSensor").get(0).getName());
+        assertEquals("float", esperEventProcessor.getEventTypeAttributes("TempSensor").get(0).getType());
 
+        assertEquals(1, esperEventProcessor.getEventTypeAttributes("TempSensorAvg").size());
+        assertEquals("avgTemp", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get(0).getName());
+        assertEquals("double", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get(0).getType());
     }
 
     /**
