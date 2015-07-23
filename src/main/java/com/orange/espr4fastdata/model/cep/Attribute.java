@@ -8,14 +8,21 @@
 
 package com.orange.espr4fastdata.model.cep;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
- * Created by pborscia on 03/06/2015.
+ * Attribute definition for EventType
  */
 public class Attribute {
+
+    @NotEmpty(message = "All attributes must have a name")
     private String name;
+
+    @NotEmpty(message = "All attributes must have a type")
     private String type;
 
     public Attribute() {
+        System.out.println("");
     }
 
     public Attribute(String name, String type) {

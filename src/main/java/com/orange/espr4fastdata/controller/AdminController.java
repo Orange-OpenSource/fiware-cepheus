@@ -20,9 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 /**
  * Controller for management of the CEP
@@ -44,7 +47,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/config", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> configuration(@RequestBody final Configuration configuration) throws ConfigurationException, PersistenceException {
+    public ResponseEntity<?> configuration(@Valid @RequestBody final Configuration configuration) throws ConfigurationException, PersistenceException {
         logger.debug("Updating configuration: {}", configuration);
 
         complexEventProcessor.setConfiguration(configuration);
@@ -63,6 +66,25 @@ public class AdminController {
         }
 
         return new ResponseEntity<>(configuration, HttpStatus.OK);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<StatusCode> validationExceptionHandler(HttpServletRequest req, MethodArgumentNotValidException exception) {
+
+        StringBuffer sb = new StringBuffer();
+        for (ObjectError error : exception.getBindingResult().getAllErrors()) {
+            if (sb.length() != 0) {
+                sb.append(", ");
+            }
+            sb.append(error.getDefaultMessage());
+        }
+        logger.error("Configuration validation error: {}", sb.toString());
+
+        StatusCode statusCode = new StatusCode();
+        statusCode.setCode("400");
+        statusCode.setReasonPhrase("Configuration validation error");
+        statusCode.setDetail(sb.toString());
+        return new ResponseEntity<>(statusCode, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConfigurationException.class)

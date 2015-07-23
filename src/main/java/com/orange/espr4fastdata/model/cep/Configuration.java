@@ -9,7 +9,10 @@
 package com.orange.espr4fastdata.model.cep;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -17,14 +20,20 @@ import java.util.List;
  */
 public class Configuration {
 
+    @NotEmpty(message = "Configuration.host must not be empty")
     private String host;
 
+    @Valid
+    @NotNull(message = "Configuration.in must contain a list of incoming events")
     @JsonProperty("in")
     private List<EventTypeIn> eventTypeIns;
 
+    @Valid
+    @NotNull(message = "Configuration.out must contain a list of outgoing events")
     @JsonProperty("out")
     private List<EventTypeOut> eventTypeOuts;
 
+    @NotNull(message = "Configuration.statements must contain a list of EPL statements")
     private List<String> statements;
 
     public Configuration() {

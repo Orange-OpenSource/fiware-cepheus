@@ -9,14 +9,23 @@
 package com.orange.espr4fastdata.model.cep;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.Valid;
 import java.util.*;
 
 public class EventType {
 
+    @NotEmpty(message = "All events must have an id")
     private String id;
+
+    @NotEmpty(message = "All events must have a type")
     private String type;
+
     private boolean isPattern;
+
+    @Valid
+    @NotEmpty(message = "All events must define a list of attributes")
     private Set<Attribute> attributes; // using a set to handle equals on unordered attributes
 
     public EventType() {
@@ -58,7 +67,9 @@ public class EventType {
     }
 
     public void setIsPattern(Boolean isPattern) {
-        this.isPattern = isPattern;
+        if (isPattern != null) {
+            this.isPattern = isPattern;
+        }
     }
 
     @JsonProperty("attributes")
