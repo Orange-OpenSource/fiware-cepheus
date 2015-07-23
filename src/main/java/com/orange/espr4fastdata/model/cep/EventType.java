@@ -66,8 +66,22 @@ public class EventType {
         this.attributes = attributes;
     }
 
-    public boolean equals(EventType e) {
-        return (type.equals(e.type) && isPattern == e.isPattern && id.equals(e.id) && attributes.equals(e.attributes));
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof EventType))
+            return false;
+
+        EventType eventType = (EventType) o;
+
+        if (isPattern != eventType.isPattern)
+            return false;
+        if (id != null ? !id.equals(eventType.id) : eventType.id != null)
+            return false;
+        if (type != null ? !type.equals(eventType.type) : eventType.type != null)
+            return false;
+        return !(attributes != null ? !attributes.equals(eventType.attributes) : eventType.attributes != null);
     }
 
     public void addAttribute(Attribute attribute) {

@@ -39,7 +39,25 @@ public class Attribute {
         this.type = type;
     }
 
-    public boolean equals(Attribute a) {
-        return name.equals(a.name) && type.equals(a.type);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Attribute))
+            return false;
+
+        Attribute attribute = (Attribute) o;
+
+        if (name != null ? !name.equals(attribute.name) : attribute.name != null)
+            return false;
+        return !(type != null ? !type.equals(attribute.type) : attribute.type != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        return result;
     }
 }
