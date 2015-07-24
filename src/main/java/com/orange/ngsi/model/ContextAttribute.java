@@ -8,6 +8,11 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Context Attribute
  */
@@ -20,8 +25,10 @@ public class ContextAttribute {
 
     private Object value;
 
-    public ContextAttribute() {
+    @JsonProperty("metadatas")
+    private List<ContextMetadata> metadata;
 
+    public ContextAttribute() {
     }
 
     public ContextAttribute(String name, String type, Object value)
@@ -31,39 +38,18 @@ public class ContextAttribute {
         this.value = value;
     }
 
-    /**
-     *
-     * @return
-     * The name
-     */
-
     public String getName() {
         return name;
     }
 
-    /**
-     *
-     * @param name
-     * The name
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     *
-     * @return
-     * The type
-     */
     public String getType() {
         return type;
     }
 
-    /**
-     *
-     * @param type
-     * The type
-     */
     public void setType(String type) {
         this.type = type;
     }
@@ -78,5 +64,30 @@ public class ContextAttribute {
 
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public List<ContextMetadata> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<ContextMetadata> metadata) {
+        this.metadata = metadata;
+    }
+
+    public void addMetadata(ContextMetadata metadata) {
+        if (this.metadata == null) {
+            this.metadata = new LinkedList<>();
+        }
+        this.metadata.add(metadata);
+    }
+
+    @Override
+    public String toString() {
+        return "ContextAttribute{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", value=" + value +
+                ", metadata=" + metadata +
+                '}';
     }
 }
