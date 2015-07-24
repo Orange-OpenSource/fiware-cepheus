@@ -22,7 +22,6 @@ public class Attribute {
     private String type;
 
     public Attribute() {
-        System.out.println("");
     }
 
     public Attribute(String name, String type) {
