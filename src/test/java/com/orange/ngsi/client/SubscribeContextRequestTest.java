@@ -1,8 +1,11 @@
 package com.orange.ngsi.client;
 
 import com.orange.espr4fastdata.Application;
+import com.orange.espr4fastdata.exception.SubscribeContextRequestException;
 import com.orange.espr4fastdata.util.Util;
 
+import com.orange.ngsi.model.SubscribeError;
+import com.orange.ngsi.model.SubscribeResponse;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +27,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -55,31 +59,45 @@ public class SubscribeContextRequestTest {
     }
 
     @Test
-    public void postSubscribeContextRequestWith500(){
+    public void postSubscribeContextRequestWith500() throws SubscribeContextRequestException, URISyntaxException {
 
         this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        try {
-            subscribeContextRequest.postSubscribeContextRequest(util.createSubscribeContextTemperature(),"http://localhost/subscribeContext");
-            this.mockServer.verify();
-        } catch (URISyntaxException e) {
-            Assert.fail("Not expected URISyntaxException");
-        }
+        subscribeContextRequest.postSubscribeContextRequest(util.createSubscribeContextTemperature(),"http://localhost/subscribeContext", new SubscribeContextRequest.SubscribeContextResponseListener() {
+                @Override
+                public void onError(SubscribeError subscribeError) {
+                    Assert.fail("Not expected Subscrive Error");
+                }
+
+                @Override
+                public void onSuccess(SubscribeResponse subscribeResponse) {
+                    Assert.fail("Not expected Success");
+                }
+        });
+        this.mockServer.verify();
+
     }
 
     @Test
-    public void postSubscribeContextRequestWith404(){
+    public void postSubscribeContextRequestWith404() throws URISyntaxException, SubscribeContextRequestException {
 
         this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        try {
-            subscribeContextRequest.postSubscribeContextRequest(util.createSubscribeContextTemperature(),"http://localhost/subscribeContext");
-            this.mockServer.verify();
-        } catch (URISyntaxException e) {
-            Assert.fail("Not expected URISyntaxException");
-        }
+        subscribeContextRequest.postSubscribeContextRequest(util.createSubscribeContextTemperature(),"http://localhost/subscribeContext", new SubscribeContextRequest.SubscribeContextResponseListener() {
+            @Override
+            public void onError(SubscribeError subscribeError) {
+                Assert.fail("Not expected Subscrive Error");
+            }
+
+            @Override
+            public void onSuccess(SubscribeResponse subscribeResponse) {
+                Assert.fail("Not expected Success");
+            }
+        });
+        this.mockServer.verify();
+
     }
 
     @Test
@@ -99,7 +117,17 @@ public class SubscribeContextRequestTest {
                 .andExpect(jsonPath("$.duration").value("P1M"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        subscribeContextRequest.postSubscribeContextRequest(util.createSubscribeContextTemperature(),"http://localhost/subscribeContext");
+        subscribeContextRequest.postSubscribeContextRequest(util.createSubscribeContextTemperature(), "http://localhost/subscribeContext", new SubscribeContextRequest.SubscribeContextResponseListener() {
+            @Override
+            public void onError(SubscribeError subscribeError) {
+                Assert.fail("Not expected Subscrive Error");
+            }
+
+            @Override
+            public void onSuccess(SubscribeResponse subscribeResponse) {
+                assertTrue(true);
+            }
+        });
         this.mockServer.verify();
     }
 

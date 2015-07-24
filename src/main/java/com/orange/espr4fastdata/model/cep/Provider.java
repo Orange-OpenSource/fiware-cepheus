@@ -11,6 +11,7 @@ package com.orange.espr4fastdata.model.cep;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -28,7 +29,7 @@ public class Provider {
      * Used by the SubscriptionManager to track valid subscriptions
      */
     @JsonIgnore
-    private Date subscriptionDate;
+    private Instant subscriptionDate;
 
     /**
      * Id of the subscription
@@ -62,11 +63,11 @@ public class Provider {
         this.url = url;
     }
 
-    public Date getSubscriptionDate() {
+    public Instant getSubscriptionDate() {
         return subscriptionDate;
     }
 
-    public void setSubscriptionDate(Date subscriptionDate) {
+    public void setSubscriptionDate(Instant subscriptionDate) {
         this.subscriptionDate = subscriptionDate;
     }
 
