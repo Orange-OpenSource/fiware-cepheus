@@ -20,6 +20,7 @@ import com.orange.espr4fastdata.model.cep.Provider;
 import com.orange.espr4fastdata.util.Util;
 import com.orange.ngsi.client.SubscribeContextRequest;
 import com.orange.ngsi.model.SubscribeContext;
+import com.orange.ngsi.model.SubscribeResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,13 +70,22 @@ public class SubscriptionManagerTest {
     public void setConfigurationOK() throws URISyntaxException, SubscribeContextRequestException {
 
         Configuration configuration = util.getBasicConf();
-        subscriptionManager.setConfiguration(util.getBasicConf());
+        subscriptionManager.setConfiguration(configuration);
 
         ArgumentCaptor<EventBean[]> eventsArg = ArgumentCaptor.forClass(EventBean[].class);
 
         ArgumentCaptor<SubscribeContext> subscribeContextArg = ArgumentCaptor.forClass(SubscribeContext.class);
         ArgumentCaptor<String> urlProviderArg = ArgumentCaptor.forClass(String.class);
-        verify(subscribeContextRequest, times(1)).postSubscribeContextRequest(subscribeContextArg.capture(), urlProviderArg.capture(), any(SubscribeContextRequest.SubscribeContextResponseListener.class));
+        ArgumentCaptor<SubscribeContextRequest.SubscribeContextResponseListener> listenerArg = ArgumentCaptor.forClass(SubscribeContextRequest.SubscribeContextResponseListener.class);
+        verify(subscribeContextRequest, times(1)).postSubscribeContextRequest(subscribeContextArg.capture(), urlProviderArg.capture(), listenerArg.capture());
+
+        SubscribeResponse subscribeResponse = new SubscribeResponse();
+        subscribeResponse.setSubscriptionId("12345678");
+        subscribeResponse.setDuration("P1H");
+        if (listenerArg.getValue() != null) {
+            listenerArg.getValue().onSuccess(subscribeResponse);
+        }
+
         SubscribeContext subscribeContext = subscribeContextArg.getValue();
         assertEquals("S.*", subscribeContext.getEntityIdList().get(0).getId());
         assertEquals("TempSensor", subscribeContext.getEntityIdList().get(0).getType());
@@ -84,7 +94,10 @@ public class SubscriptionManagerTest {
         assertEquals("P1H", subscribeContext.getDuration());
         assertEquals("http://iotAgent", urlProviderArg.getValue());
 
+        Set<Provider> providers = configuration.getEventTypeIns().get(0).getProviders();
+        for(Provider provider: providers) {
+            assertEquals("12345678", provider.getSubscriptionId());
+            assertNotNull(provider.getSubscriptionDate());
+        }
     }
-
-
 }
