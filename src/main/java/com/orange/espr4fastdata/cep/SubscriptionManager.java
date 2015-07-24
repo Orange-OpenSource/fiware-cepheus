@@ -100,7 +100,7 @@ public class SubscriptionManager {
     public void periodicSubscriptionTask() throws URISyntaxException {
 
         Instant timestampCurrent = Instant.now();
-        logger.debug("Launch periodicSubscriptionTask at {}", dateFormat.format(timestampCurrent));
+        logger.debug("Launch periodicSubscriptionTask at {}", timestampCurrent.toString());
 
         for (EventTypeIn eventType : storedEventTypeIns) {
             SubscribeContext subscribeContext = getSubscriptionContext(eventType);
