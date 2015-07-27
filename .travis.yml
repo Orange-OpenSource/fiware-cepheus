@@ -9,5 +9,5 @@ env:
 
 before_install:
   - gpg --passphrase "${BA2F4249_password}" BA2F4249.asc.gpg
-  - ls -l BA2F4249.asc
+  - ls -l BA2F4249.*
 
