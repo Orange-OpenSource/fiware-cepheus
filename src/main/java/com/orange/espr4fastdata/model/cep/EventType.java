@@ -50,9 +50,8 @@ public class EventType {
     }
 
     public Set<Attribute> getAttributes() {
-        if (attributes == null)
-        {
-            attributes = new HashSet<>();
+        if (attributes == null) {
+            return Collections.emptySet();
         }
         return attributes;
     }

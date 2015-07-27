@@ -10,6 +10,7 @@ package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,6 +68,9 @@ public class ContextAttribute {
     }
 
     public List<ContextMetadata> getMetadata() {
+        if (metadata == null) {
+            return Collections.emptyList();
+        }
         return metadata;
     }
 

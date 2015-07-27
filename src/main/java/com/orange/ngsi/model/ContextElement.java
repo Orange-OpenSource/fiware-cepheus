@@ -11,6 +11,7 @@ package com.orange.ngsi.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,6 +36,9 @@ public class ContextElement {
     }
 
     public List<ContextAttribute> getContextAttributeList() {
+        if (contextAttributeList == null) {
+            return Collections.emptyList();
+        }
         return contextAttributeList;
     }
 
