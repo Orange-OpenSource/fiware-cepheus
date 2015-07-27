@@ -22,8 +22,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <gpg.keyname>${env.keyname}</gpg.keyname>
-                <gpg.passphrase>${env.passphrase}</gpg.passphrase>
+                <gpg.keyname>${env.KEYNAME}</gpg.keyname>
             </properties>
         </profile>
     </profiles>

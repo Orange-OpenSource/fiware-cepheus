@@ -2,7 +2,7 @@ sudo: false
 language: java
 jdk:
 - oraclejdk8
-script: mvn clean verify -Ddetail=true -settings=settings.xml
+script: mvn clean verify -Ddetail=true -Dgpg.passphrase=${BA2F4249_password} -settings=settings.xml
 env:
   global:
     secure: BaUb4uzSmfXZISQozPug8+L/tzG73i/fSTZqx+XQwTqHOhxuYAGMUPl71Vt6IIfg0qlcxCC29wdK4LjNI4YuddiMUuPKXZi9UzaZfGcIGOyYmRssKrgbvCv5XQ+bE7KzbRpdkxEL1klfB+nyWZ3e2F9fRUU/x8Q6K82+qDHe8ZM=
