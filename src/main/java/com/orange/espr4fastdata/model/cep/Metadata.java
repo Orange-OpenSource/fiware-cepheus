@@ -10,26 +10,21 @@ package com.orange.espr4fastdata.model.cep;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import java.util.Collections;
-import java.util.Set;
-
 /**
- * Attribute definition for EventType
+ * Metadata definition for Attributes
  */
-public class Attribute {
+public class Metadata {
 
-    @NotEmpty(message = "All attributes must have a name")
+    @NotEmpty(message = "All metadata must have a name")
     private String name;
 
-    @NotEmpty(message = "All attributes must have a type")
+    @NotEmpty(message = "All metadata must have a type")
     private String type;
 
-    private Set<Metadata> metadata;
-
-    public Attribute() {
+    public Metadata() {
     }
 
-    public Attribute(String name, String type) {
+    public Metadata(String name, String type) {
         this.name = name;
         this.type = type;
     }
@@ -50,31 +45,18 @@ public class Attribute {
         this.type = type;
     }
 
-    public Set<Metadata> getMetadata() {
-        if (metadata == null) {
-            return Collections.emptySet();
-        }
-        return metadata;
-    }
-
-    public void setMetadata(Set<Metadata> metadata) {
-        this.metadata = metadata;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof Attribute))
+        if (!(o instanceof Metadata))
             return false;
 
-        Attribute attribute = (Attribute) o;
+        Metadata metadata = (Metadata) o;
 
-        if (name != null ? !name.equals(attribute.name) : attribute.name != null)
+        if (name != null ? !name.equals(metadata.name) : metadata.name != null)
             return false;
-        if (type != null ? !type.equals(attribute.type) : attribute.type != null)
-            return false;
-        return !(metadata != null ? !metadata.equals(attribute.metadata) : attribute.metadata != null);
+        return !(type != null ? !type.equals(metadata.type) : metadata.type != null);
 
     }
 
@@ -82,7 +64,6 @@ public class Attribute {
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
         return result;
     }
 }

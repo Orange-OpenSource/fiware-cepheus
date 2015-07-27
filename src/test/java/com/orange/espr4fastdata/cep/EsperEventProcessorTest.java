@@ -17,6 +17,8 @@ import com.orange.espr4fastdata.exception.EventProcessingException;
 import com.orange.espr4fastdata.exception.EventTypeNotFoundException;
 import com.orange.espr4fastdata.model.cep.Attribute;
 import com.orange.espr4fastdata.model.cep.Configuration;
+import com.orange.espr4fastdata.model.cep.EventType;
+import com.orange.espr4fastdata.model.cep.EventTypeIn;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.After;
 import org.junit.Assert;
@@ -70,13 +72,13 @@ public class EsperEventProcessorTest {
 
         esperEventProcessor.setConfiguration(util.getBasicConf());
 
-        assertEquals(1, esperEventProcessor.getEventTypeAttributes("TempSensor").size());
-        assertEquals("temp", esperEventProcessor.getEventTypeAttributes("TempSensor").get(0).getName());
-        assertEquals("float", esperEventProcessor.getEventTypeAttributes("TempSensor").get(0).getType());
+        assertEquals(2, esperEventProcessor.getEventTypeAttributes("TempSensor").size());
+        assertEquals("double", esperEventProcessor.getEventTypeAttributes("TempSensor").get("temp").getType());
+        assertEquals("string", esperEventProcessor.getEventTypeAttributes("TempSensor").get("temp_unit").getType());
 
-        assertEquals(1, esperEventProcessor.getEventTypeAttributes("TempSensorAvg").size());
-        assertEquals("avgTemp", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get(0).getName());
-        assertEquals("double", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get(0).getType());
+        assertEquals(2, esperEventProcessor.getEventTypeAttributes("TempSensorAvg").size());
+        assertEquals("double", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get("avgTemp").getType());
+        assertEquals("string", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get("avgTemp_unit").getType());
     }
 
     /**
@@ -154,15 +156,15 @@ public class EsperEventProcessorTest {
             // ok
         }
 
-        List<Attribute> attributes = esperEventProcessor.getEventTypeAttributes("TempSensor");
-        assertEquals(1, attributes.size());
-        assertEquals("temp", attributes.get(0).getName());
-        assertEquals("float", attributes.get(0).getType());
+        Map<String, Attribute> attributes = esperEventProcessor.getEventTypeAttributes("TempSensor");
+        assertEquals(2, attributes.size());
+        assertEquals("double", attributes.get("temp").getType());
+        assertEquals("string", attributes.get("temp_unit").getType());
 
         attributes = esperEventProcessor.getEventTypeAttributes("TempSensorAvg");
-        assertEquals(1, attributes.size());
-        assertEquals("avgTemp", attributes.get(0).getName());
-        assertEquals("double", attributes.get(0).getType());
+        assertEquals(2, attributes.size());
+        assertEquals("double", attributes.get("avgTemp").getType());
+        assertEquals("string", attributes.get("avgTemp_unit").getType());
 
         assertEquals(1, esperEventProcessor.getStatements().size());
         assertEquals(configuration.getStatements().get(0), esperEventProcessor.getStatements().get(0));
@@ -179,7 +181,7 @@ public class EsperEventProcessorTest {
 
         esperEventProcessor.setConfiguration(util.getBasicConf());
 
-        esperEventProcessor.processEvent(util.buildBasicEvent(5.0));
+        esperEventProcessor.processEvent(util.buildBasicEvent((double) 5.0));
 
         ArgumentCaptor<EventBean[]> eventsArg = ArgumentCaptor.forClass(EventBean[].class);
         verify(eventSinkListener).update(eventsArg.capture(), eq(null), any(EPStatement.class), any(EPServiceProvider.class));
@@ -188,13 +190,14 @@ public class EsperEventProcessorTest {
         assertEquals(1, events.length);
         assertEquals(events[0].get("id"), "OUT1");
         assertEquals(5.0, events[0].get("avgTemp"));
+        assertEquals("celcius", events[0].get("avgTemp_unit"));
     }
 
     private void sendXtemperature() {
         Random random = new Random(15);
         for (int i=1; i<100 ; i++) {
             try {
-                esperEventProcessor.processEvent(util.buildBasicEvent((float) (15.5 + random.nextFloat())));
+                esperEventProcessor.processEvent(util.buildBasicEvent((double) (15.5 + random.nextFloat())));
             } catch (EventProcessingException e) {
                 Assert.fail("Not expected EventProcessingException");
             }

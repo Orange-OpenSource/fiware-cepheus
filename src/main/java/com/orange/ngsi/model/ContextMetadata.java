@@ -22,16 +22,15 @@ import java.util.Map;
 public class ContextMetadata {
     private String name;
     private String type;
-    private Map<String,Object> value = new HashMap<String,Object>();
+    private Object value;
 
     public ContextMetadata() {
     }
 
-    @JsonCreator
-    public ContextMetadata(@JsonProperty("name") String name, @JsonProperty("type") String type)
-    {
+    public ContextMetadata(String name, String type, Object value) {
         this.name = name;
         this.type = type;
+        this.value = value;
     }
 
     public String getName() {
@@ -50,27 +49,19 @@ public class ContextMetadata {
         this.type = type;
     }
 
-    public Object get(String name) {
-        return value.get(name);
-    }
-
-    // "any getter" needed for serialization
-    @JsonAnyGetter
-    public Map<String,Object> any() {
+    public Object getValue() {
         return value;
     }
 
-    @JsonAnySetter
-    public void set(String name, Object value1) {
-        value.put(name, value1);
+    public void setValue(Object value) {
+        this.value = value;
     }
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return "ContextMetadata{" +
                 "name='" + name + '\'' +
                 ", type='" + type + '\'' +
-                ", value='" + value + '\'' +
+                ", value=" + value +
                 '}';
     }
 }

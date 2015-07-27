@@ -9,6 +9,7 @@
 package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
+import com.orange.espr4fastdata.cep.EventMapper;
 import com.orange.espr4fastdata.exception.EventProcessingException;
 import com.orange.espr4fastdata.exception.MissingRequestParameterException;
 import com.orange.espr4fastdata.exception.TypeNotFoundException;
@@ -40,6 +41,9 @@ public class NgsiController {
         this.complexEventProcessor = complexEventProcessor;
     }
 
+    @Autowired
+    public EventMapper eventMapper;
+
 
     @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotifyContextResponse> notifyContext(@RequestBody final NotifyContext notify) throws EventProcessingException, TypeNotFoundException, MissingRequestParameterException {
@@ -51,7 +55,7 @@ public class NgsiController {
         for (ContextElementResponse response : notify.getContextElementResponseList()) {
 
             ContextElement element = response.getContextElement();
-            Event event = eventFromContextElement(element);
+            Event event = eventMapper.eventFromContextElement(element);
             complexEventProcessor.processEvent(event);
 
         }
@@ -72,11 +76,11 @@ public class NgsiController {
         for (ContextElement element : update.getContextElements()) {
             StatusCode statusCode;
             try {
-                Event event = eventFromContextElement(element);
+                Event event = eventMapper.eventFromContextElement(element);
                 complexEventProcessor.processEvent(event);
                 statusCode = new StatusCode(CodeEnum.CODE_200);
             } catch (EventProcessingException e) {
-                statusCode = new StatusCode(CodeEnum.CODE_472,"");
+                statusCode = new StatusCode(CodeEnum.CODE_472, "");
                 statusCode.setDetail(e.getMessage());
             }
             responses.add(new ContextElementResponse(element, statusCode));
@@ -85,67 +89,6 @@ public class NgsiController {
         UpdateContextResponse response = new UpdateContextResponse();
         response.setContextElementResponses(responses);
         return response;
-    }
-
-    /**
-     * Convert a NGSI Context Element to a event.
-     * @param contextElement the NGSI Context Element
-     * @return an event to process
-     * @throws EventProcessingException if the conversion fails
-     */
-    private Event eventFromContextElement(ContextElement contextElement) throws EventProcessingException, TypeNotFoundException {
-
-        String type = contextElement.getEntityId().getType();
-
-        // Add all ContextElement attributes and the reserve 'id' attribute
-        HashMap<String, Object> attributes = new HashMap<>();
-
-        attributes.put("id", contextElement.getEntityId().getId());
-        for(ContextAttribute contextAttribute : contextElement.getContextAttributeList()) {
-            String name = contextAttribute.getName();
-            Object value = contextAttribute.getValue();
-
-            if (value == null) {
-                throw new EventProcessingException("Value cannot be null for attribute "+name);
-            }
-            //attributes.put(name, valueForType(value, contextAttribute.getType(), name));
-            attributes.put(name, value);
-        }
-
-        return new Event(type, attributes);
-    }
-
-
-    /**
-     * @param value the value to convert
-     * @param type NGSI type
-     * @param name used for error handling
-     * @return a Java Object for given value
-     * @throws EventProcessingException if the conversion fails
-     */
-    private Object valueForType(String value, String type, String name) throws EventProcessingException {
-        // when type is not defined, handle as string
-        if (type == null) {
-            return value;
-        }
-        try {
-            switch (type) {
-                case "string":
-                    return value;
-                case "boolean":
-                    return new Boolean(value);
-                case "int":
-                    return Integer.valueOf(value);
-                case "float":
-                    return Float.valueOf(value);
-                case "double":
-                    return Double.valueOf(value);
-                default:
-                    throw new EventProcessingException("Unsupported type "+type+" for attribute "+name);
-            }
-        } catch (NumberFormatException e) {
-            throw new EventProcessingException("Failed to parse value "+value+" for attribute "+name);
-        }
     }
 
     private void checkUpdateContext(UpdateContext updateContext) throws MissingRequestParameterException {
@@ -230,7 +173,4 @@ public class NgsiController {
             entityId.setIsPattern(false);
         }
     }
-
-
-
 }

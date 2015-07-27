@@ -115,7 +115,16 @@ public class EventSinkListener implements StatementAwareUpdateListener {
             String name = attribute.getName();
             Object value = eventBean.get(name);
             if (value != null) {
-                contextAttributes.add(new ContextAttribute(name, attribute.getType(), value));
+                ContextAttribute contextAttribute = new ContextAttribute(name, attribute.getType(), value);
+                // Add each metadata as a ContextMetadata of the attribute
+                for (Metadata metadata : attribute.getMetadata()) {
+                    Object metaValue = eventBean.get(name+"_"+metadata.getName());
+                    if (metaValue != null) {
+                        ContextMetadata contextMetadata = new ContextMetadata(metadata.getName(), metadata.getType(), metaValue);
+                        contextAttribute.addMetadata(contextMetadata);
+                    }
+                }
+                contextAttributes.add(contextAttribute);
             }
         }
 

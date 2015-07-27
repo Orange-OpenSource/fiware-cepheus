@@ -8,36 +8,41 @@
 
 package com.orange.espr4fastdata.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by pborscia on 04/06/2015.
+ * Event sent to the Esper CEP engine.
+ * An event is a collection of properties defined by a type.
  */
 public class Event {
-    Map attributes;
-    String type;
+
+    private Map<String, Object> values;
+    private String type;
 
     public Event() {
     }
 
-    public Event(String type, Map attributes) {
+    public Event(String type) {
         this.type = type;
-        this.attributes = attributes;
     }
 
-    public Map getAttributes() { return attributes; }
+    public String getType() {
+        return type;
+    }
 
-    public void setAttributes(Map attributes) { this.attributes = attributes; }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-    public String getType() { return type; }
+    public void addValue(String name, Object value) {
+        if (values == null) {
+            values = new HashMap<>();
+        }
+        values.put(name, value);
+    }
 
-    public void setType(String type) { this.type = type;}
-
-    @Override
-    public String toString() {
-        return "Event{" +
-                "attributes=" + attributes +
-                ", type='" + type + '\'' +
-                '}';
+    public Map<String, Object> getValues() {
+        return values;
     }
 }

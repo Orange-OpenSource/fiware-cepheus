@@ -38,6 +38,9 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     private Configuration configuration;
 
     @Autowired
+    public EventMapper eventMapper;
+
+    @Autowired
     public EventSinkListener eventSinkListener;
 
     public EsperEventProcessor() {
@@ -135,7 +138,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         logger.debug("Event sent to Esper {}", event.toString());
 
         try {
-            this.epServiceProvider.getEPRuntime().sendEvent(event.getAttributes(), event.getType());
+            this.epServiceProvider.getEPRuntime().sendEvent(event.getValues(), event.getType());
         } catch (com.espertech.esper.client.EPException e) {
             throw new EventProcessingException(e.getMessage());
         }
@@ -147,15 +150,15 @@ public class EsperEventProcessor implements ComplexEventProcessor {
      * @return
      * @throws EventTypeNotFoundException
      */
-    public List<Attribute> getEventTypeAttributes(String eventTypeName) throws EventTypeNotFoundException {
-        List<Attribute> attributes = new ArrayList<Attribute>();
+    public Map<String, Attribute> getEventTypeAttributes(String eventTypeName) throws EventTypeNotFoundException {
+        Map<String, Attribute> attributes = new HashMap<>();
 
         com.espertech.esper.client.EventType eventType = epServiceProvider.getEPAdministrator().getConfiguration().getEventType(eventTypeName);
         if (eventType != null){
             for (String name : eventType.getPropertyNames()) {
                 if (!("id".equals(name))) {
                     String type = eventType.getPropertyType(name).getSimpleName().toLowerCase();
-                    attributes.add(new Attribute(name, type));
+                    attributes.put(name, new Attribute(name, type));
                 }
             }
         } else {
@@ -213,14 +216,8 @@ public class EsperEventProcessor implements ComplexEventProcessor {
 
         for (EventType eventType : eventTypesToAdd) {
             String eventTypeName = eventType.getType();
-            // Add all event type properties, plus the reserved id attribute
-            Properties properties = new Properties();
-            properties.setProperty("id", "string");
-            for (Attribute attribute : eventType.getAttributes()) {
-                properties.setProperty(attribute.getName(), attribute.getType());
-            }
-            // Add event type
-            operations.addEventType(eventTypeName, properties);
+            // Add event type mapped to esper representation
+            operations.addEventType(eventTypeName, eventMapper.esperTypeFromEventType(eventType));
         }
     }
 
