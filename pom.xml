@@ -105,7 +105,7 @@
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.6</version>
                 <configuration>
-                    <ascDirectory>${project.build.directory}</ascDirectory>
+                    <ascDirectory>${project.basedir}</ascDirectory>
                 </configuration>
                 <executions>
                     <execution>
