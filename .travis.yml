@@ -8,4 +8,5 @@ env:
     secure: BaUb4uzSmfXZISQozPug8+L/tzG73i/fSTZqx+XQwTqHOhxuYAGMUPl71Vt6IIfg0qlcxCC29wdK4LjNI4YuddiMUuPKXZi9UzaZfGcIGOyYmRssKrgbvCv5XQ+bE7KzbRpdkxEL1klfB+nyWZ3e2F9fRUU/x8Q6K82+qDHe8ZM=
 
 before_install:
-  - echo $BA2F4249_password | gpg BA2F4249.asc.gpg
+  - gpg --passphrase "${$BA2F4249_password}" BA2F4249.asc.gpg
+  
