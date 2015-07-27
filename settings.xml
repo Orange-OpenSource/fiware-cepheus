@@ -22,7 +22,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <gpg.keyname>${env.KEYNAME}</gpg.keyname>
+                <gpg.keyname>BA2F4249</gpg.keyname>
             </properties>
         </profile>
     </profiles>
