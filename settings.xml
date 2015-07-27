@@ -1,0 +1,30 @@
+<!--
+  Copyright (C) 2015 Orange
+
+  This software is distributed under the terms and conditions of the 'GNU GENERAL PUBLIC LICENSE
+  Version 2' license which can be found in the file 'LICENSE.txt' in this package distribution or
+  at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
+-->
+
+<settings>
+    <servers>
+        <server>
+            <id>ossrh</id>
+            <username>${env.CENTRAL_USER}</username>
+            <password>${env.CENTRAL_PASSWORD}</password>
+
+        </server>
+    </servers>
+
+    <profiles>
+        <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <gpg.keyname>${env.keyname}</gpg.keyname>
+                <gpg.passphrase>${env.passphrase}</gpg.passphrase>
+            </properties>
+        </profile>
+    </profiles>
+</settings>

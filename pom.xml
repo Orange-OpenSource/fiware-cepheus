@@ -3,9 +3,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.orange</groupId>
+    <groupId>com.orange.espr4fastdata</groupId>
     <artifactId>espR4FastData</artifactId>
     <version>4.4.3-SNAPSHOT</version>
+    <name>espR4fastData for fiware</name>
+    <description>Fiware project bringing Complex Event Processing capability to NGSI gateways </description>
+    <url>https://github.com/Orange-OpenSource/EspR4FastData</url>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -98,6 +101,21 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.2.9</version>
@@ -130,4 +148,61 @@
             <url>https://repo.spring.io/libs-release</url>
         </pluginRepository>
     </pluginRepositories>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <connection>
+            scm:git:https://github.com/Orange-OpenSource/EspR4FastData.git
+        </connection>
+        <developerConnection>
+            scm:git:https://github.com/Orange-OpenSource/EspR4FastData.git
+        </developerConnection>
+        <url>https://github.com/Orange-OpenSource/EspR4FastData</url>
+    </scm>
+    <licenses>
+        <license>
+            <name>GNU GENERAL PUBLIC LICENSE Version 2</name>
+            <url>http://www.gnu.org/licenses/gpl-2.0-standalone.html</url>
+        </license>
+    </licenses>
+    <organization>
+        <name>Orange</name>
+        <url>http://www.orange.com</url>
+    </organization>
+    <developers>
+        <developer>
+            <id>marc</id>
+            <name>Marc Capdevielle</name>
+            <email>marc.capdevielle@orange.com</email>
+            <organization>Orange</organization>
+            <organizationUrl>http://www.orange.com</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>christophe</id>
+            <name>Christophe Azemar</name>
+            <email>christophe.azemar@orange.com</email>
+            <organization>Orange</organization>
+            <organizationUrl>http://www.orange.com</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>pascale</id>
+            <name>Pascale Borscia</name>
+            <email>pascale.borscia@orange.com</email>
+            <organization>Orange</organization>
+            <organizationUrl>http://www.orange.com</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
 </project>
