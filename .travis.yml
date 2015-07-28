@@ -2,10 +2,8 @@ sudo: false
 language: java
 jdk:
 - oraclejdk8
-script: mvn clean deploy -Ddetail=true -Dgpg.skip=true
-  -settings=settings.xml
+script: mvn clean deploy -Ddetail=true -settings=settings.xml
 env:
   global:
-  - secure: I5rDCpsr5q1WUo0eDhuAfXORVCb5Utm7C69X+JnRQcuexuaV7fBVD5FEEqZ+Aq0j8/DzHQFW/hcjnx258EM65+eGk+p3T1LvpdrEonWEDRjxyAfZIz6cmDqGc1E2XzLnObCeSuTR+WX+9W6vK8O+hnr/MBR+LyYKpaZAWcHDS3g=
   - secure: WjfswfDCzXiTh816mYwmWCeL17Ck8QOjxY2jYXnL5MHS77/LjlKYxi5xBVtQcdS4/eXR2E0ezbh8/P1/VsaNl2SeEVU1sHOVMZa6fzszHHsNHMNbsCgEt0FRPAy7vnYHfYuIsP2FsQhyd2kB1oqL/lsdQG8BVctExFpxBKYnGu8=
   - secure: MZ4QeabfHFQMBULkqvQBE3QWGDZMYlmnSlGC7icBF0ndZTxjYghXWsDu+f99kbGTnZy/N3EGSLhsuXzozFKp2rlAWZSPuyPAB8qx3auoFlDmzHKE9e/1UoE/Fakc6x2H0mzjdOu1bi+5yCrWVBMhac8UagRnuOhvhNCG9nQKfbg=
