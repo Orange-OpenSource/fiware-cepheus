@@ -22,7 +22,10 @@ public class Util {
 
     public Configuration getBasicConf() {
         Configuration configuration = new Configuration();
-        configuration.setHost("http://localhost:8080");
+        try {
+            configuration.setHost(new URI("http://localhost:8080"));
+        } catch (URISyntaxException e) {
+        }
 
         // eventIN 1
         EventTypeIn eventTypeIn = new EventTypeIn("S.*", "TempSensor", true);

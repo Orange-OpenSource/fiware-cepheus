@@ -9,10 +9,10 @@
 package com.orange.espr4fastdata.model.cep;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -20,8 +20,8 @@ import java.util.List;
  */
 public class Configuration {
 
-    @NotEmpty(message = "Configuration.host must not be empty")
-    private String host;
+    @NotNull(message = "Configuration.host must not be empty")
+    private URI host;
 
     @Valid
     @NotNull(message = "Configuration.in must contain a list of incoming events")
@@ -39,11 +39,11 @@ public class Configuration {
     public Configuration() {
     }
 
-    public String getHost() {
+    public URI getHost() {
         return host;
     }
 
-    public void setHost(String host) {
+    public void setHost(URI host) {
         this.host = host;
     }
 
