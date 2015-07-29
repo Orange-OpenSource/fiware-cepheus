@@ -30,76 +30,38 @@ import javax.servlet.http.HttpServletRequest;
 @ControllerAdvice("com.orange.espr4fastdata.controller")
 public class NgsiHandlerException extends ResponseEntityExceptionHandler {
 
-
     private static Logger logger = LoggerFactory.getLogger(NgsiHandlerException.class);
 
-
-    //@ExceptionHandler({Exception.class, Throwable.class})
     @ExceptionHandler({MissingRequestParameterException.class})
-    public ResponseEntity<Object> missingParameter(HttpServletRequest req, Exception exception) {
+    public ResponseEntity<Object> missingParameter(HttpServletRequest req, MissingRequestParameterException missingException) {
+        logger.error("Missing parameter: {}", missingException.getParameterName());
 
-        logger.info("Exception levee {}",exception);
-
-
-        MissingRequestParameterException missing = (MissingRequestParameterException) exception;
-
-        Object entity = entityForPath(req.getRequestURI(), new StatusCode(CodeEnum.CODE_471, missing.getParameterName(), missing.getParameterType()));
+        Object entity = entityForPath(req.getRequestURI(), new StatusCode(CodeEnum.CODE_471, missingException.getParameterName(), missingException.getParameterType()));
         return new ResponseEntity<Object>(entity, HttpStatus.OK);
-
     }
 
     @ExceptionHandler({TypeNotFoundException.class})
-    public ResponseEntity<Object> invalidParameter(HttpServletRequest req, Exception exception) {
-
-        logger.info("Exception levee {}",exception);
-
-
-        TypeNotFoundException typeNotFoundException = (TypeNotFoundException) exception;
+    public ResponseEntity<Object> invalidParameter(HttpServletRequest req, TypeNotFoundException typeNotFoundException) {
+        logger.error("Type not found: {}", typeNotFoundException.getTypeName());
 
         Object entity = entityForPath(req.getRequestURI(), new StatusCode(CodeEnum.CODE_472, typeNotFoundException.getTypeName()));
         return new ResponseEntity<Object>(entity, HttpStatus.OK);
-
     }
 
     /**
      * Response for request error. NGSI requests require custom responses.
      */
     private Object entityForPath(String path, StatusCode statusCode) {
-        /*if (path.contains("/registerContext")) {
-            RegisterContextResponse r = new RegisterContextResponse();
-            r.setErrorCode(statusCode);
-            return r;
-        } else if (path.contains("/subscribeContext")) {
-            SubscribeContextResponse r = new SubscribeContextResponse();
-            SubscribeError e = new SubscribeError();
-            e.setErrorCode(statusCode);
-            r.setSubscribeError(e);
-            return r;
-        } else if (path.contains("/unsubscribeContext")) {
-            UnsubscribeContextResponse r = new UnsubscribeContextResponse();
-            r.setStatusCode(statusCode); // WTF?
-            return r;
-        } else if (path.contains("/updateContext")) {
-            UpdateContextResponse r = new UpdateContextResponse();
-            r.setErrorCode(statusCode);
-            return r;
-        } else if (path.contains("/queryContext")) {
-            QueryContextResponse r = new QueryContextResponse();
-            r.setErrorCode(statusCode);
-            return r;
-        }*/
 
         if (path.contains("/notifyContext")) {
-            NotifyContextResponse r = new NotifyContextResponse(statusCode);
-            return r;
+            return new NotifyContextResponse(statusCode);
         } else if (path.contains("/updateContext")) {
-            UpdateContextResponse r = new UpdateContextResponse();
-            r.setErrorCode(statusCode);
-            return r;
+            UpdateContextResponse updateContextResponse = new UpdateContextResponse();
+            updateContextResponse.setErrorCode(statusCode);
+            return updateContextResponse;
         }
 
         // All other non NGSI requests send back NotifyContextResponse
-        NotifyContextResponse r = new NotifyContextResponse(statusCode);
-        return r;
+        return new NotifyContextResponse(statusCode);
     }
 }
