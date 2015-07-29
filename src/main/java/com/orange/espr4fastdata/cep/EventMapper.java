@@ -20,23 +20,6 @@ import java.util.Map;
 @Component
 public class EventMapper {
 
-    public Class classForType(String attributeType) {
-        switch (attributeType) {
-            case "string":
-                return String.class;
-            case "int":
-                return int.class;
-            case "float":
-                return float.class;
-            case "double":
-                return double.class;
-            case "boolean":
-                return boolean.class;
-            default:
-                return Object.class;
-        }
-    }
-
     /**
      * Map an EventType go an Esper event type.
      * All properties (metadata, attributes and id) are defined at the same level.
@@ -100,6 +83,23 @@ public class EventMapper {
         event.addValue("id", id);
 
         return event;
+    }
+
+    private Class classForType(String attributeType) {
+        switch (attributeType) {
+            case "string":
+                return String.class;
+            case "int":
+                return int.class;
+            case "float":
+                return float.class;
+            case "double":
+                return double.class;
+            case "boolean":
+                return boolean.class;
+            default:
+                return Object.class;
+        }
     }
 
     /**
