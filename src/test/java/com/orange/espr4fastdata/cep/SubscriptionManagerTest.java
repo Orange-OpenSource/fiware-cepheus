@@ -12,7 +12,6 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EventBean;
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.exception.SubscribeContextRequestException;
 import com.orange.espr4fastdata.model.cep.Attribute;
 import com.orange.espr4fastdata.model.cep.Configuration;
 import com.orange.espr4fastdata.model.cep.EventTypeOut;
@@ -67,7 +66,7 @@ public class SubscriptionManagerTest {
     }
 
     @Test
-    public void setConfigurationOK() throws URISyntaxException, SubscribeContextRequestException {
+    public void setConfigurationOK() throws URISyntaxException {
 
         Configuration configuration = util.getBasicConf();
         subscriptionManager.setConfiguration(configuration);

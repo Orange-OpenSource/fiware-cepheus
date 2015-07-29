@@ -8,7 +8,6 @@
 
 package com.orange.espr4fastdata.cep;
 
-import com.orange.espr4fastdata.exception.SubscribeContextRequestException;
 import com.orange.espr4fastdata.model.cep.*;
 import com.orange.ngsi.client.SubscribeContextRequest;
 import com.orange.ngsi.model.EntityId;
@@ -126,25 +125,25 @@ public class SubscriptionManager {
                 //Send subscription if subscription is a new subscription or we do not receive a response (subscriptionDate is null)
                 //Send subscription if deadline is passed
                 if ((subscriptionDate == null) || (deadlineIsPassed)) {
-                    try {
-                        subscribeContextRequest.postSubscribeContextRequest(subscribeContext, provider.getUrl(), new SubscribeContextRequest.SubscribeContextResponseListener() {
-                            @Override
-                            public void onError(SubscribeError subscribeError) {
-                                String message = "SubscribeError received: " + subscribeError.getErrorCode().getCode()
-                                        + " | " + subscribeError.getErrorCode().getDetail();
+                    subscribeContextRequest.postSubscribeContextRequest(subscribeContext, provider.getUrl(), new SubscribeContextRequest.SubscribeContextResponseListener() {
+                        @Override
+                        public void onError(SubscribeError subscribeError, Throwable t) {
+                            if (subscribeError != null) {
+                                String message = "SubscribeError received: " + subscribeError.getErrorCode().getCode() + " | " + subscribeError
+                                        .getErrorCode().getDetail();
                                 logger.warn(message);
+                            } else {
+                                logger.warn("SubscribeError", t);
                             }
+                        }
 
-                            @Override
-                            public void onSuccess(SubscribeResponse subscribeResponse) {
-                                provider.setSubscriptionDate(Instant.now());
-                                provider.setSubscriptionId(subscribeResponse.getSubscriptionId());
-                                subscriptionIds.add(provider.getSubscriptionId());
-                            }
-                        });
-                    } catch (SubscribeContextRequestException e) {
-                        logger.error("Can not send SubscribeContextRequest because : {}", e.getMessage());
-                    }
+                        @Override
+                        public void onSuccess(SubscribeResponse subscribeResponse) {
+                            provider.setSubscriptionDate(Instant.now());
+                            provider.setSubscriptionId(subscribeResponse.getSubscriptionId());
+                            subscriptionIds.add(provider.getSubscriptionId());
+                        }
+                    });
                 }
             }
         }
