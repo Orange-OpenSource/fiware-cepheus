@@ -53,7 +53,7 @@ public class JsonPersistence implements Persistence {
     @Override
     public Configuration loadConfiguration() throws PersistenceException {
 
-        logger.debug("Load Configuration from {}", this.ConfigurationFileDirectory );
+        logger.info("Load configuration from {}", this.ConfigurationFileDirectory );
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
