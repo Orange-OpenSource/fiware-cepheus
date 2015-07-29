@@ -9,6 +9,7 @@
 package com.orange.espr4fastdata;
 
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
+import com.orange.espr4fastdata.cep.SubscriptionManager;
 import com.orange.espr4fastdata.exception.ConfigurationException;
 import com.orange.espr4fastdata.exception.PersistenceException;
 import com.orange.espr4fastdata.persistence.Persistence;
@@ -50,6 +51,11 @@ public class InitNoConfTest {
             }
             return p;
         }
+
+        @Bean
+        public SubscriptionManager subscriptionManager() {
+            return Mockito.mock(SubscriptionManager.class);
+        }
     }
 
     @Autowired
@@ -61,16 +67,22 @@ public class InitNoConfTest {
     @Autowired
     public Persistence persistence;
 
+    @Autowired
+    public SubscriptionManager subscriptionManager;
+
     /**
      * Check that CEP engine is not called when no configuration avail
      */
     @Test public void initTest() throws ConfigurationException {
         verify(complexEventProcessor, never()).setConfiguration(anyObject());
+        verify(subscriptionManager, never()).setConfiguration(anyObject());
     }
 
     @After
     public void resetMock() {
         reset(complexEventProcessor);
         reset(persistence);
+        reset(subscriptionManager);
+
     }
 }

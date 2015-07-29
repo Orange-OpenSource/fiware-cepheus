@@ -10,13 +10,16 @@ package com.orange.espr4fastdata;
 
 import com.orange.espr4fastdata.cep.EsperEventProcessor;
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
+import com.orange.espr4fastdata.cep.SubscriptionManager;
 import com.orange.espr4fastdata.persistence.JsonPersistence;
 import com.orange.espr4fastdata.persistence.Persistence;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @SpringBootApplication
 @ComponentScan("com.orange")
@@ -38,7 +41,17 @@ public class Application {
     }
 
     @Bean
-    public Init init(ComplexEventProcessor complexEventProcessor, Persistence persistence) {
-        return new Init(complexEventProcessor, persistence);
+    public SubscriptionManager subscriptionManager() {
+        return new SubscriptionManager();
+    }
+
+    @Bean
+    public TaskScheduler taskScheduler() {
+        return new ThreadPoolTaskScheduler();
+    }
+
+    @Bean
+    public Init init(ComplexEventProcessor complexEventProcessor, Persistence persistence, SubscriptionManager subscriptionManager) {
+        return new Init(complexEventProcessor, persistence, subscriptionManager);
     }
 }

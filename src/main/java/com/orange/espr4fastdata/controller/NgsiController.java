@@ -10,6 +10,7 @@ package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import com.orange.espr4fastdata.cep.EventMapper;
+import com.orange.espr4fastdata.cep.SubscriptionManager;
 import com.orange.espr4fastdata.exception.EventProcessingException;
 import com.orange.espr4fastdata.exception.MissingRequestParameterException;
 import com.orange.espr4fastdata.exception.TypeNotFoundException;
@@ -44,11 +45,19 @@ public class NgsiController {
     @Autowired
     public EventMapper eventMapper;
 
+    @Autowired
+    public SubscriptionManager subscriptionManager;
 
     @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotifyContextResponse> notifyContext(@RequestBody final NotifyContext notify) throws EventProcessingException, TypeNotFoundException, MissingRequestParameterException {
 
         checkNotifyContext(notify);
+
+        // Only handle notification if it has a valid subscription
+        if (!subscriptionManager.isSubscriptionValid(notify.getSubscriptionId())) {
+            logger.warn("notifyContext request: invalid subscription id {} / {}", notify.getSubscriptionId(), notify.getOriginator());
+
+        }
 
         List<ContextElementResponse> responses = new LinkedList<>();
 
@@ -153,7 +162,6 @@ public class NgsiController {
         }
 
         checkEntityId(contextElement.getEntityId());
-
 
     }
 

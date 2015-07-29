@@ -9,6 +9,7 @@
 package com.orange.espr4fastdata;
 
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
+import com.orange.espr4fastdata.cep.SubscriptionManager;
 import com.orange.espr4fastdata.exception.ConfigurationException;
 import com.orange.espr4fastdata.exception.PersistenceException;
 import com.orange.espr4fastdata.model.cep.Configuration;
@@ -27,13 +28,14 @@ public class Init {
     private static Logger logger = LoggerFactory.getLogger(Init.class);
 
     @Autowired
-    public Init(ComplexEventProcessor complexEventProcessor, Persistence persistence) {
+    public Init(ComplexEventProcessor complexEventProcessor, Persistence persistence, SubscriptionManager subscriptionManager) {
 
         // Try restoring the persisted configuration if any
         try {
             if (persistence.checkConfigurationDirectory()) {
                 Configuration configuration = persistence.loadConfiguration();
                 complexEventProcessor.setConfiguration(configuration);
+                subscriptionManager.setConfiguration(configuration);
             }
         } catch(PersistenceException | ConfigurationException e) {
             logger.error("Failed to load or apply persisted configuration", e);

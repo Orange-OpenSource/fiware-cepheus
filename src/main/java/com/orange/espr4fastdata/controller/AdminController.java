@@ -8,6 +8,7 @@
 
 package com.orange.espr4fastdata.controller;
 
+import com.orange.espr4fastdata.cep.SubscriptionManager;
 import com.orange.espr4fastdata.exception.PersistenceException;
 import com.orange.ngsi.model.StatusCode;
 import com.orange.espr4fastdata.persistence.Persistence;
@@ -36,21 +37,22 @@ public class AdminController {
 
     private static Logger logger = LoggerFactory.getLogger(AdminController.class);
 
-    private ComplexEventProcessor complexEventProcessor;
-
-    private Persistence persistence;
+    @Autowired
+    public ComplexEventProcessor complexEventProcessor;
 
     @Autowired
-    public AdminController(ComplexEventProcessor complexEventProcessor, Persistence persistence) {
-        this.complexEventProcessor = complexEventProcessor;
-        this.persistence = persistence;
-    }
+    public Persistence persistence;
+
+    @Autowired
+    public SubscriptionManager subscriptionManager;
 
     @RequestMapping(value = "/config", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> configuration(@Valid @RequestBody final Configuration configuration) throws ConfigurationException, PersistenceException {
         logger.debug("Updating configuration: {}", configuration);
 
         complexEventProcessor.setConfiguration(configuration);
+
+        subscriptionManager.setConfiguration(configuration);
 
         persistence.saveConfiguration(configuration);
 
@@ -111,13 +113,5 @@ public class AdminController {
             statusCode.setDetail(exception.getCause().getMessage());
         }
         return new ResponseEntity<>(statusCode, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    public void setPersistence(Persistence persistence) {
-        this.persistence = persistence;
-    }
-
-    public void setComplexEventProcessor(ComplexEventProcessor complexEventProcessor) {
-        this.complexEventProcessor = complexEventProcessor;
     }
 }

@@ -8,13 +8,9 @@
 
 package com.orange.espr4fastdata.cep;
 
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EventBean;
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.model.cep.Attribute;
 import com.orange.espr4fastdata.model.cep.Configuration;
-import com.orange.espr4fastdata.model.cep.EventTypeOut;
 import com.orange.espr4fastdata.model.cep.Provider;
 import com.orange.espr4fastdata.util.Util;
 import com.orange.ngsi.client.SubscribeContextRequest;
@@ -23,33 +19,29 @@ import com.orange.ngsi.model.SubscribeResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.net.URISyntaxException;
-import java.time.Instant;
-import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
- * Created by pborscia on 23/07/2015.
+ * Tests for SubscriptionManager
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 public class SubscriptionManagerTest {
+
+    @Mock
+    TaskScheduler taskScheduler;
 
     @Mock
     SubscribeContextRequest subscribeContextRequest;
@@ -66,13 +58,19 @@ public class SubscriptionManagerTest {
     }
 
     @Test
-    public void setConfigurationOK() throws URISyntaxException {
+    public void setConfigurationOK() {
+
+        // Mock the task scheduler and capture the runnable
+        ArgumentCaptor<Runnable> runnableArg = ArgumentCaptor.forClass(Runnable.class);
+        when(taskScheduler.scheduleWithFixedDelay(runnableArg.capture(), anyLong())).thenReturn(Mockito.mock(ScheduledFuture.class));
 
         Configuration configuration = util.getBasicConf();
         subscriptionManager.setConfiguration(configuration);
 
-        ArgumentCaptor<EventBean[]> eventsArg = ArgumentCaptor.forClass(EventBean[].class);
+        // Execute scheduled runnable
+        runnableArg.getValue().run();
 
+        ArgumentCaptor<EventBean[]> eventsArg = ArgumentCaptor.forClass(EventBean[].class);
         ArgumentCaptor<SubscribeContext> subscribeContextArg = ArgumentCaptor.forClass(SubscribeContext.class);
         ArgumentCaptor<String> urlProviderArg = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<SubscribeContextRequest.SubscribeContextResponseListener> listenerArg = ArgumentCaptor.forClass(SubscribeContextRequest.SubscribeContextResponseListener.class);

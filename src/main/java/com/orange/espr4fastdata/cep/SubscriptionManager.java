@@ -18,15 +18,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 /**
  * SubscriptionManager manage subscriptions of EventTypeIn to provider
@@ -39,84 +41,127 @@ public class SubscriptionManager {
 
     private static Logger logger = LoggerFactory.getLogger(SubscriptionManager.class);
 
-    private HashSet<String> subscriptionIds = new HashSet<>();
+    /**
+     * Inner class for concurrent subscriptions tracking using a RW lock.
+     */
+    private class Subscriptions {
+        private HashSet<String> subscriptionIds = new HashSet<>();
+        private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
+        public boolean isSubscriptionValid(String subscriptionId) {
+            readWriteLock.readLock().lock();
+            boolean result = subscriptionIds.contains(subscriptionId);
+            readWriteLock.readLock().unlock();
+            return result;
+        }
+
+        private void addSubscription(String subscriptionId) {
+            readWriteLock.writeLock().lock();
+            subscriptionIds.add(subscriptionId);
+            readWriteLock.writeLock().unlock();
+        }
+
+        private void removeSubscription(String subscriptionId) {
+            readWriteLock.writeLock().lock();
+            subscriptionIds.remove(subscriptionId);
+            readWriteLock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Periodicity of the subscription task. Default: every 5 min.
+     * Must be smaller than the subscription duration !
+     */
+    @Value("${subscriptionManager.periodicity:300000}")
+    private long subscriptionPeriodicity;
+
+    /**
+     * Duration of a NGSI subscription as text.
+     */
     @Value("${subscriptionManager.duration:P1H}")
-    private String duration;
+    private String subscriptionDuration;
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+    @Autowired
+    private SubscribeContextRequest subscribeContextRequest;
 
-    private List<EventTypeIn> storedEventTypeIns = new LinkedList<>();
+    @Autowired
+    private TaskScheduler taskScheduler;
+
+    private List<EventTypeIn> eventTypeIns = Collections.emptyList();
+
+    private Subscriptions subscriptions = new Subscriptions();
+
+    private ScheduledFuture scheduledFuture;
 
     private URI hostURI;
 
-    @Autowired
-    SubscribeContextRequest subscribeContextRequest;
+    /**
+     * Update subscription to new provider of the incomming events defined in the Configuration
+     *
+     * @param configuration the new configuration
+     */
+    public void setConfiguration(Configuration configuration) {
+        hostURI = configuration.getHost();
 
-    public void setConfiguration(Configuration configuration) throws URISyntaxException {
+        // Use a new subscription set on each new configuration
+        // this prevents active subscription tasks to add subscription ids from the previous configuration
+        // this will also copy the subscription information of the previous configuration to this new configuration
+        subscriptions = migrateSubscriptions(configuration);
 
-        Collection<EventTypeIn> previousEventTypesIn = storedEventTypeIns;
-        Collection<EventTypeIn> newEventTypesIn = configuration.getEventTypeIns();
-
-        // find the eventTypeIns that have been deleted
-        List<EventTypeIn> removedEventTypesIn = new LinkedList<>(previousEventTypesIn);
-        removedEventTypesIn.removeAll(newEventTypesIn);
-
-        // find the new eventTypeIns
-        List<EventTypeIn> addedEventTypes = new LinkedList<>(newEventTypesIn);
-        addedEventTypes.removeAll(previousEventTypesIn);
-
-        subscriptionIds = new HashSet<>();
-        hostURI = new URI(configuration.getHost());
-
-        // transfer the informations of subscription to those who remain
-        for(EventTypeIn eventTypeIn : configuration.getEventTypeIns()) {
-            EventTypeIn storedEventTypeIn = getStoredEventIn(eventTypeIn);
-            if (storedEventTypeIn != null) {
-                for(Provider provider : eventTypeIn.getProviders()) {
-                    Provider storedProvider = getStoredProvider(storedEventTypeIn, provider);
-                    if (storedProvider != null) {
-                        provider.setSubscriptionDate(storedProvider.getSubscriptionDate());
-                        provider.setSubscriptionId(storedProvider.getSubscriptionId());
-                        subscriptionIds.add(provider.getSubscriptionId());
-                    }
-                }
-            }
-        }
-
-        storedEventTypeIns = configuration.getEventTypeIns();
+        // Keep a reference to configuration for next migration
+        eventTypeIns = configuration.getEventTypeIns();
 
         // TODO : send unsubscribeContext with removedEventTypesIn
 
-        //launch subscription for new eventType and also subscription not valid
-        periodicSubscriptionTask();
+        // force launch of subscription process for new or invalid subscriptions
+        scheduleSubscriptionTask();
     }
 
-    //fixedDelay : time between the end of the last invocation and the start of the next
-    //initialDelay is fixed because we do not want the task execution starts this method before to set configuration
-    @Scheduled(fixedDelayString = "${subscriptionManager.fixedDelay:300000}",
-            initialDelayString = "${subscriptionManager.initialDelay:300000}")
-    public void periodicSubscriptionTask() throws URISyntaxException {
+    /**
+     * Check that a given subscription is valid
+     *
+     * @param subscriptionId the id of subscription
+     * @return true if subscription is valid
+     */
+    public boolean isSubscriptionValid(String subscriptionId) {
+        return subscriptions.isSubscriptionValid(subscriptionId);
+    }
 
-        Instant timestampCurrent = Instant.now();
-        logger.debug("Launch periodicSubscriptionTask at {}", timestampCurrent.toString());
+    /**
+     * Cancel any previous schedule, run subscription task immediately and schedule it again.
+     */
+    private void scheduleSubscriptionTask() {
+        if (scheduledFuture != null) {
+            scheduledFuture.cancel(false);
+        }
+        scheduledFuture = taskScheduler.scheduleWithFixedDelay(this::periodicSubscriptionTask, subscriptionPeriodicity);
+    }
 
-        for (EventTypeIn eventType : storedEventTypeIns) {
-            SubscribeContext subscribeContext = getSubscriptionContext(eventType);
+    private void periodicSubscriptionTask() {
+
+        Instant now = Instant.now();
+        Instant nextSubscriptionTaskDate = now.plusMillis(subscriptionPeriodicity);
+        logger.info("Launch of the periodic subscription task at {}", now.toString());
+
+        // Futures will use the current subscription list.
+        // So that they will not add old subscriptions to a new configuration.
+        Subscriptions subscriptions = this.subscriptions;
+
+        for (EventTypeIn eventType : eventTypeIns) {
+            SubscribeContext subscribeContext = null;
             for (Provider provider : eventType.getProviders()) {
-                Boolean deadlineIsPassed = false;
+
+                boolean deadlineIsPassed = false;
                 Instant subscriptionDate = provider.getSubscriptionDate();
                 if (subscriptionDate != null) {
-                    Instant oneDurationLater = subscriptionDate.plus(Duration.parse(duration));
-                    Duration delay = Duration.between(timestampCurrent, oneDurationLater);
-
-                    //check if subscription is valid : check if deadline is passed ?
-                    if (delay.isNegative() || delay.isZero()) {
+                    Instant subscriptionEndDate = subscriptionDate.plus(Duration.parse(subscriptionDuration));
+                    // check if deadline is passed
+                    if (nextSubscriptionTaskDate.compareTo(subscriptionEndDate) >= 0) {
                         deadlineIsPassed = true;
                         String subscriptionId = provider.getSubscriptionId();
                         // if delay is passed then clear the subscription info in provider et suppress subscription
                         if (subscriptionId != null) {
-                            subscriptionIds.remove(subscriptionId);
+                            subscriptions.removeSubscription(subscriptionId);
                             provider.setSubscriptionId(null);
                             provider.setSubscriptionDate(null);
                         }
@@ -124,62 +169,75 @@ public class SubscriptionManager {
                 }
                 //Send subscription if subscription is a new subscription or we do not receive a response (subscriptionDate is null)
                 //Send subscription if deadline is passed
-                if ((subscriptionDate == null) || (deadlineIsPassed)) {
-                    subscribeContextRequest.postSubscribeContextRequest(subscribeContext, provider.getUrl(), new SubscribeContextRequest.SubscribeContextResponseListener() {
-                        @Override
-                        public void onError(SubscribeError subscribeError, Throwable t) {
-                            if (subscribeError != null) {
-                                String message = "SubscribeError received: " + subscribeError.getErrorCode().getCode() + " | " + subscribeError
-                                        .getErrorCode().getDetail();
-                                logger.warn(message);
-                            } else {
-                                logger.warn("SubscribeError", t);
-                            }
-                        }
-
-                        @Override
-                        public void onSuccess(SubscribeResponse subscribeResponse) {
-                            provider.setSubscriptionDate(Instant.now());
-                            provider.setSubscriptionId(subscribeResponse.getSubscriptionId());
-                            subscriptionIds.add(provider.getSubscriptionId());
-                        }
-                    });
+                if ((subscriptionDate == null) || deadlineIsPassed) {
+                    // lazy build body request only when the first request requires it
+                    if (subscribeContext == null) {
+                        subscribeContext = buildSubscribeContext(eventType);
+                    }
+                    doSubscription(provider, subscribeContext, subscriptions);
                 }
             }
         }
     }
 
-    private SubscribeContext getSubscriptionContext(EventTypeIn eventType) {
+    private void doSubscription(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
+        subscribeContextRequest.postSubscribeContextRequest(subscribeContext, provider.getUrl(),
+                new SubscribeContextRequest.SubscribeContextResponseListener() {
+                    @Override public void onError(SubscribeError subscribeError, Throwable t) {
+                        if (subscribeError != null) {
+                            logger.warn("SubscribeError received for {}: {} | {}", provider.getUrl(),
+                                    subscribeError.getErrorCode().getCode(), subscribeError.getErrorCode().getDetail());
+                        } else {
+                            logger.warn("Error during subscription for {}: {}", provider.getUrl(), t.toString());
+                        }
+                    }
+
+                    @Override public void onSuccess(SubscribeResponse subscribeResponse) {
+                        String subscriptionId = subscribeResponse.getSubscriptionId();
+
+                        provider.setSubscriptionDate(Instant.now());
+                        provider.setSubscriptionId(subscriptionId);
+                        subscriptions.addSubscription(subscriptionId);
+                    }
+                });
+    }
+
+    private SubscribeContext buildSubscribeContext(EventTypeIn eventType) {
         SubscribeContext subscribeContext = new SubscribeContext();
 
         EntityId entityId = new EntityId(eventType.getId(), eventType.getType(), eventType.isPattern());
         subscribeContext.setEntityIdList(Collections.singletonList(entityId));
-
-        List<String> attributes = new ArrayList<>();
-        for (Attribute attribute : eventType.getAttributes()) {
-            attributes.add(attribute.getName());
-        }
-        subscribeContext.setAttributeList(attributes);
+        subscribeContext.setAttributeList(eventType.getAttributes().stream().map(Attribute::getName).collect(Collectors.toList()));
         subscribeContext.setReference(hostURI);
-        subscribeContext.setDuration(duration);
+        subscribeContext.setDuration(subscriptionDuration);
         return subscribeContext;
     }
 
-    private EventTypeIn getStoredEventIn(EventTypeIn eventTypeIn) {
-        for(EventTypeIn storedEventTypeIn : storedEventTypeIns) {
-            if (eventTypeIn.equals(storedEventTypeIn)) {
-                return storedEventTypeIn;
-            }
-        }
-        return null;
-    }
+    /**
+     * Migrate subscriptions from previous configuration to the new configuration
+     * @param configuration the new configuration where the subscriptions must be insterted
+     * @return the list of id of the migrated subscriptions
+     */
+    private Subscriptions migrateSubscriptions(Configuration configuration) {
+        Subscriptions newSubscriptions = new Subscriptions();
 
-    private Provider getStoredProvider(EventTypeIn storedEventTypeIn, Provider provider) {
-        for(Provider storedProvider : storedEventTypeIn.getProviders()) {
-            if (provider.getUrl().equals(storedProvider.getUrl())) {
-                return storedProvider;
-            }
-        }
-        return null;
+        // For every eventType, find the corresponding one in previous configuration
+        configuration.getEventTypeIns().forEach(eventTypeIn ->
+            eventTypeIns.stream().filter(e -> e.equals(eventTypeIn)).findFirst().ifPresent(e -> {
+
+                // For every provider, find the corresponding one in previous configuration
+                eventTypeIn.getProviders().forEach(provider ->
+                    e.getProviders().stream().filter(p -> p.getUrl().equals(provider.getUrl())).findFirst().ifPresent(oldProvider -> {
+
+                        // Migrate the subscription
+                        provider.setSubscriptionId(oldProvider.getSubscriptionId());
+                        provider.setSubscriptionDate(oldProvider.getSubscriptionDate());
+                        newSubscriptions.addSubscription(oldProvider.getSubscriptionId());
+                    })
+                );
+            })
+        );
+
+        return newSubscriptions;
     }
 }
