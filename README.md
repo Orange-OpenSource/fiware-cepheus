@@ -2,6 +2,11 @@
 
 [![Build Status](https://travis-ci.org/Orange-OpenSource/EspR4FastData.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/EspR4FastData)
 
+<a href="https://scan.coverity.com/projects/5913">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/5913/badge.svg"/>
+</a>
+
 This is the code repository for Espr4FastData, the reference implementation of the Gateway Data Handling GE.
 
 This project is part of [FIWARE](http://www.fiware.org).
