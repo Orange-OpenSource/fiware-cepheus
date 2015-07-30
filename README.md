@@ -26,18 +26,16 @@ Goal:
 
 * JAVA 8
 
-### Build
+### Build and install via Maven command
+
 	mvn clean install
 
-### Installation
+### Installing from pulling [Sonatype Central Maven](http://central.sonatype.org/)
 
-You can generate a Docker image :
+	mvn -DgroupId=com.orange.espr4fastdata -DartifactId=espR4FastData -Dversion=4.4.3-SNAPSHOT -Dtransitive=false dependency:get
 
-	mvn clean docker:build
-
-You can publish the Docker image in your Docker repository :
-
-	mvn clean docker:push
+### Installing from Docker
+The docker manual can be found [here](docker/README.md)
 
 ## Running
 
