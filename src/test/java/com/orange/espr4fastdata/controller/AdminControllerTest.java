@@ -14,7 +14,6 @@ import com.orange.espr4fastdata.exception.ConfigurationException;
 import com.orange.espr4fastdata.exception.PersistenceException;
 import com.orange.espr4fastdata.model.Configuration;
 import com.orange.espr4fastdata.persistence.Persistence;
-import com.orange.espr4fastdata.util.Util;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -24,13 +23,10 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.io.IOException;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -38,6 +34,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.junit.Assert.assertEquals;
+import static com.orange.espr4fastdata.util.Util.*;
 
 
 /**
@@ -64,10 +61,8 @@ public class AdminControllerTest {
 
     private MockMvc mockMvc;
 
-    private Util util = new Util();
-
     @Autowired
-    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private MappingJackson2HttpMessageConverter mapping;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -100,9 +95,9 @@ public class AdminControllerTest {
 
     @Test
     public void postConfOK() throws Exception {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
 
-        mockMvc.perform(post("/v1/admin/config").content(this.json(configuration)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/v1/admin/config").content(json(mapping, configuration)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
         ArgumentCaptor<Configuration> configurationArg = ArgumentCaptor.forClass(Configuration.class);
@@ -121,7 +116,7 @@ public class AdminControllerTest {
 
     @Test
     public void getConfiguration() throws Exception {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         when(complexEventProcessor.getConfiguration()).thenReturn(configuration);
 
         mockMvc.perform(get("/v1/admin/config")
@@ -134,11 +129,11 @@ public class AdminControllerTest {
 
     @Test
     public void configurationErrorHandling() throws Exception {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
 
         doThrow(new ConfigurationException("ERROR", new Exception("DETAIL ERROR"))).when(complexEventProcessor).setConfiguration(any(Configuration.class));
 
-        mockMvc.perform(post("/v1/admin/config").content(this.json(configuration)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/v1/admin/config").content(json(mapping, configuration)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.reasonPhrase").value("ERROR"))
@@ -150,18 +145,11 @@ public class AdminControllerTest {
 
         doThrow(new PersistenceException("ERROR")).when(persistence).saveConfiguration(any(Configuration.class));
 
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
 
-        mockMvc.perform(post("/v1/admin/config").content(this.json(configuration)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/v1/admin/config").content(json(mapping, configuration)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value("500"))
                 .andExpect(jsonPath("$.reasonPhrase").value("ERROR"));
-    }
-
-    protected String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(
-                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
     }
 }

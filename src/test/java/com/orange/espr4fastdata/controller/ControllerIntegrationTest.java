@@ -12,7 +12,6 @@ import com.orange.espr4fastdata.Application;
 import com.orange.ngsi.model.NotifyContext;
 import com.orange.ngsi.model.UpdateContext;
 import com.orange.espr4fastdata.model.Configuration;
-import com.orange.espr4fastdata.util.Util;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,19 +19,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static com.orange.espr4fastdata.util.Util.*;
+
 /**
  * Created by pborscia on 05/06/2015.
  */
@@ -47,11 +46,8 @@ public class ControllerIntegrationTest {
 
     private MockMvc mockMvc;
 
-
-    private Util util = new Util();
-
     @Autowired
-    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private MappingJackson2HttpMessageConverter mapping;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -60,9 +56,9 @@ public class ControllerIntegrationTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         mockMvc.perform(post("/v1/admin/config")
-                .content(this.json(configuration))
+                .content(json(mapping, configuration))
                 .contentType(contentType))
                 .andExpect(status().isCreated());
 
@@ -77,10 +73,10 @@ public class ControllerIntegrationTest {
         for (int i=1; i<100 ; i++) {
 
             float value = random.nextFloat();
-            NotifyContext notifyContext = util.createNotifyContextTempSensor(value);
+            NotifyContext notifyContext = createNotifyContextTempSensor(value);
 
             mockMvc.perform(post("/v1/notifyContext")
-                    .content(this.json(notifyContext))
+                    .content(json(mapping, notifyContext))
                     .contentType(contentType))
                     .andExpect(status().isOk());
         }
@@ -96,20 +92,13 @@ public class ControllerIntegrationTest {
         for (int i=1; i<100 ; i++) {
 
             float value = random.nextFloat();
-            UpdateContext updateContext = util.createUpdateContextTempSensor(value);
+            UpdateContext updateContext = createUpdateContextTempSensor(value);
 
             mockMvc.perform(post("/v1/updateContext")
-                    .content(this.json(updateContext))
+                    .content(json(mapping, updateContext))
                     .contentType(contentType))
                     .andExpect(status().isOk());
         }
 
-    }
-
-    protected String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(
-                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
     }
 }

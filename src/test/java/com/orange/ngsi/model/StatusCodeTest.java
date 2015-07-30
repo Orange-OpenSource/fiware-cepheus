@@ -9,8 +9,6 @@
 package com.orange.ngsi.model;
 
 import com.orange.espr4fastdata.Application;
-import com.orange.ngsi.model.CodeEnum;
-import com.orange.ngsi.model.StatusCode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,12 +16,11 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * Created by pborscia on 08/07/2015.
+ * Tests for StatusCode
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 public class StatusCodeTest {
-
 
     @Test
     public void createStatusCode200(){
@@ -80,7 +77,6 @@ public class StatusCodeTest {
         Assert.assertEquals(CodeEnum.CODE_472.getLabel(),statusCode.getCode());
         Assert.assertEquals(CodeEnum.CODE_472.getShortPhrase(),statusCode.getReasonPhrase());
         Assert.assertTrue(statusCode.getDetail().contains("updateAction"));
-
     }
 
     @Test
@@ -89,7 +85,6 @@ public class StatusCodeTest {
         Assert.assertEquals(CodeEnum.CODE_473.getLabel(),statusCode.getCode());
         Assert.assertEquals(CodeEnum.CODE_473.getShortPhrase(),statusCode.getReasonPhrase());
         Assert.assertEquals(CodeEnum.CODE_473.getLongPhrase(),statusCode.getDetail());
-
     }
 
     @Test
@@ -107,7 +102,6 @@ public class StatusCodeTest {
         Assert.assertEquals(CodeEnum.CODE_481.getLabel(),statusCode.getCode());
         Assert.assertEquals(CodeEnum.CODE_481.getShortPhrase(),statusCode.getReasonPhrase());
         Assert.assertTrue(statusCode.getDetail().contains("Temperature"));
-
     }
 
     @Test
@@ -116,7 +110,6 @@ public class StatusCodeTest {
         Assert.assertEquals(CodeEnum.CODE_482.getLabel(),statusCode.getCode());
         Assert.assertEquals(CodeEnum.CODE_482.getShortPhrase(),statusCode.getReasonPhrase());
         Assert.assertEquals(CodeEnum.CODE_482.getLongPhrase(),statusCode.getDetail());
-
     }
 
     @Test
@@ -125,8 +118,5 @@ public class StatusCodeTest {
         Assert.assertEquals(CodeEnum.CODE_500.getLabel(),statusCode.getCode());
         Assert.assertEquals(CodeEnum.CODE_500.getShortPhrase(),statusCode.getReasonPhrase());
         Assert.assertEquals(CodeEnum.CODE_500.getLongPhrase(),statusCode.getDetail());
-
     }
-
-
 }

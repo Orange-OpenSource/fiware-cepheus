@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jayway.jsonpath.JsonPath;
-import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -13,13 +12,12 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static com.orange.espr4fastdata.util.Util.*;
 
 /**
- * Created by pborscia on 17/07/2015.
+ * Test for SubscribeContext
  */
 public class SubscribeContextModelTest {
-
-    Util util = new Util();
 
     @Test
     public void deserializationSimpleSubscribeContext() throws IOException {
@@ -27,7 +25,6 @@ public class SubscribeContextModelTest {
         String json = getJsonOrion();
 
         ObjectMapper mapper = new ObjectMapper();
-
 
         SubscribeContext subscribeContext = mapper.readValue(json, SubscribeContext.class);
 
@@ -43,7 +40,6 @@ public class SubscribeContextModelTest {
         assertEquals(NotifyConditionEnum.ONTIMEINTERVAL, subscribeContext.getNotifyConditionList().get(0).getType());
         assertEquals(1, subscribeContext.getNotifyConditionList().get(0).getCondValues().size());
         assertEquals("PT10S", subscribeContext.getNotifyConditionList().get(0).getCondValues().get(0));
-
     }
 
     @Test
@@ -51,7 +47,7 @@ public class SubscribeContextModelTest {
 
         SubscribeContext subscribeContext = null;
         try {
-            subscribeContext = util.createSubscribeContextTemperature();
+            subscribeContext = createSubscribeContextTemperature();
         } catch (URISyntaxException e) {
             Assert.fail(e.getMessage());
         }
@@ -78,8 +74,6 @@ public class SubscribeContextModelTest {
         List<String> condValues = JsonPath.read(json,"$.notifyConditions[0].condValues[*]");
         assertEquals(1,condValues.size());
         assertEquals("PT10S",JsonPath.read(json,"$.notifyConditions[0].condValues[0]"));
-
-
     }
 
     private String getJsonOrion(){
@@ -108,5 +102,4 @@ public class SubscribeContextModelTest {
 
         return json;
     }
-
 }

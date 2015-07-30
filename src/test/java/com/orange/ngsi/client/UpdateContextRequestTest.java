@@ -11,7 +11,6 @@ package com.orange.ngsi.client;
 import com.orange.espr4fastdata.Application;
 import com.orange.espr4fastdata.model.Broker;
 import com.orange.ngsi.model.UpdateAction;
-import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +34,7 @@ import java.io.IOException;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
+import static com.orange.espr4fastdata.util.Util.*;
 
 import javax.inject.Inject;
 
@@ -45,17 +45,16 @@ import javax.inject.Inject;
 @SpringApplicationConfiguration(classes = Application.class)
 public class UpdateContextRequestTest {
 
-
     private MockRestServiceServer mockServer;
+
+    @Autowired
+    private MappingJackson2HttpMessageConverter mapping;
 
     @Autowired
     private UpdateContextRequest updateContextRequest;
 
     @Inject
     private AsyncRestTemplate asyncRestTemplate;
-
-    private Util util = new Util();
-
 
     @Before
     public void setup() {
@@ -66,7 +65,7 @@ public class UpdateContextRequestTest {
     @Test
     public void performPostWith200() throws Exception {
 
-        String responseBody = this.json(util.createUpdateContextResponseTempSensor());
+        String responseBody = json(mapping, createUpdateContextResponseTempSensor());
 
         this.mockServer.expect(requestTo(getBroker().getUrl())).andExpect(method(HttpMethod.POST))
                 .andExpect(header("Fiware-Service", getBroker().getServiceName()))
@@ -74,7 +73,7 @@ public class UpdateContextRequestTest {
                 .andExpect(jsonPath("$.updateAction").value(UpdateAction.UPDATE.getLabel()))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
+        updateContextRequest.postUpdateContextRequest(createUpdateContextTempSensor(0), getBroker());
 
         this.mockServer.verify();
 
@@ -87,7 +86,7 @@ public class UpdateContextRequestTest {
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
+        updateContextRequest.postUpdateContextRequest(createUpdateContextTempSensor(0), getBroker());
 
         this.mockServer.verify();
 
@@ -99,7 +98,7 @@ public class UpdateContextRequestTest {
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
+        updateContextRequest.postUpdateContextRequest(createUpdateContextTempSensor(0), getBroker());
 
         this.mockServer.verify();
 
@@ -111,29 +110,8 @@ public class UpdateContextRequestTest {
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(TimeoutResponseCreator.withTimeout());
 
-        updateContextRequest.postUpdateContextRequest(util.createUpdateContextTempSensor(0), getBroker());
+        updateContextRequest.postUpdateContextRequest(createUpdateContextTempSensor(0), getBroker());
 
-    }
-
-
-    protected String json(Object o) throws IOException {
-        HttpMessageConverter mappingJackson2HttpMessageConverter = null;
-
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-
-        for(HttpMessageConverter hmc : asyncRestTemplate.getMessageConverters()) {
-            if (hmc instanceof MappingJackson2HttpMessageConverter) {
-                mappingJackson2HttpMessageConverter = hmc;
-            }
-        }
-
-        Assert.assertNotNull("the JSON message converter must not be null",
-                mappingJackson2HttpMessageConverter);
-
-        mappingJackson2HttpMessageConverter.write(
-                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-
-        return mockHttpOutputMessage.getBodyAsString();
     }
 
     private Broker getBroker() {

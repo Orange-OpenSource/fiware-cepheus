@@ -19,7 +19,6 @@ import com.orange.ngsi.model.ContextAttribute;
 import com.orange.ngsi.model.ContextElement;
 import com.orange.ngsi.model.UpdateAction;
 import com.orange.ngsi.model.UpdateContext;
-import com.orange.espr4fastdata.util.Util;
 import com.orange.ngsi.client.UpdateContextRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,8 +56,6 @@ public class EventSinkListenerTest {
     public EventSinkListener eventSinkListener;
 
     private Broker broker = new Broker("http://orion", false);
-
-    private Util util = new Util();
 
     @Before
     public void setUp() {

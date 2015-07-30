@@ -17,7 +17,6 @@ import com.orange.espr4fastdata.exception.EventProcessingException;
 import com.orange.espr4fastdata.exception.EventTypeNotFoundException;
 import com.orange.espr4fastdata.model.Attribute;
 import com.orange.espr4fastdata.model.Configuration;
-import com.orange.espr4fastdata.util.Util;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,6 +32,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 import static org.junit.Assert.assertEquals;
+import static com.orange.espr4fastdata.util.Util.*;
+
 
 /**
  * Test for the Esper complex event processor
@@ -47,8 +48,6 @@ public class EsperEventProcessorTest {
     @Autowired
     @InjectMocks
     private EsperEventProcessor esperEventProcessor;
-
-    private Util util = new Util();
 
     @Before
     public void setUp() {
@@ -66,9 +65,9 @@ public class EsperEventProcessorTest {
 
     @Test
     public void checkBasicConf() throws ConfigurationException, EventTypeNotFoundException {
-        esperEventProcessor.setConfiguration(util.getBasicConf());
+        esperEventProcessor.setConfiguration(getBasicConf());
 
-        esperEventProcessor.setConfiguration(util.getBasicConf());
+        esperEventProcessor.setConfiguration(getBasicConf());
 
         assertEquals(2, esperEventProcessor.getEventTypeAttributes("TempSensor").size());
         assertEquals("double", esperEventProcessor.getEventTypeAttributes("TempSensor").get("temp").getType());
@@ -85,7 +84,7 @@ public class EsperEventProcessorTest {
      */
     @Test(expected = ConfigurationException.class)
     public void checkUndefinedProperty() throws ConfigurationException {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         configuration.getStatements().set(0,
                 "INSERT INTO TempSensorAvg SELECT BAD, avg(TempSensor.temp) as avgTemp FROM TempSensor.win:time(2 seconds) WHERE TempSensor.id = 'S1'");
 
@@ -98,7 +97,7 @@ public class EsperEventProcessorTest {
      */
     @Test(expected = ConfigurationException.class)
     public void checkMissingEventIn() throws ConfigurationException {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         configuration.getStatements().set(0,
                 "INSERT INTO TempSensorAvg SELECT avg(BAD.temp) as avgTemp FROM BAD.win:time(2 seconds) WHERE BAD.id = 'S1'");
 
@@ -111,7 +110,7 @@ public class EsperEventProcessorTest {
      */
     @Test
     public void checkEventTypeRemoval() throws ConfigurationException {
-        esperEventProcessor.setConfiguration(util.getBasicConf());
+        esperEventProcessor.setConfiguration(getBasicConf());
 
         resetEmptyConfiguration();
 
@@ -139,7 +138,7 @@ public class EsperEventProcessorTest {
      */
     @Test
     public void checkPreviousConfigurationRestoration() throws ConfigurationException, EventTypeNotFoundException {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         esperEventProcessor.setConfiguration(configuration);
 
         Configuration badConfiguration = new Configuration();
@@ -177,9 +176,9 @@ public class EsperEventProcessorTest {
     @Test
     public void checkUpdateListenerUpdated() throws ConfigurationException, EventProcessingException {
 
-        esperEventProcessor.setConfiguration(util.getBasicConf());
+        esperEventProcessor.setConfiguration(getBasicConf());
 
-        esperEventProcessor.processEvent(util.buildBasicEvent((double) 5.0));
+        esperEventProcessor.processEvent(buildBasicEvent((double) 5.0));
 
         ArgumentCaptor<EventBean[]> eventsArg = ArgumentCaptor.forClass(EventBean[].class);
         verify(eventSinkListener).update(eventsArg.capture(), eq(null), any(EPStatement.class), any(EPServiceProvider.class));
@@ -195,7 +194,7 @@ public class EsperEventProcessorTest {
         Random random = new Random(15);
         for (int i=1; i<100 ; i++) {
             try {
-                esperEventProcessor.processEvent(util.buildBasicEvent((double) (15.5 + random.nextFloat())));
+                esperEventProcessor.processEvent(buildBasicEvent((double) (15.5 + random.nextFloat())));
             } catch (EventProcessingException e) {
                 Assert.fail("Not expected EventProcessingException");
             }

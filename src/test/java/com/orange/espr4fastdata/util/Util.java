@@ -1,10 +1,13 @@
 package com.orange.espr4fastdata.util;
 
-
 import com.orange.espr4fastdata.model.*;
 import com.orange.ngsi.model.*;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mock.http.MockHttpOutputMessage;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -12,14 +15,11 @@ import java.util.*;
 import static com.orange.ngsi.model.CodeEnum.CODE_200;
 
 /**
- * Created by pborscia on 05/06/2015.
+ * Helpers for tests
  */
 public class Util {
 
-    public Util() {
-    }
-
-    public Configuration getBasicConf() {
+    static public Configuration getBasicConf() {
         Configuration configuration = new Configuration();
         try {
             configuration.setHost(new URI("http://localhost:8080"));
@@ -50,7 +50,7 @@ public class Util {
         return configuration;
     }
 
-    public Event buildBasicEvent(Object value) {
+    static public Event buildBasicEvent(Object value) {
         Event e = new Event("TempSensor");
         e.addValue("id", "S1");
         e.addValue("temp", value);
@@ -58,7 +58,7 @@ public class Util {
         return e;
     }
 
-    public NotifyContext createNotifyContextTempSensor(float randomValue) throws URISyntaxException {
+    static public NotifyContext createNotifyContextTempSensor(float randomValue) throws URISyntaxException {
 
         NotifyContext notifyContext = new NotifyContext("1", new URI("http://iotAgent"));
         ContextElementResponse contextElementResponse = new ContextElementResponse();
@@ -69,7 +69,7 @@ public class Util {
         return notifyContext;
     }
 
-    public ContextElement createTemperatureContextElement(float randomValue) {
+    static public ContextElement createTemperatureContextElement(float randomValue) {
         ContextElement contextElement = new ContextElement();
         contextElement.setEntityId(new EntityId("S1", "TempSensor", false));
         ContextAttribute contextAttribute = new ContextAttribute("temp", "float", 15.5 + randomValue);
@@ -77,13 +77,13 @@ public class Util {
         return contextElement;
     }
 
-    public UpdateContext createUpdateContextTempSensor(float randomValue) throws URISyntaxException {
+    static public UpdateContext createUpdateContextTempSensor(float randomValue) throws URISyntaxException {
         UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
         updateContext.setContextElements(Collections.singletonList(createTemperatureContextElement(randomValue)));
         return updateContext;
     }
 
-    public UpdateContextResponse createUpdateContextResponseTempSensor() throws URISyntaxException {
+    static public UpdateContextResponse createUpdateContextResponseTempSensor() throws URISyntaxException {
         ContextElementResponse contextElementResponse = new ContextElementResponse();
         contextElementResponse.setContextElement(createTemperatureContextElement(0));
         contextElementResponse.setStatusCode(new StatusCode(CODE_200));
@@ -94,7 +94,7 @@ public class Util {
         return updateContextResponse;
     }
 
-    public ContextElement createPressureContextElement() {
+    static public ContextElement createPressureContextElement() {
         ContextElement contextElement = new ContextElement();
         contextElement.setEntityId(new EntityId("P1", "PressureSensor", false));
         ContextAttribute contextAttribute = new ContextAttribute("pressure", "int", 999);
@@ -102,13 +102,13 @@ public class Util {
         return contextElement;
     }
 
-    public UpdateContext createUpdateContextPressureSensor() throws URISyntaxException {
+    static public UpdateContext createUpdateContextPressureSensor() throws URISyntaxException {
         UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
         updateContext.setContextElements(Collections.singletonList(createPressureContextElement()));
         return updateContext;
     }
 
-    public ContextElement createWrongAttributTemperatureContextElement(float randomValue) {
+    static public ContextElement createWrongAttributTemperatureContextElement(float randomValue) {
         ContextElement contextElement = new ContextElement();
         contextElement.setEntityId(new EntityId("S1", "TempSensor", false));
         ContextAttribute contextAttribute = new ContextAttribute("pressure", "string", "low");
@@ -116,14 +116,13 @@ public class Util {
         return contextElement;
     }
 
-    public UpdateContext createUpdateContextTempSensorWithWrongAttribut(float randomValue) throws URISyntaxException {
+    static public UpdateContext createUpdateContextTempSensorWithWrongAttribut(float randomValue) throws URISyntaxException {
         UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
         updateContext.setContextElements(Collections.singletonList(createWrongAttributTemperatureContextElement(randomValue)));
         return updateContext;
     }
 
-
-    public SubscribeContext createSubscribeContextTemperature() throws URISyntaxException {
+    static public SubscribeContext createSubscribeContextTemperature() throws URISyntaxException {
         SubscribeContext subscribeContext = new SubscribeContext();
 
         List<EntityId> entityIdList = new ArrayList<>();
@@ -150,7 +149,7 @@ public class Util {
         return subscribeContext;
     }
 
-    public SubscribeContextResponse createSubscribeContextResponseTemperature() {
+    static public SubscribeContextResponse createSubscribeContextResponseTemperature() {
         SubscribeContextResponse subscribeContextResponse = new SubscribeContextResponse();
 
         SubscribeResponse subscribeResponse = new SubscribeResponse();
@@ -160,12 +159,16 @@ public class Util {
         return subscribeContextResponse;
     }
 
-    public void clearPersistedConfiguration() {
+    static public void clearPersistedConfiguration() {
         File confFile = new File("target/esper4fastdata.json");
         if (confFile.exists()) {
             confFile.delete();
         }
     }
 
-
+    static public String json(MappingJackson2HttpMessageConverter mapping, Object o) throws IOException {
+        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+        mapping.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+        return mockHttpOutputMessage.getBodyAsString();
+    }
 }

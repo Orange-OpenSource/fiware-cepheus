@@ -9,12 +9,7 @@
 package com.orange.espr4fastdata.persistence;
 
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.cep.EsperEventProcessor;
 import com.orange.espr4fastdata.exception.PersistenceException;
-import com.orange.espr4fastdata.persistence.JsonPersistence;
-import com.orange.espr4fastdata.persistence.Persistence;
-import com.orange.espr4fastdata.util.Util;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +21,8 @@ import java.io.File;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static com.orange.espr4fastdata.util.Util.*;
+
 
 /**
  * Created by pborscia on 30/06/2015.
@@ -38,12 +35,10 @@ public class PersistenceTest {
     @Autowired
     private Persistence persistence;
 
-    private Util util = new Util();
-
     @Test
     public void checkFileReturnFalse(){
 
-        util.clearPersistedConfiguration();
+        clearPersistedConfiguration();
 
         assertFalse(persistence.checkConfigurationDirectory());
     }
@@ -53,7 +48,7 @@ public class PersistenceTest {
 
         File confFile = new File("target/esper4fastdata.json");
         if (!confFile.exists()) {
-            persistence.saveConfiguration(util.getBasicConf());
+            persistence.saveConfiguration(getBasicConf());
         }
 
         assertTrue(persistence.checkConfigurationDirectory());
@@ -63,9 +58,9 @@ public class PersistenceTest {
     @Test
     public void saveloadConfiguration() throws PersistenceException {
 
-        util.clearPersistedConfiguration();
+        clearPersistedConfiguration();
 
-        persistence.saveConfiguration(util.getBasicConf());
+        persistence.saveConfiguration(getBasicConf());
 
         assertEquals(true, new File("target/esper4fastdata.json").exists());
 
@@ -75,7 +70,7 @@ public class PersistenceTest {
     @Test(expected=PersistenceException.class)
     public void loadConfigurationThrowException() throws PersistenceException {
 
-        util.clearPersistedConfiguration();
+        clearPersistedConfiguration();
 
         persistence.loadConfiguration();
     }

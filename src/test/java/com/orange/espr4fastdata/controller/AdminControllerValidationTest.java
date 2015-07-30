@@ -13,7 +13,6 @@ import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import com.orange.espr4fastdata.model.Attribute;
 import com.orange.espr4fastdata.model.Configuration;
 import com.orange.espr4fastdata.persistence.Persistence;
-import com.orange.espr4fastdata.util.Util;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
+import static com.orange.espr4fastdata.util.Util.*;
 
 /**
  * Test the Configuration validation by the Admin controller
@@ -63,10 +62,8 @@ public class AdminControllerValidationTest {
 
     private MockMvc mockMvc;
 
-    private Util util = new Util();
-
     @Autowired
-    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private MappingJackson2HttpMessageConverter mapping;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -84,34 +81,34 @@ public class AdminControllerValidationTest {
 
     @Test
     public void configurationValidationHandling() throws Exception {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         configuration.setHost(null);
         checkValidationError(configuration);
 
-        configuration = util.getBasicConf();
+        configuration = getBasicConf();
         configuration.setEventTypeIns(null);
         checkValidationError(configuration);
 
-        configuration = util.getBasicConf();
+        configuration = getBasicConf();
         configuration.setEventTypeOuts(null);
         checkValidationError(configuration);
     }
 
     @Test
     public void configurationValidationTypeIn() throws Exception {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         configuration.getEventTypeIns().get(0).setId(null);
         checkValidationError(configuration);
         configuration.getEventTypeIns().get(0).setId("");
         checkValidationError(configuration);
 
-        configuration = util.getBasicConf();
+        configuration = getBasicConf();
         configuration.getEventTypeIns().get(0).setType(null);
         checkValidationError(configuration);
         configuration.getEventTypeIns().get(0).setType("");
         checkValidationError(configuration);
 
-        configuration = util.getBasicConf();
+        configuration = getBasicConf();
         configuration.getEventTypeIns().get(0).setAttributes(null);
         checkValidationError(configuration);
         configuration.getEventTypeIns().get(0).setAttributes(Collections.emptySet());
@@ -120,7 +117,7 @@ public class AdminControllerValidationTest {
 
     @Test
     public void configurationValidationTypeInAttr() throws Exception {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         Attribute testAttr = new Attribute(null, "t");
         configuration.getEventTypeIns().get(0).setAttributes(Collections.singleton(testAttr));
         checkValidationError(configuration);
@@ -135,19 +132,19 @@ public class AdminControllerValidationTest {
 
     @Test
     public void configurationValidationTypeOut() throws Exception {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         configuration.getEventTypeOuts().get(0).setId(null);
         checkValidationError(configuration);
         configuration.getEventTypeOuts().get(0).setId("");
         checkValidationError(configuration);
 
-        configuration = util.getBasicConf();
+        configuration = getBasicConf();
         configuration.getEventTypeOuts().get(0).setType(null);
         checkValidationError(configuration);
         configuration.getEventTypeOuts().get(0).setType("");
         checkValidationError(configuration);
 
-        configuration = util.getBasicConf();
+        configuration = getBasicConf();
         configuration.getEventTypeOuts().get(0).setAttributes(null);
         checkValidationError(configuration);
         configuration.getEventTypeOuts().get(0).setAttributes(Collections.emptySet());
@@ -156,7 +153,7 @@ public class AdminControllerValidationTest {
 
     @Test
     public void configurationValidationTypeOutAttr() throws Exception {
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         Attribute testAttr = new Attribute(null, "t");
         configuration.getEventTypeOuts().get(0).setAttributes(Collections.singleton(testAttr));
         checkValidationError(configuration);
@@ -175,17 +172,10 @@ public class AdminControllerValidationTest {
      * @throws Exception
      */
     private void checkValidationError(Configuration configuration) throws Exception {
-        mockMvc.perform(post("/v1/admin/config").content(this.json(configuration)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/v1/admin/config").content(json(mapping, configuration)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.reasonPhrase").value("Configuration validation error"))
                 .andExpect(jsonPath("$.detail").exists());
-    }
-
-    private String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(
-                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
     }
 }

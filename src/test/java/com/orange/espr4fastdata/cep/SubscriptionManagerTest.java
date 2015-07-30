@@ -12,7 +12,6 @@ import com.espertech.esper.client.EventBean;
 import com.orange.espr4fastdata.Application;
 import com.orange.espr4fastdata.model.Configuration;
 import com.orange.espr4fastdata.model.Provider;
-import com.orange.espr4fastdata.util.Util;
 import com.orange.ngsi.client.SubscribeContextRequest;
 import com.orange.ngsi.model.SubscribeContext;
 import com.orange.ngsi.model.SubscribeResponse;
@@ -32,6 +31,7 @@ import java.util.concurrent.ScheduledFuture;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
+import static com.orange.espr4fastdata.util.Util.*;
 
 /**
  * Tests for SubscriptionManager
@@ -50,8 +50,6 @@ public class SubscriptionManagerTest {
     @InjectMocks
     SubscriptionManager subscriptionManager;
 
-    private Util util = new Util();
-
     @Before
     public void setUp() throws URISyntaxException {
         MockitoAnnotations.initMocks(this);
@@ -64,7 +62,7 @@ public class SubscriptionManagerTest {
         ArgumentCaptor<Runnable> runnableArg = ArgumentCaptor.forClass(Runnable.class);
         when(taskScheduler.scheduleWithFixedDelay(runnableArg.capture(), anyLong())).thenReturn(Mockito.mock(ScheduledFuture.class));
 
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         subscriptionManager.setConfiguration(configuration);
 
         // Execute scheduled runnable

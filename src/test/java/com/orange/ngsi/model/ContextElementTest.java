@@ -11,8 +11,6 @@ package com.orange.ngsi.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orange.espr4fastdata.Application;
-import com.orange.ngsi.model.ContextElement;
-import com.orange.espr4fastdata.util.Util;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -23,19 +21,18 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static com.orange.espr4fastdata.util.Util.*;
 
 /**
- * Created by pborscia on 01/07/2015.
+ * Tests for ContextElement
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 public class ContextElementTest {
 
-    private Util util = new Util();
-
     @Test
     public void convertContextElementToJsonWithoutEntityId() throws JsonProcessingException {
-        ContextElement contextElement = util.createTemperatureContextElement(0);
+        ContextElement contextElement = createTemperatureContextElement(0);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -79,15 +76,10 @@ public class ContextElementTest {
 
         ObjectMapper mapper = new ObjectMapper();
 
-
         ContextElement contextElement = mapper.readValue(json, ContextElement.class);
-
         assertEquals("E1", contextElement.getEntityId().getId());
-
         assertEquals("A", contextElement.getContextAttributeList().get(0).getName());
         assertEquals(3, ((List<?>)contextElement.getContextAttributeList().get(0).getValue()).size());
-
-
     }
 
     @Test
@@ -108,14 +100,8 @@ public class ContextElementTest {
 
         ObjectMapper mapper = new ObjectMapper();
 
-
         ContextElement contextElement = mapper.readValue(json, ContextElement.class);
-
         assertEquals("E1", contextElement.getEntityId().getId());
-
         assertEquals("A", contextElement.getContextAttributeList().get(0).getName());
-
     }
-
-
 }
