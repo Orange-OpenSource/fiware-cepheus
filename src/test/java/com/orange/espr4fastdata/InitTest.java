@@ -17,70 +17,53 @@ import com.orange.espr4fastdata.persistence.Persistence;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.*;
 
 /**
  * Test the Init bean.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {Application.class, InitTest.TestConfig.class})
+@RunWith(MockitoJUnitRunner.class)
 public class InitTest {
 
     static Configuration configuration = new Configuration();
 
-    @SpringBootApplication
-    static class TestConfig {
-
-        @Bean
-        public ComplexEventProcessor complexEventProcessor() {
-            return Mockito.mock(ComplexEventProcessor.class);
-        }
-
-        @Bean
-        public Persistence persistence() {
-            Persistence p = Mockito.mock(Persistence.class);
-            when(p.checkConfigurationDirectory()).thenReturn(true);
-            try {
-                when(p.loadConfiguration()).thenReturn(configuration);
-            } catch (PersistenceException e) {
-            }
-            return p;
-        }
-
-        @Bean
-        public SubscriptionManager subscriptionManager() {
-            return Mockito.mock(SubscriptionManager.class);
-        }
-    }
-
-    @Autowired
-    public Init init;
-
-    @Autowired
+    @Mock
     public ComplexEventProcessor complexEventProcessor;
 
-    @Autowired
+    @Mock
     public Persistence persistence;
 
-    @Autowired
+    @Mock
     public SubscriptionManager subscriptionManager;
 
     /**
      * Check that CEP engine is called when configuration avail during Init initialization
      */
     @Test
-    public void checkConfOk() throws ConfigurationException {
+    public void checkConfOk() throws ConfigurationException, PersistenceException {
+        when(persistence.checkConfigurationDirectory()).thenReturn(true);
+        when(persistence.loadConfiguration()).thenReturn(configuration);
+
+        new Init(complexEventProcessor, persistence, subscriptionManager);
+
         verify(complexEventProcessor).setConfiguration(eq(configuration));
         verify(subscriptionManager).setConfiguration(eq(configuration));
+    }
 
+    /**
+     * Check that the CEP engine is not called when no configuration exist on initialization
+     */
+    public void checkNoConf() throws ConfigurationException, PersistenceException {
+        when(persistence.checkConfigurationDirectory()).thenReturn(false);
+        when(persistence.loadConfiguration()).thenReturn(null);
+
+        new Init(complexEventProcessor, persistence, subscriptionManager);
+
+        verify(complexEventProcessor, never()).setConfiguration(anyObject());
+        verify(subscriptionManager, never()).setConfiguration(anyObject());
     }
 
     @After
