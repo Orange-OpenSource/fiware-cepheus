@@ -9,7 +9,7 @@
 package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.model.cep.Configuration;
+import com.orange.espr4fastdata.model.Configuration;
 import com.orange.espr4fastdata.util.Util;
 import com.orange.ngsi.model.CodeEnum;
 import com.orange.ngsi.model.NotifyContext;
@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

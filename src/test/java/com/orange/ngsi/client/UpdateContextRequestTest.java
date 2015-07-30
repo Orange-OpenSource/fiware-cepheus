@@ -9,7 +9,7 @@
 package com.orange.ngsi.client;
 
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.model.cep.Broker;
+import com.orange.espr4fastdata.model.Broker;
 import com.orange.ngsi.model.UpdateAction;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Assert;

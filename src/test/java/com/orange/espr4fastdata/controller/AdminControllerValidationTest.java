@@ -10,8 +10,8 @@ package com.orange.espr4fastdata.controller;
 
 import com.orange.espr4fastdata.Application;
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
-import com.orange.espr4fastdata.model.cep.Attribute;
-import com.orange.espr4fastdata.model.cep.Configuration;
+import com.orange.espr4fastdata.model.Attribute;
+import com.orange.espr4fastdata.model.Configuration;
 import com.orange.espr4fastdata.persistence.Persistence;
 import com.orange.espr4fastdata.util.Util;
 import org.junit.Before;

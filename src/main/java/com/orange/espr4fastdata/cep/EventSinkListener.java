@@ -9,8 +9,8 @@
 package com.orange.espr4fastdata.cep;
 
 import com.espertech.esper.client.*;
-import com.orange.espr4fastdata.model.cep.*;
-import com.orange.espr4fastdata.model.cep.Configuration;
+import com.orange.espr4fastdata.model.*;
+import com.orange.espr4fastdata.model.Configuration;
 import com.orange.ngsi.client.UpdateContextRequest;
 import com.orange.ngsi.model.*;
 import org.slf4j.Logger;

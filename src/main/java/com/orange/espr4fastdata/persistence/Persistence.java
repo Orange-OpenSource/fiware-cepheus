@@ -10,7 +10,7 @@ package com.orange.espr4fastdata.persistence;
 
 
 import com.orange.espr4fastdata.exception.PersistenceException;
-import com.orange.espr4fastdata.model.cep.Configuration;
+import com.orange.espr4fastdata.model.Configuration;
 
 /**
  * Created by pborscia on 30/06/2015.

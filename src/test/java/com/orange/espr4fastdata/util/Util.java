@@ -1,8 +1,7 @@
 package com.orange.espr4fastdata.util;
 
 
-import com.orange.espr4fastdata.model.Event;
-import com.orange.espr4fastdata.model.cep.*;
+import com.orange.espr4fastdata.model.*;
 import com.orange.ngsi.model.*;
 
 import java.io.File;

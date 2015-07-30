@@ -8,7 +8,7 @@
 
 package com.orange.ngsi.client;
 
-import com.orange.espr4fastdata.model.cep.Broker;
+import com.orange.espr4fastdata.model.Broker;
 import com.orange.ngsi.model.UpdateContext;
 import com.orange.ngsi.model.UpdateContextResponse;
 import org.slf4j.Logger;

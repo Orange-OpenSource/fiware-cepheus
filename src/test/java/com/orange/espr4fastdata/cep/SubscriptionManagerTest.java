@@ -10,8 +10,8 @@ package com.orange.espr4fastdata.cep;
 
 import com.espertech.esper.client.EventBean;
 import com.orange.espr4fastdata.Application;
-import com.orange.espr4fastdata.model.cep.Configuration;
-import com.orange.espr4fastdata.model.cep.Provider;
+import com.orange.espr4fastdata.model.Configuration;
+import com.orange.espr4fastdata.model.Provider;
 import com.orange.espr4fastdata.util.Util;
 import com.orange.ngsi.client.SubscribeContextRequest;
 import com.orange.ngsi.model.SubscribeContext;

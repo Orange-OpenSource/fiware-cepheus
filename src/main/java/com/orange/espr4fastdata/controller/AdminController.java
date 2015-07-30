@@ -14,7 +14,7 @@ import com.orange.ngsi.model.StatusCode;
 import com.orange.espr4fastdata.persistence.Persistence;
 import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import com.orange.espr4fastdata.exception.ConfigurationException;
-import com.orange.espr4fastdata.model.cep.Configuration;
+import com.orange.espr4fastdata.model.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -8,7 +8,10 @@
 
 package com.orange.espr4fastdata.cep;
 
-import com.orange.espr4fastdata.model.cep.*;
+import com.orange.espr4fastdata.model.Attribute;
+import com.orange.espr4fastdata.model.Configuration;
+import com.orange.espr4fastdata.model.EventTypeIn;
+import com.orange.espr4fastdata.model.Provider;
 import com.orange.ngsi.client.SubscribeContextRequest;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.SubscribeContext;

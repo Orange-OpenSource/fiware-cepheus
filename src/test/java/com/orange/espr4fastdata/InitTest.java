@@ -12,7 +12,7 @@ import com.orange.espr4fastdata.cep.ComplexEventProcessor;
 import com.orange.espr4fastdata.cep.SubscriptionManager;
 import com.orange.espr4fastdata.exception.ConfigurationException;
 import com.orange.espr4fastdata.exception.PersistenceException;
-import com.orange.espr4fastdata.model.cep.Configuration;
+import com.orange.espr4fastdata.model.Configuration;
 import com.orange.espr4fastdata.persistence.Persistence;
 import org.junit.After;
 import org.junit.Test;

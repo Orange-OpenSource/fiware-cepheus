@@ -11,7 +11,7 @@ package com.orange.espr4fastdata.cep;
 import com.orange.espr4fastdata.exception.ConfigurationException;
 import com.orange.espr4fastdata.exception.EventProcessingException;
 import com.orange.espr4fastdata.model.Event;
-import com.orange.espr4fastdata.model.cep.Configuration;
+import com.orange.espr4fastdata.model.Configuration;
 
 /**
  * Represents a Complex Event Processor (CEP)

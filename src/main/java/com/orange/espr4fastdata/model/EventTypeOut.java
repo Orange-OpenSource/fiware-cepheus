@@ -6,7 +6,7 @@
  * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
  */
 
-package com.orange.espr4fastdata.model.cep;
+package com.orange.espr4fastdata.model;
 
 import java.util.HashSet;
 import java.util.Set;
