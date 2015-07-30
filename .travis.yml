@@ -3,7 +3,12 @@ language: java
 jdk:
 - oraclejdk8
 script: mvn clean deploy -Ddetail=true -settings=settings.xml
+after_success:
+- curl -H "Content-Type: application/json" --data '{"build": true}' -X POST https://registry.hub.docker.com/u/$DOCKER_USER/espr4fastdata/trigger/$DOCKER_KEY/
+
 env:
   global:
   - secure: WjfswfDCzXiTh816mYwmWCeL17Ck8QOjxY2jYXnL5MHS77/LjlKYxi5xBVtQcdS4/eXR2E0ezbh8/P1/VsaNl2SeEVU1sHOVMZa6fzszHHsNHMNbsCgEt0FRPAy7vnYHfYuIsP2FsQhyd2kB1oqL/lsdQG8BVctExFpxBKYnGu8=
   - secure: MZ4QeabfHFQMBULkqvQBE3QWGDZMYlmnSlGC7icBF0ndZTxjYghXWsDu+f99kbGTnZy/N3EGSLhsuXzozFKp2rlAWZSPuyPAB8qx3auoFlDmzHKE9e/1UoE/Fakc6x2H0mzjdOu1bi+5yCrWVBMhac8UagRnuOhvhNCG9nQKfbg=
+  - secure: hBLYz9ILkf5fzjZ8usf9kf4Doiu9ihhVe4Ju/hn+6d6Aa8cAhFEvMJ6fWmPdIZBkyIQxhNFWvh5Tfwqq17fO8st/MXah3/CS9azNFmHQFgwFbb9tDIrDVg7XaI2BW+I8Fg4anN//7tsXJ2MeXv3WgBtNsv0mgria61mElmPwKiY=
+  - secure: O23xTRyMVwpb5CTmqLyBCQK7pWdNT88zZ617ToJtPVy/1YyHODEtApccxrpBXGmOmcdGv2ZDY6iFIqDmHjUh1jUpSRkT3C+2UPrtGPDF6smfMfur9oeZvHpkPN3+ksHZwP/eD4WgJMBEr76VNr04LCMUU9M98R9qqyxw4Cj470w=
