@@ -12,12 +12,13 @@ env:
   - secure: MZ4QeabfHFQMBULkqvQBE3QWGDZMYlmnSlGC7icBF0ndZTxjYghXWsDu+f99kbGTnZy/N3EGSLhsuXzozFKp2rlAWZSPuyPAB8qx3auoFlDmzHKE9e/1UoE/Fakc6x2H0mzjdOu1bi+5yCrWVBMhac8UagRnuOhvhNCG9nQKfbg=
   - secure: hBLYz9ILkf5fzjZ8usf9kf4Doiu9ihhVe4Ju/hn+6d6Aa8cAhFEvMJ6fWmPdIZBkyIQxhNFWvh5Tfwqq17fO8st/MXah3/CS9azNFmHQFgwFbb9tDIrDVg7XaI2BW+I8Fg4anN//7tsXJ2MeXv3WgBtNsv0mgria61mElmPwKiY=
   - secure: O23xTRyMVwpb5CTmqLyBCQK7pWdNT88zZ617ToJtPVy/1YyHODEtApccxrpBXGmOmcdGv2ZDY6iFIqDmHjUh1jUpSRkT3C+2UPrtGPDF6smfMfur9oeZvHpkPN3+ksHZwP/eD4WgJMBEr76VNr04LCMUU9M98R9qqyxw4Cj470w=
-  - secure: "Vd6qCnAh1SFOqBVo3hFXrElK4TFQUUQQLvXVZQATfqV784OZaDRKd3uP1Xl0Hk7ecmoRY/Nic3XvrycD2Wy+UYm5Hacv09/3v8PJJ/gQWaaeXsoxBBFDjoFybnWaZ8dAzuFqTmXfosTYDgLqgdpUcVfJzcFYu+W4TZgWGtJjyX4="
+  - secure: HrxUm5LvWXGv0V/j5/3J0rEWYunDEztF/oE/vZoWv+8fBVq7uxzyBUZJsAVp9etA7jsXsNXyXFAuSs9/DDJ3TC8GyuvceKa/afi/gnlByOp5vY69VT20lj2Y/NSOt1ThS/zSC0eE1Wn+t0BiSIWuQR1dq5aT5DKxJUt7T/vaTzo=
 
 addons:
     coverity_scan:
       project:
         name: "Orange-OpenSource/EspR4FastData"
+        version: "4.4.3-SNAPSHOT"
         description: "Build submitted via Travis CI"
       notification_email: pascale.borscia@orange.com
       build_command_prepend: "mvn clean"
