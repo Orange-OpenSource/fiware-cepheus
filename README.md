@@ -1,12 +1,7 @@
 # Espr4Fastdata
 
 [![Build Status](https://travis-ci.org/Orange-OpenSource/EspR4FastData.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/EspR4FastData)
-
-<a href="https://scan.coverity.com/projects/5913">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/5913/badge.svg"/>
-</a>
-
+[![Coverity Scan Status](https://scan.coverity.com/projects/5913/badge.svg)](https://scan.coverity.com/projects/5913)
 [![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/EspR4FastData/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/EspR4FastData?branch=master)
 
 This is the code repository for Espr4FastData, the reference implementation of the Gateway Data Handling GE.
