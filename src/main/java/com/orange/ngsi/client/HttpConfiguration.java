@@ -29,25 +29,20 @@ import org.springframework.web.client.AsyncRestTemplate;
 @Configuration
 public class HttpConfiguration {
 
-    @Value("${httpConfiguration.defaultMaxTotalConnections}")
-    private int defaultMaxTotalConnections;
+    @Value("${ngsi.http.maxTotalConnections:20}")
+    private int maxTotalConnections;
 
-    @Value("${httpConfiguration.defaultMaxConnectionsPerRoute}")
-    private int defaultMaxConnectionsPerRoute;
+    @Value("${ngsi.http.maxConnectionsPerRoute:2}")
+    private int maxConnectionsPerRoute;
 
-    @Value("${httpConfiguration.defaultReadTimeoutMilliseconds}")
-    private int defaultReadTimeoutMilliseconds;
-
-    PoolingNHttpClientConnectionManager connectionManager;
+    @Value("${ngsi.http.requestTimeout:2000}")
+    private int requestTimeout;
 
     @Bean
     public AsyncRestTemplate asyncRestTemplate() throws IOReactorException {
         AsyncRestTemplate restTemplate = new AsyncRestTemplate(
                 clientHttpRequestFactory());
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        //TODO replace by authent interceptor
-        //restTemplate.setInterceptors(Collections.<ClientHttpRequestInterceptor>singletonList(new ServiceNamePathInterceptor()));
-
         return restTemplate;
     }
 
@@ -59,20 +54,20 @@ public class HttpConfiguration {
     @Bean
     public CloseableHttpAsyncClient asyncHttpClient() throws IOReactorException {
 
-            connectionManager = new PoolingNHttpClientConnectionManager(
+        PoolingNHttpClientConnectionManager connectionManager = new PoolingNHttpClientConnectionManager(
                     new DefaultConnectingIOReactor(IOReactorConfig.DEFAULT));
-            connectionManager.setMaxTotal(defaultMaxTotalConnections);
-            connectionManager.setDefaultMaxPerRoute(defaultMaxConnectionsPerRoute);
+            connectionManager.setMaxTotal(maxTotalConnections);
+            connectionManager.setDefaultMaxPerRoute(maxConnectionsPerRoute);
 
-            RequestConfig config = RequestConfig.custom()
-                    .setConnectTimeout(defaultReadTimeoutMilliseconds)
-                    .setSocketTimeout(defaultReadTimeoutMilliseconds)
-                    .setConnectionRequestTimeout(defaultReadTimeoutMilliseconds)
-                    .build();
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(requestTimeout)
+                .setSocketTimeout(requestTimeout)
+                .setConnectionRequestTimeout(requestTimeout)
+                .build();
 
-            CloseableHttpAsyncClient httpclient = HttpAsyncClientBuilder
-                    .create().setConnectionManager(connectionManager)
-                    .setDefaultRequestConfig(config).build();
-            return httpclient;
+        CloseableHttpAsyncClient httpclient = HttpAsyncClientBuilder
+                .create().setConnectionManager(connectionManager)
+                .setDefaultRequestConfig(config).build();
+        return httpclient;
     }
 }

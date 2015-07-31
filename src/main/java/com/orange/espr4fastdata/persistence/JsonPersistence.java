@@ -31,19 +31,19 @@ public class JsonPersistence implements Persistence {
 
     private static Logger logger = LoggerFactory.getLogger(JsonPersistence.class);
 
-    @Value("${file.directory:/tmp/esper4fastdatajson}")
-    private String ConfigurationFileDirectory;
+    @Value("${config.file}")
+    private String ConfigurationFile;
 
     @Override
     public Boolean checkConfigurationDirectory() {
 
-        if (this.ConfigurationFileDirectory == null) {
+        if (this.ConfigurationFile == null) {
             logger.warn("Configuration File path is null ");
             return false;
         } else {
-            File confFile = new File(this.ConfigurationFileDirectory);
+            File confFile = new File(this.ConfigurationFile);
             if (!confFile.exists()) {
-                logger.warn("Configuration File {} doesn't exist", this.ConfigurationFileDirectory);
+                logger.warn("Configuration File {} doesn't exist", this.ConfigurationFile);
                 return false;
             }
         }
@@ -53,14 +53,14 @@ public class JsonPersistence implements Persistence {
     @Override
     public Configuration loadConfiguration() throws PersistenceException {
 
-        logger.info("Load configuration from {}", this.ConfigurationFileDirectory );
+        logger.info("Load configuration from {}", this.ConfigurationFile);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
 
         try {
             mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-            return mapper.readValue(new File(this.ConfigurationFileDirectory), Configuration.class );
+            return mapper.readValue(new File(this.ConfigurationFile), Configuration.class );
 
         } catch (IOException e) {
             throw new PersistenceException("Failed to load configuration", e);
@@ -69,13 +69,13 @@ public class JsonPersistence implements Persistence {
 
     @Override
     public void saveConfiguration(Configuration configuration) throws PersistenceException {
-        logger.debug("SAVE Configuration in {}", this.ConfigurationFileDirectory );
+        logger.debug("SAVE Configuration in {}", this.ConfigurationFile);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
 
         try {
-            File confFile = new File(this.ConfigurationFileDirectory);
+            File confFile = new File(this.ConfigurationFile);
             ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
             writer.writeValue(confFile, configuration);
         } catch (IOException e) {
