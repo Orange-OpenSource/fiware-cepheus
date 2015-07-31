@@ -159,13 +159,6 @@ public class Util {
         return subscribeContextResponse;
     }
 
-    static public void clearPersistedConfiguration() {
-        File confFile = new File("target/esper4fastdata.json");
-        if (confFile.exists()) {
-            confFile.delete();
-        }
-    }
-
     static public String json(MappingJackson2HttpMessageConverter mapping, Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         mapping.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);

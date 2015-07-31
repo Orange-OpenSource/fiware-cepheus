@@ -31,6 +31,7 @@ import static com.orange.espr4fastdata.util.Util.*;
 @SpringApplicationConfiguration(classes = Application.class)
 public class PersistenceTest {
 
+    private String path = "/tmp/esper4fastdata.json";
 
     @Autowired
     private Persistence persistence;
@@ -46,7 +47,7 @@ public class PersistenceTest {
     @Test
     public void checkFileReturnTrue() throws PersistenceException {
 
-        File confFile = new File("target/esper4fastdata.json");
+        File confFile = new File(path);
         if (!confFile.exists()) {
             persistence.saveConfiguration(getBasicConf());
         }
@@ -62,7 +63,7 @@ public class PersistenceTest {
 
         persistence.saveConfiguration(getBasicConf());
 
-        assertEquals(true, new File("target/esper4fastdata.json").exists());
+        assertEquals(true, new File(path).exists());
 
         persistence.loadConfiguration();
     }
@@ -73,5 +74,12 @@ public class PersistenceTest {
         clearPersistedConfiguration();
 
         persistence.loadConfiguration();
+    }
+
+    private void clearPersistedConfiguration() {
+        File confFile = new File(path);
+        if (confFile.exists()) {
+            confFile.delete();
+        }
     }
 }
