@@ -32,16 +32,10 @@ public class Broker {
      */
     private String servicePath;
 
-    /**
-     * Whether or not to mustRegister to the broker. Default: false.
-     */
-    private boolean mustRegister;
-
     public Broker() {
     }
 
     public Broker(String url, boolean mustRegister) {
-        this.mustRegister = mustRegister;
         this.url = url;
     }
 
@@ -67,13 +61,5 @@ public class Broker {
 
     public void setServicePath(String servicePath) {
         this.servicePath = servicePath;
-    }
-
-    public boolean getMustRegister() {
-        return mustRegister;
-    }
-
-    public void setMustRegister(boolean mustRegister) {
-        this.mustRegister = mustRegister;
     }
 }
