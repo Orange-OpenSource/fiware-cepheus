@@ -53,21 +53,22 @@ public class NgsiController {
 
         checkNotifyContext(notify);
 
-        // Only handle notification if it has a valid subscription
-        if (!subscriptionManager.isSubscriptionValid(notify.getSubscriptionId())) {
-            logger.warn("notifyContext request: invalid subscription id {} / {}", notify.getSubscriptionId(), notify.getOriginator());
-
-        }
-
-        for (ContextElementResponse response : notify.getContextElementResponseList()) {
-
-            ContextElement element = response.getContextElement();
-            Event event = eventMapper.eventFromContextElement(element);
-            complexEventProcessor.processEvent(event);
-        }
+        logger.debug("notifyContext incoming request id:{} originator:{}", notify.getSubscriptionId(), notify.getOriginator());
 
         NotifyContextResponse notifyContextResponse = new NotifyContextResponse();
-        notifyContextResponse.setResponseCode(new StatusCode(CodeEnum.CODE_200));
+
+        // Only handle notification if it has a valid subscription
+        if (subscriptionManager.isSubscriptionValid(notify.getSubscriptionId())) {
+            for (ContextElementResponse response : notify.getContextElementResponseList()) {
+                ContextElement element = response.getContextElement();
+                Event event = eventMapper.eventFromContextElement(element);
+                complexEventProcessor.processEvent(event);
+            }
+            notifyContextResponse.setResponseCode(new StatusCode(CodeEnum.CODE_200));
+        } else {
+            logger.warn("notifyContext request: invalid subscription id {} / {}", notify.getSubscriptionId(), notify.getOriginator());
+            notifyContextResponse.setResponseCode(new StatusCode(CodeEnum.CODE_470, notify.getSubscriptionId()));
+        }
 
         return new ResponseEntity<>(notifyContextResponse, HttpStatus.OK);
     }
@@ -76,6 +77,8 @@ public class NgsiController {
     public UpdateContextResponse updateContext(@RequestBody final UpdateContext update) throws EventProcessingException, MissingRequestParameterException, TypeNotFoundException {
 
         checkUpdateContext(update);
+
+        logger.debug("updateContext incoming request action:{}", update.getUpdateAction());
 
         List<ContextElementResponse> responses = new LinkedList<>();
 
@@ -86,6 +89,7 @@ public class NgsiController {
                 complexEventProcessor.processEvent(event);
                 statusCode = new StatusCode(CodeEnum.CODE_200);
             } catch (EventProcessingException e) {
+                logger.error("updateContext incoming request: failed to process event {}", e.toString());
                 statusCode = new StatusCode(CodeEnum.CODE_472, "");
                 statusCode.setDetail(e.getMessage());
             }
