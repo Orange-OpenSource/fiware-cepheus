@@ -7,6 +7,8 @@
        src="https://scan.coverity.com/projects/5913/badge.svg"/>
 </a>
 
+[![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/EspR4FastData/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/EspR4FastData?branch=master)
+
 This is the code repository for Espr4FastData, the reference implementation of the Gateway Data Handling GE.
 
 This project is part of [FIWARE](http://www.fiware.org).

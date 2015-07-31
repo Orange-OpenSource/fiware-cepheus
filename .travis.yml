@@ -5,6 +5,7 @@ jdk:
 script: mvn clean deploy -Ddetail=true -settings=settings.xml
 after_success:
 - "curl -H \"Content-Type: application/json\" --data \"build=true\" -X POST https://registry.hub.docker.com/u/$DOCKER_USER/espr4fastdata/trigger/$DOCKER_KEY/"
+- "mvn clean test jacoco:report coveralls:report"
 
 env:
   global:
