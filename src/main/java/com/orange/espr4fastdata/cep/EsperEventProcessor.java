@@ -51,7 +51,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
      * Apply a new configuration to the Esper CEP.
      * @param configuration the new configuration to apply
      */
-    public synchronized void setConfiguration(Configuration configuration) throws ConfigurationException {
+    public void setConfiguration(Configuration configuration) throws ConfigurationException {
         Configuration previousConfiguration = this.configuration;
         ConfigurationOperations operations = epServiceProvider.getEPAdministrator().getConfiguration();
         try {

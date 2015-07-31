@@ -46,8 +46,11 @@ public class AdminController {
     @Autowired
     public SubscriptionManager subscriptionManager;
 
+    // Synchronization note:
+    // All calls that modify configuration (which is a rare event compared to event processing) are simply synchronized.
+
     @RequestMapping(value = "/config", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> configuration(@Valid @RequestBody final Configuration configuration) throws ConfigurationException, PersistenceException {
+    public synchronized ResponseEntity<?> configuration(@Valid @RequestBody final Configuration configuration) throws ConfigurationException, PersistenceException {
         logger.debug("Updating configuration: {}", configuration);
 
         complexEventProcessor.setConfiguration(configuration);
@@ -60,7 +63,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/config", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Configuration> configuration() {
+    public synchronized ResponseEntity<Configuration> configuration() {
 
         Configuration configuration = complexEventProcessor.getConfiguration();
         if (configuration == null) {
