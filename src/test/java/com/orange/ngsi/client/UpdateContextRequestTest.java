@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -62,6 +63,9 @@ public class UpdateContextRequestTest {
     @Autowired
     ApplicationContext applicationContext;
 
+    @Autowired
+    NgsiClient ngsiClient;
+
     private Consumer<UpdateContextResponse> onSuccess = Mockito.mock(Consumer.class);
 
     private Consumer<Throwable> onFailure = Mockito.mock(Consumer.class);
@@ -79,9 +83,9 @@ public class UpdateContextRequestTest {
 
     @Test
     public void performPostWith200() throws Exception {
-        NgsiClient ngsiClient = applicationContext.getBean("ngsiClient", NgsiClient.class);
-        ngsiClient.getRequestHeaders().add("Fiware-Service", serviceName);
-        ngsiClient.getRequestHeaders().add("Fiware-ServicePath", servicePath);
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders();
+        httpHeaders.add("Fiware-Service", serviceName);
+        httpHeaders.add("Fiware-ServicePath", servicePath);
 
         String responseBody = json(mapping, createUpdateContextResponseTempSensor());
 
@@ -91,7 +95,7 @@ public class UpdateContextRequestTest {
                 .andExpect(jsonPath("$.updateAction").value(UpdateAction.UPDATE.getLabel()))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        ngsiClient.updateContext(brokerUrl, createUpdateContextTempSensor(0), onSuccess, onFailure);
+        ngsiClient.updateContext(brokerUrl, httpHeaders, createUpdateContextTempSensor(0), onSuccess, onFailure);
 
         this.mockServer.verify();
 
@@ -101,15 +105,13 @@ public class UpdateContextRequestTest {
 
     @Test
     public void performPostWith404() throws Exception {
-        NgsiClient ngsiClient = applicationContext.getBean("ngsiClient", NgsiClient.class);
-
         Consumer<UpdateContextResponse> onSuccess = Mockito.mock(Consumer.class);
         Consumer<Throwable> onFailure = Mockito.mock(Consumer.class);
 
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.updateContext(brokerUrl, createUpdateContextTempSensor(0), onSuccess, onFailure);
+        ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0), onSuccess, onFailure);
 
         this.mockServer.verify();
 
@@ -119,12 +121,10 @@ public class UpdateContextRequestTest {
 
     @Test
     public void performPostWith500() throws Exception {
-        NgsiClient ngsiClient = applicationContext.getBean("ngsiClient", NgsiClient.class);
-
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.updateContext(brokerUrl, createUpdateContextTempSensor(0), onSuccess, onFailure);
+        ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0), onSuccess, onFailure);
 
         this.mockServer.verify();
 
@@ -135,12 +135,10 @@ public class UpdateContextRequestTest {
 
     @Test
     public void performPostWithTimeout() throws Exception {
-        NgsiClient ngsiClient = applicationContext.getBean("ngsiClient", NgsiClient.class);
-
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(TimeoutResponseCreator.withTimeout());
 
-        ngsiClient.updateContext(brokerUrl, createUpdateContextTempSensor(0), onSuccess, onFailure);
+        ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0), onSuccess, onFailure);
 
         this.mockServer.verify();
 

@@ -16,6 +16,7 @@ import com.orange.ngsi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -69,7 +70,8 @@ public class EventSinkListener implements StatementAwareUpdateListener {
                 UpdateContext updateContext = buildUpdateContextRequest(eventBean, eventTypeOut);
                 if (updateContext != null) {
                     for (Broker broker : eventTypeOut.getBrokers()) {
-                        ngsiClient.updateContext(broker.getUrl(), updateContext, updateContextResponse -> {
+                        HttpHeaders httpHeaders = getHeadersForBroker(broker);
+                        ngsiClient.updateContext(broker.getUrl(), httpHeaders, updateContext, updateContextResponse -> {
                             logger.debug("UpdateContext completed for {}", broker.getUrl());
                         }, throwable -> {
                             logger.warn("UpdateContext failed for {}: {}", broker.getUrl(), throwable.toString());
@@ -144,5 +146,19 @@ public class EventSinkListener implements StatementAwareUpdateListener {
         UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
         updateContext.setContextElements(Collections.singletonList(contextElement));
         return updateContext;
+    }
+
+    /**
+     * Set custom headers for Brokers
+     */
+    private HttpHeaders getHeadersForBroker(Broker broker) {
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders();
+        if (broker.getServiceName() != null) {
+            httpHeaders.add("Fiware-Service", broker.getServiceName());
+        }
+        if (broker.getServicePath() != null) {
+            httpHeaders.add("Fiware-ServicePath", broker.getServicePath());
+        }
+        return httpHeaders;
     }
 }

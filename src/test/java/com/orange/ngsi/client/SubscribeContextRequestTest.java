@@ -75,7 +75,7 @@ public class SubscribeContextRequestTest {
         this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", createSubscribeContextTemperature(), onSuccess, onFailure);
+        ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature(), onSuccess, onFailure);
         this.mockServer.verify();
 
         verify(onFailure).accept(any(HttpClientErrorException.class));
@@ -88,7 +88,7 @@ public class SubscribeContextRequestTest {
         this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", createSubscribeContextTemperature(), onSuccess, onFailure);
+        ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature(), onSuccess, onFailure);
 
         this.mockServer.verify();
 
@@ -108,7 +108,7 @@ public class SubscribeContextRequestTest {
                 .andExpect(jsonPath("$.reference").value("http://localhost:1028/accumulate")).andExpect(jsonPath("$.duration").value("P1M"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", createSubscribeContextTemperature(), onSuccess, onFailure);
+        ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature(), onSuccess, onFailure);
         this.mockServer.verify();
 
         verify(onFailure, never()).accept(any(Throwable.class));

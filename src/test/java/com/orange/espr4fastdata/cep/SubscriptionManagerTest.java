@@ -74,7 +74,7 @@ public class SubscriptionManagerTest {
         ArgumentCaptor<SubscribeContext> subscribeContextArg = ArgumentCaptor.forClass(SubscribeContext.class);
         ArgumentCaptor<Consumer> onSuccessArg = ArgumentCaptor.forClass(Consumer.class);
 
-        verify(ngsiClient, times(1)).subscribeContext(urlProviderArg.capture(), subscribeContextArg.capture(), onSuccessArg.capture(),
+        verify(ngsiClient, times(1)).subscribeContext(urlProviderArg.capture(), eq(null), subscribeContextArg.capture(), onSuccessArg.capture(),
                 any(Consumer.class));
 
 

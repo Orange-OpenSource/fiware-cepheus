@@ -26,19 +26,21 @@ public class NgsiClient {
     @Autowired
     public AsyncRestTemplate asyncRestTemplate;
 
-    private HttpHeaders requestHeaders;
-
     /**
      * Send an update request
      * @param brokerUrl the URL of the broker
+     * @param httpHeaders the HTTP header to use, or null for default
      * @param updateContext the UpdateContext
      * @param onSuccess method called on success with an UpdateContextResponse
      * @param onFailure method called on failure with a Throwable
      */
-    public void updateContext(String brokerUrl, UpdateContext updateContext, Consumer<UpdateContextResponse> onSuccess, Consumer<Throwable> onFailure) {
+    public void updateContext(String brokerUrl, HttpHeaders httpHeaders, UpdateContext updateContext, Consumer<UpdateContextResponse> onSuccess, Consumer<Throwable> onFailure) {
         logger.debug("UpdateContextRequest: {} {}", brokerUrl, updateContext);
 
-        HttpEntity<UpdateContext> requestEntity = new HttpEntity<>(updateContext, getRequestHeaders());
+        if (httpHeaders == null) {
+            httpHeaders = getRequestHeaders();
+        }
+        HttpEntity<UpdateContext> requestEntity = new HttpEntity<>(updateContext, httpHeaders);
 
         asyncRestTemplate.exchange(brokerUrl, HttpMethod.POST, requestEntity, UpdateContextResponse.class)
                 .addCallback(new ListenableFutureCallback<ResponseEntity<UpdateContextResponse>>() {
@@ -59,14 +61,18 @@ public class NgsiClient {
     /**
      * Send a subscription request
      * @param providerUrl the URL of the subscription provider
+     * @param httpHeaders the HTTP header to use, or null for default
      * @param subscribeContext the SubscriptionContext
      * @param onSuccess method called on success with a SubscribeResponse
      * @param onFailure method called on failure with a Throwable
      */
-    public void subscribeContext(String providerUrl, SubscribeContext subscribeContext, Consumer<SubscribeContextResponse> onSuccess, Consumer<Throwable> onFailure) {
+    public void subscribeContext(String providerUrl, HttpHeaders httpHeaders, SubscribeContext subscribeContext, Consumer<SubscribeContextResponse> onSuccess, Consumer<Throwable> onFailure) {
         logger.debug("SubscribeContextRequest: {} {}", providerUrl, subscribeContext);
 
-        HttpEntity<SubscribeContext> requestEntity = new HttpEntity<>(subscribeContext, getRequestHeaders());
+        if (httpHeaders == null) {
+            httpHeaders = getRequestHeaders();
+        }
+        HttpEntity<SubscribeContext> requestEntity = new HttpEntity<>(subscribeContext, httpHeaders);
 
         asyncRestTemplate.exchange(providerUrl, HttpMethod.POST, requestEntity, SubscribeContextResponse.class)
                 .addCallback(new ListenableFutureCallback<ResponseEntity<SubscribeContextResponse>>() {
@@ -87,17 +93,21 @@ public class NgsiClient {
     /**
      * Send an unsubscribe request
      * @param providerUrl the URL of the subscription provider
+     * @param httpHeaders the HTTP header to use, or null for default
      * @param subscriptionId the subscription ID to unsubscribe
      * @param onSuccess method called on success with the subscription ID
      * @param onFailure method called on failure with a Throwable
      */
-    public void unsubscribeContext(String providerUrl, String subscriptionId, Consumer<UnsubscribeContextResponse> onSuccess, Consumer<Throwable> onFailure) {
+    public void unsubscribeContext(String providerUrl, HttpHeaders httpHeaders, String subscriptionId, Consumer<UnsubscribeContextResponse> onSuccess, Consumer<Throwable> onFailure) {
         logger.debug("UnsubscribeContextRequest: {} {}", providerUrl, subscriptionId);
 
         UnsubscribeContext unsubscribeContext = new UnsubscribeContext();
         unsubscribeContext.setSubscriptionId(subscriptionId);
 
-        HttpEntity<UnsubscribeContext> requestEntity = new HttpEntity<>(unsubscribeContext, getRequestHeaders());
+        if (httpHeaders == null) {
+            httpHeaders = getRequestHeaders();
+        }
+        HttpEntity<UnsubscribeContext> requestEntity = new HttpEntity<>(unsubscribeContext, httpHeaders);
 
         asyncRestTemplate.exchange(providerUrl, HttpMethod.POST, requestEntity, UnsubscribeContextResponse.class)
                 .addCallback(new ListenableFutureCallback<ResponseEntity<UnsubscribeContextResponse>>() {
@@ -114,15 +124,13 @@ public class NgsiClient {
     }
 
     /**
-     * The HTTP request headers used for the requests.
+     * The default HTTP request headers used for the requests.
      * @return the HTTP request headers.
      */
     public HttpHeaders getRequestHeaders() {
-        if (requestHeaders == null) {
-            requestHeaders = new HttpHeaders();
-            requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-            requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        }
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+        requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         return requestHeaders;
     }
 }

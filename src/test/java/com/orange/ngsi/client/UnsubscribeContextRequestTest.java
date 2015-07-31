@@ -80,7 +80,7 @@ public class UnsubscribeContextRequestTest {
         this.mockServer.expect(requestTo(providerURL)).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.unsubscribeContext(providerURL, subscriptionID, onSuccess, onFailure);
+        ngsiClient.unsubscribeContext(providerURL, null, subscriptionID, onSuccess, onFailure);
         this.mockServer.verify();
 
         verify(onFailure).accept(any(HttpClientErrorException.class));
@@ -93,7 +93,7 @@ public class UnsubscribeContextRequestTest {
         this.mockServer.expect(requestTo(providerURL)).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.unsubscribeContext(providerURL, subscriptionID, onSuccess, onFailure);
+        ngsiClient.unsubscribeContext(providerURL, null, subscriptionID, onSuccess, onFailure);
 
         this.mockServer.verify();
 
@@ -110,7 +110,7 @@ public class UnsubscribeContextRequestTest {
                 .andExpect(jsonPath("$.subscriptionId", hasToString(subscriptionID))).andRespond(
                 withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        ngsiClient.unsubscribeContext(providerURL, subscriptionID, onSuccess, onFailure);
+        ngsiClient.unsubscribeContext(providerURL, null, subscriptionID, onSuccess, onFailure);
 
         this.mockServer.verify();
 

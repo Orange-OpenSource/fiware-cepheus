@@ -89,7 +89,7 @@ public class EventSinkListenerTest {
 
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
-        verify(ngsiClient).updateContext(eq(broker.getUrl()), updateContextArg.capture(), any(), any());
+        verify(ngsiClient).updateContext(eq(broker.getUrl()), any(), updateContextArg.capture(), any(), any());
 
         // Check updateContext is valid
         UpdateContext updateContext = updateContextArg.getValue();
@@ -125,7 +125,7 @@ public class EventSinkListenerTest {
 
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
-        verify(ngsiClient).updateContext(eq(broker.getUrl()), updateContextArg.capture(), any(), any());
+        verify(ngsiClient).updateContext(eq(broker.getUrl()), any(), updateContextArg.capture(), any(), any());
 
         // Check id correspond to the one set in configuration
         ContextElement contextElement = updateContextArg.getValue().getContextElements().get(0);
@@ -147,7 +147,7 @@ public class EventSinkListenerTest {
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
         eventSinkListener.update(null, beans, statement, provider);
 
-        verify(ngsiClient, never()).updateContext(any(), any(), any(), any());
+        verify(ngsiClient, never()).updateContext(any(), any(), any(), any(), any());
     }
 
     /**
@@ -164,7 +164,7 @@ public class EventSinkListenerTest {
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
         eventSinkListener.update(beans, null, statement, provider);
 
-        verify(ngsiClient, never()).updateContext(any(), any(), any(), any());
+        verify(ngsiClient, never()).updateContext(any(), any(), any(), any(), any());
     }
 
     /**

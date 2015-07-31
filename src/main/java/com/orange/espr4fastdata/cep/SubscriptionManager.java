@@ -185,7 +185,7 @@ public class SubscriptionManager {
     private void doSubscription(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
         logger.debug("Updating subscription for {}", provider.getUrl());
 
-        ngsiClient.subscribeContext(provider.getUrl(), subscribeContext,
+        ngsiClient.subscribeContext(provider.getUrl(), null, subscribeContext,
                 subscribeContextResponse -> {
                     SubscribeError error = subscribeContextResponse.getSubscribeError();
                     if (error == null) {
