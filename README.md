@@ -91,10 +91,7 @@ It's a simple json file which typical content is:
 	    }
 	  ],
 	  "statements": [
-	    "INSERT INTO 'TempSensorAvg' SELECT 'OUT1' as id,
-	     avg(TempSensor.temp) as avgTemp
-	     FROM TempSensor.win:time(86400)
-	     WHERE TempSensor.id = 'S1' "
+	    "INSERT INTO 'TempSensorAvg' SELECT 'OUT1' as id, avg(TempSensor.temp) as avgTemp FROM TempSensor.win:time(86400) WHERE TempSensor.id = 'S1' "
 	  ]
 	}
 
