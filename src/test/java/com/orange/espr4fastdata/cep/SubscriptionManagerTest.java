@@ -72,13 +72,11 @@ public class SubscriptionManagerTest {
 
         ArgumentCaptor<String> urlProviderArg = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<SubscribeContext> subscribeContextArg = ArgumentCaptor.forClass(SubscribeContext.class);
+        ArgumentCaptor<Consumer> onSuccessArg = ArgumentCaptor.forClass(Consumer.class);
 
-        verify(ngsiClient, times(1)).subscribeContext(urlProviderArg.capture(), subscribeContextArg.capture(), any(Consumer.class), any(
-                Consumer.class));
+        verify(ngsiClient, times(1)).subscribeContext(urlProviderArg.capture(), subscribeContextArg.capture(), onSuccessArg.capture(),
+                any(Consumer.class));
 
-        SubscribeResponse subscribeResponse = new SubscribeResponse();
-        subscribeResponse.setSubscriptionId("12345678");
-        subscribeResponse.setDuration("P1H");
 
         SubscribeContext subscribeContext = subscribeContextArg.getValue();
         assertEquals("S.*", subscribeContext.getEntityIdList().get(0).getId());
@@ -87,6 +85,14 @@ public class SubscriptionManagerTest {
         assertEquals("temp", subscribeContext.getAttributeList().get(0));
         assertEquals("P1H", subscribeContext.getDuration());
         assertEquals("http://iotAgent", urlProviderArg.getValue());
+
+        // Call success callback
+        SubscribeResponse subscribeResponse = new SubscribeResponse();
+        subscribeResponse.setSubscriptionId("12345678");
+        subscribeResponse.setDuration("P1H");
+        SubscribeContextResponse response = new SubscribeContextResponse();
+        response.setSubscribeResponse(subscribeResponse);
+        onSuccessArg.getValue().accept(response);
 
         Set<Provider> providers = configuration.getEventTypeIns().get(0).getProviders();
         for(Provider provider: providers) {
