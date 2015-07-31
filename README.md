@@ -85,8 +85,7 @@ It's a simple json file which typical content is:
 	        {
 	          "url": "http://102.232.332:1903/v1",
 	          "serviceName": "my",
-	          "servicePath": "/test/path",
-	          "register": false
+	          "servicePath": "/test/path"
 	        }
 	      ]
 	    }
