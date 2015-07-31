@@ -12,11 +12,10 @@ import com.orange.espr4fastdata.model.Attribute;
 import com.orange.espr4fastdata.model.Configuration;
 import com.orange.espr4fastdata.model.EventTypeIn;
 import com.orange.espr4fastdata.model.Provider;
-import com.orange.ngsi.client.SubscribeContextRequest;
+import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.SubscribeContext;
 import com.orange.ngsi.model.SubscribeError;
-import com.orange.ngsi.model.SubscribeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +84,7 @@ public class SubscriptionManager {
     private String subscriptionDuration;
 
     @Autowired
-    private SubscribeContextRequest subscribeContextRequest;
+    private NgsiClient ngsiClient;
 
     @Autowired
     private TaskScheduler taskScheduler;
@@ -184,24 +183,24 @@ public class SubscriptionManager {
     }
 
     private void doSubscription(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
-        subscribeContextRequest.postSubscribeContextRequest(subscribeContext, provider.getUrl(),
-                new SubscribeContextRequest.SubscribeContextResponseListener() {
-                    @Override public void onError(SubscribeError subscribeError, Throwable t) {
-                        if (subscribeError != null) {
-                            logger.warn("SubscribeError received for {}: {} | {}", provider.getUrl(),
-                                    subscribeError.getErrorCode().getCode(), subscribeError.getErrorCode().getDetail());
-                        } else {
-                            logger.warn("Error during subscription for {}: {}", provider.getUrl(), t.toString());
-                        }
-                    }
+        logger.debug("Updating subscription for {}", provider.getUrl());
 
-                    @Override public void onSuccess(SubscribeResponse subscribeResponse) {
-                        String subscriptionId = subscribeResponse.getSubscriptionId();
+        ngsiClient.subscribeContext(provider.getUrl(), subscribeContext,
+                subscribeContextResponse -> {
+                    SubscribeError error = subscribeContextResponse.getSubscribeError();
+                    if (error == null) {
+                        String subscriptionId = subscribeContextResponse.getSubscribeResponse().getSubscriptionId();
 
                         provider.setSubscriptionDate(Instant.now());
                         provider.setSubscriptionId(subscriptionId);
                         subscriptions.addSubscription(subscriptionId);
+
+                        logger.debug("Subscription done for {}", provider.getUrl());
+                    } else {
+                        logger.warn("Error during subscription for {}: {}", provider.getUrl(), error.getErrorCode());
                     }
+                }, throwable -> {
+                    logger.warn("Error during subscription for {}: {}", provider.getUrl(), throwable.toString());
                 });
     }
 
@@ -225,21 +224,20 @@ public class SubscriptionManager {
         Subscriptions newSubscriptions = new Subscriptions();
 
         // For every eventType, find the corresponding one in previous configuration
-        configuration.getEventTypeIns().forEach(eventTypeIn ->
-            eventTypeIns.stream().filter(e -> e.equals(eventTypeIn)).findFirst().ifPresent(e -> {
+        configuration.getEventTypeIns().forEach(
+                eventTypeIn -> eventTypeIns.stream().filter(e -> e.equals(eventTypeIn)).findFirst().ifPresent(e -> {
 
-                // For every provider, find the corresponding one in previous configuration
-                eventTypeIn.getProviders().forEach(provider ->
-                    e.getProviders().stream().filter(p -> p.getUrl().equals(provider.getUrl())).findFirst().ifPresent(oldProvider -> {
+                    // For every provider, find the corresponding one in previous configuration
+                    eventTypeIn.getProviders().forEach(
+                            provider -> e.getProviders().stream().filter(p -> p.getUrl().equals(provider.getUrl())).findFirst()
+                                    .ifPresent(oldProvider -> {
 
-                        // Migrate the subscription
-                        provider.setSubscriptionId(oldProvider.getSubscriptionId());
-                        provider.setSubscriptionDate(oldProvider.getSubscriptionDate());
-                        newSubscriptions.addSubscription(oldProvider.getSubscriptionId());
-                    })
-                );
-            })
-        );
+                                        // Migrate the subscription
+                                        provider.setSubscriptionId(oldProvider.getSubscriptionId());
+                                        provider.setSubscriptionDate(oldProvider.getSubscriptionDate());
+                                        newSubscriptions.addSubscription(oldProvider.getSubscriptionId());
+                                    }));
+                }));
 
         return newSubscriptions;
     }

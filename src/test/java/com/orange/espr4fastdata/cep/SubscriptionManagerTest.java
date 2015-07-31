@@ -12,8 +12,9 @@ import com.espertech.esper.client.EventBean;
 import com.orange.espr4fastdata.Application;
 import com.orange.espr4fastdata.model.Configuration;
 import com.orange.espr4fastdata.model.Provider;
-import com.orange.ngsi.client.SubscribeContextRequest;
+import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.SubscribeContext;
+import com.orange.ngsi.model.SubscribeContextResponse;
 import com.orange.ngsi.model.SubscribeResponse;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.net.URISyntaxException;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
+import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -44,7 +46,7 @@ public class SubscriptionManagerTest {
     TaskScheduler taskScheduler;
 
     @Mock
-    SubscribeContextRequest subscribeContextRequest;
+    NgsiClient ngsiClient;
 
     @Autowired
     @InjectMocks
@@ -68,18 +70,15 @@ public class SubscriptionManagerTest {
         // Execute scheduled runnable
         runnableArg.getValue().run();
 
-        ArgumentCaptor<EventBean[]> eventsArg = ArgumentCaptor.forClass(EventBean[].class);
-        ArgumentCaptor<SubscribeContext> subscribeContextArg = ArgumentCaptor.forClass(SubscribeContext.class);
         ArgumentCaptor<String> urlProviderArg = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<SubscribeContextRequest.SubscribeContextResponseListener> listenerArg = ArgumentCaptor.forClass(SubscribeContextRequest.SubscribeContextResponseListener.class);
-        verify(subscribeContextRequest, times(1)).postSubscribeContextRequest(subscribeContextArg.capture(), urlProviderArg.capture(), listenerArg.capture());
+        ArgumentCaptor<SubscribeContext> subscribeContextArg = ArgumentCaptor.forClass(SubscribeContext.class);
+
+        verify(ngsiClient, times(1)).subscribeContext(urlProviderArg.capture(), subscribeContextArg.capture(), any(Consumer.class), any(
+                Consumer.class));
 
         SubscribeResponse subscribeResponse = new SubscribeResponse();
         subscribeResponse.setSubscriptionId("12345678");
         subscribeResponse.setDuration("P1H");
-        if (listenerArg.getValue() != null) {
-            listenerArg.getValue().onSuccess(subscribeResponse);
-        }
 
         SubscribeContext subscribeContext = subscribeContextArg.getValue();
         assertEquals("S.*", subscribeContext.getEntityIdList().get(0).getId());

@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import java.net.URISyntaxException;
 import java.util.function.Consumer;
 
+import static org.hamcrest.Matchers.hasToString;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -37,11 +38,15 @@ import static com.orange.espr4fastdata.util.Util.*;
 
 
 /**
- * Test for the NGSI SubscribeContext request
+ * Test for the NGSI UnsubscribeContext request
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-public class SubscribeContextRequestTest {
+public class UnsubscribeContextRequestTest {
+
+    private final String providerURL = "http://localhost/unsubscribeContext";
+
+    private final String subscriptionID = "SLJLSKDM%LSKDM%LKDS";
 
     private MockRestServiceServer mockServer;
 
@@ -54,7 +59,7 @@ public class SubscribeContextRequestTest {
     @Inject
     private AsyncRestTemplate asyncRestTemplate;
 
-    private Consumer<SubscribeContextResponse> onSuccess = Mockito.mock(Consumer.class);
+    private Consumer<UnsubscribeContextResponse> onSuccess = Mockito.mock(Consumer.class);
 
     private Consumer<Throwable> onFailure = Mockito.mock(Consumer.class);
 
@@ -70,12 +75,12 @@ public class SubscribeContextRequestTest {
     }
 
     @Test
-    public void subscribeContextRequestWith500() throws URISyntaxException {
+    public void unsubscribeContextRequestWith500() throws URISyntaxException {
 
-        this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(providerURL)).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", createSubscribeContextTemperature(), onSuccess, onFailure);
+        ngsiClient.unsubscribeContext(providerURL, subscriptionID, onSuccess, onFailure);
         this.mockServer.verify();
 
         verify(onFailure).accept(any(HttpClientErrorException.class));
@@ -83,12 +88,12 @@ public class SubscribeContextRequestTest {
     }
 
     @Test
-    public void subscribeContextRequestWith404() throws URISyntaxException {
+    public void unsubscribeContextRequestWith404() throws URISyntaxException {
 
-        this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(providerURL)).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", createSubscribeContextTemperature(), onSuccess, onFailure);
+        ngsiClient.unsubscribeContext(providerURL, subscriptionID, onSuccess, onFailure);
 
         this.mockServer.verify();
 
@@ -97,28 +102,29 @@ public class SubscribeContextRequestTest {
     }
 
     @Test
-    public void subscribeContextRequestOK() throws Exception {
+    public void unsubscribeContextRequestOK() throws Exception {
 
-        String responseBody = json(mapping, createSubscribeContextResponseTemperature());
+        String responseBody = json(mapping, createUnsubscribeContextResponse(CodeEnum.CODE_200, subscriptionID));
 
-        this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
-                .andExpect(jsonPath("$.entities[*]", hasSize(1))).andExpect(jsonPath("$.entities[0].id").value("Room1"))
-                .andExpect(jsonPath("$.entities[0].type").value("Room")).andExpect(jsonPath("$.entities[0].isPattern").value(false))
-                .andExpect(jsonPath("$.attributes[*]", hasSize(1))).andExpect(jsonPath("$.attributes[0]").value("temperature"))
-                .andExpect(jsonPath("$.reference").value("http://localhost:1028/accumulate")).andExpect(jsonPath("$.duration").value("P1M"))
-                .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+        this.mockServer.expect(requestTo(providerURL)).andExpect(method(HttpMethod.POST))
+                .andExpect(jsonPath("$.subscriptionId", hasToString(subscriptionID))).andRespond(
+                withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", createSubscribeContextTemperature(), onSuccess, onFailure);
+        ngsiClient.unsubscribeContext(providerURL, subscriptionID, onSuccess, onFailure);
+
         this.mockServer.verify();
 
         verify(onFailure, never()).accept(any(Throwable.class));
 
-        ArgumentCaptor<SubscribeContextResponse> responseArg = ArgumentCaptor.forClass(SubscribeContextResponse.class);
+        ArgumentCaptor<UnsubscribeContextResponse> responseArg = ArgumentCaptor.forClass(UnsubscribeContextResponse.class);
         verify(onSuccess).accept(responseArg.capture());
 
-        SubscribeContextResponse response = responseArg.getValue();
-        Assert.assertNull(response.getSubscribeError());
-        Assert.assertEquals("12345678", response.getSubscribeResponse().getSubscriptionId());
-        Assert.assertEquals("P1M", response.getSubscribeResponse().getDuration());
+        UnsubscribeContextResponse response = responseArg.getValue();
+        Assert.assertEquals(subscriptionID, response.getSubscriptionId());
+        Assert.assertEquals(CodeEnum.CODE_200.getLabel(), response.getStatusCode().getCode());
+    }
+
+    private UnsubscribeContextResponse createUnsubscribeContextResponse(CodeEnum code, String subcriptionID) {
+        return new UnsubscribeContextResponse(new StatusCode(code), subcriptionID);
     }
 }

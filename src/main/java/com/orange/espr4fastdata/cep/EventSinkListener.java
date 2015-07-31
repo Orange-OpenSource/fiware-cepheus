@@ -11,7 +11,7 @@ package com.orange.espr4fastdata.cep;
 import com.espertech.esper.client.*;
 import com.orange.espr4fastdata.model.*;
 import com.orange.espr4fastdata.model.Configuration;
-import com.orange.ngsi.client.UpdateContextRequest;
+import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
     private static Logger logger = LoggerFactory.getLogger(EventSinkListener.class);
 
     @Autowired
-    private UpdateContextRequest updateContextRequest;
+    private NgsiClient ngsiClient;
 
     /**
      * All outgoing outgoingEvents accessible by type
@@ -48,7 +48,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
             return;
         }
 
-        logger.debug("UPDATE for {} ({})", epStatement.getText(), added.length);
+        logger.debug("Events out from {} ({})", epStatement.getText(), added.length);
 
         for (EventBean eventBean : added) {
 
@@ -56,7 +56,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
             if (logger.isDebugEnabled()) {
                 logger.debug("EventType {} eventBean {}", eventBean.getEventType().getName(), eventBean.toString());
                 for (String propertyName : eventBean.getEventType().getPropertyNames()) {
-                    logger.debug("property {} value {} ", propertyName, eventBean.get(propertyName));
+                    logger.debug(" property {} value {} ", propertyName, eventBean.get(propertyName));
                 }
             }
 
@@ -69,7 +69,11 @@ public class EventSinkListener implements StatementAwareUpdateListener {
                 UpdateContext updateContext = buildUpdateContextRequest(eventBean, eventTypeOut);
                 if (updateContext != null) {
                     for (Broker broker : eventTypeOut.getBrokers()) {
-                        updateContextRequest.postUpdateContextRequest(updateContext, broker);
+                        ngsiClient.updateContext(broker.getUrl(), updateContext, updateContextResponse -> {
+                            logger.debug("UpdateContext completed for {}", broker.getUrl());
+                        }, throwable -> {
+                            logger.warn("UpdateContext failed for {}: {}", broker.getUrl(), throwable.toString());
+                        });
                     }
                 }
             }
