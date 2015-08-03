@@ -1,6 +1,6 @@
 package com.orange.ngsi.client;
 
-import com.orange.espr4fastdata.Application;
+import com.orange.cepheus.Application;
 
 import com.orange.ngsi.model.*;
 import org.junit.After;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
-import static com.orange.espr4fastdata.util.Util.*;
+import static com.orange.cepheus.util.Util.*;
 
 
 /**

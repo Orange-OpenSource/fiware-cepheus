@@ -34,7 +34,7 @@ Goal:
 
 ### Installing from pulling [Sonatype Central Maven](http://central.sonatype.org/)
 
-	mvn -DgroupId=com.orange.espr4fastdata -DartifactId=espR4FastData -Dversion=4.4.3-SNAPSHOT -Dtransitive=false dependency:get
+	mvn -DgroupId=com.orange.cepheus -DartifactId=cepheus-cep -Dversion=4.4.3-SNAPSHOT -Dtransitive=false dependency:get
 
 ### Installing from Docker
 The docker manual can be found [here](docker/README.md)

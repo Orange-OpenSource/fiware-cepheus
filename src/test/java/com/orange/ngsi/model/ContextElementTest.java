@@ -10,7 +10,7 @@ package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.orange.espr4fastdata.Application;
+import com.orange.cepheus.Application;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -21,7 +21,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static com.orange.espr4fastdata.util.Util.*;
+import static com.orange.cepheus.util.Util.*;
 
 /**
  * Tests for ContextElement

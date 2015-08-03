@@ -3,12 +3,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.orange.espr4fastdata</groupId>
-    <artifactId>espR4FastData</artifactId>
+    <groupId>com.orange.cepheus</groupId>
+    <artifactId>cepheus-cep</artifactId>
     <version>4.4.3-SNAPSHOT</version>
-    <name>espR4fastData for fiware</name>
-    <description>Fiware project bringing Complex Event Processing capability to NGSI gateways </description>
-    <url>https://github.com/Orange-OpenSource/EspR4FastData</url>
+    <name>fiware-cepheus</name>
+    <description>Fiware project bringing Complex Event Processing capability to NGSI gateways</description>
+    <url>https://github.com/Orange-OpenSource/fiware-cepheus</url>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

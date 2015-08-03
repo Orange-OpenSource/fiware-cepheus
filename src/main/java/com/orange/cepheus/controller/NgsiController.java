@@ -1,0 +1,179 @@
+/*
+ * Copyright (C) 2015 Orange
+ *
+ * This software is distributed under the terms and conditions of the 'GNU GENERAL PUBLIC LICENSE
+ * Version 2' license which can be found in the file 'LICENSE.txt' in this package distribution or
+ * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
+ */
+
+package com.orange.cepheus.controller;
+
+import com.orange.cepheus.cep.ComplexEventProcessor;
+import com.orange.cepheus.cep.EventMapper;
+import com.orange.cepheus.cep.SubscriptionManager;
+import com.orange.cepheus.exception.EventProcessingException;
+import com.orange.cepheus.exception.MissingRequestParameterException;
+import com.orange.cepheus.exception.TypeNotFoundException;
+import com.orange.cepheus.model.Event;
+import com.orange.ngsi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+
+/**
+ * Controller for the NGSI 9/10 requests
+ */
+@RestController
+@RequestMapping("/v1")
+public class NgsiController {
+
+    private static Logger logger = LoggerFactory.getLogger(AdminController.class);
+
+    private final ComplexEventProcessor complexEventProcessor;
+
+    @Autowired
+    public NgsiController(ComplexEventProcessor complexEventProcessor) {
+        this.complexEventProcessor = complexEventProcessor;
+    }
+
+    @Autowired
+    public EventMapper eventMapper;
+
+    @Autowired
+    public SubscriptionManager subscriptionManager;
+
+    @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<NotifyContextResponse> notifyContext(@RequestBody final NotifyContext notify) throws EventProcessingException, TypeNotFoundException, MissingRequestParameterException {
+
+        checkNotifyContext(notify);
+
+        logger.debug("notifyContext incoming request id:{} originator:{}", notify.getSubscriptionId(), notify.getOriginator());
+
+        NotifyContextResponse notifyContextResponse = new NotifyContextResponse();
+
+        // Only handle notification if it has a valid subscription
+        if (subscriptionManager.isSubscriptionValid(notify.getSubscriptionId())) {
+            for (ContextElementResponse response : notify.getContextElementResponseList()) {
+                ContextElement element = response.getContextElement();
+                Event event = eventMapper.eventFromContextElement(element);
+                complexEventProcessor.processEvent(event);
+            }
+            notifyContextResponse.setResponseCode(new StatusCode(CodeEnum.CODE_200));
+        } else {
+            logger.warn("notifyContext request: invalid subscription id {} / {}", notify.getSubscriptionId(), notify.getOriginator());
+            notifyContextResponse.setResponseCode(new StatusCode(CodeEnum.CODE_470, notify.getSubscriptionId()));
+        }
+
+        return new ResponseEntity<>(notifyContextResponse, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/updateContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public UpdateContextResponse updateContext(@RequestBody final UpdateContext update) throws EventProcessingException, MissingRequestParameterException, TypeNotFoundException {
+
+        checkUpdateContext(update);
+
+        logger.debug("updateContext incoming request action:{}", update.getUpdateAction());
+
+        List<ContextElementResponse> responses = new LinkedList<>();
+
+        for (ContextElement element : update.getContextElements()) {
+            StatusCode statusCode;
+            try {
+                Event event = eventMapper.eventFromContextElement(element);
+                complexEventProcessor.processEvent(event);
+                statusCode = new StatusCode(CodeEnum.CODE_200);
+            } catch (EventProcessingException e) {
+                logger.error("updateContext incoming request: failed to process event {}", e.toString());
+                statusCode = new StatusCode(CodeEnum.CODE_472, "");
+                statusCode.setDetail(e.getMessage());
+            }
+            responses.add(new ContextElementResponse(element, statusCode));
+        }
+
+        UpdateContextResponse response = new UpdateContextResponse();
+        response.setContextElementResponses(responses);
+        return response;
+    }
+
+    private void checkUpdateContext(UpdateContext updateContext) throws MissingRequestParameterException {
+
+        if (updateContext.getUpdateAction() == null) {
+            throw new MissingRequestParameterException("updateAction", "UpdateAction");
+        }
+
+        if ((updateContext.getContextElements() == null) && (!updateContext.getUpdateAction().isDelete())) {
+            throw new MissingRequestParameterException("contextElements", "List<ContextElement>");
+        }
+
+        if (updateContext.getContextElements().isEmpty() && (!updateContext.getUpdateAction().isDelete())) {
+            throw new MissingRequestParameterException("contextElements", "List<ContextElement>");
+        }
+
+        for (ContextElement contextElement : updateContext.getContextElements()) {
+            checkContextElement(contextElement);
+        }
+    }
+
+    private void checkNotifyContext(NotifyContext notifyContext) throws MissingRequestParameterException {
+
+        if ((notifyContext.getSubscriptionId() == null) || (notifyContext.getSubscriptionId().isEmpty())) {
+            throw new MissingRequestParameterException("subscriptionId", "string");
+        }
+
+        if ((notifyContext.getOriginator() == null) || (notifyContext.getOriginator().toString().isEmpty())){
+            throw new MissingRequestParameterException("originator", "URI");
+        }
+
+        if (notifyContext.getContextElementResponseList() == null)  {
+            throw new MissingRequestParameterException("contextElementResponse", "List<ContextElementResponse>");
+        }
+
+
+        for (ContextElementResponse contextElementResponse : notifyContext.getContextElementResponseList()) {
+            checkContextElementResponse(contextElementResponse);
+        }
+    }
+
+    private void checkContextElementResponse(ContextElementResponse contextElementResponse) throws MissingRequestParameterException {
+
+        if (contextElementResponse.getStatusCode() == null) {
+            throw new MissingRequestParameterException("statusCode", "StatusCode");
+        }
+
+        if (contextElementResponse.getContextElement() == null) {
+            throw new MissingRequestParameterException("contextElement", "ContextElement");
+        }
+
+        checkContextElement(contextElementResponse.getContextElement());
+    }
+
+    private void checkContextElement(ContextElement contextElement) throws MissingRequestParameterException {
+
+        if (contextElement.getEntityId() == null) {
+            throw new MissingRequestParameterException("entityId", "EntityId");
+        }
+
+        checkEntityId(contextElement.getEntityId());
+    }
+
+    private void checkEntityId(EntityId entityId) throws MissingRequestParameterException {
+
+        if ((entityId.getId() == null) || (entityId.getId().isEmpty())) {
+            throw new MissingRequestParameterException("id", "string");
+        }
+
+        if ((entityId.getType() == null) || (entityId.getType().isEmpty())) {
+            throw new MissingRequestParameterException("type", "string");
+        }
+
+        if (entityId.getIsPattern() == null)  {
+            entityId.setIsPattern(false);
+        }
+    }
+}

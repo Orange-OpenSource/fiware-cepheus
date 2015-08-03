@@ -8,7 +8,7 @@
 
 package com.orange.ngsi.model;
 
-import com.orange.espr4fastdata.Application;
+import com.orange.cepheus.Application;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

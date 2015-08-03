@@ -8,7 +8,7 @@
 
 package com.orange.ngsi.client;
 
-import com.orange.espr4fastdata.Application;
+import com.orange.cepheus.Application;
 import com.orange.ngsi.model.UpdateAction;
 import com.orange.ngsi.model.UpdateContextResponse;
 import org.junit.After;
@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 import static org.mockito.Mockito.*;
-import static com.orange.espr4fastdata.util.Util.*;
+import static com.orange.cepheus.util.Util.*;
 
 import javax.inject.Inject;
 

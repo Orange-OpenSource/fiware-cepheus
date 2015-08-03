@@ -1,0 +1,57 @@
+/*
+ * Copyright (C) 2015 Orange
+ *
+ * This software is distributed under the terms and conditions of the 'GNU GENERAL PUBLIC LICENSE
+ * Version 2' license which can be found in the file 'LICENSE.txt' in this package distribution or
+ * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
+ */
+
+package com.orange.cepheus;
+
+import com.orange.cepheus.cep.EsperEventProcessor;
+import com.orange.cepheus.cep.ComplexEventProcessor;
+import com.orange.cepheus.cep.SubscriptionManager;
+import com.orange.cepheus.persistence.JsonPersistence;
+import com.orange.cepheus.persistence.Persistence;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+
+@SpringBootApplication
+@ComponentScan("com.orange")
+@EnableScheduling
+public class Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+    @Bean
+    public ComplexEventProcessor complexEventProcessor() {
+        return new EsperEventProcessor();
+    }
+
+    @Bean
+    public Persistence persistence() {
+        return new JsonPersistence();
+    }
+
+    @Bean
+    public SubscriptionManager subscriptionManager() {
+        return new SubscriptionManager();
+    }
+
+    @Bean
+    public TaskScheduler taskScheduler() {
+        return new ThreadPoolTaskScheduler();
+    }
+
+    @Bean
+    public Init init(ComplexEventProcessor complexEventProcessor, Persistence persistence, SubscriptionManager subscriptionManager) {
+        return new Init(complexEventProcessor, persistence, subscriptionManager);
+    }
+}
