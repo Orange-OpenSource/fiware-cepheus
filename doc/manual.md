@@ -2,16 +2,16 @@
 
 # Introduction
 
-The goal of EspR4FastData is to provide a Complex Event Processor (CEP) at the gateway level with a NGSI 9/10 interface for the Fiware Data Handling GE.
+The goal of fiware-cepheus is to provide a Complex Event Processor (CEP) at the gateway level with a NGSI 9/10 interface for the Fiware Data Handling GE.
 
-EspR4FastData allows to locally process basic events (from data provided by sensors) and generate high-level aggregated events.
+fiware-cepheus allows to locally process basic events (from data provided by sensors) and generate high-level aggregated events.
 All input and output of events is done though HTTP requests conforming to the NGSI information model.
 
 # Glossary
 
 ##Fiware terms
 
-- Gateway / edge:  intermediary NGSI component, optional executing EspR4FastData (typically a RaspberryPi deployed near the sensors).
+- Gateway / edge:  intermediary NGSI component, optional executing fiware-cepheus (typically a RaspberryPi deployed near the sensors).
 - Sensors : NGSI capable devices that can transmit some data as Context Entities to other NGSI enabled components.
 
 ## NGSI terms
@@ -52,7 +52,7 @@ The Esper CEP engine imposes several restrictions to the Context Entities.
 ### Type is mandatory
 
 All events must have a given type (an Event type) that define a strict set of typed attributes. Event types must be declared before any event can be processed by the CEP engine.
-Based on this strong requirement, the EspR4FastData implementation **requires** the updates made by the Context Providers to provide a mandatory `type` field for all Context Entities.
+Based on this strong requirement, the fiware-cepheus implementation **requires** the updates made by the Context Providers to provide a mandatory `type` field for all Context Entities.
 Updates to Context Elements missing this type information will be discarded.
 
 ### Id is a reserved attribute key
@@ -99,28 +99,28 @@ can be seen as this table (or event stream) named "RoomSensors":
 
 # API Overview
 
-EspR4FastData has two different APIs:
+Fiware-cepheus has two different APIs:
 - the admin REST endpoint provides access to the current configuration and means to update it.
 - the NGSI endpoints provides the means for communication with other NGSI components (Context Providers and Context Brokers).
 
 ## Setup endpoint
 
-The setup endpoint defines a single REST endpoint where the whole EspR4FastData configuration is available. The endpoint path is '/v1/admin/config'.
+The setup endpoint defines a single REST endpoint where the whole fiware-cepheus configuration is available. The endpoint path is '/v1/admin/config'.
 The endpoint accepts GET (to return the actual JSON configuration) or POST (to apply a new JSON configuration). The endpoint will return 200 Ok on success, or 400 Bad Request if the new configuration cannot be applied.
 
 ## NGSI endpoints
 
-Currently, EspR4FastData only supports a small subset of NGSI standard operations.
+Currently, fiware-cepheus only supports a small subset of NGSI standard operations.
 
-EspR4FastData can work in two different (non exclusive) configurations :
+Fiware-cepheus can work in two different (non exclusive) configurations :
 - as a broker, by receiving directly updates though the `v1/updateContext` operation.
 - as a subscriber by receiving `v1/notifyContext` after it registered to a context broker using `v1/subscribeContext`.
 
-EspR4FastData will then publish updates to Context Entities (on outgoing events) using the `v1/updateContext` to a broker.
+Fiware-cepheus will then publish updates to Context Entities (on outgoing events) using the `v1/updateContext` to a broker.
 
 # Configuration
 
-The configuration received by EspR4FastData is persistently on each gateway. It is only saved once it was successfully accepted by the CEP engine. The configuration is simple JSON object containing the complete description of the behavior of the CEP engine (a set of EPL statements) and the mapping between the NGSI Context Entities and CEP Events.
+The configuration received by fiware-cepheus is persistently on each gateway. It is only saved once it was successfully accepted by the CEP engine. The configuration is simple JSON object containing the complete description of the behavior of the CEP engine (a set of EPL statements) and the mapping between the NGSI Context Entities and CEP Events.
 
 This is the current format is :
 
@@ -180,7 +180,7 @@ There is two ways Context Providers can notify the CEP:
  - The simplest way is for the Context Provider is to send /updateContext requests to the CEP. This does not require the Context Providers to be listed in the "providers" field.
 ```sequence
 participant IoT Agent as C
-participant EspR4FastData as B
+participant Cepheus as B
 
 C->B: update(S1.temp, 27)
 C->B: update(S1.temp, 25)
@@ -189,7 +189,7 @@ C->B: update(S1.temp, 25)
 
 ```sequence
 participant Context Provider as C
-participant EspR4FastData as B
+participant Cepheus as B
 B->C: subscribe(S1.temp)
 C->B: notify(S1.temp, 27)
 C->B: notify(S1.temp, 25)
@@ -201,7 +201,7 @@ The "out" array defines the list of outgoing events (those generated by the CEP)
 For each broker, the CEP will trigger /updateContext requests to the broker on each event update.
 
 ```sequence
-participant EspR4FastData as A
+participant Cepheus as A
 participant Remote broker as B
 A->B: update(S1.temp, 25)
 A->B: update(S1.temp, 26)
