@@ -39,7 +39,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static com.orange.cepheus.Util.*;
-import static com.orange.ngsi.Util.*;
 
 /**
  * Tests for the NGSI controller

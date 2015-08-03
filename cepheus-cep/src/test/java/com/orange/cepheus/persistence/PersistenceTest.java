@@ -31,7 +31,7 @@ import static com.orange.cepheus.Util.*;
 @SpringApplicationConfiguration(classes = Application.class)
 public class PersistenceTest {
 
-    private String path = "/tmp/esper4fastdata.json";
+    private String path = "/tmp/cepheus.json";
 
     @Autowired
     private Persistence persistence;

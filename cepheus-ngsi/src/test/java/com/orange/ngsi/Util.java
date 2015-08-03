@@ -50,7 +50,7 @@ public class Util {
         contextElementResponse.setStatusCode(new StatusCode(CODE_200));
 
         UpdateContextResponse updateContextResponse = new UpdateContextResponse();
-        updateContextResponse.setErrorCode(new StatusCode(CodeEnum.CODE_200));
+        updateContextResponse.setErrorCode(new StatusCode(CODE_200));
         updateContextResponse.setContextElementResponses(Collections.singletonList(contextElementResponse));
         return updateContextResponse;
     }
@@ -119,6 +119,7 @@ public class Util {
         subscribeContextResponse.setSubscribeResponse(subscribeResponse);
         return subscribeContextResponse;
     }
+
 
     static public String json(MappingJackson2HttpMessageConverter mapping, Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

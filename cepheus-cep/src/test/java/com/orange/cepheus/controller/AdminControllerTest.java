@@ -23,10 +23,13 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.io.IOException;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -35,7 +38,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.junit.Assert.assertEquals;
 import static com.orange.cepheus.Util.*;
-import static com.orange.ngsi.Util.*;
 
 
 /**
@@ -153,4 +155,5 @@ public class AdminControllerTest {
                 .andExpect(jsonPath("$.code").value("500"))
                 .andExpect(jsonPath("$.reasonPhrase").value("ERROR"));
     }
+
 }

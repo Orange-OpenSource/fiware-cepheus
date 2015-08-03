@@ -31,7 +31,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static com.orange.cepheus.Util.*;
-import static com.orange.ngsi.Util.*;
 
 /**
  * Test for the admin controller
