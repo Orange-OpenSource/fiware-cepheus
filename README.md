@@ -1,6 +1,6 @@
 # FIWARE Cepheus
 
-[![Build Status](https://travis-ci.org/Orange-OpenSource/EspR4FastData.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/EspR4FastData)
+[![Build Status](https://travis-ci.org/Orange-OpenSource/fiware-cepheus.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/fiware-cepheus)
 [![Coverity Scan Status](https://scan.coverity.com/projects/5913/badge.svg)](https://scan.coverity.com/projects/5913)
 [![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/EspR4FastData/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/EspR4FastData?branch=master)
 
