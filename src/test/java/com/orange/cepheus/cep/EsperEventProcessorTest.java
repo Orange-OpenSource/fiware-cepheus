@@ -32,7 +32,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 import static org.junit.Assert.assertEquals;
-import static com.orange.cepheus.util.Util.*;
+import static com.orange.cepheus.Util.*;
 
 
 /**
@@ -79,7 +79,7 @@ public class EsperEventProcessorTest {
     }
 
     /**
-     * Check that a Configuration exception is thrown when an unknown property 'BAD' is added to a statement
+     * Check that a TestConfiguration exception is thrown when an unknown property 'BAD' is added to a statement
      * @throws ConfigurationException
      */
     @Test(expected = ConfigurationException.class)
@@ -92,7 +92,7 @@ public class EsperEventProcessorTest {
     }
 
     /**
-     * Check that a Configuration exception is thrown when an unknown event type 'BAD' is referenced in a statement
+     * Check that a TestConfiguration exception is thrown when an unknown event type 'BAD' is referenced in a statement
      * @throws ConfigurationException
      */
     @Test(expected = ConfigurationException.class)

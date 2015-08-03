@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static com.orange.cepheus.util.Util.*;
+import static com.orange.ngsi.Util.*;
 
 /**
  * Test for SubscribeContext

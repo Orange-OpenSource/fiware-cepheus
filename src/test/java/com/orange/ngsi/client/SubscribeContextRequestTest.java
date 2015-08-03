@@ -1,7 +1,6 @@
 package com.orange.ngsi.client;
 
-import com.orange.cepheus.Application;
-
+import com.orange.ngsi.TestConfiguration;
 import com.orange.ngsi.model.*;
 import org.junit.After;
 import org.junit.Assert;
@@ -33,14 +32,13 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
-import static com.orange.cepheus.util.Util.*;
-
+import static com.orange.ngsi.Util.*;
 
 /**
  * Test for the NGSI SubscribeContext request
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(classes = TestConfiguration.class)
 public class SubscribeContextRequestTest {
 
     private MockRestServiceServer mockServer;

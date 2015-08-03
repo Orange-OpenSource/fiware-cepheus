@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
-import static com.orange.cepheus.util.Util.*;
+import static com.orange.cepheus.Util.*;
 
 /**
  * Tests for SubscriptionManager

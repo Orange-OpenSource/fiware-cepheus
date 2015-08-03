@@ -21,7 +21,7 @@ import java.io.File;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static com.orange.cepheus.util.Util.*;
+import static com.orange.cepheus.Util.*;
 
 
 /**

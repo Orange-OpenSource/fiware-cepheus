@@ -34,10 +34,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static com.orange.cepheus.util.Util.*;
+import static com.orange.cepheus.Util.*;
+import static com.orange.ngsi.Util.*;
 
 /**
- * Test the Configuration validation by the Admin controller
+ * Test the TestConfiguration validation by the Admin controller
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {Application.class, AdminControllerValidationTest.TestConfig.class})

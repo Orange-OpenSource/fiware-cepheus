@@ -10,7 +10,7 @@ package com.orange.cepheus.controller;
 
 import com.orange.cepheus.Application;
 import com.orange.cepheus.model.Configuration;
-import com.orange.cepheus.util.Util;
+import com.orange.cepheus.Util;
 import com.orange.ngsi.model.CodeEnum;
 import com.orange.ngsi.model.NotifyContext;
 import com.orange.ngsi.model.UpdateAction;
@@ -35,14 +35,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertThat;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static com.orange.cepheus.Util.*;
+import static com.orange.ngsi.Util.*;
 
 /**
- * Created by pborscia on 05/06/2015.
+ * Tests for the NGSI controller
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
@@ -50,8 +50,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class NgsiControllerTest {
 
     private MockMvc mockMvc;
-
-    private Util util = new Util();
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -63,7 +61,7 @@ public class NgsiControllerTest {
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        Configuration configuration = util.getBasicConf();
+        Configuration configuration = getBasicConf();
         mockMvc.perform(post("/v1/admin/config")
                 .content(this.json(configuration))
                 .contentType(MediaType.APPLICATION_JSON))
@@ -75,7 +73,7 @@ public class NgsiControllerTest {
 
         NotifyContext notifyContext = null;
         try {
-            notifyContext = util.createNotifyContextTempSensor(0);
+            notifyContext = createNotifyContextTempSensor(0);
         } catch (URISyntaxException e) {
             Assert.fail("Not expected URISyntaxException for postNotifyContextBeforeConf");
         }
@@ -170,7 +168,7 @@ public class NgsiControllerTest {
 
         UpdateContext updateContext = null;
         try {
-            updateContext = util.createUpdateContextPressureSensor();
+            updateContext = createUpdateContextPressureSensor();
         } catch (URISyntaxException e) {
             Assert.fail("Not expected Exception for postUpdateContextWithTypeNotExistsInConfiguration : " + e);
         }
@@ -197,7 +195,7 @@ public class NgsiControllerTest {
 
         UpdateContext updateContext = null;
         try {
-            updateContext = util.createUpdateContextTempSensor(0);
+            updateContext = createUpdateContextTempSensor(0);
         } catch (URISyntaxException e) {
             Assert.fail("Not expected URISyntaxException for postUpdateContextBeforeConf");
         }

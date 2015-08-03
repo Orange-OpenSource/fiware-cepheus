@@ -61,7 +61,7 @@ public class EventSinkListenerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        // Configuration setup
+        // TestConfiguration setup
         Configuration configuration = new Configuration();
         EventTypeOut eventTypeOut = new EventTypeOut("OUT1", "TempSensorAvg", false);
         eventTypeOut.addBroker(broker);

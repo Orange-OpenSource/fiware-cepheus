@@ -30,10 +30,11 @@ import java.util.Random;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static com.orange.cepheus.util.Util.*;
+import static com.orange.cepheus.Util.*;
+import static com.orange.ngsi.Util.*;
 
 /**
- * Created by pborscia on 05/06/2015.
+ * Test for the admin controller
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)

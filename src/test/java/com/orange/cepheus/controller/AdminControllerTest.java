@@ -34,7 +34,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.junit.Assert.assertEquals;
-import static com.orange.cepheus.util.Util.*;
+import static com.orange.cepheus.Util.*;
+import static com.orange.ngsi.Util.*;
 
 
 /**
