@@ -54,11 +54,6 @@ public class HttpConfiguration {
     @Bean
     public CloseableHttpAsyncClient asyncHttpClient() throws IOReactorException {
 
-        PoolingNHttpClientConnectionManager connectionManager = new PoolingNHttpClientConnectionManager(
-                    new DefaultConnectingIOReactor(IOReactorConfig.DEFAULT));
-            connectionManager.setMaxTotal(maxTotalConnections);
-            connectionManager.setDefaultMaxPerRoute(maxConnectionsPerRoute);
-
         RequestConfig config = RequestConfig.custom()
                 .setConnectTimeout(requestTimeout)
                 .setSocketTimeout(requestTimeout)
@@ -66,8 +61,17 @@ public class HttpConfiguration {
                 .build();
 
         CloseableHttpAsyncClient httpclient = HttpAsyncClientBuilder
-                .create().setConnectionManager(connectionManager)
+                .create().setConnectionManager(poolingNHttpClientConnectionManager())
                 .setDefaultRequestConfig(config).build();
         return httpclient;
+    }
+
+    @Bean
+    PoolingNHttpClientConnectionManager poolingNHttpClientConnectionManager() throws IOReactorException {
+        PoolingNHttpClientConnectionManager connectionManager = new PoolingNHttpClientConnectionManager(
+                new DefaultConnectingIOReactor(IOReactorConfig.DEFAULT));
+        connectionManager.setMaxTotal(maxTotalConnections);
+        connectionManager.setDefaultMaxPerRoute(maxConnectionsPerRoute);
+        return connectionManager;
     }
 }

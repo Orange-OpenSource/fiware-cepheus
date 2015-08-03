@@ -96,4 +96,12 @@ public class SubscribeContext {
     public void setThrottling(String throttling) {
         this.throttling = throttling;
     }
+
+    @Override
+    public String toString() {
+        return "SubscribeContext{" +
+                "entityIdList=" + entityIdList +
+                ", attributeList=" + attributeList +
+                '}';
+    }
 }

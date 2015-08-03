@@ -1,6 +1,7 @@
 package com.orange.ngsi.client;
 
 import com.orange.ngsi.model.*;
+import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.AsyncRestTemplate;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.function.Consumer;
 
@@ -25,6 +27,17 @@ public class NgsiClient {
 
     @Autowired
     public AsyncRestTemplate asyncRestTemplate;
+
+    @Autowired
+    public PoolingNHttpClientConnectionManager poolingNHttpClientConnectionManager;
+
+    /**
+     * Let some time for the client to shutdown gracefully
+     * @throws IOException
+     */
+    public void shutdownGracefully() throws IOException {
+        poolingNHttpClientConnectionManager.shutdown(10000);
+    }
 
     /**
      * Send an update request

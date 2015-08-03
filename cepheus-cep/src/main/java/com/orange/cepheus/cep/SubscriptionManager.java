@@ -8,10 +8,7 @@
 
 package com.orange.cepheus.cep;
 
-import com.orange.cepheus.model.Attribute;
-import com.orange.cepheus.model.Configuration;
-import com.orange.cepheus.model.EventTypeIn;
-import com.orange.cepheus.model.Provider;
+import com.orange.cepheus.model.*;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.SubscribeContext;
@@ -23,6 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
+import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
@@ -129,6 +128,27 @@ public class SubscriptionManager {
         return subscriptions.isSubscriptionValid(subscriptionId);
     }
 
+    @PreDestroy
+    public void shutdownGracefully() {
+
+        logger.info("Shutting down SubscriptionManager (cleanup subscriptions)");
+
+        // Cancel the scheduled subscription task
+        if (scheduledFuture != null) {
+            scheduledFuture.cancel(true);
+        }
+
+        // Unsubscribe from all providers
+        eventTypeIns.forEach(eventTypeIn -> eventTypeIn.getProviders().forEach(this::unsubscribeProvider));
+
+        // Try to stop gracefully (letting all unsubscribe complete)
+        try {
+            ngsiClient.shutdownGracefully();
+        } catch (IOException e) {
+            logger.warn("Failed to shutdown gracefully NGSI pending requests", e);
+        }
+    }
+
     /**
      * Cancel any previous schedule, run subscription task immediately and schedule it again.
      */
@@ -176,32 +196,59 @@ public class SubscriptionManager {
                     if (subscribeContext == null) {
                         subscribeContext = buildSubscribeContext(eventType);
                     }
-                    doSubscription(provider, subscribeContext, subscriptions);
+                    subscibeProvider(provider, subscribeContext, subscriptions);
                 }
             }
         }
     }
 
-    private void doSubscription(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
-        logger.debug("Updating subscription for {}", provider.getUrl());
+    /**
+     * Subscribe to a provider
+     * @param provider
+     * @param subscribeContext
+     * @param subscriptions
+     */
+    private void subscibeProvider(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
+        logger.debug("Subscribe to {} for {}", provider.getUrl(), subscribeContext.toString());
 
-        ngsiClient.subscribeContext(provider.getUrl(), null, subscribeContext,
-                subscribeContextResponse -> {
-                    SubscribeError error = subscribeContextResponse.getSubscribeError();
-                    if (error == null) {
-                        String subscriptionId = subscribeContextResponse.getSubscribeResponse().getSubscriptionId();
+        ngsiClient.subscribeContext(provider.getUrl(), null, subscribeContext, subscribeContextResponse -> {
+            SubscribeError error = subscribeContextResponse.getSubscribeError();
+            if (error == null) {
+                String subscriptionId = subscribeContextResponse.getSubscribeResponse().getSubscriptionId();
 
-                        provider.setSubscriptionDate(Instant.now());
-                        provider.setSubscriptionId(subscriptionId);
-                        subscriptions.addSubscription(subscriptionId);
+                provider.setSubscriptionDate(Instant.now());
+                provider.setSubscriptionId(subscriptionId);
+                subscriptions.addSubscription(subscriptionId);
 
-                        logger.debug("Subscription done for {}", provider.getUrl());
-                    } else {
-                        logger.warn("Error during subscription for {}: {}", provider.getUrl(), error.getErrorCode());
-                    }
-                }, throwable -> {
-                    logger.warn("Error during subscription for {}: {}", provider.getUrl(), throwable.toString());
-                });
+                logger.debug("Subscription done for {}", provider.getUrl());
+            } else {
+                logger.warn("Error during subscription for {}: {}", provider.getUrl(), error.getErrorCode());
+            }
+        }, throwable -> {
+            logger.warn("Error during subscription for {}: {}", provider.getUrl(), throwable.toString());
+        });
+    }
+
+    /**
+     * Unsubscribe from a provider
+     * @param provider the provider to unusubscribe from
+     */
+    private void unsubscribeProvider(Provider provider) {
+        final String subscriptionID = provider.getSubscriptionId();
+        if (subscriptionID != null) {
+            logger.debug("Unsubscribe from {} for {}", provider.getUrl(), provider.getSubscriptionId());
+
+            // Don't wait for result, remove immediately from subscriptions list
+            subscriptions.removeSubscription(subscriptionID);
+
+            ngsiClient.unsubscribeContext(provider.getUrl(), null, provider.getSubscriptionId(),
+                    response -> logger.debug("Unsubribe response for {}: {}", subscriptionID, response.getStatusCode().getCode()),
+                    throwable -> logger.debug("Error during unsubscribe for {}: {}", subscriptionID, throwable.toString()));
+
+            // Reset provider subscription data
+            provider.setSubscriptionDate(null);
+            provider.setSubscriptionId(null);
+        }
     }
 
     private SubscribeContext buildSubscribeContext(EventTypeIn eventType) {
@@ -223,21 +270,35 @@ public class SubscriptionManager {
     private Subscriptions migrateSubscriptions(Configuration configuration) {
         Subscriptions newSubscriptions = new Subscriptions();
 
-        // For every eventType, find the corresponding one in previous configuration
-        configuration.getEventTypeIns().forEach(
-                eventTypeIn -> eventTypeIns.stream().filter(e -> e.equals(eventTypeIn)).findFirst().ifPresent(e -> {
+        // For every previous eventType, find the corresponding one in new configuration
+        eventTypeIns.forEach(oldEventTypeIn -> {
+            Optional<EventTypeIn> maybeEventTypeIn =
+                    configuration.getEventTypeIns().stream().filter(e -> e.equals(oldEventTypeIn)).findFirst();
+            if (maybeEventTypeIn.isPresent()) {
+                EventTypeIn newEventTypeIn = maybeEventTypeIn.get();
 
-                    // For every provider, find the corresponding one in previous configuration
-                    eventTypeIn.getProviders().forEach(
-                            provider -> e.getProviders().stream().filter(p -> p.getUrl().equals(provider.getUrl())).findFirst()
-                                    .ifPresent(oldProvider -> {
+                // For every previous provider, find the corresponding one in new configuration
+                oldEventTypeIn.getProviders().forEach(oldProvider -> {
 
-                                        // Migrate the subscription
-                                        provider.setSubscriptionId(oldProvider.getSubscriptionId());
-                                        provider.setSubscriptionDate(oldProvider.getSubscriptionDate());
-                                        newSubscriptions.addSubscription(oldProvider.getSubscriptionId());
-                                    }));
-                }));
+                    Optional<Provider> optionalProvider =
+                            newEventTypeIn.getProviders().stream().filter(p -> p.getUrl().equals(oldProvider.getUrl())).findFirst();
+                    if (optionalProvider.isPresent()) {
+                        Provider provider = optionalProvider.get();
+
+                        // Migrate the subscription
+                        provider.setSubscriptionId(oldProvider.getSubscriptionId());
+                        provider.setSubscriptionDate(oldProvider.getSubscriptionDate());
+                        newSubscriptions.addSubscription(oldProvider.getSubscriptionId());
+                    } else {
+                        // Provider not found in new configuration, unsubscribe from it
+                        unsubscribeProvider(oldProvider);
+                    }
+                });
+            } else {
+                // EventType not found in new configuration, unsubscribe from all providers
+                oldEventTypeIn.getProviders().forEach(this::unsubscribeProvider);
+            }
+        });
 
         return newSubscriptions;
     }
