@@ -1,17 +1,17 @@
-# Espr4Fastdata
+# FIWARE Cepheus
 
 [![Build Status](https://travis-ci.org/Orange-OpenSource/EspR4FastData.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/EspR4FastData)
 [![Coverity Scan Status](https://scan.coverity.com/projects/5913/badge.svg)](https://scan.coverity.com/projects/5913)
 [![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/EspR4FastData/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/EspR4FastData?branch=master)
 
-This is the code repository for Espr4FastData, the reference implementation of the Gateway Data Handling GE.
+This is the code repository for fiware-cepheus, the reference implementation of the Gateway Data Handling GE.
 
 This project is part of [FIWARE](http://www.fiware.org).
-Check also the [FIWARE Catalogue entry for Espr4FastData](http://catalogue.fiware.org/enablers/gateway-data-handling-ge-espr4fastdata)
+Check also the [FIWARE Catalogue entry for Cepheus](http://catalogue.fiware.org/enablers/gateway-data-handling-ge-espr4fastdata)
 
 ## Overall description
 
-Espr4FastData is a SpringBoot Application. It uses the Esper CEP (Complex Event Processing) engine.
+Fiware-cepheus is a SpringBoot Application. It uses the Esper CEP (Complex Event Processing) engine.
 This Engine provides a lot of features (aggregation, filters, rate limiting, correlation, partitionning...) with a nice [SQL like syntax](http://www.espertech.com/esper/release-5.2.0/esper-reference/html/epl_clauses.html).
 
 Goal:
@@ -41,9 +41,9 @@ The docker manual can be found [here](docker/README.md)
 
 ## Running
 
-Espr4FastData is a SpringBoot application. You can run it as a service.
+Fiware-cepheus is a SpringBoot application. You can run it as a service.
 
-	java -jar espR4FastData.jar
+	java -jar cepheus-cep.jar
 
 ### Configuration file
 
@@ -98,4 +98,4 @@ The complete user manual can be found [here](doc/manual.md)
 
 ## License
 
-Espr4FastData is licensed under GNU General Public License Version 2.
+Fiware-cepheus is licensed under GNU General Public License Version 2.
