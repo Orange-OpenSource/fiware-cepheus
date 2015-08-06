@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.*;
@@ -55,11 +56,16 @@ public class EventSinkListenerTest {
     @InjectMocks
     public EventSinkListener eventSinkListener;
 
-    private Broker broker = new Broker("http://orion", false);
+    private Broker broker;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        broker = new Broker("http://orion");
+        broker.setServiceName("SN");
+        broker.setServicePath("SP");
+        broker.setAuthToken("AUTH_TOKEN");
 
         // TestConfiguration setup
         Configuration configuration = new Configuration();
@@ -79,6 +85,7 @@ public class EventSinkListenerTest {
     public void postMessageOnEventUpdate() {
 
         when(statement.getText()).thenReturn("statement");
+        when(ngsiClient.getRequestHeaders()).thenReturn(new HttpHeaders());
 
         // Trigger event update
         List<ContextAttribute> attributes = new LinkedList<>();
@@ -89,12 +96,20 @@ public class EventSinkListenerTest {
 
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
-        verify(ngsiClient).updateContext(eq(broker.getUrl()), any(), updateContextArg.capture(), any(), any());
+        ArgumentCaptor<HttpHeaders> headersArg = ArgumentCaptor.forClass(HttpHeaders.class);
+
+        verify(ngsiClient).updateContext(eq(broker.getUrl()), headersArg.capture(), updateContextArg.capture(), any(), any());
 
         // Check updateContext is valid
         UpdateContext updateContext = updateContextArg.getValue();
         assertEquals(UpdateAction.UPDATE, updateContext.getUpdateAction());
         assertEquals(1, updateContext.getContextElements().size());
+
+        // Check headers are valid
+        HttpHeaders headers = headersArg.getValue();
+        assertEquals("SN", headers.getFirst("Fiware-Service"));
+        assertEquals("SP", headers.getFirst("Fiware-ServicePath"));
+        assertEquals("AUTH_TOKEN", headers.getFirst("X-Auth-Token"));
 
         ContextElement contextElement = updateContext.getContextElements().get(0);
         assertEquals("OUT1234", contextElement.getEntityId().getId());
@@ -115,6 +130,7 @@ public class EventSinkListenerTest {
     public void fallbackOnConfigurationId() {
 
         when(statement.getText()).thenReturn("statement");
+        when(ngsiClient.getRequestHeaders()).thenReturn(new HttpHeaders());
 
         // Trigger event update
         List<ContextAttribute> attributes = new LinkedList<>();

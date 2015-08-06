@@ -32,10 +32,15 @@ public class Broker {
      */
     private String servicePath;
 
+    /**
+     * OAuth token for secured brokers
+     */
+    private String authToken;
+
     public Broker() {
     }
 
-    public Broker(String url, boolean mustRegister) {
+    public Broker(String url) {
         this.url = url;
     }
 
@@ -61,5 +66,13 @@ public class Broker {
 
     public void setServicePath(String servicePath) {
         this.servicePath = servicePath;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }

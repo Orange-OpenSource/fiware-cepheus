@@ -47,7 +47,7 @@ public class Util {
 
         //eventOUT
         EventTypeOut eventTypeOut = new EventTypeOut("OUT1", "TempSensorAvg", false);
-        eventTypeOut.addBroker(new Broker("http://orion", false));
+        eventTypeOut.addBroker(new Broker("http://orion"));
         Attribute outAttribute = new Attribute("avgTemp", "double");
         outAttribute.setMetadata(Collections.singleton(new Metadata("unit", "string")));
         eventTypeOut.addAttribute(outAttribute);

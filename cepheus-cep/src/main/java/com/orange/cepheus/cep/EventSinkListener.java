@@ -159,6 +159,9 @@ public class EventSinkListener implements StatementAwareUpdateListener {
         if (broker.getServicePath() != null) {
             httpHeaders.add("Fiware-ServicePath", broker.getServicePath());
         }
+        if (broker.getAuthToken() != null) {
+            httpHeaders.add("X-Auth-Token", broker.getAuthToken());
+        }
         return httpHeaders;
     }
 }
