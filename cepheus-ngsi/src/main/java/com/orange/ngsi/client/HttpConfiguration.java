@@ -39,20 +39,19 @@ public class HttpConfiguration {
     private int requestTimeout;
 
     @Bean
-    public AsyncRestTemplate asyncRestTemplate() throws IOReactorException {
-        AsyncRestTemplate restTemplate = new AsyncRestTemplate(
-                clientHttpRequestFactory());
+    public AsyncRestTemplate asyncRestTemplate(AsyncClientHttpRequestFactory asyncClientHttpRequestFactory) {
+        AsyncRestTemplate restTemplate = new AsyncRestTemplate(asyncClientHttpRequestFactory);
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
         return restTemplate;
     }
 
     @Bean
-    public AsyncClientHttpRequestFactory clientHttpRequestFactory() throws IOReactorException {
-        return new HttpComponentsAsyncClientHttpRequestFactory(asyncHttpClient());
+    public AsyncClientHttpRequestFactory clientHttpRequestFactory(CloseableHttpAsyncClient closeableHttpAsyncClient) {
+        return new HttpComponentsAsyncClientHttpRequestFactory(closeableHttpAsyncClient);
     }
 
     @Bean
-    public CloseableHttpAsyncClient asyncHttpClient() throws IOReactorException {
+    public CloseableHttpAsyncClient asyncHttpClient(PoolingNHttpClientConnectionManager poolingNHttpClientConnectionManager) {
 
         RequestConfig config = RequestConfig.custom()
                 .setConnectTimeout(requestTimeout)
@@ -60,10 +59,9 @@ public class HttpConfiguration {
                 .setConnectionRequestTimeout(requestTimeout)
                 .build();
 
-        CloseableHttpAsyncClient httpclient = HttpAsyncClientBuilder
-                .create().setConnectionManager(poolingNHttpClientConnectionManager())
+        return HttpAsyncClientBuilder
+                .create().setConnectionManager(poolingNHttpClientConnectionManager)
                 .setDefaultRequestConfig(config).build();
-        return httpclient;
     }
 
     @Bean
