@@ -61,6 +61,7 @@ public class SubscriptionManagerTest {
 
     @After
     public void after() {
+        subscriptionManager.setConfiguration(emptyConfiguration());
         reset(ngsiClient);
         reset(taskScheduler);
     }

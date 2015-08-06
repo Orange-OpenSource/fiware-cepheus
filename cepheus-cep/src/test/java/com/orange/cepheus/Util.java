@@ -18,6 +18,18 @@ import static com.orange.ngsi.model.CodeEnum.CODE_200;
  */
 public class Util {
 
+    static public Configuration emptyConfiguration() {
+        Configuration configuration = new Configuration();
+        try {
+            configuration.setHost(new URI("http://empty"));
+        } catch (URISyntaxException e) {
+        }
+        configuration.setEventTypeIns(Collections.emptyList());
+        configuration.setEventTypeOuts(Collections.emptyList());
+        configuration.setStatements(Collections.emptyList());
+        return configuration;
+    }
+
     static public Configuration getBasicConf() {
         Configuration configuration = new Configuration();
         try {
