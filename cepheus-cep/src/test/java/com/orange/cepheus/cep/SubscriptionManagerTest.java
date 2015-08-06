@@ -16,6 +16,7 @@ import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.SubscribeContext;
 import com.orange.ngsi.model.SubscribeContextResponse;
 import com.orange.ngsi.model.SubscribeResponse;
+import com.orange.ngsi.model.UnsubscribeContextResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,12 +25,21 @@ import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.Assert;
+import org.springframework.util.concurrent.FailureCallback;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+import org.springframework.util.concurrent.SuccessCallback;
 
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
@@ -42,13 +52,14 @@ import static com.orange.cepheus.Util.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SubscriptionManagerTest {
 
     @Mock
     TaskScheduler taskScheduler;
 
     @Mock
-    NgsiClient ngsiClient;
+    NgsiClient ngsiClient = Mockito.mock(NgsiClient.class, RETURNS_SMART_NULLS);
 
     @Autowired
     @InjectMocks
@@ -61,30 +72,35 @@ public class SubscriptionManagerTest {
 
     @After
     public void after() {
-        subscriptionManager.setConfiguration(emptyConfiguration());
         reset(ngsiClient);
         reset(taskScheduler);
     }
 
     @Test
-    public void setConfigurationOK() {
+    public void setConfigurationOK() throws Exception {
 
         // Mock the task scheduler and capture the runnable
         ArgumentCaptor<Runnable> runnableArg = ArgumentCaptor.forClass(Runnable.class);
         when(taskScheduler.scheduleWithFixedDelay(runnableArg.capture(), anyLong())).thenReturn(Mockito.mock(ScheduledFuture.class));
 
+        // Mock the response to the subsribeContext
+        ArgumentCaptor<SuccessCallback> successArg = ArgumentCaptor.forClass(SuccessCallback.class);
+        ListenableFuture<SubscribeContextResponse> responseFuture = Mockito.mock(ListenableFuture.class);
+        doNothing().when(responseFuture).addCallback(successArg.capture(), any());
+
         Configuration configuration = getBasicConf();
         subscriptionManager.setConfiguration(configuration);
+
+        // Capture the arg of subscription and return the mocked future
+        ArgumentCaptor<String> urlProviderArg = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<SubscribeContext> subscribeContextArg = ArgumentCaptor.forClass(SubscribeContext.class);
+        when(ngsiClient.subscribeContext(urlProviderArg.capture(), eq(null), subscribeContextArg.capture())).thenReturn(responseFuture);
 
         // Execute scheduled runnable
         runnableArg.getValue().run();
 
-        ArgumentCaptor<String> urlProviderArg = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<SubscribeContext> subscribeContextArg = ArgumentCaptor.forClass(SubscribeContext.class);
-        ArgumentCaptor<Consumer> onSuccessArg = ArgumentCaptor.forClass(Consumer.class);
-
-        verify(ngsiClient, times(1)).subscribeContext(urlProviderArg.capture(), eq(null), subscribeContextArg.capture(), onSuccessArg.capture(),
-                any(Consumer.class));
+        // Return the SubscribeContextResponse
+        callSuccessCallback(successArg);
 
         SubscribeContext subscribeContext = subscribeContextArg.getValue();
         assertEquals("S.*", subscribeContext.getEntityIdList().get(0).getId());
@@ -93,14 +109,6 @@ public class SubscriptionManagerTest {
         assertEquals("temp", subscribeContext.getAttributeList().get(0));
         assertEquals("PT1H", subscribeContext.getDuration());
         assertEquals("http://iotAgent", urlProviderArg.getValue());
-
-        // Call success callback
-        SubscribeResponse subscribeResponse = new SubscribeResponse();
-        subscribeResponse.setSubscriptionId("12345678");
-        subscribeResponse.setDuration("PT1H");
-        SubscribeContextResponse response = new SubscribeContextResponse();
-        response.setSubscribeResponse(subscribeResponse);
-        onSuccessArg.getValue().accept(response);
 
         Set<Provider> providers = configuration.getEventTypeIns().get(0).getProviders();
         for(Provider provider: providers) {
@@ -116,22 +124,27 @@ public class SubscriptionManagerTest {
         ArgumentCaptor<Runnable> runnableArg = ArgumentCaptor.forClass(Runnable.class);
         when(taskScheduler.scheduleWithFixedDelay(runnableArg.capture(), anyLong())).thenReturn(Mockito.mock(ScheduledFuture.class));
 
+        // Mock the response to the subsribeContext
+        ArgumentCaptor<SuccessCallback> successArg = ArgumentCaptor.forClass(SuccessCallback.class);
+        ListenableFuture<SubscribeContextResponse> responseFuture = Mockito.mock(ListenableFuture.class);
+        doNothing().when(responseFuture).addCallback(successArg.capture(), any());
+
+        // Return the mocked future on subscription
+        when(ngsiClient.subscribeContext(any(), any(), any())).thenReturn(responseFuture);
+
         Configuration configuration = getBasicConf();
         subscriptionManager.setConfiguration(configuration);
 
         // Execute scheduled runnable
         runnableArg.getValue().run();
 
-        ArgumentCaptor<Consumer> onSuccessArg = ArgumentCaptor.forClass(Consumer.class);
-        verify(ngsiClient, times(1)).subscribeContext(eq("http://iotAgent"), eq(null), any(), onSuccessArg.capture(), any(Consumer.class));
+        // Return the SubscribeContextResponse
+        callSuccessCallback(successArg);
 
-        // Call success callback
-        SubscribeResponse subscribeResponse = new SubscribeResponse();
-        subscribeResponse.setSubscriptionId("12345678");
-        subscribeResponse.setDuration("PT1H");
-        SubscribeContextResponse response = new SubscribeContextResponse();
-        response.setSubscribeResponse(subscribeResponse);
-        onSuccessArg.getValue().accept(response);
+        // Mock future for unsubscribeContext
+        ListenableFuture<UnsubscribeContextResponse> responseFuture2 = Mockito.mock(ListenableFuture.class);
+        doNothing().when(responseFuture2).addCallback(successArg.capture(), any());
+        when(ngsiClient.unsubscribeContext(eq("http://iotAgent"), eq(null), eq("12345678"))).thenReturn(responseFuture2);
 
         // Set a configuration without the eventType
         Configuration emptyConfiguration = new Configuration();
@@ -139,8 +152,7 @@ public class SubscriptionManagerTest {
         subscriptionManager.setConfiguration(emptyConfiguration);
 
         // Check that unsubsribe is called when a later configuration removed the event type
-        verify(ngsiClient, times(1)).unsubscribeContext(eq("http://iotAgent"), eq(null), eq("12345678"), any(), any());
-
+        Assert.notNull(successArg.getValue());
     }
 
     @Test
@@ -150,28 +162,44 @@ public class SubscriptionManagerTest {
         ArgumentCaptor<Runnable> runnableArg = ArgumentCaptor.forClass(Runnable.class);
         when(taskScheduler.scheduleWithFixedDelay(runnableArg.capture(), anyLong())).thenReturn(Mockito.mock(ScheduledFuture.class));
 
+        // Mock the response to the subsribeContext
+        ArgumentCaptor<SuccessCallback> successArg = ArgumentCaptor.forClass(SuccessCallback.class);
+        ListenableFuture<SubscribeContextResponse> responseFuture = Mockito.mock(ListenableFuture.class);
+        doNothing().when(responseFuture).addCallback(successArg.capture(), any());
+
+        // Return the mocked future on subscription
+        when(ngsiClient.subscribeContext(any(),any(), any())).thenReturn(responseFuture);
+
         Configuration configuration = getBasicConf();
         subscriptionManager.setConfiguration(configuration);
 
         // Execute scheduled runnable
         runnableArg.getValue().run();
 
-        ArgumentCaptor<Consumer> onSuccessArg = ArgumentCaptor.forClass(Consumer.class);
-        verify(ngsiClient, times(1)).subscribeContext(eq("http://iotAgent"), eq(null), any(), onSuccessArg.capture(), any(Consumer.class));
+        // Return the SubscribeContextResponse
+        callSuccessCallback(successArg);
 
-        // Call success callback
-        SubscribeResponse subscribeResponse = new SubscribeResponse();
-        subscribeResponse.setSubscriptionId("12345678");
-        subscribeResponse.setDuration("PT1H");
-        SubscribeContextResponse response = new SubscribeContextResponse();
-        response.setSubscribeResponse(subscribeResponse);
-        onSuccessArg.getValue().accept(response);
+        // Mock future for unsubscribeContext
+        ListenableFuture<UnsubscribeContextResponse> responseFuture2 = Mockito.mock(ListenableFuture.class);
+        doNothing().when(responseFuture2).addCallback(successArg.capture(), any());
+        when(ngsiClient.unsubscribeContext(eq("http://iotAgent"), eq(null), eq("12345678"))).thenReturn(responseFuture2);
 
+        // Reset conf should trigger unsubsribeContext
         Configuration emptyConfiguration = getBasicConf();
         emptyConfiguration.getEventTypeIns().get(0).setProviders(Collections.emptySet());
         subscriptionManager.setConfiguration(emptyConfiguration);
 
-        // Check that unsubsribe is called when a later configuration removed the event type
-        verify(ngsiClient, times(1)).unsubscribeContext(eq("http://iotAgent"), eq(null), eq("12345678"), any(), any());
+        // Check that unsubsribe is called
+        Assert.notNull(successArg.getValue());
+
+    }
+
+    private  void callSuccessCallback (ArgumentCaptor<SuccessCallback> successArg) {
+        SubscribeContextResponse response = new SubscribeContextResponse();
+        SubscribeResponse subscribeResponse = new SubscribeResponse();
+        subscribeResponse.setSubscriptionId("12345678");
+        subscribeResponse.setDuration("PT1H");
+        response.setSubscribeResponse(subscribeResponse);
+        successArg.getValue().onSuccess(response);
     }
 }

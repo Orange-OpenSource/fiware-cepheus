@@ -211,7 +211,7 @@ public class SubscriptionManager {
     private void subscibeProvider(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
         logger.debug("Subscribe to {} for {}", provider.getUrl(), subscribeContext.toString());
 
-        ngsiClient.subscribeContext(provider.getUrl(), null, subscribeContext, subscribeContextResponse -> {
+        ngsiClient.subscribeContext(provider.getUrl(), null, subscribeContext).addCallback(subscribeContextResponse -> {
             SubscribeError error = subscribeContextResponse.getSubscribeError();
             if (error == null) {
                 String subscriptionId = subscribeContextResponse.getSubscribeResponse().getSubscriptionId();
@@ -241,7 +241,7 @@ public class SubscriptionManager {
             // Don't wait for result, remove immediately from subscriptions list
             subscriptions.removeSubscription(subscriptionID);
 
-            ngsiClient.unsubscribeContext(provider.getUrl(), null, provider.getSubscriptionId(),
+            ngsiClient.unsubscribeContext(provider.getUrl(), null, provider.getSubscriptionId()).addCallback(
                     response -> logger.debug("Unsubribe response for {}: {}", subscriptionID, response.getStatusCode().getCode()),
                     throwable -> logger.debug("Error during unsubscribe for {}: {}", subscriptionID, throwable.toString()));
 

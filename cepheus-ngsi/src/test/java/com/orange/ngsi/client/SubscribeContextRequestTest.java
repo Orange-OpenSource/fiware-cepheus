@@ -17,12 +17,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.inject.Inject;
 
 import java.net.URISyntaxException;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
@@ -67,31 +70,22 @@ public class SubscribeContextRequestTest {
         reset(onFailure);
     }
 
-    @Test
-    public void subscribeContextRequestWith500() throws URISyntaxException {
+    @Test(expected = HttpServerErrorException.class)
+    public void subscribeContextRequestWith500() throws Exception {
 
-        this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
+        mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature(), onSuccess, onFailure);
-        this.mockServer.verify();
-
-        verify(onFailure).accept(any(HttpClientErrorException.class));
-        verify(onSuccess, never()).accept(anyObject());
+        ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature()).get();
     }
 
-    @Test
-    public void subscribeContextRequestWith404() throws URISyntaxException {
+    @Test(expected = HttpClientErrorException.class)
+    public void subscribeContextRequestWith404() throws Exception {
 
         this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature(), onSuccess, onFailure);
-
-        this.mockServer.verify();
-
-        verify(onFailure).accept(any(HttpClientErrorException.class));
-        verify(onSuccess, never()).accept(anyObject());
+        ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature()).get();
     }
 
     @Test
@@ -106,15 +100,9 @@ public class SubscribeContextRequestTest {
                 .andExpect(jsonPath("$.reference").value("http://localhost:1028/accumulate")).andExpect(jsonPath("$.duration").value("P1M"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature(), onSuccess, onFailure);
+        SubscribeContextResponse response = ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature()).get();
         this.mockServer.verify();
 
-        verify(onFailure, never()).accept(any(Throwable.class));
-
-        ArgumentCaptor<SubscribeContextResponse> responseArg = ArgumentCaptor.forClass(SubscribeContextResponse.class);
-        verify(onSuccess).accept(responseArg.capture());
-
-        SubscribeContextResponse response = responseArg.getValue();
         Assert.assertNull(response.getSubscribeError());
         Assert.assertEquals("12345678", response.getSubscribeResponse().getSubscriptionId());
         Assert.assertEquals("P1M", response.getSubscribeResponse().getDuration());

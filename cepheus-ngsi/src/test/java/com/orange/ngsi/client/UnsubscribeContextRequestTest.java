@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.inject.Inject;
 
@@ -71,31 +72,22 @@ public class UnsubscribeContextRequestTest {
         reset(onFailure);
     }
 
-    @Test
-    public void unsubscribeContextRequestWith500() throws URISyntaxException {
+    @Test(expected = HttpServerErrorException.class)
+    public void unsubscribeContextRequestWith500() throws Exception {
 
         this.mockServer.expect(requestTo(providerURL)).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.unsubscribeContext(providerURL, null, subscriptionID, onSuccess, onFailure);
-        this.mockServer.verify();
-
-        verify(onFailure).accept(any(HttpClientErrorException.class));
-        verify(onSuccess, never()).accept(anyObject());
+        ngsiClient.unsubscribeContext(providerURL, null, subscriptionID).get();
     }
 
-    @Test
-    public void unsubscribeContextRequestWith404() throws URISyntaxException {
+    @Test(expected = HttpClientErrorException.class)
+    public void unsubscribeContextRequestWith404() throws Exception {
 
         this.mockServer.expect(requestTo(providerURL)).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.unsubscribeContext(providerURL, null, subscriptionID, onSuccess, onFailure);
-
-        this.mockServer.verify();
-
-        verify(onFailure).accept(any(HttpClientErrorException.class));
-        verify(onSuccess, never()).accept(anyObject());
+        ngsiClient.unsubscribeContext(providerURL, null, subscriptionID).get();
     }
 
     @Test
@@ -107,16 +99,10 @@ public class UnsubscribeContextRequestTest {
                 .andExpect(jsonPath("$.subscriptionId", hasToString(subscriptionID))).andRespond(
                 withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        ngsiClient.unsubscribeContext(providerURL, null, subscriptionID, onSuccess, onFailure);
+        UnsubscribeContextResponse response = ngsiClient.unsubscribeContext(providerURL, null, subscriptionID).get();
 
         this.mockServer.verify();
 
-        verify(onFailure, never()).accept(any(Throwable.class));
-
-        ArgumentCaptor<UnsubscribeContextResponse> responseArg = ArgumentCaptor.forClass(UnsubscribeContextResponse.class);
-        verify(onSuccess).accept(responseArg.capture());
-
-        UnsubscribeContextResponse response = responseArg.getValue();
         Assert.assertEquals(subscriptionID, response.getSubscriptionId());
         Assert.assertEquals(CodeEnum.CODE_200.getLabel(), response.getStatusCode().getCode());
     }

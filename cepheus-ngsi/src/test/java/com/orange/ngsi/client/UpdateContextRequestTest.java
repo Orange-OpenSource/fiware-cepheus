@@ -10,6 +10,7 @@ package com.orange.ngsi.client;
 
 import com.orange.ngsi.TestConfiguration;
 import com.orange.ngsi.model.UpdateAction;
+import com.orange.ngsi.model.UpdateContext;
 import com.orange.ngsi.model.UpdateContextResponse;
 import org.junit.After;
 import org.junit.Before;
@@ -29,9 +30,16 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.ResponseCreator;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -95,67 +103,40 @@ public class UpdateContextRequestTest {
                 .andExpect(jsonPath("$.updateAction").value(UpdateAction.UPDATE.getLabel()))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        ngsiClient.updateContext(brokerUrl, httpHeaders, createUpdateContextTempSensor(0), onSuccess, onFailure);
+        ngsiClient.updateContext(brokerUrl, httpHeaders, createUpdateContextTempSensor(0)).get();
 
         this.mockServer.verify();
-
-        verify(onFailure, never()).accept(anyObject());
-        verify(onSuccess).accept(any(UpdateContextResponse.class));
     }
 
-    @Test
+    @Test(expected = HttpClientErrorException.class)
     public void performPostWith404() throws Exception {
-        Consumer<UpdateContextResponse> onSuccess = Mockito.mock(Consumer.class);
-        Consumer<Throwable> onFailure = Mockito.mock(Consumer.class);
-
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0), onSuccess, onFailure);
-
-        this.mockServer.verify();
-
-        verify(onFailure).accept(any(Throwable.class));
-        verify(onSuccess, never()).accept(any(UpdateContextResponse.class));
+        ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0)).get();
     }
 
-    @Test
+    @Test(expected = HttpServerErrorException.class)
     public void performPostWith500() throws Exception {
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0), onSuccess, onFailure);
-
-        this.mockServer.verify();
-
-        verify(onFailure).accept(any(Throwable.class));
-        verify(onSuccess, never()).accept(any(UpdateContextResponse.class));
-
+        ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0)).get();
     }
 
-    @Test
+    @Test(expected = ResourceAccessException.class)
     public void performPostWithTimeout() throws Exception {
         this.mockServer.expect(requestTo("http://localhost/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(TimeoutResponseCreator.withTimeout());
 
-        ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0), onSuccess, onFailure);
-
-        this.mockServer.verify();
-
-        verify(onFailure).accept(any(Throwable.class));
-        verify(onSuccess, never()).accept(any(UpdateContextResponse.class));
+        ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0));
     }
 
     public static class TimeoutResponseCreator implements ResponseCreator {
 
         @Override
         public ClientHttpResponse createResponse(ClientHttpRequest request) throws IOException {
-            try {
-                Thread.sleep(4000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
+            throw new SocketTimeoutException("Testing timeout exception");
         }
 
         public static TimeoutResponseCreator withTimeout() {

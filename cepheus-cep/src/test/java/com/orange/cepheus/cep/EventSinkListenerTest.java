@@ -43,7 +43,7 @@ import static org.junit.Assert.assertFalse;
 @SpringApplicationConfiguration(classes = Application.class)
 public class EventSinkListenerTest {
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_MOCKS)
     public NgsiClient ngsiClient;
 
     @Mock
@@ -98,7 +98,7 @@ public class EventSinkListenerTest {
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
         ArgumentCaptor<HttpHeaders> headersArg = ArgumentCaptor.forClass(HttpHeaders.class);
 
-        verify(ngsiClient).updateContext(eq(broker.getUrl()), headersArg.capture(), updateContextArg.capture(), any(), any());
+        verify(ngsiClient).updateContext(eq(broker.getUrl()), headersArg.capture(), updateContextArg.capture());
 
         // Check updateContext is valid
         UpdateContext updateContext = updateContextArg.getValue();
@@ -141,7 +141,7 @@ public class EventSinkListenerTest {
 
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
-        verify(ngsiClient).updateContext(eq(broker.getUrl()), any(), updateContextArg.capture(), any(), any());
+        verify(ngsiClient).updateContext(eq(broker.getUrl()), any(), updateContextArg.capture());
 
         // Check id correspond to the one set in configuration
         ContextElement contextElement = updateContextArg.getValue().getContextElements().get(0);
@@ -163,7 +163,7 @@ public class EventSinkListenerTest {
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
         eventSinkListener.update(null, beans, statement, provider);
 
-        verify(ngsiClient, never()).updateContext(any(), any(), any(), any(), any());
+        verify(ngsiClient, never()).updateContext(any(), any(), any());
     }
 
     /**
@@ -180,7 +180,7 @@ public class EventSinkListenerTest {
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
         eventSinkListener.update(beans, null, statement, provider);
 
-        verify(ngsiClient, never()).updateContext(any(), any(), any(), any(), any());
+        verify(ngsiClient, never()).updateContext(any(), any(), any());
     }
 
     /**
