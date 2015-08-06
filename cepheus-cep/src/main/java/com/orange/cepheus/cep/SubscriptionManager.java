@@ -79,7 +79,7 @@ public class SubscriptionManager {
     /**
      * Duration of a NGSI subscription as text.
      */
-    @Value("${subscriptionManager.duration:P1H}")
+    @Value("${subscriptionManager.duration:PT1H}")
     private String subscriptionDuration;
 
     @Autowired
