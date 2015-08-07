@@ -24,10 +24,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
- * Controller for the NGSI 9/10 requests
+ * Controller for the NGSI 9/10 requests supported by the CEP
  */
 @RestController
 @RequestMapping("/v1")
@@ -45,7 +46,7 @@ public class NgsiController extends NgsiBaseController {
     public SubscriptionManager subscriptionManager;
 
     @Override
-    public ResponseEntity<NotifyContextResponse> notifyContext(final NotifyContext notify) throws EventProcessingException, TypeNotFoundException, MissingRequestParameterException {
+    public NotifyContextResponse notifyContext(final NotifyContext notify) throws EventProcessingException, TypeNotFoundException {
 
         logger.debug("notifyContext incoming request id:{} originator:{}", notify.getSubscriptionId(), notify.getOriginator());
 
@@ -64,11 +65,11 @@ public class NgsiController extends NgsiBaseController {
             notifyContextResponse.setResponseCode(new StatusCode(CodeEnum.CODE_470, notify.getSubscriptionId()));
         }
 
-        return new ResponseEntity<>(notifyContextResponse, HttpStatus.OK);
+        return notifyContextResponse;
     }
 
     @Override
-    public UpdateContextResponse updateContext(final UpdateContext update) throws EventProcessingException, MissingRequestParameterException, TypeNotFoundException {
+    public UpdateContextResponse updateContext(final UpdateContext update) throws TypeNotFoundException {
 
         logger.debug("updateContext incoming request action:{}", update.getUpdateAction());
 
@@ -93,4 +94,21 @@ public class NgsiController extends NgsiBaseController {
         return response;
     }
 
+    @ExceptionHandler({TypeNotFoundException.class})
+    public ResponseEntity<Object> typeNotFoundExceptionHandler(HttpServletRequest req, TypeNotFoundException typeNotFoundException) {
+        logger.error("Type not found: {}", typeNotFoundException.getTypeName());
+
+        return errorResponse(req.getRequestURI(), new StatusCode(CodeEnum.CODE_472, typeNotFoundException.getTypeName()));
+    }
+
+    @ExceptionHandler({EventProcessingException.class})
+    public ResponseEntity<Object> eventProcessinExceptionHandler(HttpServletRequest req, EventProcessingException eventProcessingException) {
+        logger.error("Event processing error: {}", eventProcessingException.toString());
+
+        StatusCode statusCode = new StatusCode();
+        statusCode.setCode("500");
+        statusCode.setReasonPhrase("event processing error");
+        statusCode.setDetail(eventProcessingException.toString());
+        return errorResponse(req.getRequestURI(), statusCode);
+    }
 }

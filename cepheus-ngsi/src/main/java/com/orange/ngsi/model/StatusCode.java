@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class StatusCode {
 
-
     private String code;
 
     private String reasonPhrase;
@@ -30,7 +29,6 @@ public class StatusCode {
         this.code = code.getLabel();
         this.reasonPhrase = code.getShortPhrase();
         this.detail = String.format(code.getLongPhrase(), paramDetail);
-
     }
 
     public String getCode() {
@@ -56,6 +54,4 @@ public class StatusCode {
     public void setDetail(String detail) {
         this.detail = detail;
     }
-
-
 }

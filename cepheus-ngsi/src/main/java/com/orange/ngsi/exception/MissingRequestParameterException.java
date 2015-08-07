@@ -9,7 +9,7 @@
 package com.orange.ngsi.exception;
 
 /**
- * Created by pborscia on 08/07/2015.
+ * Exception used for validation of request parameters
  */
 public class MissingRequestParameterException extends Exception {
 
@@ -22,9 +22,7 @@ public class MissingRequestParameterException extends Exception {
         super("");
         this.parameterName = parameterName;
         this.parameterType = parameterType;
-
     }
-
 
     @Override
     public String getMessage() {
