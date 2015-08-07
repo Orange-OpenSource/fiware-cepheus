@@ -1,9 +1,8 @@
-package com.orange.cepheus.lb;
+package com.orange.cepheus.broker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,8 +23,8 @@ public class ConfigurationTest {
 
     @Test
     public void checkPropertiesValues(){
-        assertEquals("10.25.12.123", configuration.getHost());
-        assertEquals(8081, configuration.getPort());
+        assertEquals("10.25.12.123", configuration.getRemoteHost());
+        assertEquals(8081, configuration.getRemotePort());
     }
 
 }

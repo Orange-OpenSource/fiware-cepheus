@@ -6,7 +6,7 @@
  * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
  */
 
-package com.orange.cepheus.exception;
+package com.orange.ngsi.exception;
 
 /**
  * Created by pborscia on 08/07/2015.

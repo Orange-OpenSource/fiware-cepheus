@@ -12,15 +12,15 @@ import com.orange.cepheus.cep.ComplexEventProcessor;
 import com.orange.cepheus.cep.EventMapper;
 import com.orange.cepheus.cep.SubscriptionManager;
 import com.orange.cepheus.exception.EventProcessingException;
-import com.orange.cepheus.exception.MissingRequestParameterException;
 import com.orange.cepheus.exception.TypeNotFoundException;
 import com.orange.cepheus.model.Event;
+import com.orange.ngsi.exception.MissingRequestParameterException;
 import com.orange.ngsi.model.*;
+import com.orange.ngsi.server.NgsiBaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,16 +31,12 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/v1")
-public class NgsiController {
+public class NgsiController extends NgsiBaseController {
 
-    private static Logger logger = LoggerFactory.getLogger(AdminController.class);
-
-    private final ComplexEventProcessor complexEventProcessor;
+    private static Logger logger = LoggerFactory.getLogger(NgsiController.class);
 
     @Autowired
-    public NgsiController(ComplexEventProcessor complexEventProcessor) {
-        this.complexEventProcessor = complexEventProcessor;
-    }
+    protected ComplexEventProcessor complexEventProcessor;
 
     @Autowired
     public EventMapper eventMapper;
@@ -48,10 +44,8 @@ public class NgsiController {
     @Autowired
     public SubscriptionManager subscriptionManager;
 
-    @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<NotifyContextResponse> notifyContext(@RequestBody final NotifyContext notify) throws EventProcessingException, TypeNotFoundException, MissingRequestParameterException {
-
-        checkNotifyContext(notify);
+    @Override
+    public ResponseEntity<NotifyContextResponse> notifyContext(final NotifyContext notify) throws EventProcessingException, TypeNotFoundException, MissingRequestParameterException {
 
         logger.debug("notifyContext incoming request id:{} originator:{}", notify.getSubscriptionId(), notify.getOriginator());
 
@@ -73,10 +67,8 @@ public class NgsiController {
         return new ResponseEntity<>(notifyContextResponse, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/updateContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public UpdateContextResponse updateContext(@RequestBody final UpdateContext update) throws EventProcessingException, MissingRequestParameterException, TypeNotFoundException {
-
-        checkUpdateContext(update);
+    @Override
+    public UpdateContextResponse updateContext(final UpdateContext update) throws EventProcessingException, MissingRequestParameterException, TypeNotFoundException {
 
         logger.debug("updateContext incoming request action:{}", update.getUpdateAction());
 
@@ -101,79 +93,4 @@ public class NgsiController {
         return response;
     }
 
-    private void checkUpdateContext(UpdateContext updateContext) throws MissingRequestParameterException {
-
-        if (updateContext.getUpdateAction() == null) {
-            throw new MissingRequestParameterException("updateAction", "UpdateAction");
-        }
-
-        if ((updateContext.getContextElements() == null) && (!updateContext.getUpdateAction().isDelete())) {
-            throw new MissingRequestParameterException("contextElements", "List<ContextElement>");
-        }
-
-        if (updateContext.getContextElements().isEmpty() && (!updateContext.getUpdateAction().isDelete())) {
-            throw new MissingRequestParameterException("contextElements", "List<ContextElement>");
-        }
-
-        for (ContextElement contextElement : updateContext.getContextElements()) {
-            checkContextElement(contextElement);
-        }
-    }
-
-    private void checkNotifyContext(NotifyContext notifyContext) throws MissingRequestParameterException {
-
-        if ((notifyContext.getSubscriptionId() == null) || (notifyContext.getSubscriptionId().isEmpty())) {
-            throw new MissingRequestParameterException("subscriptionId", "string");
-        }
-
-        if ((notifyContext.getOriginator() == null) || (notifyContext.getOriginator().toString().isEmpty())){
-            throw new MissingRequestParameterException("originator", "URI");
-        }
-
-        if (notifyContext.getContextElementResponseList() == null)  {
-            throw new MissingRequestParameterException("contextElementResponse", "List<ContextElementResponse>");
-        }
-
-
-        for (ContextElementResponse contextElementResponse : notifyContext.getContextElementResponseList()) {
-            checkContextElementResponse(contextElementResponse);
-        }
-    }
-
-    private void checkContextElementResponse(ContextElementResponse contextElementResponse) throws MissingRequestParameterException {
-
-        if (contextElementResponse.getStatusCode() == null) {
-            throw new MissingRequestParameterException("statusCode", "StatusCode");
-        }
-
-        if (contextElementResponse.getContextElement() == null) {
-            throw new MissingRequestParameterException("contextElement", "ContextElement");
-        }
-
-        checkContextElement(contextElementResponse.getContextElement());
-    }
-
-    private void checkContextElement(ContextElement contextElement) throws MissingRequestParameterException {
-
-        if (contextElement.getEntityId() == null) {
-            throw new MissingRequestParameterException("entityId", "EntityId");
-        }
-
-        checkEntityId(contextElement.getEntityId());
-    }
-
-    private void checkEntityId(EntityId entityId) throws MissingRequestParameterException {
-
-        if ((entityId.getId() == null) || (entityId.getId().isEmpty())) {
-            throw new MissingRequestParameterException("id", "string");
-        }
-
-        if ((entityId.getType() == null) || (entityId.getType().isEmpty())) {
-            throw new MissingRequestParameterException("type", "string");
-        }
-
-        if (entityId.getIsPattern() == null)  {
-            entityId.setIsPattern(false);
-        }
-    }
 }

@@ -8,7 +8,8 @@
 
 package com.orange.cepheus.controller;
 
-import com.orange.cepheus.exception.MissingRequestParameterException;
+
+import com.orange.ngsi.exception.MissingRequestParameterException;
 import com.orange.cepheus.exception.TypeNotFoundException;
 import com.orange.ngsi.model.CodeEnum;
 import com.orange.ngsi.model.NotifyContextResponse;
@@ -27,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Created by pborscia on 06/07/2015.
  */
-@ControllerAdvice("com.orange.cepheus.controller")
+@ControllerAdvice("com.orange.cepheus")
 public class NgsiHandlerException extends ResponseEntityExceptionHandler {
 
     private static Logger logger = LoggerFactory.getLogger(NgsiHandlerException.class);
