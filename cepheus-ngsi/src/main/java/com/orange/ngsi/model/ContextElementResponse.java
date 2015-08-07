@@ -8,14 +8,11 @@
 
 package com.orange.ngsi.model;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * Created by pborscia on 04/06/2015.
  */
 public class ContextElementResponse {
 
-    @NotNull
     private ContextElement contextElement;
 
     private StatusCode statusCode;
