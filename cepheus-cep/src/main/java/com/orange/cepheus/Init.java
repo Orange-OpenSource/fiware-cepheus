@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 /**
  * This Bean is created to load a persisted Configuration into the Complex Event Processor on startup
  */
@@ -28,8 +30,16 @@ public class Init {
     private static Logger logger = LoggerFactory.getLogger(Init.class);
 
     @Autowired
-    public Init(ComplexEventProcessor complexEventProcessor, Persistence persistence, SubscriptionManager subscriptionManager) {
+    protected ComplexEventProcessor complexEventProcessor;
 
+    @Autowired
+    protected Persistence persistence;
+
+    @Autowired
+    protected SubscriptionManager subscriptionManager;
+
+    @PostConstruct
+    protected void loadConfigurationOnStartup() {
         // Try restoring the persisted configuration if any
         try {
             if (persistence.checkConfigurationDirectory()) {
@@ -37,7 +47,7 @@ public class Init {
                 complexEventProcessor.setConfiguration(configuration);
                 subscriptionManager.setConfiguration(configuration);
             }
-        } catch(PersistenceException | ConfigurationException e) {
+        } catch (PersistenceException | ConfigurationException e) {
             logger.error("Failed to load or apply persisted configuration", e);
         }
     }

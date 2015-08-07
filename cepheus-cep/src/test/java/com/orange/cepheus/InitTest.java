@@ -15,10 +15,14 @@ import com.orange.cepheus.exception.PersistenceException;
 import com.orange.cepheus.model.Configuration;
 import com.orange.cepheus.persistence.Persistence;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.mockito.Mockito.*;
 
@@ -39,6 +43,15 @@ public class InitTest {
     @Mock
     public SubscriptionManager subscriptionManager;
 
+    @Autowired
+    @InjectMocks
+    public Init init;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
     /**
      * Check that CEP engine is called when configuration avail during Init initialization
      */
@@ -47,7 +60,7 @@ public class InitTest {
         when(persistence.checkConfigurationDirectory()).thenReturn(true);
         when(persistence.loadConfiguration()).thenReturn(configuration);
 
-        new Init(complexEventProcessor, persistence, subscriptionManager);
+        init.loadConfigurationOnStartup();
 
         verify(complexEventProcessor).setConfiguration(eq(configuration));
         verify(subscriptionManager).setConfiguration(eq(configuration));
@@ -60,7 +73,7 @@ public class InitTest {
         when(persistence.checkConfigurationDirectory()).thenReturn(false);
         when(persistence.loadConfiguration()).thenReturn(null);
 
-        new Init(complexEventProcessor, persistence, subscriptionManager);
+        init.loadConfigurationOnStartup();
 
         verify(complexEventProcessor, never()).setConfiguration(anyObject());
         verify(subscriptionManager, never()).setConfiguration(anyObject());

@@ -13,7 +13,6 @@ import com.orange.cepheus.cep.ComplexEventProcessor;
 import com.orange.cepheus.cep.SubscriptionManager;
 import com.orange.cepheus.persistence.JsonPersistence;
 import com.orange.cepheus.persistence.Persistence;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
@@ -55,7 +54,7 @@ public class Application {
     }
 
     @Bean
-    public Init init(ComplexEventProcessor complexEventProcessor, Persistence persistence, SubscriptionManager subscriptionManager) {
-        return new Init(complexEventProcessor, persistence, subscriptionManager);
+    public Init init() {
+        return new Init();
     }
 }
