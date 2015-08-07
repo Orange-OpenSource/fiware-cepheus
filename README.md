@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Orange-OpenSource/fiware-cepheus.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/fiware-cepheus)
 [![Coverity Scan Status](https://scan.coverity.com/projects/5913/badge.svg)](https://scan.coverity.com/projects/5913)
-[![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/EspR4FastData/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/EspR4FastData?branch=master)
+[![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/fiware-cepheus/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/fiware-cepheus?branch=master)
 
 This is the code repository for fiware-cepheus, the reference implementation of the Gateway Data Handling GE.
 
