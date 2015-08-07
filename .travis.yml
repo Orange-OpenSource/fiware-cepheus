@@ -2,7 +2,7 @@ sudo: false
 language: java
 jdk:
 - oraclejdk8
-script: mvn clean deploy -Ddetail=true -settings=settings.xml
+script: mvn clean deploy -q -settings=settings.xml
 after_success:
 - "curl -H \"Content-Type: application/json\" --data \"build=true\" -X POST https://registry.hub.docker.com/u/$DOCKER_USER/fiware-cepheus/trigger/$DOCKER_KEY/"
 - "mvn clean test jacoco:report coveralls:report"

@@ -73,6 +73,11 @@ public class NgsiValidation {
         }
 
         checkEntityId(contextElement.getEntityId());
+
+        if (contextElement.getContextAttributeList() == null) {
+            throw new MissingRequestParameterException("contextAttributes", "List<ContextAttribut>");
+        }
+
     }
 
     private void checkEntityId(EntityId entityId) throws MissingRequestParameterException {
@@ -89,4 +94,5 @@ public class NgsiValidation {
             entityId.setIsPattern(false);
         }
     }
+
 }
