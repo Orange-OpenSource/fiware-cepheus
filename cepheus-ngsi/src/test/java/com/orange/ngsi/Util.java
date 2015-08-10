@@ -120,6 +120,21 @@ public class Util {
         return subscribeContextResponse;
     }
 
+    static public RegisterContext createRegisterContextTemperature() throws URISyntaxException {
+        RegisterContext registerContext = new RegisterContext();
+
+        ContextRegistration contextRegistration = new ContextRegistration(new URI("http://localhost:1028/accumulate"));
+        EntityId entityId = new EntityId("Room*", "Room", true);
+        contextRegistration.setEntityIdList(Collections.singletonList(entityId));
+        ContextRegistrationAttribute attribute = new ContextRegistrationAttribute("temperature", false);
+        attribute.setType("float");
+        contextRegistration.setContextRegistrationAttributeList(Collections.singletonList(attribute));
+        registerContext.setContextRegistrationList(Collections.singletonList(contextRegistration));
+        registerContext.setDuration("PT10S");
+
+        return registerContext;
+    }
+
 
     static public String json(MappingJackson2HttpMessageConverter mapping, Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
