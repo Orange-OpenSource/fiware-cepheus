@@ -1,10 +1,23 @@
-FROM maven:latest
+FROM java:8-jre
 MAINTAINER FIWARE Cepheus Team
 
-# Install fiware-cepheus
-RUN mvn -DgroupId=com.orange.cepheus -DartifactId=cepheus-cep -Dversion=4.4.3-SNAPSHOT -Dtransitive=false -Ddest=./cepheus-cep-4.4.3.jar -DremoteRepositories=https://oss.sonatype.org/content/repositories/snapshots dependency:get
+ENV CEPHEUS_VERSION LATEST
 
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "./cepheus-cep-4.4.3.jar"]
+# Install Supervisor
+RUN apt-get update && apt-get install -y supervisor wget
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+WORKDIR /opt/cepheus
+
+# Download CEP and Light Broker
+RUN wget -q -O cepheus-cep.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-cep&v=$CEPHEUS_VERSION"
+RUN wget -q -O cepheus-lb.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-lb&v=$CEPHEUS_VERSION"
+
+# Expose 8080 for CEP, 8081 for broker
+EXPOSE 8080 8081
+
+# Launch supervisor
+ENTRYPOINT ["/usr/bin/supervisord"]
 CMD []
 
