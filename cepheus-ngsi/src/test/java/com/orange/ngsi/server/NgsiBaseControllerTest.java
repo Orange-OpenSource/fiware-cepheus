@@ -87,6 +87,19 @@ public class NgsiBaseControllerTest {
     }
 
     @Test
+    public void checkRegisterContextNotImplemented() throws Exception {
+        try {
+            mockMvc.perform(post("/ni/registerContext")
+                    .content(json(mapping, createRegisterContextTemperature()))
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().is4xxClientError());
+            Assert.fail("should throw an UnsupportedOperationException");
+        } catch (Exception ex) {
+            Assert.assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
+        }
+    }
+
+    @Test
     public void checkNotifyContextImplemented() throws Exception {
         mockMvc.perform(post("/i/notifyContext")
                 .content(json(mapping, createNotifyContextTempSensor(0)))
@@ -97,6 +110,14 @@ public class NgsiBaseControllerTest {
     public void checkUpdateContextImplemented() throws Exception {
         mockMvc.perform(post("/i/updateContext")
                 .content(json(mapping, createUpdateContextTempSensor(0)))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void checkRegisterContextImplemented() throws Exception {
+        mockMvc.perform(post("/i/updateContext")
+                .content(json(mapping, createRegisterContextTemperature()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -138,6 +159,22 @@ public class NgsiBaseControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter updateAction of type UpdateAction is missing in the request"));
     }
 
+    @Test
+    public void missingParameterErrorRegister() throws Exception {
+
+        RegisterContext registerContext = new RegisterContext();
+
+        mockMvc.perform(post("/ni/registerContext")
+                .content(json(mapping, registerContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(result -> {
+                    System.out.println(result.getResponse().getContentAsString());
+                })
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter contextRegistrations of type List<ContextRegistration> is missing in the request"));
+    }
 
 }
 

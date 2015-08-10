@@ -50,6 +50,12 @@ public class NgsiBaseController {
         return new ResponseEntity<>(updateContext(updateContext), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/registerContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    final public ResponseEntity<RegisterContextResponse> registerContextRequest(@RequestBody final RegisterContext registerContext) throws Exception {
+        ngsiValidation.checkRegisterContext(registerContext);
+        return new ResponseEntity<>(registerContext(registerContext), HttpStatus.OK);
+    }
+
     @ExceptionHandler({MissingRequestParameterException.class})
     public ResponseEntity<Object> missingParameter(HttpServletRequest req, MissingRequestParameterException missingException) {
         logger.error("Missing parameter: {}", missingException.getParameterName());
@@ -70,6 +76,10 @@ public class NgsiBaseController {
         throw new UnsupportedOperationException("updateContext");
     }
 
+    protected RegisterContextResponse registerContext(final RegisterContext register) throws Exception {
+        throw new UnsupportedOperationException("registerContext");
+    }
+
     /*
      * Other methods for use by child classes.
      */
@@ -85,6 +95,10 @@ public class NgsiBaseController {
             UpdateContextResponse updateContextResponse = new UpdateContextResponse();
             updateContextResponse.setErrorCode(statusCode);
             entity = updateContextResponse;
+        } else if (path.contains("/registerContext")) {
+            RegisterContextResponse registerContextResponse = new RegisterContextResponse();
+            registerContextResponse.setErrorCode(statusCode);
+            entity = registerContextResponse;
         } else {
             // All other non NGSI requests send back NotifyContextResponse
             entity = new NotifyContextResponse(statusCode);

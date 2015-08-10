@@ -1,9 +1,6 @@
 package com.orange.ngsi.server;
 
-import com.orange.ngsi.model.NotifyContext;
-import com.orange.ngsi.model.NotifyContextResponse;
-import com.orange.ngsi.model.UpdateContext;
-import com.orange.ngsi.model.UpdateContextResponse;
+import com.orange.ngsi.model.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,5 +16,10 @@ public class FakeControllerHelper extends NgsiBaseController {
     @Override
     protected UpdateContextResponse updateContext(UpdateContext update) throws Exception {
         return new UpdateContextResponse();
+    }
+
+    @Override
+    protected RegisterContextResponse registerContext(RegisterContext register) throws Exception {
+        return new RegisterContextResponse();
     }
 }

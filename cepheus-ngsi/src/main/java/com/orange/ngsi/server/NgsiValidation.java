@@ -19,15 +19,12 @@ public class NgsiValidation {
         if (updateContext.getUpdateAction() == null) {
             throw new MissingRequestParameterException("updateAction", "UpdateAction");
         }
-
         if ((updateContext.getContextElements() == null) && (!updateContext.getUpdateAction().isDelete())) {
             throw new MissingRequestParameterException("contextElements", "List<ContextElement>");
         }
-
         if (updateContext.getContextElements().isEmpty() && (!updateContext.getUpdateAction().isDelete())) {
             throw new MissingRequestParameterException("contextElements", "List<ContextElement>");
         }
-
         for (ContextElement contextElement : updateContext.getContextElements()) {
             checkContextElement(contextElement);
         }
@@ -38,18 +35,24 @@ public class NgsiValidation {
         if ((notifyContext.getSubscriptionId() == null) || (notifyContext.getSubscriptionId().isEmpty())) {
             throw new MissingRequestParameterException("subscriptionId", "string");
         }
-
         if ((notifyContext.getOriginator() == null) || (notifyContext.getOriginator().toString().isEmpty())){
             throw new MissingRequestParameterException("originator", "URI");
         }
-
         if (notifyContext.getContextElementResponseList() == null)  {
             throw new MissingRequestParameterException("contextElementResponse", "List<ContextElementResponse>");
         }
-
-
         for (ContextElementResponse contextElementResponse : notifyContext.getContextElementResponseList()) {
             checkContextElementResponse(contextElementResponse);
+        }
+    }
+
+    public void checkRegisterContext(RegisterContext registerContext) throws MissingRequestParameterException {
+
+        if (registerContext.getContextRegistrationList() == null)  {
+            throw new MissingRequestParameterException("contextRegistrations", "List<ContextRegistration>");
+        }
+        for (ContextRegistration contextRegistration : registerContext.getContextRegistrationList()) {
+            checkContextRegistration(contextRegistration);
         }
     }
 
@@ -58,11 +61,9 @@ public class NgsiValidation {
         if (contextElementResponse.getStatusCode() == null) {
             throw new MissingRequestParameterException("statusCode", "StatusCode");
         }
-
         if (contextElementResponse.getContextElement() == null) {
             throw new MissingRequestParameterException("contextElement", "ContextElement");
         }
-
         checkContextElement(contextElementResponse.getContextElement());
     }
 
@@ -71,13 +72,10 @@ public class NgsiValidation {
         if (contextElement.getEntityId() == null) {
             throw new MissingRequestParameterException("entityId", "EntityId");
         }
-
         checkEntityId(contextElement.getEntityId());
-
         if (contextElement.getContextAttributeList() == null) {
             throw new MissingRequestParameterException("contextAttributes", "List<ContextAttribut>");
         }
-
     }
 
     private void checkEntityId(EntityId entityId) throws MissingRequestParameterException {
@@ -85,14 +83,36 @@ public class NgsiValidation {
         if ((entityId.getId() == null) || (entityId.getId().isEmpty())) {
             throw new MissingRequestParameterException("id", "string");
         }
-
         if ((entityId.getType() == null) || (entityId.getType().isEmpty())) {
             throw new MissingRequestParameterException("type", "string");
         }
-
         if (entityId.getIsPattern() == null)  {
             entityId.setIsPattern(false);
         }
     }
 
+    private void checkContextRegistration(ContextRegistration contextRegistration) throws MissingRequestParameterException {
+        if ((contextRegistration.getProvidingApplication() == null) || (contextRegistration.getProvidingApplication().toString().isEmpty())){
+            throw new MissingRequestParameterException("providingApplication", "URI");
+        }
+        if (contextRegistration.getEntityIdList() != null) {
+            for(EntityId entityId: contextRegistration.getEntityIdList()) {
+                checkEntityId(entityId);
+            }
+        }
+        if (contextRegistration.getContextRegistrationAttributeList() != null) {
+            for(ContextRegistrationAttribute attribute: contextRegistration.getContextRegistrationAttributeList()) {
+                checkContextRegistrationAttribute(attribute);
+            }
+        }
+    }
+
+    private void checkContextRegistrationAttribute(ContextRegistrationAttribute attribute) throws MissingRequestParameterException {
+        if ((attribute.getName() == null) || (attribute.getName().isEmpty())) {
+            throw new MissingRequestParameterException("name", "string");
+        }
+        if (attribute.getIsDomain() == null)  {
+            throw new MissingRequestParameterException("isDomain", "boolean");
+        }
+    }
 }

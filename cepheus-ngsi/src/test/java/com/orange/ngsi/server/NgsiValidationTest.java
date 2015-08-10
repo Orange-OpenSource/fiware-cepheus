@@ -192,4 +192,136 @@ public class NgsiValidationTest {
         ngsiValidation.checkNotifyContext(notifyContext);
     }
 
+    // Tests for validation of registerContext
+    @Test
+    public void nullContextRegistrationListInRegisterContext() throws MissingRequestParameterException {
+        RegisterContext registerContext = new RegisterContext();
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("contextRegistrations");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
+
+    @Test
+    public void nullProvidingApplicationInRegisterContext() throws MissingRequestParameterException {
+        RegisterContext registerContext = new RegisterContext();
+        List<ContextRegistration> contextRegistrationList = new ArrayList<>();
+        ContextRegistration contextRegistration = new ContextRegistration();
+        contextRegistrationList.add(contextRegistration);
+        registerContext.setContextRegistrationList(contextRegistrationList);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("providingApplication");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
+
+    @Test
+    public void emptyProvidingApplicationInRegisterContext() throws MissingRequestParameterException, URISyntaxException {
+        RegisterContext registerContext = new RegisterContext();
+        List<ContextRegistration> contextRegistrationList = new ArrayList<>();
+        ContextRegistration contextRegistration = new ContextRegistration(new URI(""));
+        contextRegistrationList.add(contextRegistration);
+        registerContext.setContextRegistrationList(contextRegistrationList);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("providingApplication");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
+
+    @Test
+    public void nullIdOfEntityIdInRegisterContext() throws MissingRequestParameterException, URISyntaxException {
+        RegisterContext registerContext = new RegisterContext();
+        List<ContextRegistration> contextRegistrationList = new ArrayList<>();
+        ContextRegistration contextRegistration = new ContextRegistration(new URI("http://localhost:8585/acumulate"));
+        EntityId entityId = new EntityId();
+        contextRegistration.setEntityIdList(Collections.singletonList(entityId));
+        contextRegistrationList.add(contextRegistration);
+        registerContext.setContextRegistrationList(contextRegistrationList);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("id");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
+
+    @Test
+    public void emptyIdOfEntityIdInRegisterContext() throws MissingRequestParameterException, URISyntaxException {
+        RegisterContext registerContext = new RegisterContext();
+        List<ContextRegistration> contextRegistrationList = new ArrayList<>();
+        ContextRegistration contextRegistration = new ContextRegistration(new URI("http://localhost:8585/acumulate"));
+        EntityId entityId = new EntityId("","Room",false);
+        contextRegistration.setEntityIdList(Collections.singletonList(entityId));
+        contextRegistrationList.add(contextRegistration);
+        registerContext.setContextRegistrationList(contextRegistrationList);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("id");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
+
+    @Test
+    public void nullTypeOfEntityIdInRegisterContext() throws MissingRequestParameterException, URISyntaxException {
+        RegisterContext registerContext = new RegisterContext();
+        List<ContextRegistration> contextRegistrationList = new ArrayList<>();
+        ContextRegistration contextRegistration = new ContextRegistration(new URI("http://localhost:8585/acumulate"));
+        EntityId entityId = new EntityId();
+        entityId.setId("Room1");
+        contextRegistration.setEntityIdList(Collections.singletonList(entityId));
+        contextRegistrationList.add(contextRegistration);
+        registerContext.setContextRegistrationList(contextRegistrationList);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("type");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
+
+    @Test
+    public void emptyTypeOfEntityIdInRegisterContext() throws MissingRequestParameterException, URISyntaxException {
+        RegisterContext registerContext = new RegisterContext();
+        List<ContextRegistration> contextRegistrationList = new ArrayList<>();
+        ContextRegistration contextRegistration = new ContextRegistration(new URI("http://localhost:8585/acumulate"));
+        EntityId entityId = new EntityId("Room1","",false);
+        contextRegistration.setEntityIdList(Collections.singletonList(entityId));
+        contextRegistrationList.add(contextRegistration);
+        registerContext.setContextRegistrationList(contextRegistrationList);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("type");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
+
+    @Test
+    public void nullNameOfAttributeInRegisterContext() throws MissingRequestParameterException, URISyntaxException {
+        RegisterContext registerContext = new RegisterContext();
+        ContextRegistration contextRegistration = new ContextRegistration(new URI("http://localhost:8585/acumulate"));
+        EntityId entityId = new EntityId("Room1","Room",false);
+        contextRegistration.setEntityIdList(Collections.singletonList(entityId));
+        ContextRegistrationAttribute attribute = new ContextRegistrationAttribute();
+        contextRegistration.setContextRegistrationAttributeList(Collections.singletonList(attribute));
+        registerContext.setContextRegistrationList(Collections.singletonList(contextRegistration));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("name");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
+
+    @Test
+    public void emptyNameOfAttributenRegisterContext() throws MissingRequestParameterException, URISyntaxException {
+        RegisterContext registerContext = new RegisterContext();
+        ContextRegistration contextRegistration = new ContextRegistration(new URI("http://localhost:8585/acumulate"));
+        EntityId entityId = new EntityId("Room1","Room",false);
+        contextRegistration.setEntityIdList(Collections.singletonList(entityId));
+        ContextRegistrationAttribute attribute = new ContextRegistrationAttribute("",false);
+        contextRegistration.setContextRegistrationAttributeList(Collections.singletonList(attribute));
+        registerContext.setContextRegistrationList(Collections.singletonList(contextRegistration));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("name");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
+
+    @Test
+    public void nullIsDomainOfAttributenRegisterContext() throws MissingRequestParameterException, URISyntaxException {
+        RegisterContext registerContext = new RegisterContext();
+        ContextRegistration contextRegistration = new ContextRegistration(new URI("http://localhost:8585/acumulate"));
+        EntityId entityId = new EntityId("Room1","Room",false);
+        contextRegistration.setEntityIdList(Collections.singletonList(entityId));
+        ContextRegistrationAttribute attribute = new ContextRegistrationAttribute();
+        attribute.setName("attributeName");
+        contextRegistration.setContextRegistrationAttributeList(Collections.singletonList(attribute));
+        registerContext.setContextRegistrationList(Collections.singletonList(contextRegistration));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("isDomain");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
 }
