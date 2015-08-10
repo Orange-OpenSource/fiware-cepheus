@@ -9,88 +9,47 @@ This is the code repository for fiware-cepheus, the reference implementation of 
 This project is part of [FIWARE](http://www.fiware.org).
 Check also the [FIWARE Catalogue entry for Cepheus](http://catalogue.fiware.org/enablers/gateway-data-handling-ge-espr4fastdata)
 
+## Renaming
+
+The previous name of the project was "EspR4FastData".
+It was renamed to a more generic name (using the convention of other FIWARE enablers).
+
 ## Overall description
 
-Fiware-cepheus is a SpringBoot Application. It uses the Esper CEP (Complex Event Processing) engine.
-This Engine provides a lot of features (aggregation, filters, rate limiting, correlation, partitionning...) with a nice [SQL like syntax](http://www.espertech.com/esper/release-5.2.0/esper-reference/html/epl_clauses.html).
+FIWARE Cepheus provides NGSI-compatible gateway level components.
+This project contains two Spring Boot applications and a common library :
 
-Goal:
-
-* process basic Context Entities from NGSI sensors
-* generate higher levels of abstraction (Room, Floor, Building)
-* at the gateway level (runs on Raspberry Pi)
-
+* cepheus-cep: A CEP (Complex Event Processor) engine.
+* cepheus-lb: A light broker (NGSI forwarding-only).
+* cepheus-ngsi : a client/server NGSI library.
 
 ## Build and Install
 
+More information about building can be found in [cepheus-cep/README](cepheus-cep/README.md) and [cepheus-lb/README](cepheus-lightbroker/README.md).
 
 ### Requirements
 
 * JAVA 8
+* Maven 2 (for build)
 
-### Build and install via Maven command
+### Build via Maven
 
-	mvn clean install
-
-### Installing from pulling [Sonatype Central Maven](http://central.sonatype.org/)
-
-	mvn -DgroupId=com.orange.cepheus -DartifactId=cepheus-cep -Dversion=4.4.3-SNAPSHOT -Dtransitive=false dependency:get
+    git clone https://github.com/Orange-OpenSource/fiware-cepheus.git
+    cd fiware-cepheus
+    mvn clean install
 
 ### Installing from Docker
+
+    docker pull orangeopensource/fiware-cepheus
+
 The docker manual can be found [here](docker/README.md)
 
 ## Running
 
-Fiware-cepheus is a SpringBoot application. You can run it as a service.
+Fiware-cepheus and fiware-lb are SpringBoot applications. You can run them simply with:
 
-	java -jar cepheus-cep.jar
-
-### Configuration file
-
-The configuration file directory is stored in application.properties.
-It's a simple json file which typical content is:
-
-    {
-	  "in": [
-	    {
-	      "id": "S.*",
-	      "type": "TempSensor",
-	      "isPattern": true,
-	      "attributes": [
-	        {
-	          "name": "temp",
-	          "type": "float"
-	        }
-	      ],
-	      "providers": [
-	        "http://localhost:1902/ngsi10"
-	      ]
-	    }
-	  ],
-	  "out": [
-	    {
-	      "id": "OUT1",
-	      "isPattern": false,
-	      "type": "TempSensorAvg",
-	      "attributes": [
-	        {
-	          "name": "avgTemp",
-	          "type": "float"
-	        }
-	      ],
-	      "brokers": [
-	        {
-	          "url": "http://102.232.332:1903/v1",
-	          "serviceName": "my",
-	          "servicePath": "/test/path"
-	        }
-	      ]
-	    }
-	  ],
-	  "statements": [
-	    "INSERT INTO 'TempSensorAvg' SELECT 'OUT1' as id, avg(TempSensor.temp) as avgTemp FROM TempSensor.win:time(86400) WHERE TempSensor.id = 'S1' "
-	  ]
-	}
+    java -jar cepheus-cep.jar
+    java -jar cepheus-lb.jar
 
 ## User guide
 
@@ -98,4 +57,4 @@ The complete user manual can be found [here](doc/manual.md)
 
 ## License
 
-Fiware-cepheus is licensed under GNU General Public License Version 2.
+Fiware-cepheus is licensed under [GNU General Public License Version 2](LICENCE.txt).
