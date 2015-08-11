@@ -30,6 +30,12 @@ public class Util {
         return notifyContext;
     }
 
+    static public NotifyContextResponse createNotifyContextResponseTempSensor() {
+        NotifyContextResponse notifyContextResponse = new NotifyContextResponse();
+        notifyContextResponse.setResponseCode(new StatusCode(CODE_200));
+        return notifyContextResponse;
+    }
+
     static public ContextElement createTemperatureContextElement(float randomValue) {
         ContextElement contextElement = new ContextElement();
         contextElement.setEntityId(new EntityId("S1", "TempSensor", false));

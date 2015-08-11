@@ -79,6 +79,17 @@ public class NgsiClient {
     }
 
     /**
+     * Send an notify request
+     * @param providerUrl the URL of the subscription provider
+     * @param httpHeaders the HTTP header to use, or null for default
+     * @param notifyContext the notifyContext
+     * @return a future for a NotifyContextResponse
+     */
+    public ListenableFuture<NotifyContextResponse> notifyContext(String providerUrl, HttpHeaders httpHeaders, NotifyContext notifyContext) {
+        return request(providerUrl, httpHeaders, notifyContext, NotifyContextResponse.class);
+    }
+
+    /**
      * The default HTTP request headers used for the requests.
      * @return the HTTP request headers.
      */
