@@ -56,6 +56,24 @@ public class NgsiValidation {
         }
     }
 
+    public void checkSubscribeContext(SubscribeContext subscribeContext) throws MissingRequestParameterException {
+        if (subscribeContext.getEntityIdList() == null) {
+            throw new MissingRequestParameterException("entities", "List<EntityId>");
+        } else {
+            for(EntityId entityId: subscribeContext.getEntityIdList()) {
+                checkEntityId(entityId);
+            }
+        }
+        if ((subscribeContext.getReference() == null) || (subscribeContext.getReference().toString().isEmpty())){
+            throw new MissingRequestParameterException("reference", "URI");
+        }
+        if (subscribeContext.getRestriction() != null) {
+            if ((subscribeContext.getRestriction().getAttributeExpression() == null) || (subscribeContext.getRestriction().getAttributeExpression().isEmpty())) {
+                throw new MissingRequestParameterException("attributeExpression", "string");
+            }
+        }
+    }
+
     private void checkContextElementResponse(ContextElementResponse contextElementResponse) throws MissingRequestParameterException {
 
         if (contextElementResponse.getStatusCode() == null) {

@@ -22,4 +22,9 @@ public class FakeControllerHelper extends NgsiBaseController {
     protected RegisterContextResponse registerContext(RegisterContext register) throws Exception {
         return new RegisterContextResponse();
     }
+
+    @Override
+    protected SubscribeContextResponse subscribeContext(SubscribeContext subscribe) throws Exception {
+        return new SubscribeContextResponse();
+    }
 }

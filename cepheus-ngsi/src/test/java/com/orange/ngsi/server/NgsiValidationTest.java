@@ -324,4 +324,100 @@ public class NgsiValidationTest {
         thrown.expectMessage("isDomain");
         ngsiValidation.checkRegisterContext(registerContext);
     }
+
+    // Tests for validation of subscribeContext
+    @Test
+    public void nullEntityIdListInSubscribeContext() throws MissingRequestParameterException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("entities");
+        ngsiValidation.checkSubscribeContext(subscribeContext);
+    }
+
+    @Test
+    public void nullIdOfEntityIdInSubscribeContext() throws MissingRequestParameterException, URISyntaxException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        EntityId entityId = new EntityId();
+        subscribeContext.setEntityIdList(Collections.singletonList(entityId));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("id");
+        ngsiValidation.checkSubscribeContext(subscribeContext);
+    }
+
+    @Test
+    public void emptyIdOfEntityIdInSubscribeContext() throws MissingRequestParameterException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        EntityId entityId = new EntityId("","Room",false);
+        subscribeContext.setEntityIdList(Collections.singletonList(entityId));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("id");
+        ngsiValidation.checkSubscribeContext(subscribeContext);
+    }
+
+    @Test
+    public void nullTypeOfEntityIdInSubscribeContext() throws MissingRequestParameterException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        entityId.setType(null);
+        subscribeContext.setEntityIdList(Collections.singletonList(entityId));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("type");
+        ngsiValidation.checkSubscribeContext(subscribeContext);
+    }
+
+    @Test
+    public void emptyTypeOfEntityIdInSubscribeContext() throws MissingRequestParameterException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        EntityId entityId = new EntityId("Room1","",false);
+        subscribeContext.setEntityIdList(Collections.singletonList(entityId));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("type");
+        ngsiValidation.checkSubscribeContext(subscribeContext);
+    }
+
+    @Test
+    public void nullReferenceInSubscribeContext() throws MissingRequestParameterException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        subscribeContext.setEntityIdList(Collections.singletonList(entityId));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("reference");
+        ngsiValidation.checkSubscribeContext(subscribeContext);
+    }
+
+    @Test
+    public void emptyReferenceInSubscribeContext() throws MissingRequestParameterException, URISyntaxException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        subscribeContext.setEntityIdList(Collections.singletonList(entityId));
+        subscribeContext.setReference(new URI(""));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("reference");
+        ngsiValidation.checkSubscribeContext(subscribeContext);
+    }
+    @Test
+    public void nullAttributeExpressionOfRestrictionInSubscribeContext() throws MissingRequestParameterException, URISyntaxException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        subscribeContext.setEntityIdList(Collections.singletonList(entityId));
+        subscribeContext.setReference(new URI("http://localhost:8085/accumulate"));
+        subscribeContext.setRestriction(new Restriction());
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("attributeExpression");
+        ngsiValidation.checkSubscribeContext(subscribeContext);
+    }
+
+    @Test
+    public void emptyAttributeExpressionOfRestrictionInSubscribeContext() throws MissingRequestParameterException, URISyntaxException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        subscribeContext.setEntityIdList(Collections.singletonList(entityId));
+        subscribeContext.setReference(new URI("http://localhost:8085/accumulate"));
+        Restriction restriction = new Restriction();
+        restriction.setAttributeExpression("");
+        subscribeContext.setRestriction(restriction);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("attributeExpression");
+        ngsiValidation.checkSubscribeContext(subscribeContext);
+    }
 }
