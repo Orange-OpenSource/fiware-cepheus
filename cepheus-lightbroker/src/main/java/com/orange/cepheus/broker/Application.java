@@ -11,6 +11,7 @@ package com.orange.cepheus.broker;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Created by pborscia on 06/08/2015.
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan("com.orange")
+@EnableScheduling
 public class Application {
 
     public static void main(String[] args) {

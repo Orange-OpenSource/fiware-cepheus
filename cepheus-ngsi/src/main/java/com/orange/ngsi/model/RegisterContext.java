@@ -8,8 +8,10 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -23,6 +25,9 @@ public class RegisterContext {
     private String duration;
 
     private String registrationId;
+
+    @JsonIgnore
+    private Instant expirationDate;
 
     public RegisterContext() {
     }
@@ -53,6 +58,14 @@ public class RegisterContext {
 
     public void setRegistrationId(String registrationId) {
         this.registrationId = registrationId;
+    }
+
+    public Instant getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(Instant expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     @Override
