@@ -5,7 +5,8 @@ jdk:
 script: mvn clean test jacoco:report coveralls:report deploy -q -settings=settings.xml
 after_success:
 - "curl -H \"Content-Type: application/json\" --data \"build=true\" -X POST https://registry.hub.docker.com/u/$DOCKER_USER/fiware-cepheus/trigger/$DOCKER_KEY/"
-
+cache:
+- $HOME/.m2
 env:
   global:
   - secure: "z9mRnyfsJbEhsMbkHoMh1yNZkq8u8bTDYfB5JZY2/zmijmOS7X10MF1oDovyfkGQ358eUBvy0vuksrdjGLiKGdkLVgqi05BtIOy+C3wxXGUpDj1cBSZ632jWbRub2stVs+SUiBHqMAXUlesy0+g3lqFl0XecLXpXRREREJWKmVrYPMzsbheOKaoeLniTXSkEz954imQrOyOhMpSX5awz3yZV1t3EUcGssR5rs3O1fB/5pJaR/yTp8Sb9ZSbScDi7XatSIyp5oHgqvl9ctD8OHQx5HkNYH2sewuFlQYD8NOZ0LMdJr84X06TPbkFafo4oVM3PU1dOnHYeBH+E9tSa5x9hspClE7fPyQilNKi3NJUDn1IjQNOnQjqjPTue60hLBqOQgXASjqS/QbdK2S5NsB9exqOoM5mXMiAVC9JIm/0tlhf7TgnhQqXzGBVsEtxCIGHQokUDUwvgMWlYXFoTKwaQxDX9uGwyfSsHg5HxlE+DtsQw6AG0Re+S2+G9QCMpEiF5AblItPNt+azYppsVAF38qdrN5uxwC5ewMoDIXKmqiwLi0v509T/u9uYcovWiYfv16rZHX3NhtHd2wTjDIp36Q2txrYil3XbHhxEoj36W8zavvZ1+mVkWHZBMyhpv1IPO1XtPryKZhtFlJZBOgYBELBemhbLnotuNWO14K0A="
