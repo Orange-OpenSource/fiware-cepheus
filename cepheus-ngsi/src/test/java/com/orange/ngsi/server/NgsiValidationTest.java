@@ -420,4 +420,23 @@ public class NgsiValidationTest {
         thrown.expectMessage("attributeExpression");
         ngsiValidation.checkSubscribeContext(subscribeContext);
     }
+
+    // Tests for validation of unsubscribeContext
+    @Test
+    public void nullSubscriptionIdInUnSubscribeContext() throws MissingRequestParameterException {
+        UnsubscribeContext unsubscribeContext = new UnsubscribeContext();
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("subscriptionId");
+        ngsiValidation.checkUnsubscribeContext(unsubscribeContext);
+    }
+
+    @Test
+    public void emptySubscriptionIdInUnSubscribeContext() throws MissingRequestParameterException {
+        UnsubscribeContext unsubscribeContext = new UnsubscribeContext();
+        unsubscribeContext.setSubscriptionId("");
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("subscriptionId");
+        ngsiValidation.checkUnsubscribeContext(unsubscribeContext);
+    }
+
 }

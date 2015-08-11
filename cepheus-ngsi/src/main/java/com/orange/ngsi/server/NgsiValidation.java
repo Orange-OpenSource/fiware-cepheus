@@ -74,6 +74,12 @@ public class NgsiValidation {
         }
     }
 
+    public void checkUnsubscribeContext(UnsubscribeContext unsubscribeContext) throws MissingRequestParameterException {
+        if ((unsubscribeContext.getSubscriptionId() == null) || (unsubscribeContext.getSubscriptionId().isEmpty())){
+            throw new MissingRequestParameterException("subscriptionId", "String");
+        }
+    }
+
     private void checkContextElementResponse(ContextElementResponse contextElementResponse) throws MissingRequestParameterException {
 
         if (contextElementResponse.getStatusCode() == null) {

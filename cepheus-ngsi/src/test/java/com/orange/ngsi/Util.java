@@ -135,6 +135,9 @@ public class Util {
         return registerContext;
     }
 
+    static public UnsubscribeContext createUnsubscribeContext() {
+        return new UnsubscribeContext("12345678");
+    }
 
     static public String json(MappingJackson2HttpMessageConverter mapping, Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();

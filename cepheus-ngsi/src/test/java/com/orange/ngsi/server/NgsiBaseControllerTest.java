@@ -113,6 +113,19 @@ public class NgsiBaseControllerTest {
     }
 
     @Test
+    public void checkUnsubscribeContextNotImplemented() throws Exception {
+        try {
+            mockMvc.perform(post("/ni/unsubscribeContext")
+                    .content(json(mapping, createUnsubscribeContext()))
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().is4xxClientError());
+            Assert.fail("should throw an UnsupportedOperationException");
+        } catch (Exception ex) {
+            Assert.assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
+        }
+    }
+
+    @Test
     public void checkNotifyContextImplemented() throws Exception {
         mockMvc.perform(post("/i/notifyContext")
                 .content(json(mapping, createNotifyContextTempSensor(0)))
@@ -139,6 +152,14 @@ public class NgsiBaseControllerTest {
     public void checkSubscribeContextImplemented() throws Exception {
         mockMvc.perform(post("/i/subscribeContext")
                 .content(json(mapping, createSubscribeContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void checkUnsubscribeContextImplemented() throws Exception {
+        mockMvc.perform(post("/i/unsubscribeContext")
+                .content(json(mapping, createUnsubscribeContext()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -213,6 +234,24 @@ public class NgsiBaseControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.detail").value("The parameter entities of type List<EntityId> is missing in the request"));
     }
+
+    @Test
+    public void missingParameterErrorUnsubscribe() throws Exception {
+
+        UnsubscribeContext unsubscribeContext = new UnsubscribeContext();
+
+        mockMvc.perform(post("/ni/unsubscribeContext")
+                .content(json(mapping, unsubscribeContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(result -> {
+                    System.out.println(result.getResponse().getContentAsString());
+                })
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_471.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.detail").value("The parameter subscriptionId of type String is missing in the request"));
+    }
+
 
 }
 
