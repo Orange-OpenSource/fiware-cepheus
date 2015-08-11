@@ -145,6 +145,13 @@ public class Util {
         return new UnsubscribeContext("12345678");
     }
 
+    static public QueryContext createQueryContextTemperature() {
+        QueryContext queryContext = new QueryContext();
+        queryContext.setEntityIdList(Collections.singletonList(new EntityId("S*", "TempSensor", true)));
+        queryContext.setAttributList(Collections.singletonList("temp"));
+        return queryContext;
+    }
+
     static public String json(MappingJackson2HttpMessageConverter mapping, Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         mapping.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
