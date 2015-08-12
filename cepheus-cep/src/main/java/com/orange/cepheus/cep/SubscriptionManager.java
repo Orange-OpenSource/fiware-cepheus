@@ -8,7 +8,10 @@
 
 package com.orange.cepheus.cep;
 
-import com.orange.cepheus.model.*;
+import com.orange.cepheus.cep.model.Attribute;
+import com.orange.cepheus.cep.model.Configuration;
+import com.orange.cepheus.cep.model.EventTypeIn;
+import com.orange.cepheus.cep.model.Provider;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.SubscribeContext;

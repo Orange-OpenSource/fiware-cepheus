@@ -9,8 +9,8 @@
 package com.orange.cepheus.cep;
 
 import com.espertech.esper.client.*;
-import com.orange.cepheus.model.*;
-import com.orange.cepheus.model.Configuration;
+import com.orange.cepheus.cep.model.*;
+import com.orange.cepheus.cep.model.Configuration;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import org.slf4j.Logger;

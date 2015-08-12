@@ -1,11 +1,11 @@
 package com.orange.cepheus.cep;
 
-import com.orange.cepheus.exception.EventProcessingException;
-import com.orange.cepheus.exception.TypeNotFoundException;
-import com.orange.cepheus.model.Event;
-import com.orange.cepheus.model.Attribute;
-import com.orange.cepheus.model.EventType;
-import com.orange.cepheus.model.Metadata;
+import com.orange.cepheus.cep.exception.EventProcessingException;
+import com.orange.cepheus.cep.exception.TypeNotFoundException;
+import com.orange.cepheus.cep.model.Event;
+import com.orange.cepheus.cep.model.Attribute;
+import com.orange.cepheus.cep.model.EventType;
+import com.orange.cepheus.cep.model.Metadata;
 import com.orange.ngsi.model.ContextAttribute;
 import com.orange.ngsi.model.ContextElement;
 import com.orange.ngsi.model.ContextMetadata;

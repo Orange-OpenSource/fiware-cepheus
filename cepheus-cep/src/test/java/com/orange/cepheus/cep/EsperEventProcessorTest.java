@@ -11,12 +11,11 @@ package com.orange.cepheus.cep;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EventBean;
-import com.orange.cepheus.Application;
-import com.orange.cepheus.exception.ConfigurationException;
-import com.orange.cepheus.exception.EventProcessingException;
-import com.orange.cepheus.exception.EventTypeNotFoundException;
-import com.orange.cepheus.model.Attribute;
-import com.orange.cepheus.model.Configuration;
+import com.orange.cepheus.cep.exception.ConfigurationException;
+import com.orange.cepheus.cep.exception.EventProcessingException;
+import com.orange.cepheus.cep.exception.EventTypeNotFoundException;
+import com.orange.cepheus.cep.model.Attribute;
+import com.orange.cepheus.cep.model.Configuration;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,7 +31,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 import static org.junit.Assert.assertEquals;
-import static com.orange.cepheus.Util.*;
+import static com.orange.cepheus.cep.Util.*;
 
 
 /**

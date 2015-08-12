@@ -9,13 +9,13 @@
 package com.orange.cepheus.cep;
 
 import com.espertech.esper.client.*;
-import com.orange.cepheus.exception.ConfigurationException;
-import com.orange.cepheus.exception.EventProcessingException;
-import com.orange.cepheus.exception.EventTypeNotFoundException;
-import com.orange.cepheus.model.Attribute;
-import com.orange.cepheus.model.EventType;
-import com.orange.cepheus.model.Configuration;
-import com.orange.cepheus.model.Event;
+import com.orange.cepheus.cep.exception.ConfigurationException;
+import com.orange.cepheus.cep.exception.EventProcessingException;
+import com.orange.cepheus.cep.exception.EventTypeNotFoundException;
+import com.orange.cepheus.cep.model.Attribute;
+import com.orange.cepheus.cep.model.EventType;
+import com.orange.cepheus.cep.model.Configuration;
+import com.orange.cepheus.cep.model.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

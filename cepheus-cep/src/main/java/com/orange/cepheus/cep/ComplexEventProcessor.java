@@ -8,10 +8,10 @@
 
 package com.orange.cepheus.cep;
 
-import com.orange.cepheus.exception.ConfigurationException;
-import com.orange.cepheus.exception.EventProcessingException;
-import com.orange.cepheus.model.Event;
-import com.orange.cepheus.model.Configuration;
+import com.orange.cepheus.cep.exception.ConfigurationException;
+import com.orange.cepheus.cep.exception.EventProcessingException;
+import com.orange.cepheus.cep.model.Event;
+import com.orange.cepheus.cep.model.Configuration;
 
 /**
  * Represents a Complex Event Processor (CEP)

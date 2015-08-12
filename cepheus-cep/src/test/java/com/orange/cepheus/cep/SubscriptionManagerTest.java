@@ -8,10 +8,8 @@
 
 package com.orange.cepheus.cep;
 
-import com.orange.cepheus.Application;
-import com.orange.cepheus.model.Configuration;
-import com.orange.cepheus.model.EventTypeIn;
-import com.orange.cepheus.model.Provider;
+import com.orange.cepheus.cep.model.Configuration;
+import com.orange.cepheus.cep.model.Provider;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.SubscribeContext;
 import com.orange.ngsi.model.SubscribeContextResponse;
@@ -28,24 +26,18 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
-import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.util.concurrent.SuccessCallback;
 
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
-import static com.orange.cepheus.Util.*;
+import static com.orange.cepheus.cep.Util.*;
 
 /**
  * Tests for SubscriptionManager

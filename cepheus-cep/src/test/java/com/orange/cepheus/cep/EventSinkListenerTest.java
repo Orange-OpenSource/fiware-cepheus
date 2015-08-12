@@ -10,11 +10,10 @@ package com.orange.cepheus.cep;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.EventType;
-import com.orange.cepheus.Application;
-import com.orange.cepheus.model.Attribute;
-import com.orange.cepheus.model.Broker;
-import com.orange.cepheus.model.EventTypeOut;
-import com.orange.cepheus.model.Configuration;
+import com.orange.cepheus.cep.model.Attribute;
+import com.orange.cepheus.cep.model.Broker;
+import com.orange.cepheus.cep.model.EventTypeOut;
+import com.orange.cepheus.cep.model.Configuration;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.ContextAttribute;
 import com.orange.ngsi.model.ContextElement;
