@@ -104,6 +104,18 @@ public class NgsiControllerTest {
     }
 
     @Test
+    public void postUpdateContextWithBadSyntax() throws Exception {
+
+        UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
+        mockMvc.perform(post("/v1/updateContext").content("BAD JSON").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_400.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_400.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value(CodeEnum.CODE_400.getLongPhrase()));
+    }
+
+    @Test
     public void postUpdateContextWithEmptyContextElements() throws Exception {
 
         UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);

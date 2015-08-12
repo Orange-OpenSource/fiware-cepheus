@@ -34,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static com.orange.ngsi.Util.*;
@@ -62,80 +63,53 @@ public class NgsiBaseControllerTest {
 
     @Test
     public void checkNotifyContextNotImplemented() throws Exception {
-        try {
-            mockMvc.perform(post("/ni/notifyContext")
-                    .content(json(mapping, createNotifyContextTempSensor(0)))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().is4xxClientError());
-            Assert.fail("should throw an UnsupportedOperationException");
-        } catch (Exception ex) {
-            Assert.assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
-        }
+        mockMvc.perform(
+                post("/ni/notifyContext").content(json(mapping, createNotifyContextTempSensor(0))).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
 
     @Test
     public void checkUpdateContextNotImplemented() throws Exception {
-        try {
-            mockMvc.perform(post("/ni/updateContext")
-                    .content(json(mapping, createUpdateContextTempSensor(0)))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().is4xxClientError());
-            Assert.fail("should throw an UnsupportedOperationException");
-        } catch (Exception ex) {
-            Assert.assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
-        }
+        mockMvc.perform(
+                post("/ni/updateContext").content(json(mapping, createUpdateContextTempSensor(0))).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
 
     @Test
     public void checkRegisterContextNotImplemented() throws Exception {
-        try {
-            mockMvc.perform(post("/ni/registerContext")
-                    .content(json(mapping, createRegisterContextTemperature()))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().is4xxClientError());
-            Assert.fail("should throw an UnsupportedOperationException");
-        } catch (Exception ex) {
-            Assert.assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
-        }
+        mockMvc.perform(post("/ni/registerContext").content(json(mapping, createRegisterContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
 
     @Test
     public void checkSubscribeContextNotImplemented() throws Exception {
-        try {
-            mockMvc.perform(post("/ni/subscribeContext")
-                    .content(json(mapping, createSubscribeContextTemperature()))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().is4xxClientError());
-            Assert.fail("should throw an UnsupportedOperationException");
-        } catch (Exception ex) {
-            Assert.assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
-        }
+        mockMvc.perform(post("/ni/subscribeContext")
+                .content(json(mapping, createSubscribeContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
 
     @Test
     public void checkUnsubscribeContextNotImplemented() throws Exception {
-        try {
-            mockMvc.perform(post("/ni/unsubscribeContext")
-                    .content(json(mapping, createUnsubscribeContext()))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().is4xxClientError());
-            Assert.fail("should throw an UnsupportedOperationException");
-        } catch (Exception ex) {
-            Assert.assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
-        }
+        mockMvc.perform(post("/ni/unsubscribeContext")
+                .content(json(mapping, createUnsubscribeContext()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
 
     @Test
     public void checkQueryContextNotImplemented() throws Exception {
-        try {
-            mockMvc.perform(post("/ni/queryContext")
-                    .content(json(mapping, createQueryContextTemperature()))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().is4xxClientError());
-            Assert.fail("should throw an UnsupportedOperationException");
-        } catch (Exception ex) {
-            Assert.assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
-        }
+        mockMvc.perform(post("/ni/queryContext")
+                .content(json(mapping, createQueryContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
 
     @Test
@@ -179,10 +153,22 @@ public class NgsiBaseControllerTest {
 
     @Test
     public void checkQueryContextImplemented() throws Exception {
-        mockMvc.perform(post("/i/queryContext")
-                .content(json(mapping, createQueryContextTemperature()))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+                post("/i/queryContext").content(json(mapping, createQueryContextTemperature())).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void jsonSyntaxErrorHandling() throws Exception {
+
+        NotifyContext notifyContext = createNotifyContextTempSensor(0);
+        notifyContext.setSubscriptionId(null);
+
+        mockMvc.perform(post("/ni/notifyContext").content("bad JSON").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_400.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_400.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value(CodeEnum.CODE_400.getLongPhrase()));
     }
 
     @Test
@@ -191,9 +177,7 @@ public class NgsiBaseControllerTest {
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
         notifyContext.setSubscriptionId(null);
 
-        mockMvc.perform(post("/ni/notifyContext")
-                .content(json(mapping, notifyContext))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/notifyContext").content(json(mapping, notifyContext)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
@@ -207,9 +191,7 @@ public class NgsiBaseControllerTest {
         UpdateContext updateContext = createUpdateContextTempSensor(0);
         updateContext.setUpdateAction(null);
 
-        mockMvc.perform(post("/ni/updateContext")
-                .content(json(mapping, updateContext))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/updateContext").content(json(mapping, updateContext)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
@@ -221,9 +203,7 @@ public class NgsiBaseControllerTest {
 
         RegisterContext registerContext = new RegisterContext();
 
-        mockMvc.perform(post("/ni/registerContext")
-                .content(json(mapping, registerContext))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/registerContext").content(json(mapping, registerContext)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
@@ -235,9 +215,7 @@ public class NgsiBaseControllerTest {
 
         SubscribeContext subscribeContext = new SubscribeContext();
 
-        mockMvc.perform(post("/ni/subscribeContext")
-                .content(json(mapping, subscribeContext))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/subscribeContext").content(json(mapping, subscribeContext)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
@@ -249,9 +227,7 @@ public class NgsiBaseControllerTest {
 
         UnsubscribeContext unsubscribeContext = new UnsubscribeContext();
 
-        mockMvc.perform(post("/ni/unsubscribeContext")
-                .content(json(mapping, unsubscribeContext))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/unsubscribeContext").content(json(mapping, unsubscribeContext)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))

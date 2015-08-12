@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,9 +78,26 @@ public class NgsiBaseController {
     @ExceptionHandler({MissingRequestParameterException.class})
     public ResponseEntity<Object> missingParameter(HttpServletRequest req, MissingRequestParameterException missingException) {
         logger.error("Missing parameter: {}", missingException.getParameterName());
-
         StatusCode statusCode = new StatusCode(CodeEnum.CODE_471, missingException.getParameterName(), missingException.getParameterType());
         return errorResponse(req.getRequestURI(), statusCode);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class})
+    public ResponseEntity<Object> messageNotReadableExceptionHandler(HttpServletRequest req, HttpMessageNotReadableException exception) {
+        logger.error("Message not readable: {}", exception.toString());
+        return errorResponse(req.getRequestURI(), new StatusCode(CodeEnum.CODE_400));
+    }
+
+    @ExceptionHandler({UnsupportedOperationException.class})
+    public ResponseEntity<Object> unsupportedOperation(HttpServletRequest req, UnsupportedOperationException exception) {
+        logger.error("Unsupported operation: {}", exception.toString());
+        return errorResponse(req.getRequestURI(), new StatusCode(CodeEnum.CODE_403));
+    }
+
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<Object> exceptionHandler(HttpServletRequest req, Exception exception) {
+        logger.error("Exception handler: {}", exception.toString());
+        return errorResponse(req.getRequestURI(), new StatusCode(CodeEnum.CODE_500));
     }
 
     /*
