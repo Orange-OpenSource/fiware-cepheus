@@ -152,6 +152,13 @@ public class Util {
         return queryContext;
     }
 
+    static public QueryContextResponse createQueryContextResponseTemperature() {
+        QueryContextResponse queryContextResponse = new QueryContextResponse();
+        ContextElementResponse contextElementResponse = new ContextElementResponse(createTemperatureContextElement(0), new StatusCode(CODE_200));
+        queryContextResponse.setContextElementResponses(Collections.singletonList(contextElementResponse));
+        return queryContextResponse;
+    }
+
     static public String json(MappingJackson2HttpMessageConverter mapping, Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         mapping.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);

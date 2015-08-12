@@ -90,6 +90,17 @@ public class NgsiClient {
     }
 
     /**
+     * Send an notify request
+     * @param providerUrl the URL of the registration provider
+     * @param httpHeaders the HTTP header to use, or null for default
+     * @param queryContext the queryContext
+     * @return a future for a QueryContextResponse
+     */
+    public ListenableFuture<QueryContextResponse> queryContext(String providerUrl, HttpHeaders httpHeaders, QueryContext queryContext) {
+        return request(providerUrl, httpHeaders, queryContext, QueryContextResponse.class);
+    }
+
+    /**
      * The default HTTP request headers used for the requests.
      * @return the HTTP request headers.
      */
