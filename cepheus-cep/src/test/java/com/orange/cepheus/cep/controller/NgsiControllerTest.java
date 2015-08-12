@@ -14,7 +14,6 @@ import com.orange.ngsi.model.CodeEnum;
 import com.orange.ngsi.model.NotifyContext;
 import com.orange.ngsi.model.UpdateAction;
 import com.orange.ngsi.model.UpdateContext;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,9 +28,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,7 +49,7 @@ public class NgsiControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private MappingJackson2HttpMessageConverter mapper;
 
     @Before
     public void setup() throws Exception {
@@ -61,158 +57,91 @@ public class NgsiControllerTest {
 
         Configuration configuration = getBasicConf();
         mockMvc.perform(post("/v1/admin/config")
-                .content(this.json(configuration))
+                .content(json(mapper, configuration))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
     }
 
     @Test
-    public void postNotifyContext() {
+    public void postNotifyContext() throws Exception {
 
-        NotifyContext notifyContext = null;
-        try {
-            notifyContext = createNotifyContextTempSensor(0);
-        } catch (URISyntaxException e) {
-            Assert.fail("Not expected URISyntaxException for postNotifyContextBeforeConf");
-        }
+        NotifyContext notifyContext = createNotifyContextTempSensor(0);
 
-        try {
-            mockMvc.perform(post("/v1/notifyContext")
-                    .content(this.json(notifyContext))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk());
-        } catch (Exception e) {
-            Assert.fail("Not expected URISyntaxException for postNotifyContextBeforeConf");
-        }
+        mockMvc.perform(post("/v1/notifyContext")
+                .content(json(mapper, notifyContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void postNotifyContextWithEmptySubscriptionId() throws Exception {
+
+        NotifyContext notifyContext = new NotifyContext("", new URI("http://iotAgent"));
+
+        mockMvc.perform(post("/v1/notifyContext")
+                .content(json(mapper, notifyContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value("The parameter subscriptionId of type string is missing in the request"));
+    }
+
+    @Test
+    public void postNotifyContextWithEmptyOriginator() throws Exception {
+
+        NotifyContext notifyContext = new NotifyContext("SubscriptionId", new URI(""));
+
+        mockMvc.perform(post("/v1/notifyContext")
+                .content(json(mapper, notifyContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value("The parameter originator of type URI is missing in the request"));
+    }
+
+    @Test
+    public void postUpdateContextWithEmptyContextElements() throws Exception {
+
+        UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
+        mockMvc.perform(post("/v1/updateContext").content(json(mapper, updateContext)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter contextElements of type List<ContextElement> is missing in the request"));
+    }
+
+    @Test
+    public void postUpdateContextWithTypeNotExistsInConfiguration()  throws Exception {
+
+        UpdateContext updateContext = createUpdateContextPressureSensor();
+
+        mockMvc.perform(post("/v1/updateContext")
+                .content(json(mapper, updateContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value(CodeEnum.CODE_472.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.reasonPhrase")
+                        .value(CodeEnum.CODE_472.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.detail").value(
+                        "Event type named 'PressureSensor' has not been defined or is not a Map event type, the name 'PressureSensor' has not been defined as an event type"));
     }
 
 
     @Test
-    public void postNotifyContextWithEmptySubscriptionId() {
+    public void postUpdateContextBeforeConf() throws Exception {
 
-        NotifyContext notifyContext = null;
-        try {
-            notifyContext = new NotifyContext("", new URI("http://iotAgent"));
-        } catch (URISyntaxException e) {
-            Assert.fail("Not expected URISyntaxException for postNotifyContextWithEmptySubscriptionId");
-        }
+        UpdateContext updateContext = createUpdateContextTempSensor(0);
 
-        try {
-            mockMvc.perform(post("/v1/notifyContext")
-                    .content(this.json(notifyContext))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andDo(MockMvcResultHandlers.print())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value("The parameter subscriptionId of type string is missing in the request"));
-
-        } catch (Exception e) {
-            Assert.fail("Not expected Exception for postNotifyContextWithEmptySubscriptionId");
-        }
-    }
-
-    @Test
-    public void postNotifyContextWithEmptyOriginator() {
-
-        NotifyContext notifyContext = null;
-        try {
-            notifyContext = new NotifyContext("SubscriptionId", new URI(""));
-        } catch (URISyntaxException e) {
-            Assert.fail("Not expected URISyntaxException for postNotifyContextWithEmptyOriginator");
-        }
-
-        try {
-            mockMvc.perform(post("/v1/notifyContext")
-                    .content(this.json(notifyContext))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andDo(MockMvcResultHandlers.print())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value("The parameter originator of type URI is missing in the request"));
-
-        } catch (Exception e) {
-            Assert.fail("Not expected Exception for postNotifyContextWithEmptyOriginator");
-        }
-    }
-
-    @Test
-    public void postUpdateContextWithEmptyContextElements() {
-
-        UpdateContext updateContext = null;
-
-        updateContext = new UpdateContext(UpdateAction.UPDATE);
-
-
-        try {
-            mockMvc.perform(post("/v1/updateContext")
-                    .content(this.json(updateContext))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andDo(MockMvcResultHandlers.print())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter contextElements of type List<ContextElement> is missing in the request"));
-
-        } catch (Exception e) {
-            Assert.fail("Not expected Exception for postUpdateContextWithEmptyContextElements : " + e);
-        }
-
-    }
-
-    @Test
-    public void postUpdateContextWithTypeNotExistsInConfiguration(){
-
-        UpdateContext updateContext = null;
-        try {
-            updateContext = createUpdateContextPressureSensor();
-        } catch (URISyntaxException e) {
-            Assert.fail("Not expected Exception for postUpdateContextWithTypeNotExistsInConfiguration : " + e);
-        }
-
-        try {
-            mockMvc.perform(post("/v1/updateContext")
-                    .content(this.json(updateContext))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andDo(MockMvcResultHandlers.print())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value(CodeEnum.CODE_472.getLabel()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.reasonPhrase").value(CodeEnum.CODE_472.getShortPhrase()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.detail").value("Event type named 'PressureSensor' has not been defined or is not a Map event type, the name 'PressureSensor' has not been defined as an event type"));
-
-        } catch (Exception e) {
-            Assert.fail("Not expected Exception for postUpdateContextWithTypeNotExistsInConfiguration : " + e);
-        }
-    }
-
-
-    @Test
-    public void postUpdateContextBeforeConf() {
-
-        UpdateContext updateContext = null;
-        try {
-            updateContext = createUpdateContextTempSensor(0);
-        } catch (URISyntaxException e) {
-            Assert.fail("Not expected URISyntaxException for postUpdateContextBeforeConf");
-        }
-
-
-        try {
-            mockMvc.perform(post("/v1/updateContext")
-                    .content(this.json(updateContext))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk());
-        } catch (Exception e) {
-            Assert.fail("expected Exception for postUpdateContextBeforeConf");
-        }
-    }
-
-    protected String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(
-                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
+        mockMvc.perform(post("/v1/updateContext")
+                .content(json(mapper, updateContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }
