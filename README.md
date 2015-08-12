@@ -40,9 +40,11 @@ More information about building can be found in [cepheus-cep/README](cepheus-cep
 
 ### Installing from Docker
 
+Using Docker is the fastest way to have a working setup :
+
     docker pull orangeopensource/fiware-cepheus
 
-The docker manual can be found [here](docker/README.md)
+Our docker manual can be found [here](docker/README.md)
 
 ## Running
 
