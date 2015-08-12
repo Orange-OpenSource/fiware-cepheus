@@ -10,6 +10,7 @@ package com.orange.cepheus.cep.controller;
 
 import com.orange.cepheus.cep.SubscriptionManager;
 import com.orange.cepheus.cep.exception.PersistenceException;
+import com.orange.ngsi.model.CodeEnum;
 import com.orange.ngsi.model.StatusCode;
 import com.orange.cepheus.cep.persistence.Persistence;
 import com.orange.cepheus.cep.ComplexEventProcessor;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -116,5 +118,17 @@ public class AdminController {
             statusCode.setDetail(exception.getCause().getMessage());
         }
         return new ResponseEntity<>(statusCode, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class})
+    public ResponseEntity<Object> messageNotReadableExceptionHandler(HttpServletRequest req, HttpMessageNotReadableException exception) {
+        logger.error("Request not readable: {}", exception.toString());
+        StatusCode statusCode = new StatusCode();
+        statusCode.setCode("400");
+        statusCode.setReasonPhrase(exception.getMessage());
+        if (exception.getCause() != null) {
+            statusCode.setDetail(exception.getCause().getMessage());
+        }
+        return new ResponseEntity<>(statusCode, HttpStatus.BAD_REQUEST);
     }
 }
