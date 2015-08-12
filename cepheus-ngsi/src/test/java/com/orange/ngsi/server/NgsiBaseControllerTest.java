@@ -195,9 +195,6 @@ public class NgsiBaseControllerTest {
                 .content(json(mapping, notifyContext))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(result -> {
-                    System.out.println(result.getResponse().getContentAsString());
-                })
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value(
@@ -214,9 +211,6 @@ public class NgsiBaseControllerTest {
                 .content(json(mapping, updateContext))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(result -> {
-                    System.out.println(result.getResponse().getContentAsString());
-                })
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter updateAction of type UpdateAction is missing in the request"));
@@ -231,9 +225,6 @@ public class NgsiBaseControllerTest {
                 .content(json(mapping, registerContext))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(result -> {
-                    System.out.println(result.getResponse().getContentAsString());
-                })
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter contextRegistrations of type List<ContextRegistration> is missing in the request"));
@@ -248,9 +239,6 @@ public class NgsiBaseControllerTest {
                 .content(json(mapping, subscribeContext))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(result -> {
-                    System.out.println(result.getResponse().getContentAsString());
-                })
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.detail").value("The parameter entities of type List<EntityId> is missing in the request"));
@@ -265,9 +253,6 @@ public class NgsiBaseControllerTest {
                 .content(json(mapping, unsubscribeContext))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(result -> {
-                    System.out.println(result.getResponse().getContentAsString());
-                })
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.detail").value("The parameter subscriptionId of type String is missing in the request"));
@@ -282,9 +267,6 @@ public class NgsiBaseControllerTest {
                 .content(json(mapping, queryContext))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(result -> {
-                    System.out.println(result.getResponse().getContentAsString());
-                })
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter entities of type List<EntityId> is missing in the request"));
