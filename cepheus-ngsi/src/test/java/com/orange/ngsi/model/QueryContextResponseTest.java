@@ -26,9 +26,28 @@ public class QueryContextResponseTest {
 
         String json = getJsonOrionQueryContextResponse();
         ObjectMapper mapper = new ObjectMapper();
-
         QueryContextResponse queryContextResponse = mapper.readValue(json, QueryContextResponse.class);
+
         assertNull(queryContextResponse.getErrorCode());
+        assertEquals(2, queryContextResponse.getContextElementResponses().size());
+        assertEquals(1, queryContextResponse.getContextElementResponses().get(0).getContextElement().getContextAttributeList().size());
+        assertEquals("temperature", queryContextResponse.getContextElementResponses().get(0).getContextElement().getContextAttributeList().get(0).getName());
+        assertEquals("float", queryContextResponse.getContextElementResponses().get(0).getContextElement().getContextAttributeList().get(0).getType());
+        assertEquals("23", queryContextResponse.getContextElementResponses().get(0).getContextElement().getContextAttributeList().get(0).getValue());
+        assertEquals("Room1", queryContextResponse.getContextElementResponses().get(0).getContextElement().getEntityId().getId());
+        assertEquals("Room", queryContextResponse.getContextElementResponses().get(0).getContextElement().getEntityId().getType());
+        assertEquals(false, queryContextResponse.getContextElementResponses().get(0).getContextElement().getEntityId().getIsPattern());
+        assertEquals(CodeEnum.CODE_200.getLabel(), queryContextResponse.getContextElementResponses().get(0).getStatusCode().getCode());
+        assertEquals(CodeEnum.CODE_200.getShortPhrase(), queryContextResponse.getContextElementResponses().get(0).getStatusCode().getReasonPhrase());
+        assertEquals(1, queryContextResponse.getContextElementResponses().get(1).getContextElement().getContextAttributeList().size());
+        assertEquals("temperature", queryContextResponse.getContextElementResponses().get(1).getContextElement().getContextAttributeList().get(0).getName());
+        assertEquals("float", queryContextResponse.getContextElementResponses().get(1).getContextElement().getContextAttributeList().get(0).getType());
+        assertEquals("21", queryContextResponse.getContextElementResponses().get(1).getContextElement().getContextAttributeList().get(0).getValue());
+        assertEquals("Room2", queryContextResponse.getContextElementResponses().get(1).getContextElement().getEntityId().getId());
+        assertEquals("Room", queryContextResponse.getContextElementResponses().get(1).getContextElement().getEntityId().getType());
+        assertEquals(false, queryContextResponse.getContextElementResponses().get(1).getContextElement().getEntityId().getIsPattern());
+        assertEquals(CodeEnum.CODE_200.getLabel(), queryContextResponse.getContextElementResponses().get(1).getStatusCode().getCode());
+        assertEquals(CodeEnum.CODE_200.getShortPhrase(), queryContextResponse.getContextElementResponses().get(1).getStatusCode().getReasonPhrase());
     }
 
     private String getJsonOrionQueryContextResponse(){

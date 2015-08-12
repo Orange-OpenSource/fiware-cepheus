@@ -68,6 +68,12 @@ public class NgsiBaseController {
         return new ResponseEntity<>(unsubscribeContext(unsubscribeContext), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/queryContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    final public ResponseEntity<QueryContextResponse> queryContextRequest(@RequestBody final QueryContext queryContext) throws Exception {
+        ngsiValidation.checkQueryContext(queryContext);
+        return new ResponseEntity<>(queryContext(queryContext), HttpStatus.OK);
+    }
+
     @ExceptionHandler({MissingRequestParameterException.class})
     public ResponseEntity<Object> missingParameter(HttpServletRequest req, MissingRequestParameterException missingException) {
         logger.error("Missing parameter: {}", missingException.getParameterName());
@@ -100,6 +106,10 @@ public class NgsiBaseController {
         throw new UnsupportedOperationException("unsubscribeContext");
     }
 
+    protected QueryContextResponse queryContext(final QueryContext query) throws Exception {
+        throw new UnsupportedOperationException("queryContext");
+    }
+
     /*
      * Other methods for use by child classes.
      */
@@ -129,6 +139,10 @@ public class NgsiBaseController {
             UnsubscribeContextResponse unsubscribeContextResponse = new UnsubscribeContextResponse();
             unsubscribeContextResponse.setStatusCode(statusCode);
             entity = unsubscribeContextResponse;
+        } else if (path.contains("/queryContext")) {
+            QueryContextResponse queryContextResponse = new QueryContextResponse();
+            queryContextResponse.setErrorCode(statusCode);
+            entity = queryContextResponse;
         } else {
             // All other non NGSI requests send back NotifyContextResponse
             entity = new NotifyContextResponse(statusCode);

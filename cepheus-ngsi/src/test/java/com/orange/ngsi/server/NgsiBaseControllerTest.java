@@ -126,6 +126,19 @@ public class NgsiBaseControllerTest {
     }
 
     @Test
+    public void checkQueryContextNotImplemented() throws Exception {
+        try {
+            mockMvc.perform(post("/ni/queryContext")
+                    .content(json(mapping, createQueryContextTemperature()))
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().is4xxClientError());
+            Assert.fail("should throw an UnsupportedOperationException");
+        } catch (Exception ex) {
+            Assert.assertEquals(UnsupportedOperationException.class, ex.getCause().getClass());
+        }
+    }
+
+    @Test
     public void checkNotifyContextImplemented() throws Exception {
         mockMvc.perform(post("/i/notifyContext")
                 .content(json(mapping, createNotifyContextTempSensor(0)))
@@ -160,6 +173,14 @@ public class NgsiBaseControllerTest {
     public void checkUnsubscribeContextImplemented() throws Exception {
         mockMvc.perform(post("/i/unsubscribeContext")
                 .content(json(mapping, createUnsubscribeContext()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void checkQueryContextImplemented() throws Exception {
+        mockMvc.perform(post("/i/queryContext")
+                .content(json(mapping, createQueryContextTemperature()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -252,6 +273,21 @@ public class NgsiBaseControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.detail").value("The parameter subscriptionId of type String is missing in the request"));
     }
 
+    @Test
+    public void missingParameterErrorQuery() throws Exception {
 
+        QueryContext queryContext = new QueryContext();
+
+        mockMvc.perform(post("/ni/queryContext")
+                .content(json(mapping, queryContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(result -> {
+                    System.out.println(result.getResponse().getContentAsString());
+                })
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter entities of type List<EntityId> is missing in the request"));
+    }
 }
 

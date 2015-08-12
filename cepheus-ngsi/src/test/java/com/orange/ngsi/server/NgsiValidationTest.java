@@ -168,6 +168,18 @@ public class NgsiValidationTest {
     }
 
     @Test
+    public void emptyContextElementResponseListInNotifyContext() throws MissingRequestParameterException, URISyntaxException {
+        NotifyContext notifyContext = new NotifyContext();
+        notifyContext.setSubscriptionId("subscriptionId");
+        notifyContext.setOriginator(new URI("http://iotAgent/"));
+        List<ContextElementResponse> contextElementResponseList = new ArrayList<>();
+        notifyContext.setContextElementResponseList(contextElementResponseList);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("contextElementResponse");
+        ngsiValidation.checkNotifyContext(notifyContext);
+    }
+
+    @Test
     public void nullStatusCodeInNotifyContext() throws MissingRequestParameterException, URISyntaxException {
         NotifyContext notifyContext = new NotifyContext();
         notifyContext.setSubscriptionId("subscriptionId");
@@ -196,6 +208,16 @@ public class NgsiValidationTest {
     @Test
     public void nullContextRegistrationListInRegisterContext() throws MissingRequestParameterException {
         RegisterContext registerContext = new RegisterContext();
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("contextRegistrations");
+        ngsiValidation.checkRegisterContext(registerContext);
+    }
+
+    @Test
+    public void emptyContextRegistrationListInRegisterContext() throws MissingRequestParameterException {
+        RegisterContext registerContext = new RegisterContext();
+        List<ContextRegistration> contextRegistrationList = new ArrayList<>();
+        registerContext.setContextRegistrationList(contextRegistrationList);
         thrown.expect(MissingRequestParameterException.class);
         thrown.expectMessage("contextRegistrations");
         ngsiValidation.checkRegisterContext(registerContext);
@@ -335,6 +357,16 @@ public class NgsiValidationTest {
     }
 
     @Test
+    public void emptyEntityIdListInSubscribeContext() throws MissingRequestParameterException {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        List<EntityId> entityIdList = new ArrayList<>();
+        subscribeContext.setEntityIdList(entityIdList);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("entities");
+        ngsiValidation.checkSubscribeContext(subscribeContext);
+    }
+
+    @Test
     public void nullIdOfEntityIdInSubscribeContext() throws MissingRequestParameterException, URISyntaxException {
         SubscribeContext subscribeContext = new SubscribeContext();
         EntityId entityId = new EntityId();
@@ -395,6 +427,7 @@ public class NgsiValidationTest {
         thrown.expectMessage("reference");
         ngsiValidation.checkSubscribeContext(subscribeContext);
     }
+
     @Test
     public void nullAttributeExpressionOfRestrictionInSubscribeContext() throws MissingRequestParameterException, URISyntaxException {
         SubscribeContext subscribeContext = new SubscribeContext();
@@ -439,4 +472,87 @@ public class NgsiValidationTest {
         ngsiValidation.checkUnsubscribeContext(unsubscribeContext);
     }
 
+    // Tests for validation of queryContext
+    @Test
+    public void nullEntityIdListInQueryContext() throws MissingRequestParameterException {
+        QueryContext queryContext = new QueryContext();
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("entities");
+        ngsiValidation.checkQueryContext(queryContext);
+    }
+
+    @Test
+    public void emptyEntityIdListInQueryContext() throws MissingRequestParameterException {
+        QueryContext queryContext = new QueryContext();
+        List<EntityId> entityIdList = new ArrayList<>();
+        queryContext.setEntityIdList(entityIdList);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("entities");
+        ngsiValidation.checkQueryContext(queryContext);
+    }
+
+    @Test
+    public void nullIdOfEntityIdInQueryContext() throws MissingRequestParameterException {
+        QueryContext queryContext = new QueryContext();
+        EntityId entityId = new EntityId();
+        queryContext.setEntityIdList(Collections.singletonList(entityId));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("id");
+        ngsiValidation.checkQueryContext(queryContext);
+    }
+
+    @Test
+    public void emptyIdOfEntityIdInQueryContext() throws MissingRequestParameterException {
+        QueryContext queryContext = new QueryContext();
+        EntityId entityId = new EntityId("","Room",false);
+        queryContext.setEntityIdList(Collections.singletonList(entityId));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("id");
+        ngsiValidation.checkQueryContext(queryContext);
+    }
+
+    @Test
+    public void nullTypeOfEntityIdInQueryContext() throws MissingRequestParameterException {
+        QueryContext queryContext = new QueryContext();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        entityId.setType(null);
+        queryContext.setEntityIdList(Collections.singletonList(entityId));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("type");
+        ngsiValidation.checkQueryContext(queryContext);
+    }
+
+    @Test
+    public void emptyTypeOfEntityIdInQueryContext() throws MissingRequestParameterException {
+        QueryContext queryContext = new QueryContext();
+        EntityId entityId = new EntityId("Room1","",false);
+        queryContext.setEntityIdList(Collections.singletonList(entityId));
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("type");
+        ngsiValidation.checkQueryContext(queryContext);
+    }
+
+    @Test
+    public void nullAttributeExpressionOfRestrictionInQueryContext() throws MissingRequestParameterException {
+        QueryContext queryContext = new QueryContext();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        queryContext.setEntityIdList(Collections.singletonList(entityId));
+        queryContext.setRestriction(new Restriction());
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("attributeExpression");
+        ngsiValidation.checkQueryContext(queryContext);
+    }
+
+    @Test
+    public void emptyAttributeExpressionOfRestrictionInQueryContext() throws MissingRequestParameterException {
+        QueryContext queryContext = new QueryContext();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        queryContext.setEntityIdList(Collections.singletonList(entityId));
+        Restriction restriction = new Restriction();
+        restriction.setAttributeExpression("");
+        queryContext.setRestriction(restriction);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("attributeExpression");
+        ngsiValidation.checkQueryContext(queryContext);
+    }
 }

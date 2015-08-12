@@ -32,4 +32,10 @@ public class FakeControllerHelper extends NgsiBaseController {
     protected UnsubscribeContextResponse unsubscribeContext(final UnsubscribeContext unsubscribe) throws Exception {
         return new UnsubscribeContextResponse();
     }
+
+    @Override
+    protected QueryContextResponse queryContext(final QueryContext query) throws Exception {
+        return new QueryContextResponse();
+    }
+
 }
