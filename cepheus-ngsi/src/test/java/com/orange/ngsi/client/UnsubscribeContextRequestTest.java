@@ -50,7 +50,7 @@ import static com.orange.ngsi.Util.*;
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
 public class UnsubscribeContextRequestTest {
 
-    private final String providerURL = "http://localhost/unsubscribeContext";
+    private static String baseUrl = "http://localhost:8080";
 
     private final String subscriptionID = "SLJLSKDM%LSKDM%LKDS";
 
@@ -83,19 +83,19 @@ public class UnsubscribeContextRequestTest {
     @Test(expected = HttpServerErrorException.class)
     public void unsubscribeContextRequestWith500() throws Exception {
 
-        this.mockServer.expect(requestTo(providerURL)).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/unsubscribeContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.unsubscribeContext(providerURL, null, subscriptionID).get();
+        ngsiClient.unsubscribeContext(baseUrl, null, subscriptionID).get();
     }
 
     @Test(expected = HttpClientErrorException.class)
     public void unsubscribeContextRequestWith404() throws Exception {
 
-        this.mockServer.expect(requestTo(providerURL)).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/unsubscribeContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.unsubscribeContext(providerURL, null, subscriptionID).get();
+        ngsiClient.unsubscribeContext(baseUrl, null, subscriptionID).get();
     }
 
     @Test
@@ -103,11 +103,11 @@ public class UnsubscribeContextRequestTest {
 
         String responseBody = json(mapping, createUnsubscribeContextResponse(CodeEnum.CODE_200, subscriptionID));
 
-        this.mockServer.expect(requestTo(providerURL)).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/unsubscribeContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.subscriptionId", hasToString(subscriptionID))).andRespond(
                 withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        UnsubscribeContextResponse response = ngsiClient.unsubscribeContext(providerURL, null, subscriptionID).get();
+        UnsubscribeContextResponse response = ngsiClient.unsubscribeContext(baseUrl, null, subscriptionID).get();
 
         this.mockServer.verify();
 

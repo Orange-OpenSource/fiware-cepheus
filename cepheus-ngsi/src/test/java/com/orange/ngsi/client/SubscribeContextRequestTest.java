@@ -52,6 +52,8 @@ import static com.orange.ngsi.Util.*;
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
 public class SubscribeContextRequestTest {
 
+    private static String baseUrl = "http://localhost:8080";
+
     private MockRestServiceServer mockServer;
 
     @Autowired
@@ -81,19 +83,19 @@ public class SubscribeContextRequestTest {
     @Test(expected = HttpServerErrorException.class)
     public void subscribeContextRequestWith500() throws Exception {
 
-        mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
+        mockServer.expect(requestTo(baseUrl + "/ngsi10/subscribeContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature()).get();
+        ngsiClient.subscribeContext(baseUrl, null, createSubscribeContextTemperature()).get();
     }
 
     @Test(expected = HttpClientErrorException.class)
     public void subscribeContextRequestWith404() throws Exception {
 
-        this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/subscribeContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature()).get();
+        ngsiClient.subscribeContext(baseUrl, null, createSubscribeContextTemperature()).get();
     }
 
     @Test
@@ -101,14 +103,14 @@ public class SubscribeContextRequestTest {
 
         String responseBody = json(mapping, createSubscribeContextResponseTemperature());
 
-        this.mockServer.expect(requestTo("http://localhost/subscribeContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/subscribeContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.entities[*]", hasSize(1))).andExpect(jsonPath("$.entities[0].id").value("Room1"))
                 .andExpect(jsonPath("$.entities[0].type").value("Room")).andExpect(jsonPath("$.entities[0].isPattern").value(false))
                 .andExpect(jsonPath("$.attributes[*]", hasSize(1))).andExpect(jsonPath("$.attributes[0]").value("temperature"))
                 .andExpect(jsonPath("$.reference").value("http://localhost:1028/accumulate")).andExpect(jsonPath("$.duration").value("P1M"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        SubscribeContextResponse response = ngsiClient.subscribeContext("http://localhost/subscribeContext", null, createSubscribeContextTemperature()).get();
+        SubscribeContextResponse response = ngsiClient.subscribeContext(baseUrl, null, createSubscribeContextTemperature()).get();
         this.mockServer.verify();
 
         Assert.assertNull(response.getSubscribeError());

@@ -47,68 +47,68 @@ public class NgsiClient {
 
     /**
      * Send an update request
-     * @param brokerUrl the URL of the broker
+     * @param url the URL of the broker
      * @param httpHeaders the HTTP header to use, or null for default
      * @param updateContext the UpdateContext
      * @return a future for an UpdateContextReponse
      */
-    public ListenableFuture<UpdateContextResponse> updateContext(String brokerUrl, HttpHeaders httpHeaders, UpdateContext updateContext) {
-        return request(brokerUrl, httpHeaders, updateContext, UpdateContextResponse.class);
+    public ListenableFuture<UpdateContextResponse> updateContext(String url, HttpHeaders httpHeaders, UpdateContext updateContext) {
+        return request(url + "/ngsi10/updateContext", httpHeaders, updateContext, UpdateContextResponse.class);
     }
 
     /**
      * Send a subscription request
-     * @param providerUrl the URL of the subscription provider
+     * @param url the URL of the subscription provider
      * @param httpHeaders the HTTP header to use, or null for default
      * @param subscribeContext the SubscriptionContext
      * @return a future for a SubscribeContextResponse
      */
-    public ListenableFuture<SubscribeContextResponse> subscribeContext(String providerUrl, HttpHeaders httpHeaders, SubscribeContext subscribeContext) {
-        return request(providerUrl, httpHeaders, subscribeContext, SubscribeContextResponse.class);
+    public ListenableFuture<SubscribeContextResponse> subscribeContext(String url, HttpHeaders httpHeaders, SubscribeContext subscribeContext) {
+        return request(url + "/ngsi10/subscribeContext", httpHeaders, subscribeContext, SubscribeContextResponse.class);
     }
 
     /**
      * Send an unsubscribe request
-     * @param providerUrl the URL of the subscription provider
+     * @param url the URL of the subscription provider
      * @param httpHeaders the HTTP header to use, or null for default
      * @param subscriptionId the subscription ID to unsubscribe
      * @return a future for a UnsubscribeContextResponse
      */
-    public ListenableFuture<UnsubscribeContextResponse> unsubscribeContext(String providerUrl, HttpHeaders httpHeaders, String subscriptionId) {
-        return request(providerUrl, httpHeaders, new UnsubscribeContext(subscriptionId), UnsubscribeContextResponse.class);
+    public ListenableFuture<UnsubscribeContextResponse> unsubscribeContext(String url, HttpHeaders httpHeaders, String subscriptionId) {
+        return request(url + "/ngsi10/unsubscribeContext", httpHeaders, new UnsubscribeContext(subscriptionId), UnsubscribeContextResponse.class);
     }
 
     /**
      * Send an notify request
-     * @param providerUrl the URL of the subscription provider
+     * @param url the URL of the subscription provider
      * @param httpHeaders the HTTP header to use, or null for default
      * @param notifyContext the notifyContext
      * @return a future for a NotifyContextResponse
      */
-    public ListenableFuture<NotifyContextResponse> notifyContext(String providerUrl, HttpHeaders httpHeaders, NotifyContext notifyContext) {
-        return request(providerUrl, httpHeaders, notifyContext, NotifyContextResponse.class);
+    public ListenableFuture<NotifyContextResponse> notifyContext(String url, HttpHeaders httpHeaders, NotifyContext notifyContext) {
+        return request(url + "/ngsi10/notifyContext", httpHeaders, notifyContext, NotifyContextResponse.class);
     }
 
     /**
      * Send an notify request
-     * @param providerUrl the URL of the registration provider
+     * @param url the URL of the registration provider
      * @param httpHeaders the HTTP header to use, or null for default
      * @param queryContext the queryContext
      * @return a future for a QueryContextResponse
      */
-    public ListenableFuture<QueryContextResponse> queryContext(String providerUrl, HttpHeaders httpHeaders, QueryContext queryContext) {
-        return request(providerUrl, httpHeaders, queryContext, QueryContextResponse.class);
+    public ListenableFuture<QueryContextResponse> queryContext(String url, HttpHeaders httpHeaders, QueryContext queryContext) {
+        return request(url + "/ngsi10/queryContext", httpHeaders, queryContext, QueryContextResponse.class);
     }
 
     /**
      * Send an register request
-     * @param providerUrl the URL of the registration consumer
+     * @param url the URL of the registration consumer
      * @param httpHeaders the HTTP header to use, or null for default
      * @param registerContext the registerContext
      * @return a future for a RegisterContextResponse
      */
-    public ListenableFuture<RegisterContextResponse> registerContext(String providerUrl, HttpHeaders httpHeaders, RegisterContext registerContext) {
-        return request(providerUrl, httpHeaders, registerContext, RegisterContextResponse.class);
+    public ListenableFuture<RegisterContextResponse> registerContext(String url, HttpHeaders httpHeaders, RegisterContext registerContext) {
+        return request(url + "/ngsi9/registerContext", httpHeaders, registerContext, RegisterContextResponse.class);
     }
 
     /**

@@ -47,6 +47,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
 public class RegisterContextRequestTest {
+
+    private static String baseUrl = "http://localhost:8080";
+
     private MockRestServiceServer mockServer;
 
     @Autowired
@@ -76,26 +79,26 @@ public class RegisterContextRequestTest {
     @Test(expected = HttpServerErrorException.class)
     public void registerContextRequestWith500() throws Exception {
 
-        mockServer.expect(requestTo("http://localhost/registerContext")).andExpect(method(HttpMethod.POST))
+        mockServer.expect(requestTo(baseUrl + "/ngsi9/registerContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.registerContext("http://localhost/registerContext", null, createRegisterContextTemperature()).get();
+        ngsiClient.registerContext(baseUrl, null, createRegisterContextTemperature()).get();
     }
 
     @Test(expected = HttpClientErrorException.class)
     public void subscribeContextRequestWith404() throws Exception {
 
-        this.mockServer.expect(requestTo("http://localhost/registerContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi9/registerContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.registerContext("http://localhost/registerContext", null, createRegisterContextTemperature()).get();
+        ngsiClient.registerContext(baseUrl, null, createRegisterContextTemperature()).get();
     }
     @Test
     public void registerContextRequestOK() throws Exception {
 
         String responseBody = json(mapping, createRegisterContextResponseTemperature());
 
-        this.mockServer.expect(requestTo("http://localhost/registerContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi9/registerContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.contextRegistrations[*]", hasSize(1)))
                 .andExpect(jsonPath("$.contextRegistrations[0].providingApplication").value("http://localhost:1028/accumulate"))
                 .andExpect(jsonPath("$.contextRegistrations[0].entities[*]", hasSize(1))).andExpect(jsonPath("$.contextRegistrations[0].entities[0].id").value("Room*"))
@@ -106,7 +109,7 @@ public class RegisterContextRequestTest {
                 .andExpect(jsonPath("$.duration").value("PT10S"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        RegisterContextResponse response = ngsiClient.registerContext("http://localhost/registerContext", null, createRegisterContextTemperature()).get();
+        RegisterContextResponse response = ngsiClient.registerContext(baseUrl, null, createRegisterContextTemperature()).get();
         this.mockServer.verify();
 
         Assert.assertNull(response.getErrorCode());

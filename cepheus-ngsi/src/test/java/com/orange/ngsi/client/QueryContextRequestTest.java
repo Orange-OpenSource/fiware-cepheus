@@ -49,6 +49,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
 public class QueryContextRequestTest {
 
+    private static String baseUrl = "http://localhost:8080";
+
     private MockRestServiceServer mockServer;
 
     @Autowired
@@ -78,19 +80,19 @@ public class QueryContextRequestTest {
     @Test(expected = HttpServerErrorException.class)
     public void queryContextRequestWith500() throws Exception {
 
-        mockServer.expect(requestTo("http://localhost/queryContext")).andExpect(method(HttpMethod.POST))
+        mockServer.expect(requestTo(baseUrl + "/ngsi10/queryContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.queryContext("http://localhost/queryContext", null, createQueryContextTemperature()).get();
+        ngsiClient.queryContext(baseUrl, null, createQueryContextTemperature()).get();
     }
 
     @Test(expected = HttpClientErrorException.class)
     public void queryContextRequestWith404() throws Exception {
 
-        mockServer.expect(requestTo("http://localhost/queryContext")).andExpect(method(HttpMethod.POST))
+        mockServer.expect(requestTo(baseUrl + "/ngsi10/queryContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.queryContext("http://localhost/queryContext", null, createQueryContextTemperature()).get();
+        ngsiClient.queryContext(baseUrl, null, createQueryContextTemperature()).get();
     }
 
     @Test
@@ -98,7 +100,7 @@ public class QueryContextRequestTest {
 
         String responseBody = json(mapping, createQueryContextResponseTemperature());
 
-        this.mockServer.expect(requestTo("http://localhost/queryContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/queryContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.entities[*]", hasSize(1)))
                 .andExpect(jsonPath("$.entities[0].id").value("S*"))
                 .andExpect(jsonPath("$.entities[0].type").value("TempSensor"))
@@ -107,7 +109,7 @@ public class QueryContextRequestTest {
                 .andExpect(jsonPath("$.attributes[0]").value("temp"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        QueryContextResponse response = ngsiClient.queryContext("http://localhost/queryContext", null, createQueryContextTemperature()).get();
+        QueryContextResponse response = ngsiClient.queryContext(baseUrl, null, createQueryContextTemperature()).get();
         this.mockServer.verify();
 
         Assert.assertEquals(1, response.getContextElementResponses().size());

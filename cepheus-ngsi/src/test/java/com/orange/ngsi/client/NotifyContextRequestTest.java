@@ -48,6 +48,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
 public class NotifyContextRequestTest {
+
+    private static String baseUrl = "http://localhost:8080";
+
     private MockRestServiceServer mockServer;
 
     @Autowired
@@ -77,19 +80,19 @@ public class NotifyContextRequestTest {
     @Test(expected = HttpServerErrorException.class)
     public void notifyContextRequestWith500() throws Exception {
 
-        mockServer.expect(requestTo("http://localhost/notifyContext")).andExpect(method(HttpMethod.POST))
+        mockServer.expect(requestTo(baseUrl+"/ngsi10/notifyContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        ngsiClient.notifyContext("http://localhost/notifyContext", null, createNotifyContextTempSensor(0)).get();
+        ngsiClient.notifyContext(baseUrl, null, createNotifyContextTempSensor(0)).get();
     }
 
     @Test(expected = HttpClientErrorException.class)
     public void notifyContextRequestWith404() throws Exception {
 
-        mockServer.expect(requestTo("http://localhost/notifyContext")).andExpect(method(HttpMethod.POST))
+        mockServer.expect(requestTo(baseUrl+"/ngsi10/notifyContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        ngsiClient.notifyContext("http://localhost/notifyContext", null, createNotifyContextTempSensor(0)).get();
+        ngsiClient.notifyContext(baseUrl, null, createNotifyContextTempSensor(0)).get();
     }
 
     @Test
@@ -97,7 +100,7 @@ public class NotifyContextRequestTest {
 
         String responseBody = json(mapping, createNotifyContextResponseTempSensor());
 
-        this.mockServer.expect(requestTo("http://localhost/notifyContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl+ "/ngsi10/notifyContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.subscriptionId").value("1"))
                 .andExpect(jsonPath("$.originator").value("http://iotAgent"))
                 .andExpect(jsonPath("$.contextResponses[*]", hasSize(1)))
@@ -110,7 +113,7 @@ public class NotifyContextRequestTest {
                 .andExpect(jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value(15.5))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        NotifyContextResponse response = ngsiClient.notifyContext("http://localhost/notifyContext", null, createNotifyContextTempSensor(0)).get();
+        NotifyContextResponse response = ngsiClient.notifyContext(baseUrl, null, createNotifyContextTempSensor(0)).get();
         this.mockServer.verify();
 
         Assert.assertEquals(CodeEnum.CODE_200.getLabel(), response.getResponseCode().getCode());
