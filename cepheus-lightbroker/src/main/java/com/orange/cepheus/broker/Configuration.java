@@ -19,46 +19,23 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("broker")
 public class Configuration {
 
-    //remoteHost
-    @NotEmpty
-    private String remoteHost;
+    private String remoteBroker;
 
-    //remotePort
-    private int remotePort;
-
-    public Configuration() {
+    public Configuration(){
     }
 
-    public Configuration(String remoteHost, int remotePort) {
-        this.remoteHost = remoteHost;
-        this.remotePort = remotePort;
+    public String getRemoteBroker() {
+        return remoteBroker;
     }
 
-    public String getRemoteHost() {
-        return remoteHost;
-    }
-
-    public void setRemoteHost(String remoteHost) {
-        this.remoteHost = remoteHost;
-    }
-
-    public int getRemotePort() {
-        return remotePort;
-    }
-
-    public void setRemotePort(int remotePort) {
-        this.remotePort = remotePort;
-    }
-
-    public StringBuilder getUrlRemoteBrokerBuilder() {
-        return new StringBuilder("http://").append(remoteHost).append(':').append(remotePort);
+    public void setRemoteBroker(String remoteBroker) {
+        this.remoteBroker = remoteBroker;
     }
 
     @Override
     public String toString() {
         return "Configuration{" +
-                "remoteHost='" + remoteHost + '\'' +
-                ", remotePort=" + remotePort +
+                "remoteBroker='" + remoteBroker + '\'' +
                 '}';
     }
 }

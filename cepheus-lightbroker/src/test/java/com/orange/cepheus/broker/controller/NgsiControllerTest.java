@@ -94,7 +94,7 @@ public class NgsiControllerTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        when(configuration.getUrlRemoteBrokerBuilder()).thenReturn(new StringBuilder("http://orionhost:9999"));
+        when(configuration.getRemoteBroker()).thenReturn("http://orionhost:9999");
     }
 
     @After

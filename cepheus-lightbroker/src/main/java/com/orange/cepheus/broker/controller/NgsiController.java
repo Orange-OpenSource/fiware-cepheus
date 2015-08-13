@@ -51,9 +51,7 @@ public class NgsiController extends NgsiBaseController {
     public RegisterContextResponse registerContext(final RegisterContext register) throws Registrations.RegistrationException, ExecutionException, InterruptedException {
         logger.debug("registerContext incoming request id:{} duration:{}", register.getRegistrationId(), register.getDuration());
 
-        //TODO forward the register to remote broker
-        String urlRemoteBroker = configuration.getUrlRemoteBrokerBuilder().toString();
-        ngsiClient.registerContext(urlRemoteBroker, null, register).addCallback(
+        ngsiClient.registerContext(configuration.getRemoteBroker(), null, register).addCallback(
                 this::saveRegistrationIdRemote,
                 throwable -> logger.warn("RegisterContext failed: {}", throwable.toString()));
 
@@ -77,9 +75,8 @@ public class NgsiController extends NgsiBaseController {
 
         if (!providingApplication.hasNext()) {
             //forward the update to the remote broker
-            urlProvider = configuration.getUrlRemoteBrokerBuilder().toString();
             //TODO : use fiware-service in http headers
-            ngsiClient.updateContext(urlProvider, null, update).addCallback(
+            ngsiClient.updateContext(configuration.getRemoteBroker(), null, update).addCallback(
                     updateContextResponse -> logger.debug("UpdateContext completed"),
                     throwable -> logger.warn("UpdateContext failed: {}", throwable.toString()));
         }
