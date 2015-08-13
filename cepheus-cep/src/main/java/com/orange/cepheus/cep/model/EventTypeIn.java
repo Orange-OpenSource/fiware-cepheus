@@ -8,6 +8,7 @@
 
 package com.orange.cepheus.cep.model;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +28,9 @@ public class EventTypeIn extends EventType {
     }
 
     public Set<Provider> getProviders() {
+        if (providers == null) {
+            return Collections.emptySet();
+        }
         return providers;
     }
 

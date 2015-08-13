@@ -8,6 +8,7 @@
 
 package com.orange.cepheus.cep.model;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +27,9 @@ public class EventTypeOut extends EventType {
     }
 
     public Set<Broker> getBrokers() {
+        if (brokers == null) {
+            return Collections.emptySet();
+        }
         return brokers;
     }
 
