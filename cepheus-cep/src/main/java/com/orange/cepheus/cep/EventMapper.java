@@ -63,15 +63,19 @@ public class EventMapper {
         for(ContextAttribute contextAttribute : contextElement.getContextAttributeList()) {
             String attrName = contextAttribute.getName();
             for (ContextMetadata contextMetada : contextAttribute.getMetadata()) {
-                event.addValue(attrName + "_" + contextMetada.getName(), contextMetada.getValue());
+                String name = contextMetada.getName();
+                type = contextMetada.getType();
+                Object value = valueForType(contextAttribute.getValue(), type, name);
+                event.addValue(attrName + "_" + name, value);
             }
         }
 
         // Override with attributes values
         for(ContextAttribute contextAttribute : contextElement.getContextAttributeList()) {
             String name = contextAttribute.getName();
+            type = contextAttribute.getType();
 
-            Object value = contextAttribute.getValue();
+            Object value = valueForType(contextAttribute.getValue(), type, name);
             if (value == null) {
                 throw new EventProcessingException("Value cannot be null for attribute "+name);
             }
@@ -109,7 +113,25 @@ public class EventMapper {
      * @return a Java Object for given value
      * @throws EventProcessingException if the conversion fails
      */
-    private Object valueForType(String value, String type, String name) throws EventProcessingException {
+    private Object valueForType(Object value, String type, String name) throws EventProcessingException {
+        // when type is not defined, handle as string
+        if (type == null) {
+            return value;
+        }
+        if (value instanceof String) {
+            return valueForString((String) value, type, name);
+        }
+        return value;
+    }
+
+    /**
+     * @param value the value to convert
+     * @param type NGSI type
+     * @param name used for error handling
+     * @return a Java Object for given value
+     * @throws EventProcessingException if the conversion fails
+     */
+    private Object valueForString(String value, String type, String name) throws EventProcessingException {
         // when type is not defined, handle as string
         if (type == null) {
             return value;
