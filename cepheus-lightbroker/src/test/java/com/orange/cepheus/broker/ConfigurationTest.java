@@ -28,11 +28,15 @@ public class ConfigurationTest {
     @Autowired
     Configuration configuration;
 
-
     @Test
-    public void checkPropertiesValues(){
+    public void checkPropertiesValues() {
         assertEquals("10.25.12.123", configuration.getRemoteHost());
         assertEquals(8081, configuration.getRemotePort());
+    }
+
+    @Test
+    public void checkStringBuilder() {
+        assertEquals("http://10.25.12.123:8081", configuration.getUrlRemoteBrokerBuilder().toString());
     }
 
 }

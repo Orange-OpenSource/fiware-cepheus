@@ -50,6 +50,10 @@ public class Configuration {
         this.remotePort = remotePort;
     }
 
+    public StringBuilder getUrlRemoteBrokerBuilder() {
+        return new StringBuilder("http://").append(remoteHost).append(':').append(remotePort);
+    }
+
     @Override
     public String toString() {
         return "Configuration{" +

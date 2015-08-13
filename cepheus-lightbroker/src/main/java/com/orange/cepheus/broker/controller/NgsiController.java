@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+import org.springframework.util.concurrent.SuccessCallback;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,17 +48,20 @@ public class NgsiController extends NgsiBaseController {
     Configuration configuration;
 
     @Override
-    public RegisterContextResponse registerContext(final RegisterContext register) throws Registrations.RegistrationException {
+    public RegisterContextResponse registerContext(final RegisterContext register) throws Registrations.RegistrationException, ExecutionException, InterruptedException {
         logger.debug("registerContext incoming request id:{} duration:{}", register.getRegistrationId(), register.getDuration());
 
-        RegisterContextResponse registerContextResponse = new RegisterContextResponse();
-
-        //register new registration or update previous registration (if registrationId != null) or remove registration (if duration = 0)
-        registerContextResponse.setRegistrationId(registrations.addContextRegistration(register));
-
         //TODO forward the register to remote broker
+        String urlRemoteBroker = configuration.getUrlRemoteBrokerBuilder().append("/v1/registerContext").toString();
+        ngsiClient.registerContext(urlRemoteBroker, null, register).addCallback(
+                this::saveRegistrationIdRemote,
+                throwable -> logger.warn("RegisterContext failed: {}", throwable.toString()));
 
-        return registerContextResponse;
+        RegisterContextResponse registerContextLocalResponse = new RegisterContextResponse();
+        //register new registration or update previous registration (if registrationId != null) or remove registration (if duration = 0)
+        registerContextLocalResponse.setRegistrationId(registrations.addContextRegistration(register));
+
+        return registerContextLocalResponse;
     }
 
     @Override
@@ -69,15 +74,17 @@ public class NgsiController extends NgsiBaseController {
 
         Iterator<URI> providingApplication = registrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
         String urlProvider;
-        if (providingApplication.hasNext()) {
-            //send the update to the first providing Application
-            urlProvider = providingApplication.next().toString();
-        } else {
+
+        if (!providingApplication.hasNext()) {
             //forward the update to the remote broker
-            StringBuilder urlBrokerBuilder = new StringBuilder("http://").append(configuration.getRemoteHost()).append(':').append(configuration.getRemotePort()).append("/v1/updateContext");
-            urlProvider = urlBrokerBuilder.toString();
+            urlProvider = configuration.getUrlRemoteBrokerBuilder().append("/v1/updateContext").toString();
+            //TODO : use fiware-service in http headers
+            ngsiClient.updateContext(urlProvider, null, update).addCallback(
+                    updateContextResponse -> logger.debug("UpdateContext completed"),
+                    throwable -> logger.warn("UpdateContext failed: {}", throwable.toString()));
         }
-        //TODO : use fiware-service in http headers
+        //send the update to the first providing Application
+        urlProvider = providingApplication.next().toString();
         return ngsiClient.updateContext(urlProvider, null, update).get();
     }
 
@@ -90,6 +97,10 @@ public class NgsiController extends NgsiBaseController {
         statusCode.setReasonPhrase("registration error");
         statusCode.setDetail(registrationException.toString());
         return errorResponse(req.getRequestURI(), statusCode);
+    }
+
+    private void saveRegistrationIdRemote(RegisterContextResponse registerContextResponse) {
+        //TODO
     }
 
 }

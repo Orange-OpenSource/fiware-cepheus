@@ -50,9 +50,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -96,13 +94,13 @@ public class NgsiControllerTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        when(configuration.getRemoteHost()).thenReturn("orionhost");
-        when(configuration.getRemotePort()).thenReturn(9999);
+        when(configuration.getUrlRemoteBrokerBuilder()).thenReturn(new StringBuilder("http://orionhost:9999"));
     }
 
     @After
     public void resetMocks() {
         reset(registrations);
+        reset(ngsiClient);
         reset(configuration);
     }
 
@@ -122,6 +120,10 @@ public class NgsiControllerTest {
     public void postNewRegisterContext() throws Exception {
 
         when(registrations.addContextRegistration(any())).thenReturn("12345678");
+        ListenableFuture<RegisterContextResponse> responseFuture = Mockito.mock(ListenableFuture.class);
+        doNothing().when(responseFuture).addCallback(any(), any());
+        when(ngsiClient.registerContext(any(), eq(null), any())).thenReturn(responseFuture);
+
         mockMvc.perform(post("/v1/registerContext")
                 .content(json(mapper, createRegisterContextTemperature()))
                 .contentType(MediaType.APPLICATION_JSON))
