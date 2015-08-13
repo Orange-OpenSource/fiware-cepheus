@@ -141,6 +141,15 @@ public class Util {
         return registerContext;
     }
 
+    static public RegisterContextResponse createRegisterContextResponseTemperature() throws URISyntaxException {
+        RegisterContextResponse registerContextResponse = new RegisterContextResponse();
+
+        registerContextResponse.setDuration("PT10S");
+        registerContextResponse.setRegistrationId("123456789");
+
+        return registerContextResponse;
+    }
+
     static public UnsubscribeContext createUnsubscribeContext() {
         return new UnsubscribeContext("12345678");
     }

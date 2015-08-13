@@ -101,6 +101,17 @@ public class NgsiClient {
     }
 
     /**
+     * Send an register request
+     * @param providerUrl the URL of the registration consumer
+     * @param httpHeaders the HTTP header to use, or null for default
+     * @param registerContext the registerContext
+     * @return a future for a RegisterContextResponse
+     */
+    public ListenableFuture<RegisterContextResponse> registerContext(String providerUrl, HttpHeaders httpHeaders, RegisterContext registerContext) {
+        return request(providerUrl, httpHeaders, registerContext, RegisterContextResponse.class);
+    }
+
+    /**
      * The default HTTP request headers used for the requests.
      * @return the HTTP request headers.
      */
