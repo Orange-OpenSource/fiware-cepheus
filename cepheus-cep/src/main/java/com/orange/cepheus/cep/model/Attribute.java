@@ -11,6 +11,7 @@ package com.orange.cepheus.cep.model;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -24,7 +25,7 @@ public class Attribute {
     @NotEmpty(message = "All attributes must have a type")
     private String type;
 
-    private Set<Metadata> metadata;
+    private Set<Metadata> metadata = Collections.emptySet();
 
     public Attribute() {
     }
@@ -51,13 +52,13 @@ public class Attribute {
     }
 
     public Set<Metadata> getMetadata() {
-        if (metadata == null) {
-            return Collections.emptySet();
-        }
         return metadata;
     }
 
     public void setMetadata(Set<Metadata> metadata) {
+        if (metadata == null) {
+            metadata = Collections.emptySet();
+        }
         this.metadata = metadata;
     }
 
