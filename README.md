@@ -57,6 +57,10 @@ Fiware-cepheus and fiware-lb are SpringBoot applications. You can run them simpl
 
 The complete user manual can be found [here](doc/manual.md)
 
+### Example
+
+Some simple examples of how to use the cepheus-cep can be found under the [/scripts](scripts)
+
 ## License
 
 Fiware-cepheus is licensed under [GNU General Public License Version 2](LICENCE.txt).
