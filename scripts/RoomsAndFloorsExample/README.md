@@ -32,11 +32,11 @@ a Context Entity that would be based on the floors :
 
 The EPL rule to average the temperature based on the previous model is :
 
-  INSERT INTO Floor
-  SELECT floor as id, avg(temperature) as temperature
-  FROM Room.win:time(10 minutes)
-  GROUP BY floor
-  OUTPUT AFTER 1 min LAST EVERY 1 min
+    INSERT INTO Floor
+    SELECT floor as id, avg(temperature) as temperature
+    FROM Room.win:time(10 minutes)
+    GROUP BY floor
+    OUTPUT LAST EVERY 1 min
 
 Please refer to Esper EPL manual for details about the syntax of this rule.
 We are using the "floor" attribute of the Room as the "id" of the Floor.
