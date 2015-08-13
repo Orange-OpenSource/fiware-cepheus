@@ -18,7 +18,7 @@ You can pull the latest image from [Docker Hub](https://hub.docker.com/r/orangeo
 
 ## Build the image
 
-    docker build -t orangeopensource/fiware-cepheus
+    docker build -t orangeopensource/fiware-cepheus .
 
 The parameter `-t orangeopensource/fiware-cepheus` gives the image a name. This name could be anything, or even include an organization like `-t org/orangeopensource`.
 This name is later used to run the container based on the image.

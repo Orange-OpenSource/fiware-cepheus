@@ -6,7 +6,7 @@
  * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
  */
 
-package com.orange.cepheus.broker.controller;
+package com.orange.cepheus.broker;
 
 import com.orange.ngsi.model.*;
 import org.springframework.http.MediaType;
@@ -46,6 +46,17 @@ public class Util {
         contextElement.setContextAttributeList(Collections.singletonList(contextAttribute));
         return contextElement;
     }
+
+    static public ContextElement createTemperaturePressureContextElement() {
+        ContextElement contextElement = new ContextElement();
+        contextElement.setEntityId(new EntityId("S1", "TempSensor", false));
+        List<ContextAttribute> contextAttributeList = new ArrayList<>();
+        contextAttributeList.add(new ContextAttribute("temp", "float", 15.5));
+        contextAttributeList.add(new ContextAttribute("pressure", "int", 1015));
+        contextElement.setContextAttributeList(contextAttributeList);
+        return contextElement;
+    }
+
 
     static public UpdateContext createUpdateContextTempSensor(float randomValue) throws URISyntaxException {
         UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
@@ -127,6 +138,36 @@ public class Util {
         subscribeResponse.setSubscriptionId("12345678");
         subscribeContextResponse.setSubscribeResponse(subscribeResponse);
         return subscribeContextResponse;
+    }
+
+    static public RegisterContext createRegisterContextTemperature() throws URISyntaxException {
+        RegisterContext registerContext = new RegisterContext();
+
+        ContextRegistration contextRegistration = new ContextRegistration(new URI("http://localhost:1028/accumulate"));
+        EntityId entityId = new EntityId("Room*", "Room", true);
+        contextRegistration.setEntityIdList(Collections.singletonList(entityId));
+        ContextRegistrationAttribute attribute = new ContextRegistrationAttribute("temperature", false);
+        attribute.setType("float");
+        contextRegistration.setContextRegistrationAttributeList(Collections.singletonList(attribute));
+        registerContext.setContextRegistrationList(Collections.singletonList(contextRegistration));
+        registerContext.setDuration("PT10S");
+
+        return registerContext;
+    }
+
+    static public UpdateContext createUpdateContextTempSensorAndPressure() throws URISyntaxException {
+        UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
+        updateContext.setContextElements(Collections.singletonList(createTemperaturePressureContextElement()));
+        return updateContext;
+    }
+
+    static public UpdateContextResponse createUpdateContextResponseTempSensorAndPressure() throws URISyntaxException {
+        ContextElementResponse contextElementResponse = new ContextElementResponse();
+        contextElementResponse.setContextElement(createTemperaturePressureContextElement());
+        contextElementResponse.setStatusCode(new StatusCode(CODE_200));
+        UpdateContextResponse updateContextResponse = new UpdateContextResponse();
+        updateContextResponse.setContextElementResponses(Collections.singletonList(contextElementResponse));
+        return updateContextResponse;
     }
 
     static public String json(MappingJackson2HttpMessageConverter mapping, Object o) throws IOException {
