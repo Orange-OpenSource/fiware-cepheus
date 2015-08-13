@@ -66,4 +66,11 @@ public class Metadata {
         result = 31 * result + (type != null ? type.hashCode() : 0);
         return result;
     }
+
+    @Override public String toString() {
+        return "Metadata{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
 }

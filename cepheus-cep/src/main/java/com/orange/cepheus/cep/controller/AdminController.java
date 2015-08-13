@@ -53,7 +53,7 @@ public class AdminController {
 
     @RequestMapping(value = "/config", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public synchronized ResponseEntity<?> configuration(@Valid @RequestBody final Configuration configuration) throws ConfigurationException, PersistenceException {
-        logger.debug("Updating configuration: {}", configuration);
+        logger.info("Update configuration");
 
         complexEventProcessor.setConfiguration(configuration);
 

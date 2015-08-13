@@ -45,4 +45,11 @@ public class Event {
     public Map<String, Object> getValues() {
         return values;
     }
+
+    @Override public String toString() {
+        return "Event{" +
+                "type='" + type + '\'' +
+                ", values=" + values +
+                '}';
+    }
 }

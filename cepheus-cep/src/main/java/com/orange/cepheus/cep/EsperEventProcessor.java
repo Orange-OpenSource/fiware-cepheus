@@ -52,6 +52,8 @@ public class EsperEventProcessor implements ComplexEventProcessor {
      * @param configuration the new configuration to apply
      */
     public void setConfiguration(Configuration configuration) throws ConfigurationException {
+        logger.info("Apply configuration");
+
         Configuration previousConfiguration = this.configuration;
         ConfigurationOperations operations = epServiceProvider.getEPAdministrator().getConfiguration();
         try {
@@ -135,7 +137,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
      * @throws EventProcessingException
      */
     public void processEvent(Event event) throws EventProcessingException {
-        logger.debug("Event sent to Esper {}", event.toString());
+        logger.info("EventIn: {}", event.toString());
 
         try {
             this.epServiceProvider.getEPRuntime().sendEvent(event.getValues(), event.getType());
@@ -205,18 +207,21 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         for (String statementName : statementsToDelete) {
             EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(statementName);
             if (statement != null) {
+                logger.info("Removing unused statement: "+statement.getText());
                 statement.stop();
                 statement.destroy();
             }
         }
         // Finally remove the event types
         for (EventType eventType : eventTypesToRemove) {
+            logger.info("Removing unused event: " + eventType);
             operations.removeEventType(eventType.getType(), false);
         }
 
         for (EventType eventType : eventTypesToAdd) {
-            String eventTypeName = eventType.getType();
+            logger.info("Add new event type: {}", eventType);
             // Add event type mapped to esper representation
+            String eventTypeName = eventType.getType();
             operations.addEventType(eventTypeName, eventMapper.esperTypeFromEventType(eventType));
         }
     }
@@ -238,6 +243,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             // Create statement if does not already exist
             EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(hash);
             if (statement == null) {
+                logger.info("Add new statement: {}", eplStatement);
                 statement = epServiceProvider.getEPAdministrator().createEPL(eplStatement, hash);
                 statement.addListener(eventSinkListener);
             }
@@ -248,6 +254,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         for (String hash : epServiceProvider.getEPAdministrator().getStatementNames()) {
             if (!hashes.contains(hash)) {
                 EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(hash);
+                logger.info("Remove unused statement: {}", statement.getText());
                 if (statement != null) {
                     statement.destroy();
                 }

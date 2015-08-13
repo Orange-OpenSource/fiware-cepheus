@@ -76,6 +76,13 @@ public class EventType {
         this.attributes = attributes;
     }
 
+    public void addAttribute(Attribute attribute) {
+        if (attributes == null) {
+            attributes = new HashSet<>();
+        }
+        attributes.add(attribute);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -94,10 +101,13 @@ public class EventType {
         return !(attributes != null ? !attributes.equals(eventType.attributes) : eventType.attributes != null);
     }
 
-    public void addAttribute(Attribute attribute) {
-        if (attributes == null) {
-            attributes = new HashSet<>();
-        }
-        attributes.add(attribute);
+    @Override
+    public String toString() {
+        return "EventType{" +
+                "id='" + id + '\'' +
+                ", type='" + type + '\'' +
+                ", isPattern=" + isPattern +
+                ", attributes=" + attributes +
+                '}';
     }
 }

@@ -49,16 +49,15 @@ public class EventSinkListener implements StatementAwareUpdateListener {
             return;
         }
 
-        logger.debug("Events out from {} ({})", epStatement.getText(), added.length);
-
         for (EventBean eventBean : added) {
 
             // Debug some information about the event
-            if (logger.isDebugEnabled()) {
-                logger.debug("EventType {} eventBean {}", eventBean.getEventType().getName(), eventBean.toString());
+            if (logger.isInfoEnabled()) {
+                StringBuilder sb = new StringBuilder();
                 for (String propertyName : eventBean.getEventType().getPropertyNames()) {
-                    logger.debug(" property {} value {} ", propertyName, eventBean.get(propertyName));
+                    sb.append(" / ").append(propertyName).append(':').append(eventBean.get(propertyName));
                 }
+                logger.info("EventOut: {}{} from {}", eventBean.getEventType().getName(), sb.toString(), epStatement.getText());
             }
 
             // Send updateContext requests to each broker

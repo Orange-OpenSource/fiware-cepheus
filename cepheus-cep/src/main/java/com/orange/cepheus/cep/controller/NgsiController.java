@@ -69,7 +69,7 @@ public class NgsiController extends NgsiBaseController {
     @Override
     public UpdateContextResponse updateContext(final UpdateContext update) throws TypeNotFoundException {
 
-        logger.debug("updateContext incoming request action:{}", update.getUpdateAction());
+        logger.debug("updateContext incoming request: {}", update.toString());
 
         List<ContextElementResponse> responses = new LinkedList<>();
 

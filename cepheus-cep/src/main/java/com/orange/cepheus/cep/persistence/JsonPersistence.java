@@ -69,7 +69,7 @@ public class JsonPersistence implements Persistence {
 
     @Override
     public void saveConfiguration(Configuration configuration) throws PersistenceException {
-        logger.debug("SAVE Configuration in {}", this.ConfigurationFile);
+        logger.info("Save configuration in {}", this.ConfigurationFile);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);

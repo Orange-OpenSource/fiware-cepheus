@@ -85,4 +85,12 @@ public class Attribute {
         result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
         return result;
     }
+
+    @Override public String toString() {
+        return "Attribute{" +
+                "name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", metadata=" + metadata +
+                '}';
+    }
 }

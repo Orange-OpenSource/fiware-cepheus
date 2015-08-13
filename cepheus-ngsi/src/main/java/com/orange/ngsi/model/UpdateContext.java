@@ -41,4 +41,12 @@ public class UpdateContext {
     public void setUpdateAction(UpdateAction updateAction) {
         this.updateAction = updateAction;
     }
+
+    @Override
+    public String toString() {
+        return "UpdateContext{" +
+                "contextElements=" + contextElements +
+                ", updateAction=" + updateAction +
+                '}';
+    }
 }
