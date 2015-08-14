@@ -10,6 +10,7 @@ package com.orange.cepheus.broker.controller;
 
 import com.orange.cepheus.broker.Configuration;
 import com.orange.cepheus.broker.Registrations;
+import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import com.orange.ngsi.server.NgsiBaseController;
@@ -48,7 +49,7 @@ public class NgsiController extends NgsiBaseController {
     Configuration configuration;
 
     @Override
-    public RegisterContextResponse registerContext(final RegisterContext register) throws Registrations.RegistrationException, ExecutionException, InterruptedException {
+    public RegisterContextResponse registerContext(final RegisterContext register) throws RegistrationException {
         logger.debug("registerContext incoming request id:{} duration:{}", register.getRegistrationId(), register.getDuration());
 
         ngsiClient.registerContext(configuration.getRemoteBroker(), null, register).addCallback(
@@ -85,14 +86,14 @@ public class NgsiController extends NgsiBaseController {
         return ngsiClient.updateContext(urlProvider, null, update).get();
     }
 
-    @ExceptionHandler({Registrations.RegistrationException.class})
-    public ResponseEntity<Object> registrationExceptionHandler(HttpServletRequest req, Registrations.RegistrationException registrationException) {
-        logger.error("Registration error: {}", registrationException.toString());
+    @ExceptionHandler(RegistrationException.class)
+    public ResponseEntity<Object> registrationExceptionHandler(HttpServletRequest req, RegistrationException registrationException) {
+        logger.error("Registration error: {}", registrationException.getMessage());
 
         StatusCode statusCode = new StatusCode();
-        statusCode.setCode("500");
+        statusCode.setCode("400");
         statusCode.setReasonPhrase("registration error");
-        statusCode.setDetail(registrationException.toString());
+        statusCode.setDetail(registrationException.getMessage());
         return errorResponse(req.getRequestURI(), statusCode);
     }
 

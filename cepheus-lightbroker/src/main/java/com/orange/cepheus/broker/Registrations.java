@@ -8,6 +8,7 @@
 
 package com.orange.cepheus.broker;
 
+import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.ngsi.model.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -28,15 +29,6 @@ import java.util.stream.Collectors;
  */
 @Component
 public class Registrations {
-
-    /**
-     * Exception that can occur during a registration
-     */
-    public static class RegistrationException extends Exception {
-        public RegistrationException(String message, Throwable cause) {
-            super(message, cause);
-        }
-    }
 
     /**
      * List of all context registrations

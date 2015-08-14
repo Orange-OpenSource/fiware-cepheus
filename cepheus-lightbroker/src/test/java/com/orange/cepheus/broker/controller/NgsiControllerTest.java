@@ -113,7 +113,22 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter contextRegistrations of type List<ContextRegistration> is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail")
+                        .value("The parameter contextRegistrations of type List<ContextRegistration> is missing in the request"));
+    }
+
+    @Test
+    public void postRegisterContextWithBadContextRegistrations() throws Exception {
+        // RegisterContext with a bad pattern
+        RegisterContext registerContext = createRegistrationContext();
+        registerContext.getContextRegistrationList().get(0).getEntityIdList().get(0).setId("]|,\\((");
+        registerContext.getContextRegistrationList().get(0).getEntityIdList().get(0).setIsPattern(true);
+
+        mockMvc.perform(post("/v1/registerContext").content(json(mapper, registerContext)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("400"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("registration error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value(""));
     }
 
     @Test

@@ -27,6 +27,22 @@ import static com.orange.ngsi.model.CodeEnum.CODE_200;
  */
 public class Util {
 
+    static public RegisterContext createRegistrationContext() throws Exception {
+        return createRegistrationContext("SENSOR1", "string", false, "http://providingApplication", "temp");
+    }
+
+    static public RegisterContext createRegistrationContext(String entityId, String entityType, boolean entityIsPattern, String providingApp, String attr) throws Exception {
+        RegisterContext registerContext = new RegisterContext();
+        registerContext.setDuration("PT1M");
+
+        ContextRegistration contextRegistration = new ContextRegistration();
+        contextRegistration.setEntityIdList(Collections.singletonList(new EntityId(entityId, entityType, entityIsPattern)));
+        contextRegistration.setContextRegistrationAttributeList(Collections.singletonList(new ContextRegistrationAttribute(attr, false)));
+        contextRegistration.setProvidingApplication(new URI(providingApp));
+        registerContext.setContextRegistrationList(Collections.singletonList(contextRegistration));
+
+        return registerContext;
+    }
 
     static public NotifyContext createNotifyContextTempSensor(float randomValue) throws URISyntaxException {
 

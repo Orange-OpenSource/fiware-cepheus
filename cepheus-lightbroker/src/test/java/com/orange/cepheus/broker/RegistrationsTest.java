@@ -8,7 +8,7 @@
 
 package com.orange.cepheus.broker;
 
-import com.orange.ngsi.model.ContextRegistration;
+import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.ngsi.model.ContextRegistrationAttribute;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.RegisterContext;
@@ -24,6 +24,7 @@ import org.springframework.util.Assert;
 import java.net.URI;
 import java.util.*;
 
+import static com.orange.cepheus.broker.Util.*;
 import static org.junit.Assert.*;
 
 /**
@@ -69,7 +70,7 @@ public class RegistrationsTest {
         try {
             registrations.addContextRegistration(registerContext);
             fail("registration should fail on bad duration with RegistrationException");
-        } catch (Registrations.RegistrationException ex) {
+        } catch (RegistrationException ex) {
         }
     }
 
@@ -84,7 +85,7 @@ public class RegistrationsTest {
         try {
             registrations.addContextRegistration(registerContext);
             fail("registration should fail on bad pattern with RegistrationException");
-        } catch (Registrations.RegistrationException ex) {
+        } catch (RegistrationException ex) {
         }
     }
 
@@ -245,22 +246,5 @@ public class RegistrationsTest {
         searchedEntityId = new EntityId("C", "string", false);
         it = registrations.findProvidingApplication(searchedEntityId, null);
         assertFalse(it.hasNext());
-    }
-
-    private RegisterContext createRegistrationContext() throws Exception {
-        return createRegistrationContext("SENSOR1", "string", false, "http://providingApplication", "temp");
-    }
-
-    private RegisterContext createRegistrationContext(String entityId, String entityType, boolean entityIsPattern, String providingApp, String attr) throws Exception {
-        RegisterContext registerContext = new RegisterContext();
-        registerContext.setDuration("PT1M");
-
-        ContextRegistration contextRegistration = new ContextRegistration();
-        contextRegistration.setEntityIdList(Collections.singletonList(new EntityId(entityId, entityType, entityIsPattern)));
-        contextRegistration.setContextRegistrationAttributeList(Collections.singletonList(new ContextRegistrationAttribute(attr, false)));
-        contextRegistration.setProvidingApplication(new URI(providingApp));
-        registerContext.setContextRegistrationList(Collections.singletonList(contextRegistration));
-
-        return registerContext;
     }
 }
