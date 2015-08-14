@@ -11,6 +11,7 @@ package com.orange.cepheus.broker.controller;
 import com.orange.cepheus.broker.Application;
 import com.orange.cepheus.broker.Configuration;
 import com.orange.cepheus.broker.LocalRegistrations;
+import com.orange.cepheus.broker.exception.MissingRemoteBrokerException;
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
@@ -79,6 +80,9 @@ public class NgsiControllerTest {
     @Mock
     ListenableFuture<UpdateContextResponse> updateContextResponseListenableFuture;
 
+    @Mock
+    ListenableFuture<QueryContextResponse> queryContextResponseListenableFuture;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -102,6 +106,7 @@ public class NgsiControllerTest {
         when(configuration.getRemoteBroker()).thenReturn("http://orionhost:9999");
         when(updateContextResponseListenableFuture.get()).thenReturn(createUpdateContextResponseTempSensorAndPressure());
         doNothing().when(updateContextResponseListenableFuture).addCallback(any(),any());
+        when(queryContextResponseListenableFuture.get()).thenReturn(createQueryContextResponseTemperature());
     }
 
     @After
@@ -311,7 +316,7 @@ public class NgsiControllerTest {
         assertTrue(attributeArgumentCaptor.getValue().contains("temp"));
         assertTrue(attributeArgumentCaptor.getValue().contains("pressure"));
 
-        // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
+        // Capture updateContext when updateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
         String urlProvider = "http//iotagent:1234";
 
@@ -369,4 +374,170 @@ public class NgsiControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("Receiver internal error"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("An unknown error at the receiver has occured"));
     }
+
+    @Test
+    public void postQueryContextWithProvidingApplication() throws Exception {
+
+        //localRegistrations mock return always a providingApplication
+        when(providingApplication.hasNext()).thenReturn(true);
+        when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        //ngsiclient mock return always createQueryContextResponseTemperature when call queryContext
+        when(ngsiClient.queryContext(any(), any(), any())).thenReturn(queryContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/queryContext")
+                .content(json(mapper, createQueryContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value(15.5))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
+
+        //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
+        verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
+
+        //check entityId
+        assertEquals("S*", entityIdArgumentCaptor.getValue().getId());
+        assertEquals("TempSensor", entityIdArgumentCaptor.getValue().getType());
+        assertTrue(entityIdArgumentCaptor.getValue().getIsPattern());
+
+        //check attributes
+        assertEquals(1, attributeArgumentCaptor.getValue().size());
+        assertTrue(attributeArgumentCaptor.getValue().contains("temp"));
+
+        // Capture queryContext when queryContextRequest is called on updateContextRequest,
+        ArgumentCaptor<QueryContext> queryContextArg = ArgumentCaptor.forClass(QueryContext.class);
+        String urlProvider = "http//iotagent:1234";
+
+        //check ListenableFuture is called at least Once and with get method
+        verify(queryContextResponseListenableFuture, atLeastOnce()).get();
+
+        //verify urlProvider
+        verify(ngsiClient, atLeastOnce()).queryContext(eq(urlProvider), any(), queryContextArg.capture());
+
+        // Check id correspond to the required
+        assertEquals(1, queryContextArg.getValue().getEntityIdList().size());
+        assertEquals("S*", queryContextArg.getValue().getEntityIdList().get(0).getId());
+    }
+
+    @Test
+    public void postQueryContextWithoutProvidingApplication() throws Exception {
+
+        //localRegistrations mock return always without providingApplication
+        when(providingApplication.hasNext()).thenReturn(false);
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        //ngsiclient mock return always createQueryContextResponseTemperature when call queryContext
+        when(ngsiClient.queryContext(any(), any(), any())).thenReturn(queryContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/queryContext")
+                .content(json(mapper, createQueryContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value(15.5))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
+
+        //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
+        verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
+
+        //check entityId
+        assertEquals("S*", entityIdArgumentCaptor.getValue().getId());
+        assertEquals("TempSensor", entityIdArgumentCaptor.getValue().getType());
+        assertTrue(entityIdArgumentCaptor.getValue().getIsPattern());
+
+        //check attributes
+        assertEquals(1, attributeArgumentCaptor.getValue().size());
+        assertTrue(attributeArgumentCaptor.getValue().contains("temp"));
+
+        // Capture queryContext when queryContextRequest is called on updateContextRequest,
+        ArgumentCaptor<QueryContext> queryContextArg = ArgumentCaptor.forClass(QueryContext.class);
+        String urlProvider = "http://orionhost:9999";
+
+        //check ListenableFuture is called at least Once and with get method
+        verify(queryContextResponseListenableFuture, atLeastOnce()).get();
+
+        //verify urlProvider
+        verify(ngsiClient, atLeastOnce()).queryContext(eq(urlProvider), any(), queryContextArg.capture());
+
+        // Check id correspond to the required
+        assertEquals(1, queryContextArg.getValue().getEntityIdList().size());
+        assertEquals("S*", queryContextArg.getValue().getEntityIdList().get(0).getId());
+    }
+
+    @Test
+    public void postQueryContextWithMissingBrokerException() throws Exception {
+
+        //configuration mock return null as remoteBroker
+        when(configuration.getRemoteBroker()).thenReturn(null);
+
+        //localRegistrations mock return always without providingApplication
+        when(providingApplication.hasNext()).thenReturn(false);
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.queryContext(any(), any(), any())).thenReturn(queryContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/queryContext")
+                .content(json(mapper, createQueryContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("missing remote broker error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("Not remote broker configured to foward queryContext coming from providingApplication"));
+    }
+
+    @Test
+    public void postQueryContextWithExecutionException() throws Exception {
+
+        //localRegistrations mock return always a providingApplication
+        when(providingApplication.hasNext()).thenReturn(true);
+        when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        when(queryContextResponseListenableFuture.get()).thenThrow(new ExecutionException("execution exception", new Throwable()));
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.queryContext(any(), any(), any())).thenReturn(queryContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/queryContext")
+                .content(json(mapper, createQueryContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("Receiver internal error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("An unknown error at the receiver has occured"));
+    }
+
+    @Test
+    public void postQueryContextWithInterruptedException() throws Exception {
+
+        //localRegistrations mock return always a providingApplication
+        when(providingApplication.hasNext()).thenReturn(true);
+        when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        when(queryContextResponseListenableFuture.get()).thenThrow(new InterruptedException());
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.queryContext(any(), any(), any())).thenReturn(queryContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/queryContext")
+                .content(json(mapper, createQueryContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("Receiver internal error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("An unknown error at the receiver has occured"));
+    }
+
 }

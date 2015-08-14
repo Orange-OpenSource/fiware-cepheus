@@ -10,6 +10,7 @@ package com.orange.cepheus.broker.controller;
 
 import com.orange.cepheus.broker.Configuration;
 import com.orange.cepheus.broker.LocalRegistrations;
+import com.orange.cepheus.broker.exception.MissingRemoteBrokerException;
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
@@ -60,7 +61,7 @@ public class NgsiController extends NgsiBaseController {
     public UpdateContextResponse updateContext(final UpdateContext update) throws ExecutionException, InterruptedException {
         logger.debug("updateContext incoming request action:{}", update.getUpdateAction());
 
-        //search only the first
+        //TODO : search providingApplication for all contextElement of updateContext
         ContextElement contextElement = update.getContextElements().get(0);
         Set<String> attributesName = contextElement.getContextAttributeList().stream().map(ContextAttribute::getName).collect(Collectors.toSet());
 
@@ -75,6 +76,7 @@ public class NgsiController extends NgsiBaseController {
             //forward the update to the remote broker
             final String urlBroker = configuration.getRemoteBroker();
 
+            //check if remote broker is configured
             if (urlBroker != null) {
                 //TODO : use fiware-service in http headers
                 ngsiClient.updateContext(urlBroker, null, update).addCallback(
@@ -96,6 +98,35 @@ public class NgsiController extends NgsiBaseController {
         }
     }
 
+    @Override
+    public QueryContextResponse queryContext(final QueryContext query) throws ExecutionException, InterruptedException, MissingRemoteBrokerException {
+        logger.debug("queryContext incoming request on entities:{}", query.getEntityIdList().toString());
+
+        Set<String> attributes = new HashSet<>();
+        if (query.getEntityIdList() != null ) {
+            attributes.addAll(query.getAttributList());
+        }
+
+        //TODO : search providingApplication for all entities of queryContext
+        Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(query.getEntityIdList().get(0), attributes);
+
+        if (providingApplication.hasNext()) {
+            // forward to providing application
+            final String urlProvider = providingApplication.next().toString();
+            return ngsiClient.queryContext(urlProvider, null, query).get();
+        } else {
+            // forward query to remote broker
+            final String urlBroker = configuration.getRemoteBroker();
+            //check if remote broker is configured
+            if (urlBroker != null) {
+                //TODO : use fiware-service in http headers
+                return ngsiClient.queryContext(urlBroker, null, query).get();
+            } else {
+                throw new MissingRemoteBrokerException("Not remote broker configured to foward queryContext coming from providingApplication");
+            }
+        }
+    }
+
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<Object> registrationExceptionHandler(HttpServletRequest req, RegistrationException registrationException) {
         logger.error("Registration error: {}", registrationException.getMessage());
@@ -104,6 +135,17 @@ public class NgsiController extends NgsiBaseController {
         statusCode.setCode("400");
         statusCode.setReasonPhrase("registration error");
         statusCode.setDetail(registrationException.getMessage());
+        return errorResponse(req.getRequestURI(), statusCode);
+    }
+
+    @ExceptionHandler(MissingRemoteBrokerException.class)
+    public ResponseEntity<Object> missingRemoteBrokerExceptionHandler(HttpServletRequest req, MissingRemoteBrokerException missingRemoteBrokerException) {
+        logger.error("MissingRemoteBrokerException error: {}", missingRemoteBrokerException.getMessage());
+
+        StatusCode statusCode = new StatusCode();
+        statusCode.setCode("500");
+        statusCode.setReasonPhrase("missing remote broker error");
+        statusCode.setDetail(missingRemoteBrokerException.getMessage());
         return errorResponse(req.getRequestURI(), statusCode);
     }
 }
