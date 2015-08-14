@@ -11,6 +11,7 @@ package com.orange.cepheus.broker.controller;
 import com.orange.cepheus.broker.Application;
 import com.orange.cepheus.broker.Configuration;
 import com.orange.cepheus.broker.LocalRegistrations;
+import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import org.junit.After;
@@ -119,11 +120,14 @@ public class NgsiControllerTest {
         registerContext.getContextRegistrationList().get(0).getEntityIdList().get(0).setId("]|,\\((");
         registerContext.getContextRegistrationList().get(0).getEntityIdList().get(0).setIsPattern(true);
 
+        when(localRegistrations.updateRegistrationContext(any())).thenThrow(new RegistrationException("bad pattern", new RuntimeException()));
+
         mockMvc.perform(post("/v1/registerContext").content(json(mapper, registerContext)).contentType(MediaType.APPLICATION_JSON))
+                .andDo(mvcResult -> System.out.println(mvcResult.getResponse().getContentAsString()))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("400"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("registration error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value(""));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("bad pattern"));
     }
 
     @Test
@@ -181,7 +185,7 @@ public class NgsiControllerTest {
 
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
-        String urlProvider = "http://orionhost:9999/v1/updateContext";
+        String urlProvider = "http://orionhost:9999";
 
         //check ngsclient.updateContext that is called only once
         //verify urlProvider
@@ -220,11 +224,9 @@ public class NgsiControllerTest {
 
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
-        String urlProvider = "http//iotagent:1234/v1/updateContext";
-        //check ngsclient.updateContext that is called only once
-        verify(ngsiClient, atLeastOnce()).updateContext(any(), any(), any());
+        String urlProvider = "http//iotagent:1234";
         //verify urlProvider
-        verify(ngsiClient).updateContext(eq(urlProvider), any(), updateContextArg.capture());
+        verify(ngsiClient, atLeastOnce()).updateContext(eq(urlProvider), any(), updateContextArg.capture());
 
         // Check id correspond to the required
         ContextElement contextElement = updateContextArg.getValue().getContextElements().get(0);
@@ -256,7 +258,7 @@ public class NgsiControllerTest {
             public URI next() {
                 URI uri = null;
                 try {
-                    uri = new URI("http//iotagent:1234/v1/updateContext");
+                    uri = new URI("http//iotagent:1234");
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
                 }
