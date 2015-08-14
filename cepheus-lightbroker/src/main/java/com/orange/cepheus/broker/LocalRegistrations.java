@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 @Component
 public class LocalRegistrations {
 
-    @Autowired
-    protected RemoteRegistrations remoteRegistrations;
+    //@Autowired
+    //protected RemoteRegistrations remoteRegistrations;
 
     /**
      * List of all context registrations
