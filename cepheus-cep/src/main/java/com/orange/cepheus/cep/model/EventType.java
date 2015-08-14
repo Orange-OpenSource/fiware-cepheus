@@ -102,6 +102,15 @@ public class EventType {
     }
 
     @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (isPattern ? 1 : 0);
+        result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "EventType{" +
                 "id='" + id + '\'' +

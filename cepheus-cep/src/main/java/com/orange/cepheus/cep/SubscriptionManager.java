@@ -48,27 +48,35 @@ public class SubscriptionManager {
     /**
      * Inner class for concurrent subscriptions tracking using a RW lock.
      */
-    private class Subscriptions {
+    private static class Subscriptions {
         private HashSet<String> subscriptionIds = new HashSet<>();
         private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
         public boolean isSubscriptionValid(String subscriptionId) {
-            readWriteLock.readLock().lock();
-            boolean result = subscriptionIds.contains(subscriptionId);
-            readWriteLock.readLock().unlock();
-            return result;
+            try {
+                readWriteLock.readLock().lock();
+                return subscriptionIds.contains(subscriptionId);
+            } finally {
+                readWriteLock.readLock().unlock();
+            }
         }
 
         private void addSubscription(String subscriptionId) {
-            readWriteLock.writeLock().lock();
-            subscriptionIds.add(subscriptionId);
-            readWriteLock.writeLock().unlock();
+            try {
+                readWriteLock.writeLock().lock();
+                subscriptionIds.add(subscriptionId);
+            } finally {
+                readWriteLock.writeLock().unlock();
+            }
         }
 
         private void removeSubscription(String subscriptionId) {
-            readWriteLock.writeLock().lock();
-            subscriptionIds.remove(subscriptionId);
-            readWriteLock.writeLock().unlock();
+            try {
+                readWriteLock.writeLock().lock();
+                subscriptionIds.remove(subscriptionId);
+            } finally {
+                readWriteLock.writeLock().unlock();
+            }
         }
     }
 

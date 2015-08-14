@@ -141,7 +141,7 @@ public class EventMapper {
                 case "string":
                     return value;
                 case "boolean":
-                    return new Boolean(value);
+                    return value;
                 case "int":
                     return Integer.valueOf(value);
                 case "float":

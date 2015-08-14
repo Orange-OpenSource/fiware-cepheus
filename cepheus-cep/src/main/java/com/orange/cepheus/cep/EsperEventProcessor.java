@@ -254,8 +254,8 @@ public class EsperEventProcessor implements ComplexEventProcessor {
         for (String hash : epServiceProvider.getEPAdministrator().getStatementNames()) {
             if (!hashes.contains(hash)) {
                 EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(hash);
-                logger.info("Remove unused statement: {}", statement.getText());
                 if (statement != null) {
+                    logger.info("Remove unused statement: {}", statement.getText());
                     statement.destroy();
                 }
             }
