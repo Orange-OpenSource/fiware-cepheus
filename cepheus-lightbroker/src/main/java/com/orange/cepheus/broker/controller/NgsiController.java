@@ -73,11 +73,17 @@ public class NgsiController extends NgsiBaseController {
         } else {
 
             //forward the update to the remote broker
-            final String urlProvider = configuration.getRemoteBroker();
-            //TODO : use fiware-service in http headers
-            ngsiClient.updateContext(urlProvider, null, update).addCallback(
-                    updateContextResponse -> logger.debug("UpdateContext completed"+urlProvider),
-                    throwable -> logger.warn("UpdateContext failed: {}", throwable.toString()));
+            final String urlBroker = configuration.getRemoteBroker();
+
+            if (urlBroker != null) {
+                //TODO : use fiware-service in http headers
+                ngsiClient.updateContext(urlBroker, null, update).addCallback(
+                        updateContextResponse -> logger.debug("UpdateContext completed for {} ", urlBroker),
+                        throwable -> logger.warn("UpdateContext failed for {}: {}", urlBroker, throwable.toString()));
+
+            } else {
+                logger.warn("Not remote broker to foward updateContext coming from providingApplication");
+            }
 
             UpdateContextResponse updateContextResponse = new UpdateContextResponse();
             List<ContextElementResponse> contextElementResponseList = new ArrayList<>();
@@ -86,7 +92,7 @@ public class NgsiController extends NgsiBaseController {
                 contextElementResponseList.add(new ContextElementResponse(c, statusCode));
             }
             updateContextResponse.setContextElementResponses(contextElementResponseList);
-            return new UpdateContextResponse();
+            return updateContextResponse;
         }
     }
 
