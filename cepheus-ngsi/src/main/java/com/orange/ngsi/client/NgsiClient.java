@@ -68,7 +68,7 @@ public class NgsiClient {
     }
 
     /**
-     * Send an unsubscribe request
+     * Send an unsubscription request
      * @param url the URL of the subscription provider
      * @param httpHeaders the HTTP header to use, or null for default
      * @param subscriptionId the subscription ID to unsubscribe
@@ -90,7 +90,7 @@ public class NgsiClient {
     }
 
     /**
-     * Send an notify request
+     * Send an query request
      * @param url the URL of the registration provider
      * @param httpHeaders the HTTP header to use, or null for default
      * @param queryContext the queryContext

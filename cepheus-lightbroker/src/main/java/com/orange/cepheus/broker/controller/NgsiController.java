@@ -9,7 +9,7 @@
 package com.orange.cepheus.broker.controller;
 
 import com.orange.cepheus.broker.Configuration;
-import com.orange.cepheus.broker.Registrations;
+import com.orange.cepheus.broker.LocalRegistrations;
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
@@ -18,8 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.util.concurrent.SuccessCallback;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,8 +37,7 @@ public class NgsiController extends NgsiBaseController {
 
     private static Logger logger = LoggerFactory.getLogger(NgsiController.class);
 
-    @Autowired
-    Registrations registrations;
+    @Autowired LocalRegistrations localRegistrations;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -58,7 +55,7 @@ public class NgsiController extends NgsiBaseController {
 
         RegisterContextResponse registerContextLocalResponse = new RegisterContextResponse();
         //register new registration or update previous registration (if registrationId != null) or remove registration (if duration = 0)
-        registerContextLocalResponse.setRegistrationId(registrations.addContextRegistration(register));
+        registerContextLocalResponse.setRegistrationId(localRegistrations.updateRegistrationContext(register));
 
         return registerContextLocalResponse;
     }
@@ -71,7 +68,7 @@ public class NgsiController extends NgsiBaseController {
         ContextElement contextElement = update.getContextElements().get(0);
         Set<String> attributesName = contextElement.getContextAttributeList().stream().map(ContextAttribute::getName).collect(Collectors.toSet());
 
-        Iterator<URI> providingApplication = registrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
+        Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
         String urlProvider;
 
         if (!providingApplication.hasNext()) {

@@ -10,12 +10,10 @@ package com.orange.cepheus.broker.controller;
 
 import com.orange.cepheus.broker.Application;
 import com.orange.cepheus.broker.Configuration;
-import com.orange.cepheus.broker.Registrations;
-import com.orange.cepheus.broker.Util;
+import com.orange.cepheus.broker.LocalRegistrations;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +25,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -35,7 +32,6 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.util.concurrent.SuccessCallback;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
@@ -65,8 +61,7 @@ public class NgsiControllerTest {
 
     private MockMvc mockMvc;
 
-    @Mock
-    Registrations registrations;
+    @Mock LocalRegistrations localRegistrations;
 
     @Mock
     NgsiClient ngsiClient;
@@ -99,7 +94,7 @@ public class NgsiControllerTest {
 
     @After
     public void resetMocks() {
-        reset(registrations);
+        reset(localRegistrations);
         reset(ngsiClient);
         reset(configuration);
     }
@@ -134,7 +129,7 @@ public class NgsiControllerTest {
     @Test
     public void postNewRegisterContext() throws Exception {
 
-        when(registrations.addContextRegistration(any())).thenReturn("12345678");
+        when(localRegistrations.updateRegistrationContext(any())).thenReturn("12345678");
         ListenableFuture<RegisterContextResponse> responseFuture = Mockito.mock(ListenableFuture.class);
         doNothing().when(responseFuture).addCallback(any(), any());
         when(ngsiClient.registerContext(any(), eq(null), any())).thenReturn(responseFuture);
@@ -161,8 +156,8 @@ public class NgsiControllerTest {
     @Test
     public void postUpdateContextWithoutProvidingApplication() throws Exception {
 
-        //registrations mock return always without providingApplication
-        when(registrations.findProvidingApplication(any(), any())).thenReturn(getWithoutProviginApplication());
+        //localRegistrations mock return always without providingApplication
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(getWithoutProviginApplication());
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
         when(ngsiClient.updateContext(any(),any(),any())).thenReturn(getListenableFutureUpdateContextResponseTemperature());
 
@@ -171,8 +166,8 @@ public class NgsiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on registrations Set<String> searchAttributes
-        verify(registrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
+        //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
+        verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
 
         //check entityId
         assertEquals("S1", entityIdArgumentCaptor.getValue().getId());
@@ -198,8 +193,8 @@ public class NgsiControllerTest {
     @Test
     public void postUpdateContextWithProvidingApplication() throws Exception {
 
-        //registrations mock return always a providingApplication
-        when(registrations.findProvidingApplication(any(), any())).thenReturn(getProviginApplication());
+        //localRegistrations mock return always a providingApplication
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(getProviginApplication());
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
         when(ngsiClient.updateContext(any(),any(),any())).thenReturn(getListenableFutureUpdateContextResponseTemperature());
 
@@ -208,8 +203,8 @@ public class NgsiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on registrations Set<String> searchAttributes
-        verify(registrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
+        //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
+        verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
 
         //check entityId
         assertEquals("S1", entityIdArgumentCaptor.getValue().getId());

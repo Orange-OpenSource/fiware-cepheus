@@ -10,6 +10,7 @@ package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.ngsi.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +29,10 @@ import java.util.stream.Collectors;
  * Maintains the list of all context registrations
  */
 @Component
-public class Registrations {
+public class LocalRegistrations {
+
+    @Autowired
+    protected RemoteRegistrations remoteRegistrations;
 
     /**
      * List of all context registrations
@@ -41,11 +45,12 @@ public class Registrations {
     Map<String, Pattern> cachedPatterns = new ConcurrentHashMap<>();
 
     /**
-     * Add a new context registration
+     * Add or update a new context registration.
+     * When the duration of the context is set to zero, this is handled as a remove.
      * @param registerContext
      * @return contextRegistrationId
      */
-    public String addContextRegistration(RegisterContext registerContext) throws RegistrationException {
+    public String updateRegistrationContext(RegisterContext registerContext) throws RegistrationException {
         Duration duration = registrationDuration(registerContext);
         String registrationId = registerContext.getRegistrationId();
 

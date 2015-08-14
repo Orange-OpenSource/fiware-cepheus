@@ -28,37 +28,36 @@ import static com.orange.cepheus.broker.Util.*;
 import static org.junit.Assert.*;
 
 /**
- * Tests for registrations management
+ * Tests for localRegistrations management
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class RegistrationsTest {
+public class LocalRegistrationsTest {
 
-    @Autowired
-    Registrations registrations;
+    @Autowired LocalRegistrations localRegistrations;
 
     @Test
     public void testRegistration() throws Exception {
         RegisterContext registerContext = createRegistrationContext();
-        String registrationId = registrations.addContextRegistration(registerContext);
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
         Assert.hasLength(registrationId);
-        assertNotNull(registrations.getRegistration(registrationId));
+        assertNotNull(localRegistrations.getRegistration(registrationId));
         assertNotNull(registerContext.getExpirationDate());
     }
 
     @Test
     public void testUnregisterWithZeroDuration() throws Exception {
         RegisterContext registerContext = createRegistrationContext();
-        String registrationId = registrations.addContextRegistration(registerContext);
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
 
         // Remove registration using a zero duration
         RegisterContext zeroDuration = createRegistrationContext();
         zeroDuration.setRegistrationId(registrationId);
         zeroDuration.setDuration("PT0S");
-        registrations.addContextRegistration(zeroDuration);
+        localRegistrations.updateRegistrationContext(zeroDuration);
 
-        Assert.isNull(registrations.getRegistration(registrationId));
+        Assert.isNull(localRegistrations.getRegistration(registrationId));
     }
 
     @Test
@@ -68,7 +67,7 @@ public class RegistrationsTest {
 
         //TODO expect does not work on inner Exception
         try {
-            registrations.addContextRegistration(registerContext);
+            localRegistrations.updateRegistrationContext(registerContext);
             fail("registration should fail on bad duration with RegistrationException");
         } catch (RegistrationException ex) {
         }
@@ -83,7 +82,7 @@ public class RegistrationsTest {
 
         //TODO expect does not work on inner Exception
         try {
-            registrations.addContextRegistration(registerContext);
+            localRegistrations.updateRegistrationContext(registerContext);
             fail("registration should fail on bad pattern with RegistrationException");
         } catch (RegistrationException ex) {
         }
@@ -93,27 +92,27 @@ public class RegistrationsTest {
     public void testRegistrationPurge() throws Exception {
         RegisterContext registerContext = createRegistrationContext();
         registerContext.setDuration("PT1S"); // 1 s only
-        String registrationId = registrations.addContextRegistration(registerContext);
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
 
         // Wait for expiration
         Thread.sleep(1500);
 
         // Force trigger of scheduled purge
-        registrations.purgeExpiredContextRegistrations();
+        localRegistrations.purgeExpiredContextRegistrations();
 
-        assertNull(registrations.getRegistration(registrationId));
+        assertNull(localRegistrations.getRegistration(registrationId));
     }
 
     @Test
     public void testFindEntityId() throws Exception {
-        // Insert 3 registrations
+        // Insert 3 localRegistrations
         for (String n : new String[]{"A", "B", "C"}) {
-            registrations.addContextRegistration(createRegistrationContext(n, "string", false, "http://"+n, "temp"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"));
         }
 
         // Find B
         EntityId searchedEntityId = new EntityId("B", "string", false);
-        Iterator<URI> it = registrations.findProvidingApplication(searchedEntityId, null);
+        Iterator<URI> it = localRegistrations.findProvidingApplication(searchedEntityId, null);
         assertTrue(it.hasNext());
         assertEquals("http://B", it.next().toString());
         assertFalse(it.hasNext());
@@ -121,19 +120,19 @@ public class RegistrationsTest {
 
     @Test
     public void testFindEntityIds() throws Exception {
-        // Insert 3 registrations
+        // Insert 3 localRegistrations
         for (String n : new String[]{"A", "B", "C"}) {
-            registrations.addContextRegistration(createRegistrationContext(n, "string", false, "http://"+n, "temp"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"));
         }
         // Insert 3 more
         for (String n : new String[]{"A", "B", "C"}) {
-            registrations.addContextRegistration(createRegistrationContext(n, "string", false, "http://"+n+"2", "temp"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n + "2", "temp"));
         }
 
         // Find the two B
         EntityId searchedEntityId = new EntityId("B", "string", false);
         List<String> results = new LinkedList<>();
-        registrations.findProvidingApplication(searchedEntityId, null).forEachRemaining(uri -> results.add(uri.toString()));
+        localRegistrations.findProvidingApplication(searchedEntityId, null).forEachRemaining(uri -> results.add(uri.toString()));
         Collections.sort(results);
         assertEquals(2, results.size());
         assertEquals("http://B", results.get(0));
@@ -142,15 +141,15 @@ public class RegistrationsTest {
 
     @Test
     public void testFindEntityIdPattern() throws Exception {
-        // Insert 3 registrations
+        // Insert 3 localRegistrations
         for (String n : new String[]{"A", "B", "C"}) {
-            registrations.addContextRegistration(createRegistrationContext(n, "string", false, "http://"+n, "temp"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"));
         }
 
         // Find A and B
         EntityId searchedEntityId = new EntityId("A|B", "string", true);
         List<String> results = new LinkedList<>();
-        registrations.findProvidingApplication(searchedEntityId, null).forEachRemaining(uri -> results.add(uri.toString()));
+        localRegistrations.findProvidingApplication(searchedEntityId, null).forEachRemaining(uri -> results.add(uri.toString()));
         Collections.sort(results);
         assertEquals(2, results.size());
         assertEquals("http://A", results.get(0));
@@ -159,18 +158,18 @@ public class RegistrationsTest {
 
     @Test
     public void testFindEntyIdAndAttribute() throws Exception {
-        // Insert 3 registrations
+        // Insert 3 localRegistrations
         for (String n : new String[]{"A", "B", "C"}) {
-            registrations.addContextRegistration(createRegistrationContext(n, "string", false, "http://"+n, "temp"+n));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp" + n));
         }
         // Add other A entities but with other attributes
-        registrations.addContextRegistration(createRegistrationContext("A", "string", false, "http://AB", "tempB"));
-        registrations.addContextRegistration(createRegistrationContext("A", "string", false, "http://AC", "tempC"));
+        localRegistrations.updateRegistrationContext(createRegistrationContext("A", "string", false, "http://AB", "tempB"));
+        localRegistrations.updateRegistrationContext(createRegistrationContext("A", "string", false, "http://AC", "tempC"));
 
         // Find only entity A with attr tempA
         EntityId searchedEntityId = new EntityId("A", "string", false);
         Set<String> attribute = Collections.singleton("tempA");
-        Iterator<URI> it = registrations.findProvidingApplication(searchedEntityId, attribute);
+        Iterator<URI> it = localRegistrations.findProvidingApplication(searchedEntityId, attribute);
 
         assertTrue(it.hasNext());
         assertEquals("http://A", it.next().toString());
@@ -179,9 +178,9 @@ public class RegistrationsTest {
 
     @Test
     public void testFindEntyIdAndAttributes() throws Exception {
-        // Insert 2 registrations only temp2 attr
+        // Insert 2 localRegistrations only temp2 attr
         for (String n : new String[]{"A", "B"}) {
-            registrations.addContextRegistration(createRegistrationContext(n, "string", false, "http://"+n, "temp2"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp2"));
         }
         // Insert 1 registration with both temp2 & temp3 attrs
         for (String n : new String[]{"C"}) {
@@ -190,18 +189,18 @@ public class RegistrationsTest {
             attrs.add(new ContextRegistrationAttribute("temp2", false));
             attrs.add(new ContextRegistrationAttribute("temp3", false));
             registerContext.getContextRegistrationList().get(0).setContextRegistrationAttributeList(attrs);
-            registrations.addContextRegistration(registerContext);
+            localRegistrations.updateRegistrationContext(registerContext);
         }
-        // Insert 2 registrations only temp3
+        // Insert 2 localRegistrations only temp3
         for (String n : new String[]{"D", "E"}) {
-            registrations.addContextRegistration(createRegistrationContext(n, "string", false, "http://"+n, "temp3"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp3"));
         }
 
         // Find only entity with temp2 and temp3
         EntityId searchedEntityId = new EntityId(".*", "string", true);
         Set<String> attributes = new HashSet<>();
         Collections.addAll(attributes, "temp2", "temp3");
-        Iterator<URI> it = registrations.findProvidingApplication(searchedEntityId, attributes);
+        Iterator<URI> it = localRegistrations.findProvidingApplication(searchedEntityId, attributes);
         assertTrue(it.hasNext());
         assertEquals("http://C", it.next().toString());
         assertFalse(it.hasNext());
@@ -209,42 +208,42 @@ public class RegistrationsTest {
 
     @Test
     public void testFindEntityIdNoMatch() throws Exception {
-        // Insert 3 registrations
+        // Insert 3 localRegistrations
         for (String n : new String[]{"A", "B", "C"}) {
-            registrations.addContextRegistration(createRegistrationContext(n, "string", false, "http://"+n, "temp"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"));
         }
 
         EntityId searchedEntityId = new EntityId("D", "string", false);
-        Iterator<URI> it = registrations.findProvidingApplication(searchedEntityId, null);
+        Iterator<URI> it = localRegistrations.findProvidingApplication(searchedEntityId, null);
         assertFalse(it.hasNext());
 
         searchedEntityId = new EntityId("B", "wrongtype", false);
-        it = registrations.findProvidingApplication(searchedEntityId, null);
+        it = localRegistrations.findProvidingApplication(searchedEntityId, null);
         assertFalse(it.hasNext());
     }
 
     @Test
     public void testFindEntityIdExpired() throws Exception {
-        // Insert 3 registrations with short expiration
+        // Insert 3 localRegistrations with short expiration
         for (String n : new String[]{"A", "B", "C"}) {
             RegisterContext registerContext = createRegistrationContext(n, "string", false, "http://"+n, "temp");
             registerContext.setDuration("PT1S");
-            registrations.addContextRegistration(registerContext);
+            localRegistrations.updateRegistrationContext(registerContext);
         }
 
         // Wait for expiration
         Thread.sleep(1500);
 
         EntityId searchedEntityId = new EntityId("A", "string", false);
-        Iterator<URI> it = registrations.findProvidingApplication(searchedEntityId, null);
+        Iterator<URI> it = localRegistrations.findProvidingApplication(searchedEntityId, null);
         assertFalse(it.hasNext());
 
         searchedEntityId = new EntityId("B", "string", false);
-        it = registrations.findProvidingApplication(searchedEntityId, null);
+        it = localRegistrations.findProvidingApplication(searchedEntityId, null);
         assertFalse(it.hasNext());
 
         searchedEntityId = new EntityId("C", "string", false);
-        it = registrations.findProvidingApplication(searchedEntityId, null);
+        it = localRegistrations.findProvidingApplication(searchedEntityId, null);
         assertFalse(it.hasNext());
     }
 }
