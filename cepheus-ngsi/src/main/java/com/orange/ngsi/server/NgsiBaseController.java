@@ -96,7 +96,7 @@ public class NgsiBaseController {
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> exceptionHandler(HttpServletRequest req, Exception exception) {
-        logger.error("Exception handler: {}", exception.toString());
+        logger.error("Exception handler: {}", exception);
         return errorResponse(req.getRequestURI(), new StatusCode(CodeEnum.CODE_500));
     }
 
