@@ -49,10 +49,6 @@ public class NgsiController extends NgsiBaseController {
     public RegisterContextResponse registerContext(final RegisterContext register) throws RegistrationException {
         logger.debug("registerContext incoming request id:{} duration:{}", register.getRegistrationId(), register.getDuration());
 
-        ngsiClient.registerContext(configuration.getRemoteBroker(), null, register).addCallback(
-                this::saveRegistrationIdRemote,
-                throwable -> logger.warn("RegisterContext failed: {}", throwable.toString()));
-
         RegisterContextResponse registerContextLocalResponse = new RegisterContextResponse();
         //register new registration or update previous registration (if registrationId != null) or remove registration (if duration = 0)
         registerContextLocalResponse.setRegistrationId(localRegistrations.updateRegistrationContext(register));
@@ -69,18 +65,29 @@ public class NgsiController extends NgsiBaseController {
         Set<String> attributesName = contextElement.getContextAttributeList().stream().map(ContextAttribute::getName).collect(Collectors.toSet());
 
         Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
-        String urlProvider;
 
-        if (!providingApplication.hasNext()) {
+        if (providingApplication.hasNext()) {
+            //send the update to the first providing Application (command)
+            final String urlProvider = providingApplication.next().toString();
+            return ngsiClient.updateContext(urlProvider, null, update).get();
+        } else {
+
             //forward the update to the remote broker
+            final String urlProvider = configuration.getRemoteBroker();
             //TODO : use fiware-service in http headers
-            ngsiClient.updateContext(configuration.getRemoteBroker(), null, update).addCallback(
-                    updateContextResponse -> logger.debug("UpdateContext completed"),
+            ngsiClient.updateContext(urlProvider, null, update).addCallback(
+                    updateContextResponse -> logger.debug("UpdateContext completed"+urlProvider),
                     throwable -> logger.warn("UpdateContext failed: {}", throwable.toString()));
+
+            UpdateContextResponse updateContextResponse = new UpdateContextResponse();
+            List<ContextElementResponse> contextElementResponseList = new ArrayList<>();
+            StatusCode statusCode = new StatusCode(CodeEnum.CODE_200);
+            for (ContextElement c : update.getContextElements()) {
+                contextElementResponseList.add(new ContextElementResponse(c, statusCode));
+            }
+            updateContextResponse.setContextElementResponses(contextElementResponseList);
+            return new UpdateContextResponse();
         }
-        //send the update to the first providing Application
-        urlProvider = providingApplication.next().toString();
-        return ngsiClient.updateContext(urlProvider, null, update).get();
     }
 
     @ExceptionHandler(RegistrationException.class)
@@ -93,9 +100,4 @@ public class NgsiController extends NgsiBaseController {
         statusCode.setDetail(registrationException.getMessage());
         return errorResponse(req.getRequestURI(), statusCode);
     }
-
-    private void saveRegistrationIdRemote(RegisterContextResponse registerContextResponse) {
-        //TODO
-    }
-
 }

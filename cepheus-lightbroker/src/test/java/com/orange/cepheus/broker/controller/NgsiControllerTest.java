@@ -182,8 +182,10 @@ public class NgsiControllerTest {
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
         String urlProvider = "http://orionhost:9999/v1/updateContext";
+
+        //check ngsclient.updateContext that is called only once
         //verify urlProvider
-        verify(ngsiClient).updateContext(eq(urlProvider), any(), updateContextArg.capture());
+        verify(ngsiClient, atLeastOnce()).updateContext(eq(urlProvider), any(), updateContextArg.capture());
 
         // Check id correspond to the required
         ContextElement contextElement = updateContextArg.getValue().getContextElements().get(0);
@@ -219,6 +221,8 @@ public class NgsiControllerTest {
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
         String urlProvider = "http//iotagent:1234/v1/updateContext";
+        //check ngsclient.updateContext that is called only once
+        verify(ngsiClient, atLeastOnce()).updateContext(any(), any(), any());
         //verify urlProvider
         verify(ngsiClient).updateContext(eq(urlProvider), any(), updateContextArg.capture());
 
