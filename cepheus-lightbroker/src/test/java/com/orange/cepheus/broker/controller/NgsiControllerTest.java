@@ -33,6 +33,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.util.concurrent.SuccessCallback;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
@@ -62,7 +63,8 @@ public class NgsiControllerTest {
 
     private MockMvc mockMvc;
 
-    @Mock LocalRegistrations localRegistrations;
+    @Mock
+    LocalRegistrations localRegistrations;
 
     @Mock
     NgsiClient ngsiClient;
@@ -158,12 +160,12 @@ public class NgsiControllerTest {
     public void postUpdateContextWithNullUpdateAction() throws Exception {
 
         mockMvc.perform(post("/v1/updateContext")
-                    .content(json(mapper, new UpdateContext()))
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter updateAction of type UpdateAction is missing in the request"));
+                .content(json(mapper, new UpdateContext()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter updateAction of type UpdateAction is missing in the request"));
     }
 
     @Test
@@ -218,7 +220,7 @@ public class NgsiControllerTest {
         when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
 
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
-        when(ngsiClient.updateContext(any(),any(),any())).thenReturn(updateContextResponseListenableFuture);
+        when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))
@@ -253,4 +255,47 @@ public class NgsiControllerTest {
         assertEquals("S1", contextElement.getEntityId().getId());
     }
 
+    @Test
+    public void postUpdateContextWithThrowExecutionException() throws Exception {
+
+        //localRegistrations mock return always a providingApplication
+        when(providingApplication.hasNext()).thenReturn(true);
+        when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        when(updateContextResponseListenableFuture.get()).thenThrow(new ExecutionException("execution exception", new Throwable()));
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/updateContext")
+                .content(json(mapper, createUpdateContextTempSensorAndPressure()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("Receiver internal error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("An unknown error at the receiver has occured"));
+    }
+
+    @Test
+    public void postUpdateContextWithThrowInterruptedException() throws Exception {
+
+        //localRegistrations mock return always a providingApplication
+        when(providingApplication.hasNext()).thenReturn(true);
+        when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        when(updateContextResponseListenableFuture.get()).thenThrow(new InterruptedException());
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/updateContext")
+                .content(json(mapper, createUpdateContextTempSensorAndPressure()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("Receiver internal error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("An unknown error at the receiver has occured"));
+    }
 }
