@@ -54,4 +54,13 @@ public class StatusCode {
     public void setDetail(String detail) {
         this.detail = detail;
     }
+
+    @Override
+    public String toString() {
+        return "StatusCode{" +
+                "code='" + code + '\'' +
+                ", reasonPhrase='" + reasonPhrase + '\'' +
+                ", detail='" + detail + '\'' +
+                '}';
+    }
 }
