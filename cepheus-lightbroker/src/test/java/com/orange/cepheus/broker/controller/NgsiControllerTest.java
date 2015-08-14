@@ -70,6 +70,12 @@ public class NgsiControllerTest {
     @Mock
     Configuration configuration;
 
+    @Mock
+    Iterator<URI> providingApplication;
+
+    @Mock
+    ListenableFuture<UpdateContextResponse> updateContextResponseListenableFuture;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -91,6 +97,7 @@ public class NgsiControllerTest {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
         when(configuration.getRemoteBroker()).thenReturn("http://orionhost:9999");
+        when(updateContextResponseListenableFuture.get()).thenReturn(createUpdateContextResponseTempSensorAndPressure());
     }
 
     @After
@@ -98,6 +105,8 @@ public class NgsiControllerTest {
         reset(localRegistrations);
         reset(ngsiClient);
         reset(configuration);
+        reset(providingApplication);
+        reset(updateContextResponseListenableFuture);
     }
 
     @Test
@@ -161,9 +170,11 @@ public class NgsiControllerTest {
     public void postUpdateContextWithoutProvidingApplication() throws Exception {
 
         //localRegistrations mock return always without providingApplication
-        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(getWithoutProviginApplication());
+        when(providingApplication.hasNext()).thenReturn(false);
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
-        when(ngsiClient.updateContext(any(),any(),any())).thenReturn(getListenableFutureUpdateContextResponseTemperature());
+        when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))
@@ -187,7 +198,9 @@ public class NgsiControllerTest {
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
         String urlProvider = "http://orionhost:9999";
 
-        //check ngsclient.updateContext that is called only once
+        //check ListenableFuture is called at least Once and with addCallback method
+        verify(updateContextResponseListenableFuture, atLeastOnce()).addCallback(any(), any());
+
         //verify urlProvider
         verify(ngsiClient, atLeastOnce()).updateContext(eq(urlProvider), any(), updateContextArg.capture());
 
@@ -200,9 +213,12 @@ public class NgsiControllerTest {
     public void postUpdateContextWithProvidingApplication() throws Exception {
 
         //localRegistrations mock return always a providingApplication
-        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(getProviginApplication());
+        when(providingApplication.hasNext()).thenReturn(true);
+        when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
-        when(ngsiClient.updateContext(any(),any(),any())).thenReturn(getListenableFutureUpdateContextResponseTemperature());
+        when(ngsiClient.updateContext(any(),any(),any())).thenReturn(updateContextResponseListenableFuture);
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))
@@ -225,90 +241,16 @@ public class NgsiControllerTest {
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
         String urlProvider = "http//iotagent:1234";
+
+        //check ListenableFuture is called at least Once and with get method
+        verify(updateContextResponseListenableFuture, atLeastOnce()).get();
+
         //verify urlProvider
         verify(ngsiClient, atLeastOnce()).updateContext(eq(urlProvider), any(), updateContextArg.capture());
 
         // Check id correspond to the required
         ContextElement contextElement = updateContextArg.getValue().getContextElements().get(0);
         assertEquals("S1", contextElement.getEntityId().getId());
-    }
-
-    private Iterator<URI> getWithoutProviginApplication() {
-        return new Iterator<URI>() {
-            @Override
-            public boolean hasNext() {
-                return false;
-            }
-
-            @Override
-            public URI next() {
-                return null;
-            }
-        };
-    }
-
-    private Iterator<URI> getProviginApplication() {
-        return new Iterator<URI>() {
-            @Override
-            public boolean hasNext() {
-                return true;
-            }
-
-            @Override
-            public URI next() {
-                URI uri = null;
-                try {
-                    uri = new URI("http//iotagent:1234");
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                }
-                return uri;
-            }
-        };
-    }
-
-    private ListenableFuture<UpdateContextResponse> getListenableFutureUpdateContextResponseTemperature() {
-        return new ListenableFuture<UpdateContextResponse>() {
-            @Override
-            public void addCallback(ListenableFutureCallback<? super UpdateContextResponse> listenableFutureCallback) {
-
-            }
-
-            @Override
-            public void addCallback(SuccessCallback<? super UpdateContextResponse> successCallback, FailureCallback failureCallback) {
-
-            }
-
-            @Override
-            public boolean cancel(boolean mayInterruptIfRunning) {
-                return false;
-            }
-
-            @Override
-            public boolean isCancelled() {
-                return false;
-            }
-
-            @Override
-            public boolean isDone() {
-                return false;
-            }
-
-            @Override
-            public UpdateContextResponse get() throws InterruptedException, ExecutionException {
-                return null;
-            }
-
-            @Override
-            public UpdateContextResponse get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-                try {
-                    return createUpdateContextResponseTempSensorAndPressure();
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-        };
     }
 
 }
