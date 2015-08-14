@@ -31,8 +31,11 @@ import java.util.stream.Collectors;
 @Component
 public class LocalRegistrations {
 
-    //@Autowired
-    //protected RemoteRegistrations remoteRegistrations;
+    /**
+     * All registrations updates are forwarded to the remote broker
+     */
+    @Autowired
+    protected RemoteRegistrations remoteRegistrations;
 
     /**
      * List of all context registrations
@@ -57,6 +60,7 @@ public class LocalRegistrations {
         // Handle a zero duration as a special remove operation
         if (duration.isZero() && registrationId != null) {
             registrations.remove(registrationId);
+            remoteRegistrations.removeRegistration(registrationId);
             return registrationId;
         }
 
@@ -77,6 +81,10 @@ public class LocalRegistrations {
         registerContext.setExpirationDate(Instant.now().plus(duration));
 
         registrations.put(registrationId, registerContext);
+
+        // Forward to remote broker
+        remoteRegistrations.registerContext(registerContext, registrationId);
+
         return registrationId;
     }
 
@@ -151,6 +159,7 @@ public class LocalRegistrations {
         registrations.forEach((registrationId, registerContext) -> {
             if (registerContext.getExpirationDate().isBefore(now)) {
                 registrations.remove(registrationId);
+                remoteRegistrations.removeRegistration(registrationId);
             }
         });
     }

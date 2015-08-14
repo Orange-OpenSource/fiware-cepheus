@@ -13,8 +13,13 @@ import com.orange.ngsi.model.ContextRegistrationAttribute;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.RegisterContext;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.DirtiesContext;
@@ -26,6 +31,8 @@ import java.util.*;
 
 import static com.orange.cepheus.broker.Util.*;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for localRegistrations management
@@ -35,7 +42,22 @@ import static org.junit.Assert.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class LocalRegistrationsTest {
 
-    @Autowired LocalRegistrations localRegistrations;
+    @Mock
+    protected RemoteRegistrations remoteRegistrations;
+
+    @Autowired
+    @InjectMocks
+    protected LocalRegistrations localRegistrations;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @After
+    public void resetMocks() {
+        reset(remoteRegistrations);
+    }
 
     @Test
     public void testRegistration() throws Exception {
@@ -44,6 +66,8 @@ public class LocalRegistrationsTest {
         Assert.hasLength(registrationId);
         assertNotNull(localRegistrations.getRegistration(registrationId));
         assertNotNull(registerContext.getExpirationDate());
+
+        verify(remoteRegistrations).registerContext(eq(registerContext), eq(registrationId));
     }
 
     @Test
@@ -58,6 +82,8 @@ public class LocalRegistrationsTest {
         localRegistrations.updateRegistrationContext(zeroDuration);
 
         Assert.isNull(localRegistrations.getRegistration(registrationId));
+
+        verify(remoteRegistrations).removeRegistration(registrationId);
     }
 
     @Test
@@ -71,6 +97,8 @@ public class LocalRegistrationsTest {
             fail("registration should fail on bad duration with RegistrationException");
         } catch (RegistrationException ex) {
         }
+
+        verify(remoteRegistrations, never()).registerContext(any(), any());
     }
 
     @Test
@@ -86,6 +114,8 @@ public class LocalRegistrationsTest {
             fail("registration should fail on bad pattern with RegistrationException");
         } catch (RegistrationException ex) {
         }
+
+        verify(remoteRegistrations, never()).registerContext(any(), any());
     }
 
     @Test
@@ -101,6 +131,8 @@ public class LocalRegistrationsTest {
         localRegistrations.purgeExpiredContextRegistrations();
 
         assertNull(localRegistrations.getRegistration(registrationId));
+
+        verify(remoteRegistrations).removeRegistration(registrationId);
     }
 
     @Test
