@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.xml.datatype.DatatypeFactory;
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -169,10 +169,12 @@ public class LocalRegistrations {
      * @throws RegistrationException
      */
     private Duration registrationDuration(RegisterContext registerContext) throws RegistrationException {
+        // Use java.xml.datatype functions as java.time do not handle durations with months and years...
         try {
-            return Duration.parse(registerContext.getDuration());
-        } catch (DateTimeParseException e) {
-            throw new RegistrationException("bad duration", e);
+            long duration = DatatypeFactory.newInstance().newDuration(registerContext.getDuration()).getTimeInMillis(new Date());
+            return Duration.ofMillis(duration);
+        } catch (Exception e) {
+            throw new RegistrationException("bad duration: "+registerContext.getDuration(), e);
         }
     }
 

@@ -27,6 +27,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
 import java.net.URI;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static com.orange.cepheus.broker.Util.*;
@@ -84,6 +86,19 @@ public class LocalRegistrationsTest {
         Assert.isNull(localRegistrations.getRegistration(registrationId));
 
         verify(remoteRegistrations).removeRegistration(registrationId);
+    }
+
+    @Test
+    public void test1MonthDuration() throws Exception {
+        RegisterContext registerContext = createRegistrationContext();
+        registerContext.setDuration("P1M");
+        localRegistrations.updateRegistrationContext(registerContext);
+
+        Instant now = Instant.now();
+        Instant after = now.plus(31, ChronoUnit.DAYS).plus(10, ChronoUnit.MINUTES);
+        Instant before = now.plus(30, ChronoUnit.DAYS).minus(10, ChronoUnit.MINUTES);
+        assertFalse(registerContext.getExpirationDate().isAfter(after));
+        assertFalse(registerContext.getExpirationDate().isBefore(before));
     }
 
     @Test
