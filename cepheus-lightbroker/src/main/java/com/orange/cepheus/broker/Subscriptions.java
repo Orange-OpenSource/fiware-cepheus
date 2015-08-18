@@ -10,27 +10,26 @@ package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
-import com.orange.ngsi.model.EntityId;
-import com.orange.ngsi.model.SubscribeContext;
-import com.orange.ngsi.model.UnsubscribeContext;
-import com.orange.ngsi.model.UpdateContext;
+import com.orange.ngsi.model.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.annotation.PostConstruct;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 /**
  * Handles subscriptions.
@@ -101,10 +100,50 @@ public class Subscriptions {
 
     /**
      * Send notifyContext asynchronously to all subscribers matching the updateContext.
-     * @param updateContext
+     * @param searchEntityId the entity id to search
+     * @param searchAttributes the attributes to search
+     * @return list of matching reference applications
      */
-    public void notifySubscribersOnUpdate(UpdateContext updateContext) {
-        throw new NotImplementedException();
+    public Iterator<URI> findReferences(EntityId searchEntityId, Set<String> searchAttributes) {
+        final boolean searchType = hasType(searchEntityId);
+        final Pattern pattern = getPattern(searchEntityId);
+
+        // Filter out expired subscriptions
+        Predicate<SubscribeContext> filterExpired = subscribeContext -> subscribeContext.getExpirationDate().isAfter(Instant.now());
+
+        // Filter only matching entity ids
+        Predicate<EntityId> filterEntityId = entityId -> {
+            // Match by type if any
+            if (searchType && (!hasType(entityId) || !searchEntityId.getType().equals(entityId.getType()))) {
+                return false;
+            }
+            // Match pattern if any
+            if (pattern != null) {
+                // Match two patterns by equality
+                if (entityId.getIsPattern()) {
+                    return searchEntityId.getId().equals(entityId.getId());
+                }
+                return pattern.matcher(entityId.getId()).find();
+            } else {
+                if (entityId.getIsPattern()) {
+                    return getPattern(entityId).matcher(searchEntityId.getId()).find();
+                }
+                // Match two patterns by equality
+                return searchEntityId.getId().equals(entityId.getId());
+            }
+        };
+
+        // Only filter by attributes if search is looking for them
+        final boolean noAttributes = searchAttributes == null || searchAttributes.size() == 0;
+
+        // Filter each registration (remove expired) and return its providing application
+        // if at least one of its listed entities matches the searched context element
+        // and if all searched attributes are defined in the registration (if any)
+        return subscriptions.values().stream()
+                .filter(filterExpired)
+                .filter(subscribeContext -> subscribeContext.getEntityIdList().stream().filter(filterEntityId).findFirst().isPresent()
+                        && (noAttributes || subscribeContext.getAttributeList().containsAll(searchAttributes)))
+                .map(SubscribeContext::getReference).iterator();
     }
 
     /**
@@ -144,12 +183,20 @@ public class Subscriptions {
     }
 
     /**
+     * @return TRUE if the type is not null or empty
+     */
+    private boolean hasType(final EntityId entityId) {
+        final String type = entityId.getType();
+        return type != null && !"".equals(type);
+    }
+
+    /**
      * Compile (or get from cache) the patter corresponding to the entity id
      * @param entityId the entity id
      * @return the pattern, or null if entity id is not a pattern
      * @throws PatternSyntaxException
      */
-    public Pattern getPattern(final EntityId entityId) throws PatternSyntaxException {
+    private Pattern getPattern(final EntityId entityId) throws PatternSyntaxException {
         if (!entityId.getIsPattern()) {
             return null;
         }
@@ -161,6 +208,5 @@ public class Subscriptions {
         }
         return pattern;
     }
-
 
 }

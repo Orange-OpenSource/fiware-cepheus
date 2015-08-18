@@ -146,6 +146,15 @@ public class Util {
         return subscribeContext;
     }
 
+    static public SubscribeContext createSubscribeContext(String entityId, String entityType, boolean entityIsPattern, String reference, String attr) throws Exception {
+        SubscribeContext subscribeContext = new SubscribeContext();
+        subscribeContext.setDuration("PT1M");
+        subscribeContext.setEntityIdList(Collections.singletonList(new EntityId(entityId, entityType, entityIsPattern)));
+        subscribeContext.setAttributeList(Collections.singletonList(attr));
+        subscribeContext.setReference(new URI(reference));
+        return subscribeContext;
+    }
+
     static public SubscribeContextResponse createSubscribeContextResponseTemperature() {
         SubscribeContextResponse subscribeContextResponse = new SubscribeContextResponse();
 
