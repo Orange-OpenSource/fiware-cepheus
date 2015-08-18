@@ -8,10 +8,12 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -37,6 +39,9 @@ public class SubscribeContext {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     String throttling;
+
+    @JsonIgnore
+    private Instant expirationDate;
 
     public SubscribeContext() {
     }
@@ -95,6 +100,14 @@ public class SubscribeContext {
 
     public void setThrottling(String throttling) {
         this.throttling = throttling;
+    }
+
+    public Instant getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(Instant expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     @Override
