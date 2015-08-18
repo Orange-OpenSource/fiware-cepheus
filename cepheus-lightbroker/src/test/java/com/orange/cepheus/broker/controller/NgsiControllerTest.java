@@ -620,4 +620,37 @@ public class NgsiControllerTest {
         verify(subscriptions, atLeastOnce()).getSubscription("12345678");
     }
 
+    @Test
+    public void postUnSubscribeContextWhichExist() throws Exception {
+
+        UnsubscribeContext unsubscribeContext = new UnsubscribeContext("12345678");
+        when(subscriptions.deleteSubscription(any())).thenReturn(true);
+
+        mockMvc.perform(post("/v1/unsubscribeContext")
+                .content(json(mapper, unsubscribeContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscriptionId").value("12345678"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_200.getLabel()));
+
+        verify(subscriptions, atLeastOnce()).deleteSubscription(any());
+    }
+
+    @Test
+    public void postUnSubscribeContextWhichNotExist() throws Exception {
+
+        UnsubscribeContext unsubscribeContext = new UnsubscribeContext("12345678");
+        when(subscriptions.deleteSubscription(any())).thenReturn(false);
+
+        mockMvc.perform(post("/v1/unsubscribeContext")
+                .content(json(mapper, unsubscribeContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscriptionId").value("12345678"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_470.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value(CodeEnum.CODE_470.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.detail").value("The subscription ID specified 12345678 does not correspond to an active subscription"));
+
+        verify(subscriptions, atLeastOnce()).deleteSubscription(any());
+    }
 }

@@ -150,6 +150,20 @@ public class NgsiController extends NgsiBaseController {
         return subscribeContextResponse;
     }
 
+    @Override
+    public UnsubscribeContextResponse unsubscribeContext(final UnsubscribeContext unsubscribe) {
+        logger.debug("unsubscribeContext in coming request with subscriptionId: {}", unsubscribe.getSubscriptionId());
+
+        String subscriptionId = unsubscribe.getSubscriptionId();
+        StatusCode statusCode;
+        if (subscriptions.deleteSubscription(unsubscribe)) {
+            statusCode = new StatusCode(CodeEnum.CODE_200);
+        } else {
+            statusCode = new StatusCode(CodeEnum.CODE_470, subscriptionId);
+        }
+        return new UnsubscribeContextResponse( statusCode, subscriptionId);
+    }
+
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<Object> registrationExceptionHandler(HttpServletRequest req, RegistrationException registrationException) {
         logger.error("Registration error: {}", registrationException.getMessage());

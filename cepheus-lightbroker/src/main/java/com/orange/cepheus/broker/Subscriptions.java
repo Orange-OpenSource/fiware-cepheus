@@ -91,7 +91,7 @@ public class Subscriptions {
     /**
      * Removes a subscription.
      * @param unsubscribeContext
-     * @return
+     * @return false if there is not subscription to delete
      */
     public boolean deleteSubscription(UnsubscribeContext unsubscribeContext) {
         SubscribeContext subscribeContext = subscriptions.remove(unsubscribeContext.getSubscriptionId());
