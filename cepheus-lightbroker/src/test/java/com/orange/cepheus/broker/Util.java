@@ -134,7 +134,7 @@ public class Util {
 
         subscribeContext.setReference(new URI("http://localhost:1028/accumulate"));
 
-        subscribeContext.setDuration("PT10S");
+        subscribeContext.setDuration("P1M");
 
         List<NotifyCondition> notifyConditionList = new ArrayList<>();
         List<String> condValues = new ArrayList<>();

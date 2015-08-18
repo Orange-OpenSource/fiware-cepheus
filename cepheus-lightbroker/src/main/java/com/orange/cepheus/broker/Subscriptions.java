@@ -18,10 +18,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,12 +53,12 @@ public class Subscriptions {
      */
     public String addSubscription(SubscribeContext subscribeContext) throws SubscriptionException {
         //if duration is not present, then lb set duration to P1M
-        Duration duration = subscriptionDuration(subscribeContext);
+        Duration duration = convertDuration(subscribeContext.getDuration());
         if (duration.isNegative()) {
-            new SubscriptionException("negative duration is not allowed", new Throwable());
+            throw new SubscriptionException("negative duration is not allowed", new Throwable());
         }
         if (duration.isZero()) {
-            duration = Duration.parse("P1M");
+            duration = convertDuration("P1M");
         }
 
         // Compile all entity patterns now to check for conformance (result is cached for later use)
@@ -121,14 +124,16 @@ public class Subscriptions {
     }
 
     /**
-     * @return the duration of the subscription
+     * @return the duration in String format
      * @throws SubscriptionException
      */
-    private Duration subscriptionDuration(SubscribeContext subscribeContext) throws SubscriptionException {
+    private Duration convertDuration(String duration) throws SubscriptionException {
+        // Use java.xml.datatype functions as java.time do not handle durations with months and years...
         try {
-            return Duration.parse(subscribeContext.getDuration());
-        } catch (DateTimeParseException e) {
-            throw new SubscriptionException("bad duration", e);
+            long longDuration = DatatypeFactory.newInstance().newDuration(duration).getTimeInMillis(new Date());
+            return Duration.ofMillis(longDuration);
+        } catch (Exception e) {
+            throw new SubscriptionException("bad duration: " + duration, e);
         }
     }
 
@@ -138,7 +143,7 @@ public class Subscriptions {
      * @return the pattern, or null if entity id is not a pattern
      * @throws PatternSyntaxException
      */
-    private Pattern getPattern(final EntityId entityId) throws PatternSyntaxException {
+    public Pattern getPattern(final EntityId entityId) throws PatternSyntaxException {
         if (!entityId.getIsPattern()) {
             return null;
         }
@@ -150,4 +155,6 @@ public class Subscriptions {
         }
         return pattern;
     }
+
+
 }
