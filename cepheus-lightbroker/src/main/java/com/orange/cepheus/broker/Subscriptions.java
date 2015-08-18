@@ -95,7 +95,8 @@ public class Subscriptions {
      * @return
      */
     public boolean deleteSubscription(UnsubscribeContext unsubscribeContext) {
-        throw new NotImplementedException();
+        SubscribeContext subscribeContext = subscriptions.remove(unsubscribeContext.getSubscriptionId());
+        return (subscribeContext != null);
     }
 
     /**
@@ -111,7 +112,12 @@ public class Subscriptions {
      */
     @Scheduled(fixedDelay = 60000)
     public void purgeExpiredSubscriptions() {
-        throw new NotImplementedException();
+        final Instant now = Instant.now();
+        subscriptions.forEach((subscriptionId, subscribeContext) -> {
+            if (subscribeContext.getExpirationDate().isBefore(now)) {
+                subscriptions.remove(subscriptionId);
+            }
+        });
     }
 
     /**

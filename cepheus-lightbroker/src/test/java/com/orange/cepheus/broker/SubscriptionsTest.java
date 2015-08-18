@@ -9,6 +9,7 @@ package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.SubscriptionException;
 import com.orange.ngsi.model.SubscribeContext;
+import com.orange.ngsi.model.UnsubscribeContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import java.time.temporal.ChronoUnit;
 
 import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for localRegistrations management
@@ -94,6 +97,32 @@ public class SubscriptionsTest {
         subscribeContext.getEntityIdList().get(0).setIsPattern(true);
 
         subscriptions.addSubscription(subscribeContext);
+    }
+
+    @Test
+    public void deleteExistSubscriptions() throws URISyntaxException, SubscriptionException {
+        SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        String subscriptionId = subscriptions.addSubscription(subscribeContext);
+        UnsubscribeContext unsubscribeContext = new UnsubscribeContext(subscriptionId);
+        assertTrue(subscriptions.deleteSubscription(unsubscribeContext));
+    }
+
+    @Test
+    public void deleteNotExistSubscriptions() throws URISyntaxException, SubscriptionException {
+        UnsubscribeContext unsubscribeContext = new UnsubscribeContext("12345");
+        assertFalse(subscriptions.deleteSubscription(unsubscribeContext));
+    }
+
+    @Test
+    public void purgeExpiredSubscriptionsTest() throws URISyntaxException, SubscriptionException, InterruptedException {
+        SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        subscribeContext.setDuration("PT1S"); // 1s only
+        String subscriptionId = subscriptions.addSubscription(subscribeContext);
+
+        Thread.sleep(1500);
+
+        subscriptions.purgeExpiredSubscriptions();
+        assertNull(subscriptions.getSubscription(subscriptionId));
     }
 
 }
