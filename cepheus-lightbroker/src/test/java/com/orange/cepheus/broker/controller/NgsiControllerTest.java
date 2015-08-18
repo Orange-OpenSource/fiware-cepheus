@@ -11,8 +11,10 @@ package com.orange.cepheus.broker.controller;
 import com.orange.cepheus.broker.Application;
 import com.orange.cepheus.broker.Configuration;
 import com.orange.cepheus.broker.LocalRegistrations;
+import com.orange.cepheus.broker.Subscriptions;
 import com.orange.cepheus.broker.exception.MissingRemoteBrokerException;
 import com.orange.cepheus.broker.exception.RegistrationException;
+import com.orange.cepheus.broker.exception.SubscriptionException;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import org.junit.After;
@@ -27,6 +29,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -44,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.orange.cepheus.broker.Util.*;
+import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
 import static com.orange.cepheus.broker.Util.createUpdateContextResponseTempSensorAndPressure;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -51,6 +55,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -67,6 +72,9 @@ public class NgsiControllerTest {
 
     @Mock
     LocalRegistrations localRegistrations;
+
+    @Mock
+    Subscriptions subscriptions;
 
     @Mock
     NgsiClient ngsiClient;
@@ -112,6 +120,7 @@ public class NgsiControllerTest {
     @After
     public void resetMocks() {
         reset(localRegistrations);
+        reset(subscriptions);
         reset(ngsiClient);
         reset(configuration);
         reset(providingApplication);
@@ -538,6 +547,77 @@ public class NgsiControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("Receiver internal error"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("An unknown error at the receiver has occured"));
+    }
+
+    @Test
+    public void postSubscribeContextWithEmptyEntities() throws Exception {
+
+        mockMvc.perform(post("/v1/subscribeContext")
+                .content(json(mapper, new SubscribeContext()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.detail")
+                        .value("The parameter entities of type List<EntityId> is missing in the request"));
+    }
+
+    @Test
+    public void postSubscribeContextWithBadDuration() throws Exception {
+        // Bad duration
+        SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        subscribeContext.setDuration("PIPO");
+
+        when(subscriptions.addSubscription(any())).thenThrow(new SubscriptionException("bad duration", new RuntimeException()));
+
+        mockMvc.perform(post("/v1/subscribeContext")
+                .content(json(mapper, subscribeContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value("400"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value("subscription error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.detail").value("bad duration"));
+    }
+
+    @Test
+    public void postNewSubscribeContext() throws Exception {
+
+        SubscribeContext subscribeContext = createSubscribeContextTemperature();
+
+        when(subscriptions.addSubscription(any())).thenReturn("12345678");
+        when(subscriptions.getSubscription("12345678")).thenReturn(subscribeContext);
+
+        mockMvc.perform(post("/v1/subscribeContext")
+                .content(json(mapper, subscribeContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeResponse.subscriptionId").value("12345678"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeResponse.duration").value("P1M"));
+
+        verify(subscriptions, atLeastOnce()).addSubscription(any());
+        verify(subscriptions, atLeastOnce()).getSubscription("12345678");
+    }
+
+    @Test
+    public void postNewSubscribeContextWithNoDuration() throws Exception {
+
+        SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        subscribeContext.setDuration(null);
+
+        SubscribeContext subscribeContextInSubscription = createSubscribeContextTemperature();
+
+        when(subscriptions.addSubscription(any())).thenReturn("12345678");
+        when(subscriptions.getSubscription("12345678")).thenReturn(subscribeContextInSubscription);
+
+        mockMvc.perform(post("/v1/subscribeContext")
+                .content(json(mapper, subscribeContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeResponse.subscriptionId").value("12345678"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeResponse.duration").value("P1M"));
+
+        verify(subscriptions, atLeastOnce()).addSubscription(any());
+        verify(subscriptions, atLeastOnce()).getSubscription("12345678");
     }
 
 }

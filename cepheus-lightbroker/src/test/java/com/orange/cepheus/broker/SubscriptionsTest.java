@@ -25,7 +25,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static com.orange.cepheus.broker.Util.createRegistrationContext;
 import static com.orange.cepheus.broker.Util.createSubscribeContext;
 import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
 import static org.junit.Assert.*;

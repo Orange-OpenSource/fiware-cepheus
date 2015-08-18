@@ -10,8 +10,10 @@ package com.orange.cepheus.broker.controller;
 
 import com.orange.cepheus.broker.Configuration;
 import com.orange.cepheus.broker.LocalRegistrations;
+import com.orange.cepheus.broker.Subscriptions;
 import com.orange.cepheus.broker.exception.MissingRemoteBrokerException;
 import com.orange.cepheus.broker.exception.RegistrationException;
+import com.orange.cepheus.broker.exception.SubscriptionException;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import com.orange.ngsi.server.NgsiBaseController;
@@ -38,7 +40,11 @@ public class NgsiController extends NgsiBaseController {
 
     private static Logger logger = LoggerFactory.getLogger(NgsiController.class);
 
-    @Autowired LocalRegistrations localRegistrations;
+    @Autowired
+    LocalRegistrations localRegistrations;
+
+    @Autowired
+    Subscriptions subscriptions;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -127,6 +133,23 @@ public class NgsiController extends NgsiBaseController {
         }
     }
 
+    @Override
+    public SubscribeContextResponse subscribeContext(final SubscribeContext subscribe) throws SubscriptionException {
+        logger.debug("subscribeContext incoming request on entities: {}", subscribe.getEntityIdList().toString());
+
+        SubscribeContextResponse subscribeContextResponse = new SubscribeContextResponse();
+        SubscribeResponse subscribeResponse = new SubscribeResponse();
+
+        //add the subscription and return subscriptionId
+        String subscriptionId = subscriptions.addSubscription(subscribe);
+        subscribeResponse.setSubscriptionId(subscriptionId);
+        //return in the response the duration because it is set by the subscriptions class if the duration is null in the request
+        subscribeResponse.setDuration(subscriptions.getSubscription(subscriptionId).getDuration());
+        subscribeContextResponse.setSubscribeResponse(subscribeResponse);
+
+        return subscribeContextResponse;
+    }
+
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<Object> registrationExceptionHandler(HttpServletRequest req, RegistrationException registrationException) {
         logger.error("Registration error: {}", registrationException.getMessage());
@@ -146,6 +169,17 @@ public class NgsiController extends NgsiBaseController {
         statusCode.setCode("500");
         statusCode.setReasonPhrase("missing remote broker error");
         statusCode.setDetail(missingRemoteBrokerException.getMessage());
+        return errorResponse(req.getRequestURI(), statusCode);
+    }
+
+    @ExceptionHandler(SubscriptionException.class)
+    public ResponseEntity<Object> subscriptionExceptionHandler(HttpServletRequest req, SubscriptionException subscriptionException) {
+        logger.error("Subscription error: {}", subscriptionException.getMessage());
+
+        StatusCode statusCode = new StatusCode();
+        statusCode.setCode("400");
+        statusCode.setReasonPhrase("subscription error");
+        statusCode.setDetail(subscriptionException.getMessage());
         return errorResponse(req.getRequestURI(), statusCode);
     }
 }
