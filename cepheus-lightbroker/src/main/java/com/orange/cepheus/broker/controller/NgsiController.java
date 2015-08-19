@@ -85,7 +85,7 @@ public class NgsiController extends NgsiBaseController {
             final String urlBroker = configuration.getRemoteBroker();
 
             //check if remote broker is configured
-            if (urlBroker != null) {
+            if ((urlBroker != null) && (!urlBroker.isEmpty())) {
                 //TODO : use fiware-service in http headers
                 ngsiClient.updateContext(urlBroker, null, update).addCallback(
                         updateContextResponse -> logger.debug("UpdateContext completed for {} ", urlBroker),
