@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static org.junit.Assert.*;
 
@@ -68,6 +69,14 @@ public class PatternsTest {
         Patterns patterns = new Patterns();
         Pattern pattern = patterns.getPattern(entityId);
         assertNotEquals(pattern, patterns.getPattern(entityId2));
+    }
+
+    @Test(expected = PatternSyntaxException.class)
+    public void getPatternThrowPatternSyntaxExceptionTest() {
+        EntityId entityId = new EntityId("]|,\\((", "string", true);
+        Patterns patterns = new Patterns();
+        patterns.getPattern(entityId);
+
     }
 
     @Test
@@ -150,4 +159,33 @@ public class PatternsTest {
         assertFalse(entityIdPredicate.test(entityIdRegisterOrSubscribe));
     }
 
+    @Test
+    public void getFilterEntityIdWithNoTypeTest() {
+        EntityId entityIdRegisterOrSubscribe = new EntityId("B", "", false);
+        EntityId entityIdsearch = new EntityId("A|B", "string", true);
+        Patterns patterns = new Patterns();
+
+        Predicate<EntityId> entityIdPredicate = patterns.getFilterEntityId(entityIdsearch);
+        assertFalse(entityIdPredicate.test(entityIdRegisterOrSubscribe));
+    }
+
+    @Test
+    public void getFilterEntityIdWithNoType2Test() {
+        EntityId entityIdRegisterOrSubscribe = new EntityId("B", "string", false);
+        EntityId entityIdsearch = new EntityId("A|B", "", true);
+        Patterns patterns = new Patterns();
+
+        Predicate<EntityId> entityIdPredicate = patterns.getFilterEntityId(entityIdsearch);
+        assertFalse(entityIdPredicate.test(entityIdRegisterOrSubscribe));
+    }
+
+    @Test
+    public void getFilterEntityIdWithNoEqualType2Test() {
+        EntityId entityIdRegisterOrSubscribe = new EntityId("B", "string", false);
+        EntityId entityIdsearch = new EntityId("A|B", "long", true);
+        Patterns patterns = new Patterns();
+
+        Predicate<EntityId> entityIdPredicate = patterns.getFilterEntityId(entityIdsearch);
+        assertFalse(entityIdPredicate.test(entityIdRegisterOrSubscribe));
+    }
 }

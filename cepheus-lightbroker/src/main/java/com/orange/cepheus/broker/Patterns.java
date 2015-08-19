@@ -69,6 +69,9 @@ public class Patterns {
             if (searchType && (!hasType(entityId) || !searchEntityId.getType().equals(entityId.getType()))) {
                 return false;
             }
+            if(!searchType && hasType(entityId)) {
+                return false;
+            }
             // Match pattern if any
             if (pattern != null) {
                 // Match two patterns by equality
