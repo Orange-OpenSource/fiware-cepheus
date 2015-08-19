@@ -37,15 +37,13 @@ public class LocalRegistrations {
     @Autowired
     protected RemoteRegistrations remoteRegistrations;
 
+    @Autowired
+    private Patterns patterns;
+
     /**
      * List of all context registrations
      */
     Map<String, RegisterContext> registrations = new ConcurrentHashMap<>();
-
-    /**
-     * Cache of compiled patterns
-     */
-    Map<String, Pattern> cachedPatterns = new ConcurrentHashMap<>();
 
     /**
      * Add or update a new context registration.
@@ -66,7 +64,7 @@ public class LocalRegistrations {
 
         // Compile all entity patterns now to check for conformance (result is cached for later use)
         try {
-            registerContext.getContextRegistrationList().forEach(c -> c.getEntityIdList().forEach(this::getPattern));
+            registerContext.getContextRegistrationList().forEach(c -> c.getEntityIdList().forEach(patterns::getPattern));
         } catch (PatternSyntaxException e) {
             throw new RegistrationException("bad pattern", e);
         }
@@ -104,30 +102,12 @@ public class LocalRegistrations {
      * @return list of matching providing applications
      */
     public Iterator<URI> findProvidingApplication(EntityId searchEntityId, Set<String> searchAttributes) {
-        final boolean searchType = hasType(searchEntityId);
-        final Pattern pattern = getPattern(searchEntityId);
 
         // Filter out expired registrations
         Predicate<RegisterContext> filterExpired = registerContext -> registerContext.getExpirationDate().isAfter(Instant.now());
 
         // Filter only matching entity ids
-        Predicate<EntityId> filterEntityId = entityId -> {
-            // Match by type if any
-            if (searchType && (!hasType(entityId) || !searchEntityId.getType().equals(entityId.getType()))) {
-                return false;
-            }
-            // Match pattern if any
-            if (pattern != null) {
-                // Match two patterns by equality
-                if (entityId.getIsPattern()) {
-                    return searchEntityId.getId().equals(entityId.getId());
-                }
-                return pattern.matcher(entityId.getId()).find();
-            }
-            // Match id
-            return searchEntityId.getId().equals(entityId.getId());
-
-        };
+        Predicate<EntityId> filterEntityId = patterns.getFilterEntityId(searchEntityId);
 
         // Only filter by attributes if search is looking for them
         final boolean noAttributes = searchAttributes == null || searchAttributes.size() == 0;
@@ -176,32 +156,5 @@ public class LocalRegistrations {
         } catch (Exception e) {
             throw new RegistrationException("bad duration: "+registerContext.getDuration(), e);
         }
-    }
-
-    /**
-     * @return TRUE if the type is not null or empty
-     */
-    private boolean hasType(final EntityId entityId) {
-        final String type = entityId.getType();
-        return type != null && !"".equals(type);
-    }
-
-    /**
-     * Compile (or get from cache) the patter corresponding to the entity id
-     * @param entityId the entity id
-     * @return the pattern, or null if entity id is not a pattern
-     * @throws PatternSyntaxException
-     */
-    private Pattern getPattern(final EntityId entityId) throws PatternSyntaxException {
-        if (!entityId.getIsPattern()) {
-            return null;
-        }
-        String id = entityId.getId();
-        Pattern pattern = cachedPatterns.get(id);
-        if (pattern == null) {
-            pattern = Pattern.compile(id);
-            cachedPatterns.put(id, pattern);
-        }
-        return pattern;
     }
 }
