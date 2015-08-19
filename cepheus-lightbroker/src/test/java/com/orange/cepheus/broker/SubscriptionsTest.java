@@ -81,6 +81,8 @@ public class SubscriptionsTest {
         Assert.hasLength(subscriptionId);
         Assert.notNull(subscriptions.getSubscription(subscriptionId));
         Assert.notNull(subscribeContext.getExpirationDate());
+        Assert.notNull(subscribeContext.getSubscriptionId());
+        assertEquals(subscriptionId, subscribeContext.getSubscriptionId());
         Instant now = Instant.now();
         Instant after = now.plus(31, ChronoUnit.DAYS).plus(10, ChronoUnit.MINUTES);
         Instant before = now.plus(30, ChronoUnit.DAYS).minus(10, ChronoUnit.MINUTES);

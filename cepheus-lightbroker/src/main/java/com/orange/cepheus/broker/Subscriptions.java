@@ -70,22 +70,13 @@ public class Subscriptions {
         // Generate a subscription id
         String subscriptionId = UUID.randomUUID().toString();
 
-        //set the expiration date
+        //set the expiration date and subscriptionId
         subscribeContext.setExpirationDate(Instant.now().plus(duration));
+        subscribeContext.setSubscriptionId(subscriptionId);
 
         subscriptions.put(subscriptionId, subscribeContext);
 
         return subscriptionId;
-    }
-
-    /**
-     * updates a subscription.
-     * @param subscribeContext
-     * @return the subscriptionId
-     * @throws SubscriptionException
-     */
-    public String updateSubscription(SubscribeContext subscribeContext) throws SubscriptionException {
-        throw new NotImplementedException();
     }
 
     /**
