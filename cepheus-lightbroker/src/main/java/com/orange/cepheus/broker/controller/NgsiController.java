@@ -104,16 +104,20 @@ public class NgsiController extends NgsiBaseController {
             updateContextResponse.setContextElementResponses(contextElementResponseList);
 
             //search subscriptions matching to send notifyContext (only update coming from providingApplication and not remote broker
-            final URI originator = new URI(configuration.getLocalBroker());
-            Iterator<SubscribeContext> subscribeContextIterator = subscriptions.findSubscriptions(contextElement.getEntityId(), attributesName);
-            while (subscribeContextIterator.hasNext()) {
-                SubscribeContext subscribeContext = subscribeContextIterator.next();
-                NotifyContext notifyContext = new NotifyContext(subscribeContext.getSubscriptionId(), originator);
-                notifyContext.setContextElementResponseList(contextElementResponseList);
-                String urlProvider = subscribeContext.getReference().toString();
-                ngsiClient.notifyContext( urlProvider, null, notifyContext).addCallback(
-                        notifyContextResponse -> logger.debug("NotifyContext completed for {}", urlProvider),
-                        throwable -> logger.warn("NotifyContext failed for {}: {}", urlProvider, throwable.toString()));
+            String originator = configuration.getLocalBroker();
+            if (originator != null && !originator.isEmpty()) {
+                Iterator<SubscribeContext> subscribeContextIterator = subscriptions.findSubscriptions(contextElement.getEntityId(), attributesName);
+                while (subscribeContextIterator.hasNext()) {
+                    SubscribeContext subscribeContext = subscribeContextIterator.next();
+                    NotifyContext notifyContext = new NotifyContext(subscribeContext.getSubscriptionId(), new URI(originator));
+                    notifyContext.setContextElementResponseList(contextElementResponseList);
+                    String urlProvider = subscribeContext.getReference().toString();
+                    ngsiClient.notifyContext(urlProvider, null, notifyContext).addCallback(
+                            notifyContextResponse -> logger.debug("NotifyContext completed for {}", urlProvider),
+                            throwable -> logger.warn("NotifyContext failed for {}: {}", urlProvider, throwable.toString()));
+                }
+            } else {
+                logger.warn("Not local broker to set in notifyContext sending to reference application => Not notification sended");
             }
 
             return updateContextResponse;
@@ -125,7 +129,7 @@ public class NgsiController extends NgsiBaseController {
         logger.debug("queryContext incoming request on entities:{}", query.getEntityIdList().toString());
 
         Set<String> attributes = new HashSet<>();
-        if (query.getEntityIdList() != null ) {
+        if (query.getEntityIdList() != null) {
             attributes.addAll(query.getAttributList());
         }
 
@@ -177,7 +181,7 @@ public class NgsiController extends NgsiBaseController {
         } else {
             statusCode = new StatusCode(CodeEnum.CODE_470, subscriptionId);
         }
-        return new UnsubscribeContextResponse( statusCode, subscriptionId);
+        return new UnsubscribeContextResponse(statusCode, subscriptionId);
     }
 
     @ExceptionHandler(RegistrationException.class)
