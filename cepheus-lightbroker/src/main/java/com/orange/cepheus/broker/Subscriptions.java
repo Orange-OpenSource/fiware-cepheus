@@ -11,6 +11,7 @@ package com.orange.cepheus.broker;
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
 import com.orange.ngsi.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -39,10 +40,8 @@ public class Subscriptions {
 
     private Map<String, SubscribeContext> subscriptions = new ConcurrentHashMap<>();
 
-    /**
-     * Cache of compiled patterns
-     */
-    private Map<String, Pattern> cachedPatterns = new ConcurrentHashMap<>();
+    @Autowired
+    private Patterns patterns;
 
     /**
      * Add a subscription.
@@ -62,7 +61,7 @@ public class Subscriptions {
 
         // Compile all entity patterns now to check for conformance (result is cached for later use)
         try {
-            subscribeContext.getEntityIdList().forEach(this::getPattern);
+            subscribeContext.getEntityIdList().forEach(patterns::getPattern);
         } catch (PatternSyntaxException e) {
             throw new SubscriptionException("bad pattern", e);
         }
@@ -96,33 +95,12 @@ public class Subscriptions {
      * @return list of matching subscription
      */
     public Iterator<SubscribeContext> findSubscriptions(EntityId searchEntityId, Set<String> searchAttributes) {
-        final boolean searchType = hasType(searchEntityId);
-        final Pattern pattern = getPattern(searchEntityId);
 
         // Filter out expired subscriptions
         Predicate<SubscribeContext> filterExpired = subscribeContext -> subscribeContext.getExpirationDate().isAfter(Instant.now());
 
         // Filter only matching entity ids
-        Predicate<EntityId> filterEntityId = entityId -> {
-            // Match by type if any
-            if (searchType && (!hasType(entityId) || !searchEntityId.getType().equals(entityId.getType()))) {
-                return false;
-            }
-            // Match pattern if any
-            if (pattern != null) {
-                // Match two patterns by equality
-                if (entityId.getIsPattern()) {
-                    return searchEntityId.getId().equals(entityId.getId());
-                }
-                return pattern.matcher(entityId.getId()).find();
-            } else {
-                if (entityId.getIsPattern()) {
-                    return getPattern(entityId).matcher(searchEntityId.getId()).find();
-                }
-                // Match two patterns by equality
-                return searchEntityId.getId().equals(entityId.getId());
-            }
-        };
+        Predicate<EntityId> filterEntityId = patterns.getFilterEntityId(searchEntityId);
 
         // Only filter by attributes if search is looking for them
         final boolean noAttributes = searchAttributes == null || searchAttributes.size() == 0;
@@ -173,31 +151,5 @@ public class Subscriptions {
         }
     }
 
-    /**
-     * @return TRUE if the type is not null or empty
-     */
-    private boolean hasType(final EntityId entityId) {
-        final String type = entityId.getType();
-        return type != null && !"".equals(type);
-    }
-
-    /**
-     * Compile (or get from cache) the patter corresponding to the entity id
-     * @param entityId the entity id
-     * @return the pattern, or null if entity id is not a pattern
-     * @throws PatternSyntaxException
-     */
-    private Pattern getPattern(final EntityId entityId) throws PatternSyntaxException {
-        if (!entityId.getIsPattern()) {
-            return null;
-        }
-        String id = entityId.getId();
-        Pattern pattern = cachedPatterns.get(id);
-        if (pattern == null) {
-            pattern = Pattern.compile(id);
-            cachedPatterns.put(id, pattern);
-        }
-        return pattern;
-    }
 
 }

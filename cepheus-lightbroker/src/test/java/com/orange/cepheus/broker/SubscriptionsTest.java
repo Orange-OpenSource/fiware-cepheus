@@ -30,7 +30,7 @@ import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
 import static org.junit.Assert.*;
 
 /**
- * Tests for localRegistrations management
+ * Tests for Subscriptions management
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
