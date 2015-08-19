@@ -133,9 +133,9 @@ public class SubscriptionsTest {
         }
         // Find B
         EntityId searchedEntityId = new EntityId("B", "string", false);
-        Iterator<URI> it = subscriptions.findReferences(searchedEntityId, null);
+        Iterator<SubscribeContext> it = subscriptions.findSubscriptions(searchedEntityId, null);
         assertTrue(it.hasNext());
-        assertEquals("http://B", it.next().toString());
+        assertEquals("http://B", it.next().getReference().toString());
         assertFalse(it.hasNext());
     }
 
@@ -153,7 +153,7 @@ public class SubscriptionsTest {
         // Find the two B
         EntityId searchedEntityId = new EntityId("B", "string", false);
         List<String> results = new LinkedList<>();
-        subscriptions.findReferences(searchedEntityId, null).forEachRemaining(uri -> results.add(uri.toString()));
+        subscriptions.findSubscriptions(searchedEntityId, null).forEachRemaining(subscribeContext -> results.add(subscribeContext.getReference().toString()));
         Collections.sort(results);
         assertEquals(2, results.size());
         assertEquals("http://B", results.get(0));
@@ -170,7 +170,7 @@ public class SubscriptionsTest {
         // Find A and B
         EntityId searchedEntityId = new EntityId("A|B", "string", true);
         List<String> results = new LinkedList<>();
-        subscriptions.findReferences(searchedEntityId, null).forEachRemaining(uri -> results.add(uri.toString()));
+        subscriptions.findSubscriptions(searchedEntityId, null).forEachRemaining(subscribeContext -> results.add(subscribeContext.getReference().toString()));
         Collections.sort(results);
         assertEquals(2, results.size());
         assertEquals("http://A", results.get(0));
@@ -188,7 +188,7 @@ public class SubscriptionsTest {
         // Find A and B
         EntityId searchedEntityId = new EntityId("A", "string", false);
         List<String> results = new LinkedList<>();
-        subscriptions.findReferences(searchedEntityId, null).forEachRemaining(uri -> results.add(uri.toString()));
+        subscriptions.findSubscriptions(searchedEntityId, null).forEachRemaining(subscribeContext -> results.add(subscribeContext.getReference().toString()));
         Collections.sort(results);
         assertEquals(1, results.size());
         assertEquals("http://AB", results.get(0));
@@ -218,9 +218,9 @@ public class SubscriptionsTest {
         EntityId searchedEntityId = new EntityId(".*", "string", true);
         Set<String> attributes = new HashSet<>();
         Collections.addAll(attributes, "temp2", "temp3");
-        Iterator<URI> it = subscriptions.findReferences(searchedEntityId, attributes);
+        Iterator<SubscribeContext> it = subscriptions.findSubscriptions(searchedEntityId, attributes);
         assertTrue(it.hasNext());
-        assertEquals("http://C", it.next().toString());
+        assertEquals("http://C", it.next().getReference().toString());
         assertFalse(it.hasNext());
     }
 
@@ -232,11 +232,11 @@ public class SubscriptionsTest {
         }
 
         EntityId searchedEntityId = new EntityId("D", "string", false);
-        Iterator<URI> it = subscriptions.findReferences(searchedEntityId, null);
+        Iterator<SubscribeContext> it = subscriptions.findSubscriptions(searchedEntityId, null);
         assertFalse(it.hasNext());
 
         searchedEntityId = new EntityId("B", "wrongtype", false);
-        it = subscriptions.findReferences(searchedEntityId, null);
+        it = subscriptions.findSubscriptions(searchedEntityId, null);
         assertFalse(it.hasNext());
     }
 
@@ -253,15 +253,15 @@ public class SubscriptionsTest {
         Thread.sleep(1500);
 
         EntityId searchedEntityId = new EntityId("A", "string", false);
-        Iterator<URI> it = subscriptions.findReferences(searchedEntityId, null);
+        Iterator<SubscribeContext> it = subscriptions.findSubscriptions(searchedEntityId, null);
         assertFalse(it.hasNext());
 
         searchedEntityId = new EntityId("B", "string", false);
-        it = subscriptions.findReferences(searchedEntityId, null);
+        it = subscriptions.findSubscriptions(searchedEntityId, null);
         assertFalse(it.hasNext());
 
         searchedEntityId = new EntityId("C", "string", false);
-        it = subscriptions.findReferences(searchedEntityId, null);
+        it = subscriptions.findSubscriptions(searchedEntityId, null);
         assertFalse(it.hasNext());
     }
 }

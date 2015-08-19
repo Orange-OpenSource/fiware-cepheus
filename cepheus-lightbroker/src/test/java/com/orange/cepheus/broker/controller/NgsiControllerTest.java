@@ -49,6 +49,7 @@ import java.util.concurrent.TimeoutException;
 import static com.orange.cepheus.broker.Util.*;
 import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
 import static com.orange.cepheus.broker.Util.createUpdateContextResponseTempSensorAndPressure;
+import static com.orange.ngsi.model.CodeEnum.CODE_200;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -86,10 +87,16 @@ public class NgsiControllerTest {
     Iterator<URI> providingApplication;
 
     @Mock
+    Iterator<SubscribeContext> matchedSubscriptions;
+
+    @Mock
     ListenableFuture<UpdateContextResponse> updateContextResponseListenableFuture;
 
     @Mock
     ListenableFuture<QueryContextResponse> queryContextResponseListenableFuture;
+
+    @Mock
+    ListenableFuture<NotifyContextResponse> notifyContextResponseListenableFuture;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -112,9 +119,11 @@ public class NgsiControllerTest {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
         when(configuration.getRemoteBroker()).thenReturn("http://orionhost:9999");
+        when(configuration.getLocalBroker()).thenReturn("http://localhost:8081");
         when(updateContextResponseListenableFuture.get()).thenReturn(createUpdateContextResponseTempSensorAndPressure());
-        doNothing().when(updateContextResponseListenableFuture).addCallback(any(),any());
+        doNothing().when(updateContextResponseListenableFuture).addCallback(any(), any());
         when(queryContextResponseListenableFuture.get()).thenReturn(createQueryContextResponseTemperature());
+        doNothing().when(notifyContextResponseListenableFuture).addCallback(any(), any());
     }
 
     @After
@@ -124,7 +133,9 @@ public class NgsiControllerTest {
         reset(ngsiClient);
         reset(configuration);
         reset(providingApplication);
+        reset(matchedSubscriptions);
         reset(updateContextResponseListenableFuture);
+        reset(notifyContextResponseListenableFuture);
     }
 
     @Test
@@ -190,6 +201,9 @@ public class NgsiControllerTest {
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
         when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+        //subscriptions mock return always without matched subscriptions
+        when(matchedSubscriptions.hasNext()).thenReturn(false);
+        when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
 
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
         when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
@@ -236,6 +250,9 @@ public class NgsiControllerTest {
         // Check id correspond to the required
         ContextElement contextElement = updateContextArg.getValue().getContextElements().get(0);
         assertEquals("S1", contextElement.getEntityId().getId());
+
+        //check ngsiClient.notify is not called
+        verify(ngsiClient, never()).notifyContext(any(), any(), any());
     }
 
     @Test
@@ -247,8 +264,18 @@ public class NgsiControllerTest {
         when(providingApplication.hasNext()).thenReturn(false);
         when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
 
+        //subscriptions mock return always with matched subscriptions
+        when(matchedSubscriptions.hasNext()).thenReturn(true, false);
+        SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        subscribeContext.setSubscriptionId("999999");
+        when(matchedSubscriptions.next()).thenReturn(subscribeContext);
+        when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
+
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
         when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
+
+        //ngsiClient mock return always CODE_200
+        when(ngsiClient.notifyContext(any(), any(), any())).thenReturn(notifyContextResponseListenableFuture);
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))
@@ -284,6 +311,17 @@ public class NgsiControllerTest {
         //verify ngsiClient.updateContext is never called
         verify(ngsiClient, never()).updateContext(any(), any(), any());
 
+        //check ngsiClient.notify is called at least once
+        // Capture notifyContext when postNotifyContextRequest is called on updateContextRequest,
+        ArgumentCaptor<NotifyContext> notifyContextArg = ArgumentCaptor.forClass(NotifyContext.class);
+        verify(notifyContextResponseListenableFuture, atLeastOnce()).addCallback(any(), any());
+        String urlReference = subscribeContext.getReference().toString();
+        verify(ngsiClient, atLeastOnce()).notifyContext(eq(urlReference), any(), notifyContextArg.capture());
+        // Check id and status correspond to the required
+        assertEquals(1, notifyContextArg.getValue().getContextElementResponseList().size());
+        ContextElementResponse contextElementResponse = notifyContextArg.getValue().getContextElementResponseList().get(0);
+        assertEquals("S1", contextElementResponse.getContextElement().getEntityId().getId());
+        assertEquals("200", contextElementResponse.getStatusCode().getCode());
     }
 
     @Test
@@ -293,6 +331,10 @@ public class NgsiControllerTest {
         when(providingApplication.hasNext()).thenReturn(true);
         when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
         when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        //subscriptions mock return always without matched subscriptions
+        when(matchedSubscriptions.hasNext()).thenReturn(false);
+        when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
 
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
         when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
@@ -338,6 +380,70 @@ public class NgsiControllerTest {
         // Check id correspond to the required
         ContextElement contextElement = updateContextArg.getValue().getContextElements().get(0);
         assertEquals("S1", contextElement.getEntityId().getId());
+
+        //check ngsiClient.notify is not called
+        verify(ngsiClient, never()).notifyContext(any(), any(), any());
+    }
+
+    @Test
+    public void postUpdateContextWithProvidingApplicationAndMatchedSusbcriptions() throws Exception {
+
+        //localRegistrations mock return always a providingApplication
+        when(providingApplication.hasNext()).thenReturn(true);
+        when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        //subscriptions mock return always without matched subscriptions
+        when(matchedSubscriptions.hasNext()).thenReturn(true);
+        when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/updateContext")
+                .content(json(mapper, createUpdateContextTempSensorAndPressure()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].value").value(15.5))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].name").value("pressure"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].type").value("int"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value(1015))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+
+        //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
+        verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
+
+        //check entityId
+        assertEquals("S1", entityIdArgumentCaptor.getValue().getId());
+        assertEquals("TempSensor", entityIdArgumentCaptor.getValue().getType());
+        assertFalse(entityIdArgumentCaptor.getValue().getIsPattern());
+
+        //check attributes
+        assertEquals(2, attributeArgumentCaptor.getValue().size());
+        assertTrue(attributeArgumentCaptor.getValue().contains("temp"));
+        assertTrue(attributeArgumentCaptor.getValue().contains("pressure"));
+
+        // Capture updateContext when updateContextRequest is called on updateContextRequest,
+        ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
+        String urlProvider = "http//iotagent:1234";
+
+        //check ListenableFuture is called at least Once and with get method
+        verify(updateContextResponseListenableFuture, atLeastOnce()).get();
+
+        //verify urlProvider
+        verify(ngsiClient, atLeastOnce()).updateContext(eq(urlProvider), any(), updateContextArg.capture());
+
+        // Check id correspond to the required
+        ContextElement contextElement = updateContextArg.getValue().getContextElements().get(0);
+        assertEquals("S1", contextElement.getEntityId().getId());
+
+        //check ngsiClient.notify is not called
+        verify(ngsiClient, never()).notifyContext(any(), any(), any());
     }
 
     @Test
@@ -348,10 +454,17 @@ public class NgsiControllerTest {
         when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
         when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
 
+        //subscriptions mock return always without matched subscriptions
+        when(matchedSubscriptions.hasNext()).thenReturn(false);
+        when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
+
         when(updateContextResponseListenableFuture.get()).thenThrow(new ExecutionException("execution exception", new Throwable()));
 
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
         when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
+
+        //check ngsiClient.notify is not called
+        verify(ngsiClient, never()).notifyContext(any(), any(), any());
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))
@@ -370,10 +483,17 @@ public class NgsiControllerTest {
         when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
         when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
 
+        //subscriptions mock return always without matched subscriptions
+        when(matchedSubscriptions.hasNext()).thenReturn(false);
+        when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
+
         when(updateContextResponseListenableFuture.get()).thenThrow(new InterruptedException());
 
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
         when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
+
+        //check ngsiClient.notify is not called
+        verify(ngsiClient, never()).notifyContext(any(), any(), any());
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))

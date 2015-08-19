@@ -20,6 +20,7 @@ import com.orange.ngsi.server.NgsiBaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -64,13 +66,14 @@ public class NgsiController extends NgsiBaseController {
     }
 
     @Override
-    public UpdateContextResponse updateContext(final UpdateContext update) throws ExecutionException, InterruptedException {
+    public UpdateContextResponse updateContext(final UpdateContext update) throws ExecutionException, InterruptedException, URISyntaxException {
         logger.debug("updateContext incoming request action:{}", update.getUpdateAction());
 
         //TODO : search providingApplication for all contextElement of updateContext
         ContextElement contextElement = update.getContextElements().get(0);
         Set<String> attributesName = contextElement.getContextAttributeList().stream().map(ContextAttribute::getName).collect(Collectors.toSet());
 
+        // search providingApplication to forward updateContext
         Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
 
         if (providingApplication.hasNext()) {
@@ -78,7 +81,6 @@ public class NgsiController extends NgsiBaseController {
             final String urlProvider = providingApplication.next().toString();
             return ngsiClient.updateContext(urlProvider, null, update).get();
         } else {
-
             //forward the update to the remote broker
             final String urlBroker = configuration.getRemoteBroker();
 
@@ -88,11 +90,11 @@ public class NgsiController extends NgsiBaseController {
                 ngsiClient.updateContext(urlBroker, null, update).addCallback(
                         updateContextResponse -> logger.debug("UpdateContext completed for {} ", urlBroker),
                         throwable -> logger.warn("UpdateContext failed for {}: {}", urlBroker, throwable.toString()));
-
             } else {
                 logger.warn("Not remote broker to foward updateContext coming from providingApplication");
             }
 
+            //create updateContextResponse
             UpdateContextResponse updateContextResponse = new UpdateContextResponse();
             List<ContextElementResponse> contextElementResponseList = new ArrayList<>();
             StatusCode statusCode = new StatusCode(CodeEnum.CODE_200);
@@ -100,6 +102,20 @@ public class NgsiController extends NgsiBaseController {
                 contextElementResponseList.add(new ContextElementResponse(c, statusCode));
             }
             updateContextResponse.setContextElementResponses(contextElementResponseList);
+
+            //search subscriptions matching to send notifyContext (only update coming from providingApplication and not remote broker
+            final URI originator = new URI(configuration.getLocalBroker());
+            Iterator<SubscribeContext> subscribeContextIterator = subscriptions.findSubscriptions(contextElement.getEntityId(), attributesName);
+            while (subscribeContextIterator.hasNext()) {
+                SubscribeContext subscribeContext = subscribeContextIterator.next();
+                NotifyContext notifyContext = new NotifyContext(subscribeContext.getSubscriptionId(), originator);
+                notifyContext.setContextElementResponseList(contextElementResponseList);
+                String urlProvider = subscribeContext.getReference().toString();
+                ngsiClient.notifyContext( urlProvider, null, notifyContext).addCallback(
+                        notifyContextResponse -> logger.debug("NotifyContext completed for {}", urlProvider),
+                        throwable -> logger.warn("NotifyContext failed for {}: {}", urlProvider, throwable.toString()));
+            }
+
             return updateContextResponse;
         }
     }

@@ -99,12 +99,12 @@ public class Subscriptions {
     }
 
     /**
-     * Send notifyContext asynchronously to all subscribers matching the updateContext.
+     * find subscriptionID matching the updateContext.
      * @param searchEntityId the entity id to search
      * @param searchAttributes the attributes to search
-     * @return list of matching reference applications
+     * @return list of matching subscription
      */
-    public Iterator<URI> findReferences(EntityId searchEntityId, Set<String> searchAttributes) {
+    public Iterator<SubscribeContext> findSubscriptions(EntityId searchEntityId, Set<String> searchAttributes) {
         final boolean searchType = hasType(searchEntityId);
         final Pattern pattern = getPattern(searchEntityId);
 
@@ -142,8 +142,8 @@ public class Subscriptions {
         return subscriptions.values().stream()
                 .filter(filterExpired)
                 .filter(subscribeContext -> subscribeContext.getEntityIdList().stream().filter(filterEntityId).findFirst().isPresent()
-                        && (noAttributes || subscribeContext.getAttributeList().containsAll(searchAttributes)))
-                .map(SubscribeContext::getReference).iterator();
+                        && (noAttributes || subscribeContext.getAttributeList().containsAll(searchAttributes))).iterator();
+
     }
 
     /**

@@ -43,6 +43,9 @@ public class SubscribeContext {
     @JsonIgnore
     private Instant expirationDate;
 
+    @JsonIgnore
+    private String subscriptionId;
+
     public SubscribeContext() {
     }
 
@@ -108,6 +111,14 @@ public class SubscribeContext {
 
     public void setExpirationDate(Instant expirationDate) {
         this.expirationDate = expirationDate;
+    }
+
+    public String getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public void setSubscriptionId(String subscriptionId) {
+        this.subscriptionId = subscriptionId;
     }
 
     @Override

@@ -30,6 +30,7 @@ public class ConfigurationTest {
 
     @Test
     public void checkPropertiesValues() {
+        assertEquals("http://localhost:8081", configuration.getLocalBroker());
         assertEquals("http://10.25.12.123:8081", configuration.getRemoteBroker());
     }
 }

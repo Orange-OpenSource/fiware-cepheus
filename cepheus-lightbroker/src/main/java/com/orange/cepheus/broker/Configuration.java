@@ -19,9 +19,19 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("broker")
 public class Configuration {
 
+    private String localBroker;
+
     private String remoteBroker;
 
     public Configuration(){
+    }
+
+    public String getLocalBroker() {
+        return localBroker;
+    }
+
+    public void setLocalBroker(String localBroker) {
+        this.localBroker = localBroker;
     }
 
     public String getRemoteBroker() {
@@ -35,7 +45,8 @@ public class Configuration {
     @Override
     public String toString() {
         return "Configuration{" +
-                "remoteBroker='" + remoteBroker + '\'' +
+                "localBroker='" + localBroker + '\'' +
+                ", remoteBroker='" + remoteBroker + '\'' +
                 '}';
     }
 }
