@@ -29,7 +29,7 @@ import java.util.*;
  * Controller for the NGSI 9/10 requests supported by the CEP
  */
 @RestController
-@RequestMapping("/v1")
+@RequestMapping(value = {"/v1","/ngsi10"})
 public class NgsiController extends NgsiBaseController {
 
     private static Logger logger = LoggerFactory.getLogger(NgsiController.class);
