@@ -797,10 +797,32 @@ public class NgsiControllerTest {
     }
 
     @Test
-    public void postQueryContextWithMissingBrokerException() throws Exception {
+    public void postQueryContextWithNullRemoteBroker() throws Exception {
 
         //configuration mock return null as remoteBroker
         when(configuration.getRemoteBroker()).thenReturn(null);
+
+        //localRegistrations mock return always without providingApplication
+        when(providingApplication.hasNext()).thenReturn(false);
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.queryContext(any(), any(), any())).thenReturn(queryContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/queryContext")
+                .content(json(mapper, createQueryContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("missing remote broker error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("Not remote broker configured to foward queryContext coming from providingApplication"));
+    }
+
+    @Test
+    public void postQueryContextWithEmptyRemoteBroker() throws Exception {
+
+        //configuration mock return "" as remoteBroker
+        when(configuration.getRemoteBroker()).thenReturn("");
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);

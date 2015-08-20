@@ -144,7 +144,7 @@ public class NgsiController extends NgsiBaseController {
             // forward query to remote broker
             final String urlBroker = configuration.getRemoteBroker();
             //check if remote broker is configured
-            if (urlBroker != null) {
+            if ((urlBroker != null) && (!urlBroker.isEmpty())) {
                 //TODO : use fiware-service in http headers
                 return ngsiClient.queryContext(urlBroker, null, query).get();
             } else {
