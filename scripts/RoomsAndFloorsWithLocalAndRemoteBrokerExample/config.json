@@ -1,0 +1,34 @@
+{
+  "host":"http://localhost:8080",
+  "in":[
+    {
+      "id":"Room*",
+      "type":"Room",
+      "isPattern":true,
+      "providers":[
+        "http://localhost:8081"
+      ],
+      "attributes":[
+        { "name":"temperature", "type":"double" },
+        { "name":"floor", "type":"string" }
+      ]
+    }
+  ],
+  "out":[
+    {
+      "id":"Floor1",
+      "type":"Floor",
+      "brokers":[
+        {
+          "url":"http://localhost:8082"
+        }
+      ],
+      "attributes":[
+        { "name":"temperature", "type":"double" }
+      ]
+    }
+  ],
+  "statements":[
+    "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
+  ]
+}
