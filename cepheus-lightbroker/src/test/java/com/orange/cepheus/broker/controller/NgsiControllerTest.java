@@ -748,6 +748,58 @@ public class NgsiControllerTest {
     }
 
     @Test
+    public void postQueryContextWithProvidingApplicationWithNullAttributes() throws Exception {
+
+        //localRegistrations mock return always a providingApplication
+        when(providingApplication.hasNext()).thenReturn(true);
+        when(providingApplication.next()).thenReturn(new URI("http//iotagent:1234"));
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        //ngsiclient mock return always createQueryContextResponseTemperature when call queryContext
+        when(ngsiClient.queryContext(any(), any(), any())).thenReturn(queryContextResponseListenableFuture);
+
+        QueryContext queryContext = createQueryContextTemperature();
+        queryContext.setAttributList(null);
+
+        mockMvc.perform(post("/v1/queryContext")
+                .content(json(mapper, queryContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value(15.5))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
+
+        //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
+        verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
+
+        //check entityId
+        assertEquals("S*", entityIdArgumentCaptor.getValue().getId());
+        assertEquals("TempSensor", entityIdArgumentCaptor.getValue().getType());
+        assertTrue(entityIdArgumentCaptor.getValue().getIsPattern());
+
+        //check attributes
+        assertEquals(0, attributeArgumentCaptor.getValue().size());
+
+        // Capture queryContext when queryContextRequest is called on updateContextRequest,
+        ArgumentCaptor<QueryContext> queryContextArg = ArgumentCaptor.forClass(QueryContext.class);
+        String urlProvider = "http//iotagent:1234";
+
+        //check ListenableFuture is called at least Once and with get method
+        verify(queryContextResponseListenableFuture, atLeastOnce()).get();
+
+        //verify urlProvider
+        verify(ngsiClient, atLeastOnce()).queryContext(eq(urlProvider), any(), queryContextArg.capture());
+
+        // Check id correspond to the required
+        assertEquals(1, queryContextArg.getValue().getEntityIdList().size());
+        assertEquals("S*", queryContextArg.getValue().getEntityIdList().get(0).getId());
+    }
+
+    @Test
     public void postQueryContextWithoutProvidingApplication() throws Exception {
 
         //localRegistrations mock return always without providingApplication
