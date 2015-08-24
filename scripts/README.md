@@ -15,3 +15,5 @@ It also contains some examples of how to use Cepheus-CEP and Cepheus-Broker with
 * [Room and Flap Query and Command With Local and Remote Broker example](RoomFlapQueryAndCommandWithLocalAndRemoteBrokerExample/README.md)
 
 * [Rooms and Flaps example](RoomsAndFlapsExample/README.md)
+
+* [Rooms and Flap Commands With Local Broker example](RoomsAndFlapCommandsWithLocalBrokerExample/README.md)
