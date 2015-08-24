@@ -84,6 +84,7 @@ You can run the [run.sh](run.sh) file in a terminal while checking the logs of C
 to see the Rooms temperature sent to the CEP and the CEP reacting to the events.
 
 In a first terminal, launch mock-orion (default on port :8082 on your machine)
+
     cd scripts
     java -jar mock-orion-1.0-SNAPSHOT.jar
 
