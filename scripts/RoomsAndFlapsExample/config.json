@@ -1,0 +1,26 @@
+{
+  "host":"http://localhost:8080",
+  "in":[
+    {
+      "id":"Room1",
+      "type":"Room",
+      "attributes":[
+        { "name":"temperature", "type":"double" },
+        { "name":"floor", "type":"string" },
+        { "name":"flap", "type":"string" }
+      ]
+    }
+  ],
+  "out":[
+    {
+      "id":"Flap1",
+      "type":"Flap",
+      "attributes":[
+        { "name":"status", "type":"string" }
+      ]
+    }
+  ],
+  "statements":[
+    "INSERT INTO Flap SELECT a.flap as id, 'closed' as status FROM pattern [every a=Room(temperature > cast(25,double)) -> ( (Room(id=a.id, temperature > cast(25,double)) and not Room(id=a.id, temperature <= cast(25,double))) -> (Room(id=a.id, temperature > cast(25,double)) and not Room(id=a.id, temperature <= cast(25,double)))) where timer:within(10 seconds)]"
+  ]
+}
