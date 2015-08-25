@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * NGSI Controller : NGSI operation implemented by Cepheus-lightbroker
  */
 @RestController
-@RequestMapping(value = {"/v1","/ngsi9","/ngsi10"})
+@RequestMapping(value = {"/v1","/ngsi9","/NGSI9","/ngsi10","/NGSI10"})
 public class NgsiController extends NgsiBaseController {
 
     private static Logger logger = LoggerFactory.getLogger(NgsiController.class);
