@@ -74,13 +74,16 @@ public class NgsiController extends NgsiBaseController {
         Set<String> attributesName = contextElement.getContextAttributeList().stream().map(ContextAttribute::getName).collect(Collectors.toSet());
 
         // search providingApplication to forward updateContext
+        logger.debug("updateContext incoming request on entityId: {} and on attributes: {} ", contextElement.getEntityId().toString(), attributesName);
         Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
 
         if (providingApplication.hasNext()) {
             //send the update to the first providing Application (command)
             final String urlProvider = providingApplication.next().toString();
+            logger.debug("providingApplication to forward updateContext founded: {}", urlProvider);
             return ngsiClient.updateContext(urlProvider, null, update).get();
         } else {
+            logger.debug("Not providingApplication then forward to the remote broker");
             //forward the update to the remote broker
             final String urlBroker = configuration.getRemoteBroker();
 
