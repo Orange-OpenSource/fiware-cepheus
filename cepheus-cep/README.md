@@ -30,6 +30,11 @@ Goal:
 
     wget "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-cep&v=LATEST"
 
+### Installing from [Sonatype Central Maven](http://central.sonatype.org/) using wget and dpkg
+
+    wget "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-cep&v=LATEST&p=deb"
+    dpkg -i cepheus-cep.deb
+
 ## Running
 
 Fiware-cepheus is a SpringBoot application. You can run it as a service.
