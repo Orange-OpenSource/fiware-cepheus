@@ -88,6 +88,23 @@ It's a simple json file which typical content is:
 	  ]
 	}
 
+## Admin guide
+
+You can modify some properties in command line:
+
+ 	java -jar cepheus-cep.jar --property=value
+
+With properties :
+
+<table>
+    <tr><th>Name</th><th>Description</th><th>Default Value</th></tr>
+    <tr><td>server.port</td><td>broker port</td><td>8080</td></tr>
+    <tr><td>config.file</td><td>configuration file location</td><td>/tmp/cepheus.json</td></tr>
+    <tr><td>subscriptionManager.periodicity</td><td>Periodicity of the subscription manager task</td><td>300000</td></tr>
+    <tr><td>subscriptionManager.duration</td><td>Duration of a NGSI subscription</td><td>PT1H</td></tr>
+    <tr><td>logging.level.com.orange.cepheus.cep</td><td>log level</td><td>INFO</td></tr>
+</table>
+
 ## User guide
 
 The complete user manual can be found [here](../doc/manual.md)

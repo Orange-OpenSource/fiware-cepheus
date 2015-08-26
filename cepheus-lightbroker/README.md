@@ -60,7 +60,7 @@ With properties :
     <tr><td>server.port</td><td>broker port</td><td>8081</td></tr>
     <tr><td>broker.localBroker</td><td>base URL</td><td>http://localhost:8081</td></tr>
     <tr><td>broker.remoteBroker</td><td>remote broker URL (Orion)</td><td>http://localhost:8082</td></tr>
-    <tr><td>logging.level.com.orange.cepheus.broker</td><td>level log</td><td>INFO</td></tr>
+    <tr><td>logging.level.com.orange.cepheus.broker</td><td>log level</td><td>INFO</td></tr>
 </table>
 
 
