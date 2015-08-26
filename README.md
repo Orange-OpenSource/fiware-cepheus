@@ -46,6 +46,17 @@ Using Docker is the fastest way to have a working setup :
 
 Our docker manual can be found [here](docker/README.md)
 
+### Installing from Debian packaging
+
+When you launch mvn install, you create two debian packages : cepheus-cep-{version}.deb and cepeheus-lb-{version}.deb.
+Then you can install these packages lauching :
+
+    dpkg -i cepheus-cep-{version}.deb
+    dpkg -i cepheus-lb-{version}.deb
+
+Each command install the file jar in /usr/share/cepheus directory and create a symbolic links /usr/share/java/cepheus-cep.jar /usr/share/java/cepheus-lb.jar
+Each command verify java version requirement.
+
 ## Running
 
 Fiware-cepheus and fiware-lb are SpringBoot applications. You can run them simply with:
