@@ -53,8 +53,7 @@ public class NgsiClient {
      * @return a future for an UpdateContextReponse
      */
     public ListenableFuture<UpdateContextResponse> updateContext(String url, HttpHeaders httpHeaders, UpdateContext updateContext) {
-        //TODO : disable case sensitive operation
-        return request(url + "/NGSI10/updateContext", httpHeaders, updateContext, UpdateContextResponse.class);
+        return request(url + "/ngsi10/updateContext", httpHeaders, updateContext, UpdateContextResponse.class);
     }
 
     /**

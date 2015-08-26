@@ -97,7 +97,7 @@ public class UpdateContextRequestTest {
 
         String responseBody = json(mapping, createUpdateContextResponseTempSensor());
 
-        this.mockServer.expect(requestTo(brokerUrl + "/NGSI10/updateContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(header("Fiware-Service", serviceName))
                 .andExpect(header("Fiware-ServicePath", servicePath))
                 .andExpect(jsonPath("$.updateAction").value(UpdateAction.UPDATE.getLabel()))
@@ -110,7 +110,7 @@ public class UpdateContextRequestTest {
 
     @Test(expected = HttpClientErrorException.class)
     public void performPostWith404() throws Exception {
-        this.mockServer.expect(requestTo(brokerUrl + "/NGSI10/updateContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0)).get();
@@ -118,7 +118,7 @@ public class UpdateContextRequestTest {
 
     @Test(expected = HttpServerErrorException.class)
     public void performPostWith500() throws Exception {
-        this.mockServer.expect(requestTo(brokerUrl + "/NGSI10/updateContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
         ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0)).get();
@@ -126,7 +126,7 @@ public class UpdateContextRequestTest {
 
     @Test(expected = ResourceAccessException.class)
     public void performPostWithTimeout() throws Exception {
-        this.mockServer.expect(requestTo(brokerUrl + "/NGSI10/updateContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(TimeoutResponseCreator.withTimeout());
 
         ngsiClient.updateContext(brokerUrl, null, createUpdateContextTempSensor(0));
