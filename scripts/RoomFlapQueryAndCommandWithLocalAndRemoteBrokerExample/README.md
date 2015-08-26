@@ -41,7 +41,6 @@ Now in another terminal, trigger the [run.sh](run.sh) script:
     cd scripts/RoomFlapQueryAndCommandWithLocalAndRemoteBrokerExample
     sh run.sh
 
-The script first sends the [config.json](config.json) file to Cepheus-CEP.
 The mock-iotagent send the register requests for Room and Flap entities to cepheus-broker. Cepheus-broker forward the register to mock-orion.
 The mock-orion request the temperature of all rooms to cepheus-broker. Cepheus-broker forward the query request to mock-iotagent.
 The mock-iotagent send query response to Cepheus-broker. Cepheus-broker forward the response to mock-orion which print the values.
@@ -51,4 +50,18 @@ The same for flap status.
 The mock-orion send the update of the status of flap for flap21 to cepheus-broker. Cepheus-broker forward the update request to mock-iotagent.
 The mock-iotagent respond ok to Cepheus-broker. Cepheus-broker forward the response to mock-orion which print the response.
 
+## Sequence Diagram
 
+
+```sequence
+Mock IotAgent->LB: /ngsi10/registerContext Room*
+LB->Mock Orion: /ngsi10/registerContext Room*
+Mock IotAgent->LB: /ngsi10/registerContext Flap*
+LB->Mock Orion: /ngsi10/registerContext Flap*
+Mock Orion->LB: /ngsi10/queryContext Room*
+LB->Mock IotAgent: /ngsi10/queryContext Room*
+Mock Orion->LB: /ngsi10/queryContext Flap21
+LB->Mock IotAgent: /ngsi10/queryContext Flap21
+Mock Orion->LB: /ngsi10/updateContext Flap21, status=closed
+LB->Mock IotAgent: /ngsi10/updateContext Flap21, status=closed
+```

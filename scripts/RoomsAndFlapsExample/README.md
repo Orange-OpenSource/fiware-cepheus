@@ -78,7 +78,7 @@ The [config.json](config.json) has the complete configuration setup.
 ## Testing the setup
 
 You can run the [run.sh](run.sh) file in a terminal while checking the logs of Cepheus CEP
-to see the Rooms temperture sent to the CEP and the CEP reacting to the events.
+to see the Rooms temperature sent to the CEP and the CEP reacting to the events.
 
 In a first terminal, launch Cepheus-CEP:
 
@@ -98,6 +98,13 @@ sending temperatures updates.
 Go back to the terminal where you launched the CEP. You should see tempertures as "EventIn" beeing logged.
 
 After a few seconds, the "EventOut" logs will show the CEP triggering the status for each flap.
+
+## sequence diagram
+
+```sequence
+script->CEP: /v1/admin/config
+script->CEP: /v1/updateContext RoomXY
+```
 
 ## Next step
 

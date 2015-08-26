@@ -117,3 +117,14 @@ Go back to the terminal where you launched first the LB then after the CEP. You 
 After a few seconds, the "EventOut" logs will show the CEP triggering the average temperature for each floor.
 CEP send the EventOut updates to a remote NGSI broker (mock-orion).
 You should see temperature averages as "Floor" beeing logged in mock-orion logs.
+
+## Sequence Diagram
+
+```sequence
+run.sh->CEP: /v1/admin/config
+CEP->LB: /ngsi10/subscribeContext Room*
+run.sh->LB: /v1/updateContext RoomXY ...
+LB->CEP: /ngs10/notifyContext RoomXY (IN)...
+CEP->LB: /ngsi10/updateContext FloorX (OUT)
+LB->Mock Orion: /ngsi10/updateContext FloorX
+```

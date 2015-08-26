@@ -109,6 +109,16 @@ Go back to the terminal where you launched first the LB then after the CEP. You 
 
 After a few seconds, the "EventOut" logs will show the CEP triggering the average temperature for each floor.
 
+
+## sequence diagram
+
+```sequence
+run.sh->CEP: /v1/admin/config
+CEP->LB: /ngs10/subscribeContext Room*
+run.sh->LB: /v1/updateContext RoomXY ...
+LB->CEP: /ngsi10/notifyContext RoomXY ...
+```
+
 ## Next step
 
 You must now learn how to send the EventOut updates to a remote NGSI broker.
