@@ -101,6 +101,10 @@ After a few seconds, the "EventOut" logs will show the CEP triggering the status
 
 ## sequence diagram
 
+![Alt text](RoomsAndFlapsExample.svg)
+
+
+
 ```sequence
 script->CEP: /v1/admin/config
 script->CEP: /v1/updateContext RoomXY
