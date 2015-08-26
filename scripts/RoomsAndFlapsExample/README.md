@@ -101,8 +101,7 @@ After a few seconds, the "EventOut" logs will show the CEP triggering the status
 
 ## sequence diagram
 
-![Alt text](RoomsAndFlapsExample.svg)
-
+![](RoomsAndFlapsExample.svg?raw=true)
 
 
 ```sequence
