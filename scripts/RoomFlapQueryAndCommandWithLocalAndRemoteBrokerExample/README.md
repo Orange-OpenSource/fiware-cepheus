@@ -52,6 +52,7 @@ The mock-iotagent respond ok to Cepheus-broker. Cepheus-broker forward the respo
 
 ## Sequence Diagram
 
+![sequence diagram](sequence-diagram.svg)
 
 ```sequence
 Mock IotAgent->LB: /ngsi10/registerContext Room*

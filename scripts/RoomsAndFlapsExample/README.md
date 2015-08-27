@@ -99,9 +99,9 @@ Go back to the terminal where you launched the CEP. You should see tempertures a
 
 After a few seconds, the "EventOut" logs will show the CEP triggering the status for each flap.
 
-## sequence diagram
+## Sequence Diagram
 
-![sequence diagram](RoomsAndFlapsExample.svg)
+![sequence diagram](sequence-diagram.svg)
 
 
 ## Next step

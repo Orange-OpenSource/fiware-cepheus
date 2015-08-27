@@ -110,7 +110,8 @@ Go back to the terminal where you launched first the LB then after the CEP. You 
 After a few seconds, the "EventOut" logs will show the CEP triggering the average temperature for each floor.
 
 
-## sequence diagram
+## Sequence Diagram
+
 ![sequence diagram](sequence-diagram.svg)
 
 ```sequence

@@ -120,10 +120,12 @@ Go back to the terminal where you launched the CEP. You should see temperatures 
 After a few seconds, the "EventOut" logs will show the CEP triggering the status for each flap.
 Theses "EventOut" will send to mock-iotagent via Cepheus-lb.
 
-## sequence diagram
+## Sequence Diagram
+
+![sequence diagram](sequence-diagram.svg)
 
 ```sequence
-script->CEP: /v1/admin/config
+run.sh->CEP: /v1/admin/config
 CEP->LB: /ngsi10/subscribeContext Room*
 Mock IotAgent->LB: /ngsi10/registerContext Flap*
 Mock IotAgent->LB: /ngsi10/updateContext RoomXY ...
