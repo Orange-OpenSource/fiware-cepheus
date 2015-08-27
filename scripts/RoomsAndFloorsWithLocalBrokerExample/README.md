@@ -111,6 +111,7 @@ After a few seconds, the "EventOut" logs will show the CEP triggering the averag
 
 
 ## sequence diagram
+![sequence diagram](sequence-diagram.svg)
 
 ```sequence
 run.sh->CEP: /v1/admin/config
