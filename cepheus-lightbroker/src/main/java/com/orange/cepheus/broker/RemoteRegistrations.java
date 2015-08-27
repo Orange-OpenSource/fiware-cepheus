@@ -66,12 +66,12 @@ public class RemoteRegistrations {
      * @param localRegistrationId the local registrationId
      */
     public void registerContext(final RegisterContext registerContext, final String localRegistrationId) {
-        String remoteBroker = configuration.getRemoteBroker();
 
         // When no remote broker is define, don't do anything.
-        if (remoteBroker == null) {
+        if ((configuration.getRemoteBroker() == null) || (configuration.getRemoteBroker().getUrl() == null) || (configuration.getRemoteBroker().getUrl().isEmpty())) {
             return;
         }
+        String remoteBroker = configuration.getRemoteBroker().getUrl();
 
         logger.debug("registering {} to remote broker {}", localRegistrationId, remoteBroker);
 

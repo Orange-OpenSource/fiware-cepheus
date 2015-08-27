@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -85,16 +86,17 @@ public class NgsiController extends NgsiBaseController {
         } else {
             logger.debug("Not providingApplication then forward to the remote broker");
             //forward the update to the remote broker
-            final String urlBroker = configuration.getRemoteBroker();
 
-            //check if remote broker is configured
-            if ((urlBroker != null) && (!urlBroker.isEmpty())) {
-                //TODO : use fiware-service in http headers
-                ngsiClient.updateContext(urlBroker, null, update).addCallback(
+            // When no remote broker is define, don't do anything.
+            if ((configuration.getRemoteBroker() == null) || (configuration.getRemoteBroker().getUrl() == null) || (configuration.getRemoteBroker().getUrl().isEmpty())) {
+                logger.warn("Not remote broker to foward updateContext coming from providingApplication");
+            } else {
+
+                final String urlBroker = configuration.getRemoteBroker().getUrl();
+                HttpHeaders httpHeaders = configuration.getHeadersForBroker(ngsiClient.getRequestHeaders());
+                ngsiClient.updateContext(urlBroker, httpHeaders, update).addCallback(
                         updateContextResponse -> logger.debug("UpdateContext completed for {} ", urlBroker),
                         throwable -> logger.warn("UpdateContext failed for {}: {}", urlBroker, throwable.toString()));
-            } else {
-                logger.warn("Not remote broker to foward updateContext coming from providingApplication");
             }
 
             //create updateContextResponse
@@ -145,13 +147,13 @@ public class NgsiController extends NgsiBaseController {
             return ngsiClient.queryContext(urlProvider, null, query).get();
         } else {
             // forward query to remote broker
-            final String urlBroker = configuration.getRemoteBroker();
             //check if remote broker is configured
-            if ((urlBroker != null) && (!urlBroker.isEmpty())) {
-                //TODO : use fiware-service in http headers
-                return ngsiClient.queryContext(urlBroker, null, query).get();
-            } else {
+            if ((configuration.getRemoteBroker() == null) || (configuration.getRemoteBroker().getUrl() == null) || (configuration.getRemoteBroker().getUrl().isEmpty())) {
                 throw new MissingRemoteBrokerException("Not remote broker configured to foward queryContext coming from providingApplication");
+            } else {
+                String urlBroker = configuration.getRemoteBroker().getUrl();
+                HttpHeaders httpHeaders = configuration.getHeadersForBroker(ngsiClient.getRequestHeaders());
+                return ngsiClient.queryContext(urlBroker, httpHeaders, query).get();
             }
         }
     }
@@ -219,4 +221,5 @@ public class NgsiController extends NgsiBaseController {
         statusCode.setDetail(subscriptionException.getMessage());
         return errorResponse(req.getRequestURI(), statusCode);
     }
+
 }

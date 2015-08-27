@@ -39,10 +39,13 @@ import static org.mockito.Mockito.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class RemoteRegistrationsTest {
 
-    private final static String remoteBroker = "http://remoteBroker:8080";
+    private final static String remoteBrokerUrl = "http://remoteBroker:8080";
 
     @Mock
     Configuration configuration;
+
+    @Mock
+    Configuration.RemoteBroker remoteBroker;
 
     @Captor
     private ArgumentCaptor<SuccessCallback<RegisterContextResponse>> successCaptor;
@@ -83,6 +86,7 @@ public class RemoteRegistrationsTest {
         // prepare mocks
         doNothing().when(registerFuture).addCallback(successCaptor.capture(), any());
         when(ngsiClient.registerContext(any(), any(), any())).thenReturn(registerFuture);
+        when(remoteBroker.getUrl()).thenReturn(remoteBrokerUrl);
         when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
 
         // make *the* call
@@ -98,7 +102,7 @@ public class RemoteRegistrationsTest {
         successCaptor.getValue().onSuccess(response);
 
         // check NGSI client is called
-        verify(ngsiClient, times(1)).registerContext(eq(remoteBroker), eq(null), eq(registerContext));
+        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(null), eq(registerContext));
 
         // check pending will not retrigger a successful register
         remoteRegistrations.registerPendingRemoteRegistrations();
@@ -122,13 +126,14 @@ public class RemoteRegistrationsTest {
         // prepare mocks
         doNothing().when(registerFuture).addCallback(successCaptor.capture(), failureCaptor.capture());
         when(ngsiClient.registerContext(any(), any(), any())).thenReturn(registerFuture);
+        when(remoteBroker.getUrl()).thenReturn(remoteBrokerUrl);
         when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
 
         // make *the* call
         remoteRegistrations.registerContext(registerContext, localRegistrationId);
 
         // check NGSI client is called
-        verify(ngsiClient, times(1)).registerContext(eq(remoteBroker), eq(null), eq(registerContext));
+        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(null), eq(registerContext));
 
         // fake response from ngsi client to registerContext
         failureCaptor.getValue().onFailure(new RuntimeException("fail"));
@@ -138,7 +143,7 @@ public class RemoteRegistrationsTest {
 
         // check register is called another time
         remoteRegistrations.registerPendingRemoteRegistrations();
-        verify(ngsiClient, times(2)).registerContext(eq(remoteBroker), eq(null), eq(registerContext));
+        verify(ngsiClient, times(2)).registerContext(eq(remoteBrokerUrl), eq(null), eq(registerContext));
 
         // fake response from ngsi client to registerContext
         RegisterContextResponse response = new RegisterContextResponse();
@@ -160,7 +165,9 @@ public class RemoteRegistrationsTest {
         // prepare mocks
         doNothing().when(registerFuture).addCallback(successCaptor.capture(), any());
         when(ngsiClient.registerContext(any(), any(), any())).thenReturn(registerFuture);
+        when(remoteBroker.getUrl()).thenReturn(remoteBrokerUrl);
         when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+
 
         // make the call first call
         remoteRegistrations.registerContext(registerContext, localRegistrationId);
@@ -172,7 +179,7 @@ public class RemoteRegistrationsTest {
         successCaptor.getValue().onSuccess(response);
 
         // rechecks
-        verify(ngsiClient, times(1)).registerContext(eq(remoteBroker), eq(null), eq(registerContext));
+        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(null), eq(registerContext));
         assertEquals(remoteRegistrationId, remoteRegistrations.getRemoteRegistrationId(localRegistrationId));
 
         // Prepare a new registerContext
@@ -192,7 +199,7 @@ public class RemoteRegistrationsTest {
         successCaptor.getValue().onSuccess(response2);
 
         // rechecks
-        verify(ngsiClient, times(1)).registerContext(eq(remoteBroker), eq(null), eq(registerContextUpdate));
+        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(null), eq(registerContextUpdate));
         assertEquals(remoteRegistrationId, remoteRegistrations.getRemoteRegistrationId(localRegistrationId));
     }
 
@@ -204,6 +211,42 @@ public class RemoteRegistrationsTest {
 
         // declare no broker
         when(configuration.getRemoteBroker()).thenReturn(null);
+
+        // make *the* call
+        remoteRegistrations.registerContext(registerContext, localRegistrationId);
+
+        // check no remote was called
+        verify(ngsiClient, never()).registerContext(any(), any(), any());
+        assertNull(remoteRegistrations.getRemoteRegistrationId(localRegistrationId));
+    }
+
+    @Test
+    public void testRemoteRegistrationNoUrlBroker() throws Exception {
+        String localRegistrationId = "localRegistrationId1";
+
+        RegisterContext registerContext = createRegistrationContext();
+
+        // declare no broker
+        when(remoteBroker.getUrl()).thenReturn(null);
+        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+
+        // make *the* call
+        remoteRegistrations.registerContext(registerContext, localRegistrationId);
+
+        // check no remote was called
+        verify(ngsiClient, never()).registerContext(any(), any(), any());
+        assertNull(remoteRegistrations.getRemoteRegistrationId(localRegistrationId));
+    }
+
+    @Test
+    public void testRemoteRegistrationEmptyUrlBroker() throws Exception {
+        String localRegistrationId = "localRegistrationId1";
+
+        RegisterContext registerContext = createRegistrationContext();
+
+        // declare no broker
+        when(remoteBroker.getUrl()).thenReturn("");
+        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
 
         // make *the* call
         remoteRegistrations.registerContext(registerContext, localRegistrationId);

@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -84,6 +85,9 @@ public class NgsiControllerTest {
     Configuration configuration;
 
     @Mock
+    Configuration.RemoteBroker remoteBroker;
+
+    @Mock
     Iterator<URI> providingApplication;
 
     @Mock
@@ -118,7 +122,11 @@ public class NgsiControllerTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        when(configuration.getRemoteBroker()).thenReturn("http://orionhost:9999");
+        when(remoteBroker.getUrl()).thenReturn("http://orionhost:9999");
+        when(remoteBroker.getServiceName()).thenReturn("SN");
+        when(remoteBroker.getServicePath()).thenReturn("SP");
+        when(remoteBroker.getAuthToken()).thenReturn("AUTH_TOKEN");
+        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
         when(configuration.getLocalBroker()).thenReturn("http://localhost:8081");
         when(updateContextResponseListenableFuture.get()).thenReturn(createUpdateContextResponseTempSensorAndPressure());
         doNothing().when(updateContextResponseListenableFuture).addCallback(any(), any());
@@ -132,6 +140,7 @@ public class NgsiControllerTest {
         reset(subscriptions);
         reset(ngsiClient);
         reset(configuration);
+        reset(remoteBroker);
         reset(providingApplication);
         reset(matchedSubscriptions);
         reset(updateContextResponseListenableFuture);
@@ -244,6 +253,12 @@ public class NgsiControllerTest {
         //check ListenableFuture is called at least Once and with addCallback method
         verify(updateContextResponseListenableFuture, atLeastOnce()).addCallback(any(), any());
 
+        //check ngsiClient.getRequestHeaders() is called at least Once
+        verify(ngsiClient, atLeastOnce()).getRequestHeaders();
+
+        //check configuration.getHeadersForBroker() is called at least Once
+        verify(configuration, atLeastOnce()).getHeadersForBroker(any());
+
         //verify urlProvider
         verify(ngsiClient, atLeastOnce()).updateContext(eq(urlProvider), any(), updateContextArg.capture());
 
@@ -325,9 +340,80 @@ public class NgsiControllerTest {
     }
 
     @Test
+    public void postUpdateContextWithoutProvidingApplicationAndWithoutRemoteBrokerUrlButWithNotify() throws Exception {
+
+        when(remoteBroker.getUrl()).thenReturn(null);
+        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+
+        //localRegistrations mock return always without providingApplication
+        when(providingApplication.hasNext()).thenReturn(false);
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        //subscriptions mock return always with matched subscriptions
+        when(matchedSubscriptions.hasNext()).thenReturn(true, false);
+        SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        subscribeContext.setSubscriptionId("999999");
+        when(matchedSubscriptions.next()).thenReturn(subscribeContext);
+        when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
+
+        //ngsiClient mock return always CODE_200
+        when(ngsiClient.notifyContext(any(), any(), any())).thenReturn(notifyContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/updateContext")
+                .content(json(mapper, createUpdateContextTempSensorAndPressure()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].value").value(15.5))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].name").value("pressure"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].type").value("int"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value(1015))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+
+        //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
+        verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
+
+        //check entityId
+        assertEquals("S1", entityIdArgumentCaptor.getValue().getId());
+        assertEquals("TempSensor", entityIdArgumentCaptor.getValue().getType());
+        assertFalse(entityIdArgumentCaptor.getValue().getIsPattern());
+
+        //check attributes
+        assertEquals(2, attributeArgumentCaptor.getValue().size());
+        assertTrue(attributeArgumentCaptor.getValue().contains("temp"));
+        assertTrue(attributeArgumentCaptor.getValue().contains("pressure"));
+
+        //check ListenableFuture is called never and with addCallback method
+        verify(updateContextResponseListenableFuture, never()).addCallback(any(), any());
+
+        //verify ngsiClient.updateContext is never called
+        verify(ngsiClient, never()).updateContext(any(), any(), any());
+
+        //check ngsiClient.notify is called at least once
+        // Capture notifyContext when postNotifyContextRequest is called on updateContextRequest,
+        ArgumentCaptor<NotifyContext> notifyContextArg = ArgumentCaptor.forClass(NotifyContext.class);
+        verify(notifyContextResponseListenableFuture, atLeastOnce()).addCallback(any(), any());
+        String urlReference = subscribeContext.getReference().toString();
+        verify(ngsiClient, atLeastOnce()).notifyContext(eq(urlReference), any(), notifyContextArg.capture());
+        // Check id and status correspond to the required
+        assertEquals(1, notifyContextArg.getValue().getContextElementResponseList().size());
+        ContextElementResponse contextElementResponse = notifyContextArg.getValue().getContextElementResponseList().get(0);
+        assertEquals("S1", contextElementResponse.getContextElement().getEntityId().getId());
+        assertEquals("200", contextElementResponse.getStatusCode().getCode());
+    }
+
+    @Test
     public void postUpdateContextWithoutProvidingApplicationAndWithEmptyRemoteBrokerButWithNotify() throws Exception {
 
-        when(configuration.getRemoteBroker()).thenReturn("");
+        when(remoteBroker.getUrl()).thenReturn("");
+        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
@@ -784,7 +870,7 @@ public class NgsiControllerTest {
         //check attributes
         assertEquals(0, attributeArgumentCaptor.getValue().size());
 
-        // Capture queryContext when queryContextRequest is called on updateContextRequest,
+        // Capture queryContext when queryContextRequest is called on queryContextRequest
         ArgumentCaptor<QueryContext> queryContextArg = ArgumentCaptor.forClass(QueryContext.class);
         String urlProvider = "http//iotagent:1234";
 
@@ -797,6 +883,7 @@ public class NgsiControllerTest {
         // Check id correspond to the required
         assertEquals(1, queryContextArg.getValue().getEntityIdList().size());
         assertEquals("S*", queryContextArg.getValue().getEntityIdList().get(0).getId());
+
     }
 
     @Test
@@ -837,11 +924,20 @@ public class NgsiControllerTest {
         ArgumentCaptor<QueryContext> queryContextArg = ArgumentCaptor.forClass(QueryContext.class);
         String urlProvider = "http://orionhost:9999";
 
+        // Capture HttpHeaders queryContextRequest is called on queryContextRequest
+        ArgumentCaptor<HttpHeaders> httpHeadersArg = ArgumentCaptor.forClass(HttpHeaders.class);
+
         //check ListenableFuture is called at least Once and with get method
         verify(queryContextResponseListenableFuture, atLeastOnce()).get();
 
+        //check ngsiClient.getRequestHeaders() is called at least Once
+        verify(ngsiClient, atLeastOnce()).getRequestHeaders();
+
+        //check configuration.getHeadersForBroker() is called at least Once
+        verify(configuration, atLeastOnce()).getHeadersForBroker(any());
+
         //verify urlProvider
-        verify(ngsiClient, atLeastOnce()).queryContext(eq(urlProvider), any(), queryContextArg.capture());
+        verify(ngsiClient, atLeastOnce()).queryContext(eq(urlProvider), httpHeadersArg.capture(), queryContextArg.capture());
 
         // Check id correspond to the required
         assertEquals(1, queryContextArg.getValue().getEntityIdList().size());
@@ -871,10 +967,35 @@ public class NgsiControllerTest {
     }
 
     @Test
-    public void postQueryContextWithEmptyRemoteBroker() throws Exception {
+    public void postQueryContextWithNullRemoteBrokerUrl() throws Exception {
 
-        //configuration mock return "" as remoteBroker
-        when(configuration.getRemoteBroker()).thenReturn("");
+        //configuration mock return null as remoteBroker
+        when(remoteBroker.getUrl()).thenReturn(null);
+        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+
+        //localRegistrations mock return always without providingApplication
+        when(providingApplication.hasNext()).thenReturn(false);
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.queryContext(any(), any(), any())).thenReturn(queryContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/queryContext")
+                .content(json(mapper, createQueryContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("missing remote broker error"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("Not remote broker configured to foward queryContext coming from providingApplication"));
+    }
+
+    @Test
+    public void postQueryContextWithEmptyRemoteBrokerUrl() throws Exception {
+
+        //configuration mock return "" as remoteBrokerUrl
+        when(remoteBroker.getUrl()).thenReturn("");
+        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
