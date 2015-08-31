@@ -66,7 +66,8 @@ Fiware-cepheus and fiware-lb are SpringBoot applications. You can run them simpl
 
 ## User guide
 
-The complete user manual can be found [here](doc/manual.md)
+The complete user manual can be found under the /doc folder.
+For and easier reading, please use this link :
 
 ### Example
 
