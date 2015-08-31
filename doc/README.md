@@ -13,7 +13,7 @@ These components will work together and with other NGSI compatible components
 (like the [Orion broker](https://github.com/telefonicaid/fiware-orion) or [IoT Agents](https://github.com/telefonicaid/iotagent-node-lib))
 to build full NGSI compliant IoT networks.
 
-For building and running these two components, please refer to [Github's root README](http://github.com/orange-opensource/fiware-cepheus/README.md).
+For building and running these two components, please refer to [Github's root README](https://github.com/Orange-OpenSource/fiware-cepheus/blob/master/README.md).
 
 # Architecture
 
