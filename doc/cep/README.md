@@ -1,29 +1,30 @@
-# Cepheus CEP manual
+# Cepheus-CEP
 
 - [Introduction](#introduction)
-- [API Overview](#api overview)
-- [JSON Configuration](#json configuration)
-- [Mapping Context Entities to Events](#Mapping Context Entities to Events)
+- [API Overview](#api-overview)
+- [JSON Configuration](configuration.md)
+- [Mapping Context Entities to Events](mapping.md)
 
-# Introduction
+## Introduction
 
-Cepheus-CEP is to provide a Complex Event Processor (CEP) at the gateway level with a NGSI 9/10 interface for the FIWARE Data Handling GE.
+Cepheus-CEP provides a Complex Event Processor (CEP) at the gateway level with a NGSI 9/10 interface for the FIWARE Data Handling GE.
 
-fiware-cepheus allows to locally process basic events (from data provided by sensors) and generate high-level aggregated events.
+Cepheus-CEP allows to locally process basic events (from data provided by sensors) and generate higher-level aggregated events.
 All input and output of events is done though HTTP requests conforming to the NGSI information model.
 
-# API Overview
+## API Overview
 
 Cepheus-cep has two APIs:
+
 - the admin REST endpoint provides access to the current configuration and means to update it.
 - the NGSI endpoints provides the means for communication with other NGSI components (Context Providers and Context Brokers).
 
-## Setup endpoint
+### Admin endpoint
 
-The setup endpoint defines a single REST endpoint where the whole configuration is available. The endpoint path is `/v1/admin/config`.
-The endpoint accepts two HTTP verbs :
+The admin endpoint defines a single REST endpoint where the whole configuration is available. The endpoint path is `/v1/admin/config`.
+The endpoint accepts two HTTP verbs : `GET` and `POST`.
 
-### GET v1/admin/config
+**GET v1/admin/config**
 
 This endpoint returns the actual configuration as a JSON object with a `200 Ok` status code.
 
@@ -33,7 +34,7 @@ Example:
 
     curl -H 'Accept: application/json' http://localhost:8080/v1/admin/config
 
-### POST v1/admin/config
+**POST v1/admin/config**
 
 This endpoint applies a new configuration given in the body as JSON.
 
@@ -46,187 +47,15 @@ Example:
 
     cat config.json | curl -H 'Accept: application/json' -H 'Content-Type: application/json' -d @-
 
-See the [JSON Configuration](#JSON Configuration) section about the content of the JSON configuration
+See the [JSON Configuration](configuration.md) section about the content of the JSON configuration
 
-## NGSI endpoints
+### NGSI endpoints
 
-Cepheus-cep only supports the subset of NGSI standard operations it needs to communicate with other NGSI components.
+Cepheus-CEP only supports the subset of NGSI standard operations it needs to communicate with other NGSI components.
 
 It can receive updates to Context Elements, mapped as incoming events, by two (non exclusive) methods :
 
 - by receiving directly updates though the `ngsi10/updateContext` (or `v1/updateContext`) operation.
 - as a subscriber by receiving `ngsi10/notifyContext` (or `v1/notifyContext`) after it registered to a context broker using `ngsi10/subscribeContext`.
 
-Cepheus-cep will then publish updates to Context Entities (on outgoing events) using the `ngsi10/updateContext` requests to a broker.
-
-# JSON Configuration
-
-The configuration a simple JSON object containing the complete description of the behavior of the CEP engine
-(a set of EPL statements) and the mapping between the NGSI Context Entities and CEP Events.
-
-Here is an example:
-
-```json
-{
-  "host":"http://localhost:8080",
-  "in":[
-    {
-      "id":"RoomX",
-      "type":"Room",
-      "attributes":[
-        { "name":"temperature", "type":"double" },
-        { "name":"floor", "type":"string" }
-      ]
-      "provider":[
-        "http://localhost:8081"
-      ]
-    }
-  ],
-  "out":[
-    {
-      "id":"FloorX",
-      "type":"Floor",
-      "attributes":[
-        { "name":"temperature", "type":"double" }
-      ]
-      "broker":[
-        { "url":"http://localhost:8081" }
-      ]
-    }
-  ],
-  "statements":[
-    "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
-  ]
-}
-```
-
-### Incomming events
-
-The "in" array defines the list of incoming events (NGSI Context Entities) the CEP expects as input from Context Providers.
-
-There is two ways Context Providers can notify the CEP:
-
- - The simplest way is for the Context Provider is to send `/updateContext` requests to the CEP.
-
-![update](fig/cep-incoming-subscribe.png)
-
-<!--```sequence
-participant IoT Agent as C
-participant Cepheus CEP as B
-
-C->B: update(S1.temp, 27)
-C->B: update(S1.temp, 25)
-```-->
-
- - The second way is to make the CEP subscribe to the Context Provider.
-   For each Context Provider defined in the "providers" field of an event, the CEP will send initialy a `/subscribeContext`,
-   and will expect in return the Context Provider to notify it with `/notifyContext` requests.
-
-![update](fig/cep-incoming-notify.png)
-
-<!--```sequence
-participant Broker as C
-participant Cepheus CEP as B
-B->C: subscribe(S1.temp)
-C->B: notify(S1.temp, 27)
-C->B: notify(S1.temp, 25)
-```-->
-
-### Outgoing events
-
-The "out" array defines the list of outgoing events (those generated by the CEP). Each outgoing event can have multiple brokers.
-For each broker, the CEP will trigger `ngsi10/updateContext` requests to the broker on each event update.
-
-![update](fig/cep-outgoing-update.png)
-
-<!--```sequence
-participant Cepheus CEP as A
-participant Remote broker as B
-A->B: update(S1.temp, 25)
-A->B: update(S1.temp, 26)
-```-->
-
-### Statements
-
-"statements" defines a list of [Esper EPL statements](http://www.espertech.com/esper/release-5.2.0/esper-reference/html/epl_clauses.html)
-that will interact with the events previously defined.
-
-# Mapping Context Entities to Events
-
-The CEP engine works by processing incoming events and generating outgoing events.
-These concepts can be mapped quite easily to updates of Context Entities in the NGSI data model.
-
-When the CEP engine is addressed an update to a Context Entity using the NGSI 10 /updateContext request,
-it will fire the corresponding events and process the related EPL statements.
-
-If one or more outgoing events are fired by the CEP engine, the corresponding /updateContext requests
-will be called to notify Context Brokers of the updates to the mapped Context Entities.
-
-## Restrictions
-
-The Esper CEP engine imposes several restrictions to the Context Entities.
-
-### Type is mandatory
-
-All events must have a given type (an Event type) that define a strict set of typed attributes.
-Event types must be declared before any event can be processed by the CEP engine.
-
-Based on this strong requirement, the fiware-cepheus implementation **requires** the updates made by
-the Context Providers to provide a mandatory `type` field for all Context Entities.
-Updates to Context Elements missing this type information will be discarded.
-
-### Id is a reserved attribute key
-
-Another consequence is that the `id` field is handled by CEP engine as just another attribute of the event.
-Therefore no Context Attribute is allowed to be named `id`.
-
-### Simple attribute types
-
-The current version of the CEP engine only handle simple attribute types (like string, int, float, ...)
-and cannot execute statements for complex types like objects or arrays because of the strongly typed nature of the CEP engine.
-
-Note: A later version might support complex values by flattening values using [JSON path](http://goessner.net/articles/JsonPath/) expressions.
-
-### Accessing attributes metadata
-
-An attribute metadata can be access from the CEP rules by joining the key of the attribute
-and the key of the metadata separated by an underscore character: `Attribute Key` _ `Metadata key`.
-
-Example: `temperature_unit` will give access to the `unit` metdata of the `temperature` attribute.
-
-Note: the same type limitations (previous section) of attributes apply to metadata types.
-
-## A more visual mapping
-
-It is possible to visualize a stream of events as a SQL database table.
-For each type, we define a table with columns for the `id` and each attribute. Each event is represented by a single row.
-
-For example, the following Context Entities :
-
-```
-  {
-    "id": "SENSOR1",
-    "type":"RoomSensors",
-    "attributes": [
-      { "name": "T°", "type": "float", "value": "21" },
-      { "name": "Pressure", "type": "integer", "value": "560" }
-    ]
-  },
-  {
-    "id": "SENSOR2",
-    "type":"RoomSensors",
-    "attribtues": [
-      { "name": "T°", "type": "float", "value": "30" },
-      { "name": "Pressure", "type": "integer", "value": "1342" }
-    ]
-  }
-```
-
-can be seen as this table (or event stream) named "RoomSensors":
-
-<table>
-<tr><th>ID</th><th>T°</th><th>Pressure</th></tr>
-<tr><td>SENSOR1</td><td>21</td><td>560</td></tr>
-<tr><td>SENSOR2</td><td>30</td><td>1342</td></tr>
-<tr><td>...</td><td>...</td><td>...</td></tr>
-</table>
+Cepheus-CEP will then publish updates to Context Entities (on outgoing events) using the `ngsi10/updateContext` requests to a broker.

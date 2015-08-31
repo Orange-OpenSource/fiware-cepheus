@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/Orange-OpenSource/fiware-cepheus.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/fiware-cepheus)
 [![Coverity Scan Status](https://scan.coverity.com/projects/5913/badge.svg)](https://scan.coverity.com/projects/5913)
 [![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/fiware-cepheus/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/fiware-cepheus?branch=master)
+[![Docs Status](https://readthedocs.org/projects/fiware-cepheus/badge/?version=latest)](https://readthedocs.org/projects/fiware-cepheus/)
 
 This is the code repository for fiware-cepheus, the reference implementation of the Gateway Data Handling GE.
 
@@ -12,7 +13,7 @@ Check also the [FIWARE Catalogue entry for Cepheus](http://catalogue.fiware.org/
 ## Renaming
 
 The previous name of the project was "EspR4FastData".
-It was renamed to a more generic name (using the convention of other FIWARE enablers).
+It was renamed to a more generic name (using the convention of other FIWARE Generic Enablers).
 
 ## Overall description
 
@@ -59,19 +60,19 @@ Each command verify java version requirement.
 
 ## Running
 
-Fiware-cepheus and fiware-lb are SpringBoot applications. You can run them simply with:
+The project provides two SpringBoot applications. You can run them simply with:
 
     java -jar cepheus-cep.jar
     java -jar cepheus-lb.jar
 
 ## User guide
 
-The complete user manual can be found under the /doc folder.
-For and easier reading, please use this link :
+The complete user manual can be found under the [/doc](doc) folder.
+The user manual is also available though readthedocs.org: [User Manual](http://fiware-cepheus.readthedocs.org/en/latest/)
 
 ### Example
 
-Some simple examples of how to use the cepheus-cep can be found under the [/scripts](scripts)
+Some simple examples to learn how to use the Cepheus-CEP and Cepheus-Broker can be found under the [/scripts](scripts) folder.
 
 ## License
 

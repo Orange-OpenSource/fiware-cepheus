@@ -1,14 +1,13 @@
 site_name: Fiware-Cepheus
-site_url: https://fiware-cepheus.readthedocs.org
-repo_url: https://github.com/Orange-OpenSource/fiware-cepheus.git
+repo_url: https://github.com/Orange-OpenSource/fiware-cepheus
 site_description: FIWARE Cepheus Documentation
-docs_dir: doc
-site_dir: html
+docs_dir: 'doc'
 markdown_extensions: [toc,fenced_code]
-use_directory_urls: false
 theme: readthedocs
-extra_css: ["http://fiware.org/style/monokai_sublime.css"]
 pages:
-  - Home: README.md
-  - Cepheus-CEP: cep/README.md
-  - Cepheus-Broker: broker/README.md
+- 'Home': 'README.md'
+- 'Cepheus-CEP':
+  - 'Overview': 'cep/README.md'
+  - 'Configuration': 'cep/configuration.md'
+  - 'NGSI mapping': 'cep/mapping.md'
+- 'Cepheus-Broker': 'broker/README.md'

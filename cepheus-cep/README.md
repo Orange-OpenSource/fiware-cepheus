@@ -107,7 +107,7 @@ With properties :
 
 ## User guide
 
-The complete user manual can be found [here](../doc/manual.md)
+The complete user manual can be found [here](../doc/cep/README.md)
 
 ## License
 
