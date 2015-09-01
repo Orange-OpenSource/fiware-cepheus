@@ -5,9 +5,9 @@ docs_dir: 'doc'
 markdown_extensions: [toc,fenced_code]
 theme: readthedocs
 pages:
-- 'Home': 'README.md'
+- 'Home': 'index.md'
 - 'Cepheus-CEP':
-  - 'Overview': 'cep/README.md'
+  - 'Overview': 'cep/index.md'
   - 'Configuration': 'cep/configuration.md'
   - 'NGSI mapping': 'cep/mapping.md'
-- 'Cepheus-Broker': 'broker/README.md'
+- 'Cepheus-Broker': 'broker/index.md'
