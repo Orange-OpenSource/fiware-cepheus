@@ -30,6 +30,8 @@ or forwarded to the corresponding `providingApplication`.
 
 ![broker forward](../fig/broker-forward.png)
 
+The forwarding process is described in the Fiware-Orion project documentation: [here](https://fiware-orion.readthedocs.org/en/develop/user/context_providers/index.html)
+
 ## Pubsub support
 
 Publish/subscribe is supported by the `/subscribeContext` requests to Context Entities that will trigger `/notifyContext` requests.
@@ -37,3 +39,15 @@ Publish/subscribe is supported by the `/subscribeContext` requests to Context En
 This feature is mainly used by Cepheus-CEP to track updates to Context Entities.
 
 ![broker notify](../fig/broker-notify.png)
+
+## Limitations
+
+The broker has many limitations due to its simple design compared to a complete broker implementation.
+
+- Broker only supports `registerContext`, `updateContext`, `queryContext`, `subscribeContext`, `unsubscribeContext` and `notifyContext` operations from NGSI v1 API (json formated).
+- Subscriptions only support `ONCHANGE` as type of notification.
+- Subscriptions do not handle throttling.
+- All subscriptions and registrations are lost on restart of the application (not persisted on disk, kept in memory only).
+- If multiple NGSI providers register the same Context Entities, only the first provider will get the forwarded `queryContext` or `updateContext` requests.
+- When a `queryContext` or `updateContext` request contains references to multiple Context Entities, the request is forwarded only to the Context Provider of the first Context Entity.
+- Broker does not keep the any value of Context Entities, all requests will get forwarded to a Context Provider or the remote Broker.
