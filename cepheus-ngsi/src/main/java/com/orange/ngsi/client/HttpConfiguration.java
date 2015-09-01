@@ -8,6 +8,11 @@
 
 package com.orange.ngsi.client;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
@@ -20,8 +25,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.AsyncClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.AsyncRestTemplate;
+
+import javax.annotation.Resource;
+import java.io.IOException;
 
 /**
  * Configure HTTP connections
@@ -38,10 +47,40 @@ public class HttpConfiguration {
     @Value("${ngsi.http.requestTimeout:2000}")
     private int requestTimeout;
 
+    /**
+     * Custom jackson mapper for NGSI V1 to convert numbers and booleans to strings
+     */
     @Bean
-    public AsyncRestTemplate asyncRestTemplate(AsyncClientHttpRequestFactory asyncClientHttpRequestFactory) {
+    public Jackson2ObjectMapperBuilder ngsiV1JacksonMapper() {
+        Jackson2ObjectMapperBuilder b = new Jackson2ObjectMapperBuilder();
+
+        // Serialize numbers as strings
+        b.featuresToEnable(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS);
+
+        // Serialize booleans as strings
+        SimpleModule booleanAsString = new SimpleModule("BooleanAsString");
+        booleanAsString.addSerializer(Boolean.class, new JsonSerializer<Boolean>() {
+            @Override public void serialize(Boolean value, JsonGenerator jgen, SerializerProvider provider)
+                    throws IOException, JsonProcessingException {
+                jgen.writeString(value.toString());
+
+            }
+        });
+        b.modulesToInstall(booleanAsString);
+
+        return b;
+    }
+
+    @Bean
+    @Resource(name="ngsiV1JacksonMapper")
+    public AsyncRestTemplate asyncRestTemplate(AsyncClientHttpRequestFactory asyncClientHttpRequestFactory,
+            MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter) {
         AsyncRestTemplate restTemplate = new AsyncRestTemplate(asyncClientHttpRequestFactory);
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+        // Force use of the NGSI V1 custom mapper
+        restTemplate.getMessageConverters().clear();
+        restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter);
+
         return restTemplate;
     }
 

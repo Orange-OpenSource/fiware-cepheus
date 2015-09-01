@@ -106,11 +106,11 @@ public class NotifyContextRequestTest {
                 .andExpect(jsonPath("$.contextResponses[*]", hasSize(1)))
                 .andExpect(jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
                 .andExpect(jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
-                .andExpect(jsonPath("$.contextResponses[0].contextElement.isPattern").value(false))
+                .andExpect(jsonPath("$.contextResponses[0].contextElement.isPattern").value("false"))
                 .andExpect(jsonPath("$.contextResponses[0].contextElement.attributes[*]", hasSize(1)))
                 .andExpect(jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
                 .andExpect(jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
-                .andExpect(jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value(15.5))
+                .andExpect(jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value("15.5"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
         NotifyContextResponse response = ngsiClient.notifyContext(baseUrl, null, createNotifyContextTempSensor(0)).get();

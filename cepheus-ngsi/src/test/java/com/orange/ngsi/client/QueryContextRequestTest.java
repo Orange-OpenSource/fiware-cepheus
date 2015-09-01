@@ -104,7 +104,7 @@ public class QueryContextRequestTest {
                 .andExpect(jsonPath("$.entities[*]", hasSize(1)))
                 .andExpect(jsonPath("$.entities[0].id").value("S*"))
                 .andExpect(jsonPath("$.entities[0].type").value("TempSensor"))
-                .andExpect(jsonPath("$.entities[0].isPattern").value(true))
+                .andExpect(jsonPath("$.entities[0].isPattern").value("true"))
                 .andExpect(jsonPath("$.attributes[*]", hasSize(1)))
                 .andExpect(jsonPath("$.attributes[0]").value("temp"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
@@ -120,7 +120,7 @@ public class QueryContextRequestTest {
         Assert.assertEquals(1, response.getContextElementResponses().get(0).getContextElement().getContextAttributeList().size());
         Assert.assertEquals("temp", response.getContextElementResponses().get(0).getContextElement().getContextAttributeList().get(0).getName());
         Assert.assertEquals("float", response.getContextElementResponses().get(0).getContextElement().getContextAttributeList().get(0).getType());
-        Assert.assertEquals(15.5, response.getContextElementResponses().get(0).getContextElement().getContextAttributeList().get(0).getValue());
+        Assert.assertEquals("15.5", response.getContextElementResponses().get(0).getContextElement().getContextAttributeList().get(0).getValue());
     }
 
 }

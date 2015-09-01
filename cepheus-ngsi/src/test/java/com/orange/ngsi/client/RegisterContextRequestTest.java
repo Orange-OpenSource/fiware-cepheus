@@ -102,10 +102,10 @@ public class RegisterContextRequestTest {
                 .andExpect(jsonPath("$.contextRegistrations[*]", hasSize(1)))
                 .andExpect(jsonPath("$.contextRegistrations[0].providingApplication").value("http://localhost:1028/accumulate"))
                 .andExpect(jsonPath("$.contextRegistrations[0].entities[*]", hasSize(1))).andExpect(jsonPath("$.contextRegistrations[0].entities[0].id").value("Room*"))
-                .andExpect(jsonPath("$.contextRegistrations[0].entities[0].type").value("Room")).andExpect(jsonPath("$.contextRegistrations[0].entities[0].isPattern").value(true))
+                .andExpect(jsonPath("$.contextRegistrations[0].entities[0].type").value("Room")).andExpect(jsonPath("$.contextRegistrations[0].entities[0].isPattern").value("true"))
                 .andExpect(jsonPath("$.contextRegistrations[0].attributes[*]", hasSize(1))).andExpect(jsonPath("$.contextRegistrations[0].attributes[0].name").value("temperature"))
                 .andExpect(jsonPath("$.contextRegistrations[0].attributes[0].type").value("float"))
-                .andExpect(jsonPath("$.contextRegistrations[0].attributes[0].isDomain").value(false))
+                .andExpect(jsonPath("$.contextRegistrations[0].attributes[0].isDomain").value("false"))
                 .andExpect(jsonPath("$.duration").value("PT10S"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
