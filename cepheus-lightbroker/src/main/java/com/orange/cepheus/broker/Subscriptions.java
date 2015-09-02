@@ -8,29 +8,19 @@
 
 package com.orange.cepheus.broker;
 
-import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
 import com.orange.ngsi.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.annotation.PostConstruct;
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.Period;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.util.stream.Collectors;
 
 /**
  * Handles subscriptions.
