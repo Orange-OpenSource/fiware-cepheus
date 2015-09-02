@@ -108,7 +108,7 @@ public class SubscriptionManager {
     private URI hostURI;
 
     /**
-     * Update subscription to new provider of the incomming events defined in the Configuration
+     * Update subscription to new provider of the incoming events defined in the Configuration
      *
      * @param configuration the new configuration
      */
@@ -207,7 +207,7 @@ public class SubscriptionManager {
                     if (subscribeContext == null) {
                         subscribeContext = buildSubscribeContext(eventType);
                     }
-                    subscibeProvider(provider, subscribeContext, subscriptions);
+                    subscribeProvider(provider, subscribeContext, subscriptions);
                 }
             }
         }
@@ -219,7 +219,7 @@ public class SubscriptionManager {
      * @param subscribeContext
      * @param subscriptions
      */
-    private void subscibeProvider(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
+    private void subscribeProvider(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
         logger.debug("Subscribe to {} for {}", provider.getUrl(), subscribeContext.toString());
 
         ngsiClient.subscribeContext(provider.getUrl(), null, subscribeContext).addCallback(subscribeContextResponse -> {
