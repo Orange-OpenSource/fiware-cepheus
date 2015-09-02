@@ -8,11 +8,13 @@
 
 package com.orange.cepheus.broker;
 
+import com.orange.cepheus.broker.exception.MissingRemoteBrokerException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -25,34 +27,44 @@ import static org.junit.Assert.assertNull;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @TestPropertySource(locations="classpath:test.properties")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ConfigurationTest {
 
     @Autowired
     Configuration configuration;
 
     @Test
-    public void acheckPropertiesValues() {
-        assertEquals("http://localhost:8081", configuration.getLocalBroker());
-        assertEquals("http://10.25.12.123:8081", configuration.getRemoteBroker().getUrl());
-        assertEquals("gateway", configuration.getRemoteBroker().getServiceName());
-        assertEquals("gateway1", configuration.getRemoteBroker().getServicePath());
-        assertEquals("XXXXXXXXX", configuration.getRemoteBroker().getAuthToken());
+    public void checkPropertiesValues() throws MissingRemoteBrokerException {
+        assertEquals("http://localhost:8081", configuration.getLocalUrl());
+        assertEquals("http://10.25.12.123:8081", configuration.getRemoteUrl());
+        assertEquals("gateway", configuration.getRemoteServiceName());
+        assertEquals("gateway1", configuration.getRemoteServicePath());
+        assertEquals("XXXXXXXXX", configuration.getRemoteAuthToken());
     }
 
     @Test
-    public void bgetHeadersForBroker(){
+    public void getHeadersForBroker(){
+        configuration.setRemoteServiceName("SERVICE");
+        configuration.setRemoteServicePath("PATH");
+        configuration.setRemoteAuthToken("TOKEN");
+
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders = configuration.getHeadersForBroker(httpHeaders);
-        assertEquals("gateway", httpHeaders.getFirst("Fiware-Service"));
-        assertEquals("gateway1", httpHeaders.getFirst("Fiware-ServicePath"));
-        assertEquals("XXXXXXXXX", httpHeaders.getFirst("X-Auth-Token"));
+        configuration.addRemoteHeaders(httpHeaders);
+
+        assertEquals("SERVICE", httpHeaders.getFirst("Fiware-Service"));
+        assertEquals("PATH", httpHeaders.getFirst("Fiware-ServicePath"));
+        assertEquals("TOKEN", httpHeaders.getFirst("X-Auth-Token"));
     }
 
     @Test
-    public void cgetHeadersForBrokerWithNullParameters(){
-        configuration.setRemoteBroker(new Configuration.RemoteBroker());
+    public void getHeadersForBrokerWithNullParameters(){
+        configuration.setRemoteServiceName(null);
+        configuration.setRemoteServicePath(null);
+        configuration.setRemoteAuthToken(null);
+
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders = configuration.getHeadersForBroker(httpHeaders);
+        configuration.addRemoteHeaders(httpHeaders);
+
         assertNull(httpHeaders.getFirst("Fiware-Service"));
         assertNull(httpHeaders.getFirst("Fiware-ServicePath"));
         assertNull(httpHeaders.getFirst("X-Auth-Token"));

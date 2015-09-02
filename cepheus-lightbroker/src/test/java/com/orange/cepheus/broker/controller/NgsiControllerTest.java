@@ -30,27 +30,18 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.util.concurrent.SuccessCallback;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static com.orange.cepheus.broker.Util.*;
 import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
 import static com.orange.cepheus.broker.Util.createUpdateContextResponseTempSensorAndPressure;
-import static com.orange.ngsi.model.CodeEnum.CODE_200;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -59,6 +50,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -83,9 +75,6 @@ public class NgsiControllerTest {
 
     @Mock
     Configuration configuration;
-
-    @Mock
-    Configuration.RemoteBroker remoteBroker;
 
     @Mock
     Iterator<URI> providingApplication;
@@ -122,12 +111,11 @@ public class NgsiControllerTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        when(remoteBroker.getUrl()).thenReturn("http://orionhost:9999");
-        when(remoteBroker.getServiceName()).thenReturn("SN");
-        when(remoteBroker.getServicePath()).thenReturn("SP");
-        when(remoteBroker.getAuthToken()).thenReturn("AUTH_TOKEN");
-        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
-        when(configuration.getLocalBroker()).thenReturn("http://localhost:8081");
+        when(configuration.getLocalUrl()).thenReturn("http://localhost:8081");
+        when(configuration.getRemoteUrl()).thenReturn("http://orionhost:9999");
+        when(configuration.getRemoteServiceName()).thenReturn(null);
+        when(configuration.getRemoteServicePath()).thenReturn(null);
+        when(configuration.getRemoteAuthToken()).thenReturn(null);
         when(updateContextResponseListenableFuture.get()).thenReturn(createUpdateContextResponseTempSensorAndPressure());
         doNothing().when(updateContextResponseListenableFuture).addCallback(any(), any());
         when(queryContextResponseListenableFuture.get()).thenReturn(createQueryContextResponseTemperature());
@@ -140,7 +128,6 @@ public class NgsiControllerTest {
         reset(subscriptions);
         reset(ngsiClient);
         reset(configuration);
-        reset(remoteBroker);
         reset(providingApplication);
         reset(matchedSubscriptions);
         reset(updateContextResponseListenableFuture);
@@ -257,7 +244,7 @@ public class NgsiControllerTest {
         verify(ngsiClient, atLeastOnce()).getRequestHeaders();
 
         //check configuration.getHeadersForBroker() is called at least Once
-        verify(configuration, atLeastOnce()).getHeadersForBroker(any());
+        verify(configuration, atLeastOnce()).addRemoteHeaders(any());
 
         //verify urlProvider
         verify(ngsiClient, atLeastOnce()).updateContext(eq(urlProvider), any(), updateContextArg.capture());
@@ -273,7 +260,7 @@ public class NgsiControllerTest {
     @Test
     public void postUpdateContextWithoutProvidingApplicationAndWithoutRemoteBrokerButWithNotify() throws Exception {
 
-        when(configuration.getRemoteBroker()).thenReturn(null);
+        when(configuration.getRemoteUrl()).thenReturn(null);
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
@@ -342,8 +329,7 @@ public class NgsiControllerTest {
     @Test
     public void postUpdateContextWithoutProvidingApplicationAndWithoutRemoteBrokerUrlButWithNotify() throws Exception {
 
-        when(remoteBroker.getUrl()).thenReturn(null);
-        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+        when(configuration.getRemoteUrl()).thenReturn(null);
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
@@ -412,8 +398,7 @@ public class NgsiControllerTest {
     @Test
     public void postUpdateContextWithoutProvidingApplicationAndWithEmptyRemoteBrokerButWithNotify() throws Exception {
 
-        when(remoteBroker.getUrl()).thenReturn("");
-        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+        when(configuration.getRemoteUrl()).thenReturn("");
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
@@ -482,8 +467,8 @@ public class NgsiControllerTest {
     @Test
     public void postUpdateContextWithoutProvidingApplicationAndWithoutRemoteBrokerButWithNullOriginator() throws Exception {
 
-        when(configuration.getRemoteBroker()).thenReturn(null);
-        when(configuration.getLocalBroker()).thenReturn(null);
+        when(configuration.getRemoteUrl()).thenReturn(null);
+        when(configuration.getLocalUrl()).thenReturn(null);
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
@@ -544,8 +529,8 @@ public class NgsiControllerTest {
     @Test
     public void postUpdateContextWithoutProvidingApplicationAndWithoutRemoteBrokerButWithEmptyOriginator() throws Exception {
 
-        when(configuration.getRemoteBroker()).thenReturn(null);
-        when(configuration.getLocalBroker()).thenReturn("");
+        when(configuration.getRemoteUrl()).thenReturn(null);
+        when(configuration.getLocalUrl()).thenReturn("");
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
@@ -934,7 +919,7 @@ public class NgsiControllerTest {
         verify(ngsiClient, atLeastOnce()).getRequestHeaders();
 
         //check configuration.getHeadersForBroker() is called at least Once
-        verify(configuration, atLeastOnce()).getHeadersForBroker(any());
+        verify(configuration, atLeastOnce()).addRemoteHeaders(any());
 
         //verify urlProvider
         verify(ngsiClient, atLeastOnce()).queryContext(eq(urlProvider), httpHeadersArg.capture(), queryContextArg.capture());
@@ -948,7 +933,7 @@ public class NgsiControllerTest {
     public void postQueryContextWithNullRemoteBroker() throws Exception {
 
         //configuration mock return null as remoteBroker
-        when(configuration.getRemoteBroker()).thenReturn(null);
+        when(configuration.getRemoteUrl()).thenReturn(null);
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
@@ -963,15 +948,14 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("missing remote broker error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("Not remote broker configured to foward queryContext coming from providingApplication"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("No remote.url parameter defined to forward queryContext"));
     }
 
     @Test
     public void postQueryContextWithNullRemoteBrokerUrl() throws Exception {
 
         //configuration mock return null as remoteBroker
-        when(remoteBroker.getUrl()).thenReturn(null);
-        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+        when(configuration.getRemoteUrl()).thenReturn(null);
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
@@ -986,16 +970,14 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("missing remote broker error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("Not remote broker configured to foward queryContext coming from providingApplication"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("No remote.url parameter defined to forward queryContext"));
     }
 
     @Test
     public void postQueryContextWithEmptyRemoteBrokerUrl() throws Exception {
 
         //configuration mock return "" as remoteBrokerUrl
-        when(remoteBroker.getUrl()).thenReturn("");
-        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
-
+        when(configuration.getRemoteUrl()).thenReturn("");
 
         //localRegistrations mock return always without providingApplication
         when(providingApplication.hasNext()).thenReturn(false);
@@ -1010,7 +992,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("missing remote broker error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("Not remote broker configured to foward queryContext coming from providingApplication"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("No remote.url parameter defined to forward queryContext"));
     }
 
     @Test

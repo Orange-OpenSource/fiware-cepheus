@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFutureCallback;
@@ -68,19 +69,22 @@ public class RemoteRegistrations {
     public void registerContext(final RegisterContext registerContext, final String localRegistrationId) {
 
         // When no remote broker is define, don't do anything.
-        if ((configuration.getRemoteBroker() == null) || (configuration.getRemoteBroker().getUrl() == null) || (configuration.getRemoteBroker().getUrl().isEmpty())) {
+        final String remoteUrl = configuration.getRemoteUrl();
+        if (remoteUrl == null || remoteUrl.isEmpty()) {
             return;
         }
-        String remoteBroker = configuration.getRemoteBroker().getUrl();
 
-        logger.debug("registering {} to remote broker {}", localRegistrationId, remoteBroker);
+        logger.debug("registering {} to remote broker {}", localRegistrationId, remoteUrl);
 
         // If we already had a remote registration, reset its registerContext
         String previousRemoteRegistrationId = resetRemoteRegistration(localRegistrationId);
         // Update the registerContext with the previous remote registrationId if any
         registerContext.setRegistrationId(previousRemoteRegistrationId);
 
-        ngsiClient.registerContext(remoteBroker, null, registerContext).addCallback(
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders();
+        configuration.addRemoteHeaders(httpHeaders);
+
+        ngsiClient.registerContext(remoteUrl, httpHeaders, registerContext).addCallback(
                 result -> {
                     String remoteRegistrationId = result.getRegistrationId();
                     boolean error = result.getErrorCode() != null || remoteRegistrationId == null;

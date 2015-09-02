@@ -8,8 +8,7 @@
 
 package com.orange.cepheus.broker;
 
-import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
@@ -17,119 +16,105 @@ import org.springframework.stereotype.Component;
  * Configuration properties to access ligth broker
  */
 @Component
-@ConfigurationProperties("broker")
 public class Configuration {
 
-    public static class RemoteBroker {
+    /**
+     * Url to this broker instance
+     */
+    @Value("${local.url}")
+    private String localUrl;
 
-        /**
-         * Url to the broker
-         */
-        private String url;
+    /**
+     * Url to the remote broker
+     */
+    @Value("${remote.url:}")
+    private String remoteUrl;
 
-        /**
-         * Fiware specific service name (optional)
-         */
-        private String serviceName;
+    /**
+     * Fiware specific service name (optional)
+     */
+    @Value("${remote.serviceName:}")
+    private String remoteServiceName;
 
-        /**
-         * Fiware specific service path (optional)
-         */
-        private String servicePath;
+    /**
+     * Fiware specific service path (optional)
+     */
+    @Value("${remote.servicePath:}")
+    private String remoteServicePath;
 
-        /**
-         * OAuth token for secured brokers
-         */
-        private String authToken;
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public String getServiceName() {
-            return serviceName;
-        }
-
-        public void setServiceName(String serviceName) {
-            this.serviceName = serviceName;
-        }
-
-        public String getServicePath() {
-            return servicePath;
-        }
-
-        public void setServicePath(String servicePath) {
-            this.servicePath = servicePath;
-        }
-
-        public String getAuthToken() {
-            return authToken;
-        }
-
-        public void setAuthToken(String authToken) {
-            this.authToken = authToken;
-        }
-
-        @Override
-        public String toString() {
-            return "RemoteBroker{" +
-                    "url='" + url + '\'' +
-                    ", serviceName='" + serviceName + '\'' +
-                    ", servicePath='" + servicePath + '\'' +
-                    ", authToken='" + authToken + '\'' +
-                    '}';
-        }
-    }
-
-    private String localBroker;
-
-    private RemoteBroker remoteBroker;
+    /**
+     * OAuth token for secured brokers
+     */
+    @Value("${remote.authToken:}")
+    private String remoteAuthToken;
 
     public Configuration() {
     }
 
-    public String getLocalBroker() {
-        return localBroker;
+    public String getLocalUrl() {
+        return localUrl;
     }
 
-    public void setLocalBroker(String localBroker) {
-        this.localBroker = localBroker;
+    public void setLocalUrl(String localUrl) {
+        this.localUrl = localUrl;
     }
 
-    public RemoteBroker getRemoteBroker() {
-        return remoteBroker;
+    public String getRemoteUrl() {
+        return remoteUrl;
     }
 
-    public void setRemoteBroker(RemoteBroker remoteBroker) {
-        this.remoteBroker = remoteBroker;
+    public void setRemoteUrl(String remoteUrl) {
+        this.remoteUrl = remoteUrl;
     }
 
-    /**
-     * Set custom headers for Brokers
+    public String getRemoteServiceName() {
+        return remoteServiceName;
+    }
+
+    public void setRemoteServiceName(String remoteServiceName) {
+        this.remoteServiceName = remoteServiceName;
+    }
+
+    public String getRemoteServicePath() {
+        return remoteServicePath;
+    }
+
+    public void setRemoteServicePath(String remoteServicePath) {
+        this.remoteServicePath = remoteServicePath;
+    }
+
+    public String getRemoteAuthToken() {
+        return remoteAuthToken;
+    }
+
+    public void setRemoteAuthToken(String remoteAuthToken) {
+        this.remoteAuthToken = remoteAuthToken;
+    }
+
+    /*
+     * Inject Orion-specific headers into the given HttpHeaders list
+     * @param httpHeaders
      */
-    public HttpHeaders getHeadersForBroker(HttpHeaders httpHeaders) {
-
-        if (remoteBroker.getServiceName() != null) {
-            httpHeaders.add("Fiware-Service", remoteBroker.getServiceName());
+    public void addRemoteHeaders(HttpHeaders httpHeaders) {
+        if (remoteServiceName != null) {
+            httpHeaders.set("Fiware-Service", remoteServiceName);
         }
-        if (remoteBroker.getServicePath() != null) {
-            httpHeaders.add("Fiware-ServicePath", remoteBroker.getServicePath());
+        if (remoteServicePath != null) {
+            httpHeaders.set("Fiware-ServicePath", remoteServicePath);
         }
-        if (remoteBroker.getAuthToken() != null) {
-            httpHeaders.add("X-Auth-Token", remoteBroker.getAuthToken());
+        if (remoteAuthToken != null) {
+            httpHeaders.set("X-Auth-Token", remoteAuthToken);
         }
-        return httpHeaders;
     }
 
     @Override
     public String toString() {
         return "Configuration{" +
-                "localBroker='" + localBroker + '\'' +
-                ", remoteBroker=" + remoteBroker +
+                "localUrl='" + localUrl + '\'' +
+                ", remoteUrl='" + remoteUrl + '\'' +
+                ", remoteServiceName='" + remoteServiceName + '\'' +
+                ", remoteServicePath='" + remoteServicePath + '\'' +
+                ", remoteAuthToken='" + remoteAuthToken + '\'' +
                 '}';
     }
 }

@@ -74,59 +74,55 @@ public class NgsiController extends NgsiBaseController {
         ContextElement contextElement = update.getContextElements().get(0);
         Set<String> attributesName = contextElement.getContextAttributeList().stream().map(ContextAttribute::getName).collect(Collectors.toSet());
 
-        // search providingApplication to forward updateContext
         logger.debug("updateContext incoming request on entityId: {} and on attributes: {} ", contextElement.getEntityId().toString(), attributesName);
-        Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
 
+        // Search registrations to forward updateContext
+        Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
         if (providingApplication.hasNext()) {
-            //send the update to the first providing Application (command)
+            // Forward the update to the first providing Application (command)
             final String urlProvider = providingApplication.next().toString();
             logger.debug("providingApplication to forward updateContext founded: {}", urlProvider);
             return ngsiClient.updateContext(urlProvider, null, update).get();
-        } else {
-            logger.debug("Not providingApplication then forward to the remote broker");
-            //forward the update to the remote broker
-
-            // When no remote broker is define, don't do anything.
-            if ((configuration.getRemoteBroker() == null) || (configuration.getRemoteBroker().getUrl() == null) || (configuration.getRemoteBroker().getUrl().isEmpty())) {
-                logger.warn("Not remote broker to foward updateContext coming from providingApplication");
-            } else {
-
-                final String urlBroker = configuration.getRemoteBroker().getUrl();
-                HttpHeaders httpHeaders = configuration.getHeadersForBroker(ngsiClient.getRequestHeaders());
-                ngsiClient.updateContext(urlBroker, httpHeaders, update).addCallback(
-                        updateContextResponse -> logger.debug("UpdateContext completed for {} ", urlBroker),
-                        throwable -> logger.warn("UpdateContext failed for {}: {}", urlBroker, throwable.toString()));
-            }
-
-            //create updateContextResponse
-            UpdateContextResponse updateContextResponse = new UpdateContextResponse();
-            List<ContextElementResponse> contextElementResponseList = new ArrayList<>();
-            StatusCode statusCode = new StatusCode(CodeEnum.CODE_200);
-            for (ContextElement c : update.getContextElements()) {
-                contextElementResponseList.add(new ContextElementResponse(c, statusCode));
-            }
-            updateContextResponse.setContextElementResponses(contextElementResponseList);
-
-            //search subscriptions matching to send notifyContext (only update coming from providingApplication and not remote broker
-            String originator = configuration.getLocalBroker();
-            if (originator != null && !originator.isEmpty()) {
-                Iterator<SubscribeContext> subscribeContextIterator = subscriptions.findSubscriptions(contextElement.getEntityId(), attributesName);
-                while (subscribeContextIterator.hasNext()) {
-                    SubscribeContext subscribeContext = subscribeContextIterator.next();
-                    NotifyContext notifyContext = new NotifyContext(subscribeContext.getSubscriptionId(), new URI(originator));
-                    notifyContext.setContextElementResponseList(contextElementResponseList);
-                    String urlProvider = subscribeContext.getReference().toString();
-                    ngsiClient.notifyContext(urlProvider, null, notifyContext).addCallback(
-                            notifyContextResponse -> logger.debug("NotifyContext completed for {}", urlProvider),
-                            throwable -> logger.warn("NotifyContext failed for {}: {}", urlProvider, throwable.toString()));
-                }
-            } else {
-                logger.warn("Not local broker to set in notifyContext sending to reference application => Not notification sended");
-            }
-
-            return updateContextResponse;
         }
+
+        logger.debug("No matching registration, forward to the remote broker");
+
+        // Forward the update to the remote broker
+        final String brokerUrl = configuration.getRemoteUrl();
+        if (brokerUrl == null || brokerUrl.isEmpty()) {
+            logger.warn("No remote.url parameter defined to forward updateContext");
+        } else {
+            ngsiClient.updateContext(brokerUrl, getRemoteBrokerHeaders(), update).addCallback(
+                    updateContextResponse -> logger.debug("UpdateContext completed for {} ", brokerUrl),
+                    throwable -> logger.warn("UpdateContext failed for {}: {}", brokerUrl, throwable.toString()));
+        }
+
+        List<ContextElementResponse> contextElementResponseList = new ArrayList<>();
+        StatusCode statusCode = new StatusCode(CodeEnum.CODE_200);
+        for (ContextElement c : update.getContextElements()) {
+            contextElementResponseList.add(new ContextElementResponse(c, statusCode));
+        }
+
+        String originator = configuration.getLocalUrl();
+        if (originator == null || originator.isEmpty()) {
+            logger.warn("No local.url parameter defined to use as originator for sending notifyContext");
+        } else {
+            // Send notifications to matching subscriptions
+            Iterator<SubscribeContext> matchingSubscriptions = subscriptions.findSubscriptions(contextElement.getEntityId(), attributesName);
+            while (matchingSubscriptions.hasNext()) {
+                SubscribeContext subscribeContext = matchingSubscriptions.next();
+                NotifyContext notifyContext = new NotifyContext(subscribeContext.getSubscriptionId(), new URI(originator));
+                notifyContext.setContextElementResponseList(contextElementResponseList);
+                String providerUrl = subscribeContext.getReference().toString();
+                ngsiClient.notifyContext(providerUrl, null, notifyContext).addCallback(
+                                notifyContextResponse -> logger.debug("NotifyContext completed for {}", providerUrl),
+                                throwable -> logger.warn("NotifyContext failed for {}: {}", providerUrl, throwable.toString()));
+            }
+        }
+
+        UpdateContextResponse updateContextResponse = new UpdateContextResponse();
+        updateContextResponse.setContextElementResponses(contextElementResponseList);
+        return updateContextResponse;
     }
 
     @Override
@@ -140,22 +136,18 @@ public class NgsiController extends NgsiBaseController {
 
         //TODO : search providingApplication for all entities of queryContext
         Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(query.getEntityIdList().get(0), attributes);
-
         if (providingApplication.hasNext()) {
             // forward to providing application
             final String urlProvider = providingApplication.next().toString();
             return ngsiClient.queryContext(urlProvider, null, query).get();
-        } else {
-            // forward query to remote broker
-            //check if remote broker is configured
-            if ((configuration.getRemoteBroker() == null) || (configuration.getRemoteBroker().getUrl() == null) || (configuration.getRemoteBroker().getUrl().isEmpty())) {
-                throw new MissingRemoteBrokerException("Not remote broker configured to foward queryContext coming from providingApplication");
-            } else {
-                String urlBroker = configuration.getRemoteBroker().getUrl();
-                HttpHeaders httpHeaders = configuration.getHeadersForBroker(ngsiClient.getRequestHeaders());
-                return ngsiClient.queryContext(urlBroker, httpHeaders, query).get();
-            }
         }
+
+        String brokerUrl = configuration.getRemoteUrl();
+        if (brokerUrl == null || brokerUrl.isEmpty()) {
+            throw new MissingRemoteBrokerException("No remote.url parameter defined to forward queryContext");
+        }
+        // forward query to remote broker
+        return ngsiClient.queryContext(brokerUrl, getRemoteBrokerHeaders(), query).get();
     }
 
     @Override
@@ -222,4 +214,9 @@ public class NgsiController extends NgsiBaseController {
         return errorResponse(req.getRequestURI(), statusCode);
     }
 
+    private HttpHeaders getRemoteBrokerHeaders() {
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders();
+        configuration.addRemoteHeaders(httpHeaders);
+        return httpHeaders;
+    }
 }

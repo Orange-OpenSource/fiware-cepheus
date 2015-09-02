@@ -44,9 +44,6 @@ public class RemoteRegistrationsTest {
     @Mock
     Configuration configuration;
 
-    @Mock
-    Configuration.RemoteBroker remoteBroker;
-
     @Captor
     private ArgumentCaptor<SuccessCallback<RegisterContextResponse>> successCaptor;
 
@@ -86,8 +83,7 @@ public class RemoteRegistrationsTest {
         // prepare mocks
         doNothing().when(registerFuture).addCallback(successCaptor.capture(), any());
         when(ngsiClient.registerContext(any(), any(), any())).thenReturn(registerFuture);
-        when(remoteBroker.getUrl()).thenReturn(remoteBrokerUrl);
-        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+        when(configuration.getRemoteUrl()).thenReturn(remoteBrokerUrl);
 
         // make *the* call
         remoteRegistrations.registerContext(registerContext, localRegistrationId);
@@ -126,8 +122,7 @@ public class RemoteRegistrationsTest {
         // prepare mocks
         doNothing().when(registerFuture).addCallback(successCaptor.capture(), failureCaptor.capture());
         when(ngsiClient.registerContext(any(), any(), any())).thenReturn(registerFuture);
-        when(remoteBroker.getUrl()).thenReturn(remoteBrokerUrl);
-        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+        when(configuration.getRemoteUrl()).thenReturn(remoteBrokerUrl);
 
         // make *the* call
         remoteRegistrations.registerContext(registerContext, localRegistrationId);
@@ -165,8 +160,7 @@ public class RemoteRegistrationsTest {
         // prepare mocks
         doNothing().when(registerFuture).addCallback(successCaptor.capture(), any());
         when(ngsiClient.registerContext(any(), any(), any())).thenReturn(registerFuture);
-        when(remoteBroker.getUrl()).thenReturn(remoteBrokerUrl);
-        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+        when(configuration.getRemoteUrl()).thenReturn(remoteBrokerUrl);
 
 
         // make the call first call
@@ -210,7 +204,7 @@ public class RemoteRegistrationsTest {
         RegisterContext registerContext = createRegistrationContext();
 
         // declare no broker
-        when(configuration.getRemoteBroker()).thenReturn(null);
+        when(configuration.getRemoteUrl()).thenReturn(null);
 
         // make *the* call
         remoteRegistrations.registerContext(registerContext, localRegistrationId);
@@ -227,8 +221,7 @@ public class RemoteRegistrationsTest {
         RegisterContext registerContext = createRegistrationContext();
 
         // declare no broker
-        when(remoteBroker.getUrl()).thenReturn(null);
-        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+        when(configuration.getRemoteUrl()).thenReturn(null);
 
         // make *the* call
         remoteRegistrations.registerContext(registerContext, localRegistrationId);
@@ -245,8 +238,7 @@ public class RemoteRegistrationsTest {
         RegisterContext registerContext = createRegistrationContext();
 
         // declare no broker
-        when(remoteBroker.getUrl()).thenReturn("");
-        when(configuration.getRemoteBroker()).thenReturn(remoteBroker);
+        when(configuration.getRemoteUrl()).thenReturn("");
 
         // make *the* call
         remoteRegistrations.registerContext(registerContext, localRegistrationId);

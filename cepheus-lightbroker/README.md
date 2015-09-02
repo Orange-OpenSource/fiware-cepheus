@@ -58,11 +58,11 @@ With properties :
 <table>
     <tr><th>Name</th><th>Description</th><th>Default Value</th></tr>
     <tr><td>server.port</td><td>broker port</td><td>8081</td></tr>
-    <tr><td>broker.localBroker</td><td>base URL</td><td>http://localhost:8081</td></tr>
-    <tr><td>broker.remoteBroker.url</td><td>remote broker URL (Orion)</td><td>http://localhost:8082</td></tr>
-    <tr><td>broker.remoteBroker.serviceName</td><td>remote broker Service Name</td><td></td></tr>
-    <tr><td>broker.remoteBroker.servicePath</td><td>remote broker Service Path</td><td></td></tr>
-    <tr><td>broker.remoteBroker.authToken</td><td>OAuth token for secured broker</td><td></td></tr>
+    <tr><td>local.url</td><td>public URL to this instance</td><td>http://localhost:8081</td></tr>
+    <tr><td>remote.url</td><td>URL to the remote broker (Orion)</td><td>http://localhost:8082</td></tr>
+    <tr><td>remote.serviceName</td><td>remote broker Service Name</td><td></td></tr>
+    <tr><td>remote.servicePath</td><td>remote broker Service Path</td><td></td></tr>
+    <tr><td>remote.authToken</td><td>OAuth token for secured broker</td><td></td></tr>
     <tr><td>logging.level.com.orange.cepheus.broker</td><td>log level</td><td>INFO</td></tr>
 </table>
 
