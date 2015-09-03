@@ -72,7 +72,7 @@ The user manual is also available though readthedocs.org: [User Manual](http://f
 
 ### Example
 
-Some simple examples to learn how to use the Cepheus-CEP and Cepheus-Broker can be found under the [/scripts](scripts) folder.
+Some simple examples to learn how to use Cepheus-CEP and Cepheus-Broker can be found under the [doc/examples](doc/examples) folder.
 
 ## License
 
