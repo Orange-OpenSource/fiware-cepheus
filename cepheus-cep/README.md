@@ -41,69 +41,48 @@ Fiware-cepheus is a SpringBoot application. You can run it as a service.
 
     java -jar cepheus-cep.jar
 
-### Configuration file
+## Application properties
 
-The configuration file location is stored in application.properties.
-It's a simple json file which typical content is:
-
-    {
-	  "in": [
-	    {
-	      "id": "S.*",
-	      "type": "TempSensor",
-	      "isPattern": true,
-	      "attributes": [
-	        {
-	          "name": "temp",
-	          "type": "float"
-	        }
-	      ],
-	      "providers": [
-	        "http://localhost:1902/ngsi10"
-	      ]
-	    }
-	  ],
-	  "out": [
-	    {
-	      "id": "OUT1",
-	      "isPattern": false,
-	      "type": "TempSensorAvg",
-	      "attributes": [
-	        {
-	          "name": "avgTemp",
-	          "type": "float"
-	        }
-	      ],
-	      "brokers": [
-	        {
-	          "url": "http://102.232.332:1903/v1",
-	          "serviceName": "my",
-	          "servicePath": "/test/path"
-	        }
-	      ]
-	    }
-	  ],
-	  "statements": [
-	    "INSERT INTO 'TempSensorAvg' SELECT 'OUT1' as id, avg(TempSensor.temp) as avgTemp FROM TempSensor.win:time(86400) WHERE TempSensor.id = 'S1' "
-	  ]
-	}
-
-## Admin guide
-
-You can modify some properties in command line:
-
- 	java -jar cepheus-cep.jar --property=value
-
-With properties :
+This is the list of the application properties:
 
 <table>
-    <tr><th>Name</th><th>Description</th><th>Default Value</th></tr>
-    <tr><td>server.port</td><td>broker port</td><td>8080</td></tr>
+    <tr><th>Name</th><th>Description</th><th>Default value</th></tr>
+    <tr><td>server.port</td><td>port used</td><td>8080</td></tr>
     <tr><td>config.file</td><td>configuration file location</td><td>/tmp/cepheus.json</td></tr>
     <tr><td>subscriptionManager.periodicity</td><td>Periodicity of the subscription manager task</td><td>300000</td></tr>
     <tr><td>subscriptionManager.duration</td><td>Duration of a NGSI subscription</td><td>PT1H</td></tr>
     <tr><td>logging.level.com.orange.cepheus.cep</td><td>log level</td><td>INFO</td></tr>
 </table>
+
+Default properties are defined in [application.properties](src/main/resources/application.properties).
+
+### Command line parameters
+
+You can modify all the application properties from the command line:
+
+    java -jar cepheus-cep.jar --property=value
+
+Example:
+
+    java -jar cepheus-cep.jar --server.port=9091 --config.file=/var/cepheus/cep-config.json
+
+### Custom applications.properties file
+
+If you want to customize application properties after application has been packaged,
+you can override the default properties in an external properties file.
+
+You can either:
+
+* Put a `application.properties` in the current path `.` or under `./config/`
+* Specify a custom location for the properties file using `--spring.config.location` parameter
+
+    java -jar cepheus.cep.jar --spring.config.location=/etc/default/cepheus-cep.properties
+
+### Configuration file
+
+The Cepheus-CEP loads its configuration on startup and saves back configuration updates to this file.
+The default location of the configuration file is defined by the `config.file` property.
+This Cepheus-CEP process must have write access rights on this file.
 
 ## User guide
 
@@ -111,4 +90,4 @@ The complete user manual can be found [here](../doc/cep/README.md)
 
 ## License
 
-Fiware-cepheus is licensed under GNU General Public License Version 2.
+Cepheus-CEP is licensed under the [GNU General Public License Version 2](../LICENCE.txt).

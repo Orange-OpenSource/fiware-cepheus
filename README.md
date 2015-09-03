@@ -76,4 +76,4 @@ Some simple examples to learn how to use Cepheus-CEP and Cepheus-Broker can be f
 
 ## License
 
-Fiware-cepheus is licensed under [GNU General Public License Version 2](LICENCE.txt).
+FIWARE Cepheus is licensed under the [GNU General Public License Version 2](LICENCE.txt).
