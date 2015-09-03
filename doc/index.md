@@ -1,6 +1,6 @@
 # Introduction
 
-Fiware-Cepheus provides two components to an NGSI gateway : [Cepheus-Broker](broker/README.md) a lightweight NGSI broker and [Cepheus-CEP](cep/README.md) a Complex Event Processor.
+Fiware-Cepheus provides two components to an NGSI gateway : [Cepheus-Broker](broker/index.md) a lightweight NGSI broker and [Cepheus-CEP](cep/index.md) a Complex Event Processor.
 
 These components will work together and with other NGSI compatible components
 (like the [Orion broker](https://github.com/telefonicaid/fiware-orion) or [IoT Agents](https://github.com/telefonicaid/iotagent-node-lib))
