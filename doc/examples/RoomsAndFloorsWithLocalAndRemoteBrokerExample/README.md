@@ -85,8 +85,8 @@ to see the Rooms temperature sent to the CEP and the CEP reacting to the events.
 
 In a first terminal, launch mock-orion (default on port :8082 on your machine)
 
-    cd scripts
-    java -jar mock-orion-1.0-SNAPSHOT.jar
+    cd doc/examples/mocks/mock-orion
+    mvn spring-boot:run
 
 In a second terminal, launch Cepheus-lb:
 
