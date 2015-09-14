@@ -2,7 +2,7 @@
   "host":"http://localhost:8080",
   "in":[
     {
-      "id":"Room*",
+      "id":"Room.*",
       "type":"Room",
       "isPattern":true,
       "providers":[

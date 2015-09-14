@@ -37,7 +37,7 @@ public class AdminController {
 
         QueryContext queryContext = new QueryContext(Collections.singletonList(new EntityId(query.getName(), query.getType(), query.getIsPattern())));
         QueryContextResponse queryContextResponse = ngsiClient.queryContext(cepheusBroker, null, queryContext).get();
-        logger.info("QueryContextResponse received from {}: {}", cepheusBroker, queryContextResponse.toString());
+        logger.info("=> QueryContextResponse received from {}: {}", cepheusBroker, queryContextResponse.toString());
         if (queryContextResponse.getErrorCode() == null) {
             queryContextResponse.getContextElementResponses().forEach(contextElementResponse -> {
                 logger.info("EntityId : {}", contextElementResponse.getContextElement().getEntityId().toString());
@@ -65,7 +65,7 @@ public class AdminController {
         updateContext.setContextElements(Collections.singletonList(contextElement));
 
         UpdateContextResponse updateContextResponse = ngsiClient.updateContext(cepheusBroker, null, updateContext).get();
-        logger.info("UpdateContextResponse received from {}: {}", cepheusBroker, updateContextResponse.toString());
+        logger.info("=> UpdateContextResponse received from {}: {}", cepheusBroker, updateContextResponse.toString());
         if (updateContextResponse.getErrorCode() == null) {
             updateContextResponse.getContextElementResponses().forEach(contextElementResponse -> {
                 logger.info("EntityId : {}", contextElementResponse.getContextElement().getEntityId().toString());

@@ -27,7 +27,7 @@ public class NgsiController extends NgsiBaseController {
     @Override
     public UpdateContextResponse updateContext(final UpdateContext update) {
 
-        logger.info("updateContext incoming request : {}", update.toString());
+        logger.info("=> updateContext : {}", update.toString());
 
         //send response with status 200 = OK
         UpdateContextResponse updateContextResponse = new UpdateContextResponse();
@@ -42,7 +42,7 @@ public class NgsiController extends NgsiBaseController {
 
     @Override
     public RegisterContextResponse registerContext(final RegisterContext register) {
-        logger.info("registerContext incoming request : {}", register.toString());
+        logger.info("=> registerContext : {}", register.toString());
 
         RegisterContextResponse registerContextResponse = new RegisterContextResponse(registrationId);
         registerContextResponse.setDuration(register.getDuration());
