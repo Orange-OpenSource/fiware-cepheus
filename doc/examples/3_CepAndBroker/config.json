@@ -2,7 +2,7 @@
   "host":"http://localhost:8080",
   "in":[
     {
-      "id":"Room*",
+      "id":"Room.*",
       "type":"Room",
       "isPattern":true,
       "providers":[
@@ -20,6 +20,9 @@
       "type":"Floor",
       "attributes":[
         { "name":"temperature", "type":"double" }
+      ],
+      "brokers": [
+        { "url":"http://localhost:8081" }
       ]
     }
   ],

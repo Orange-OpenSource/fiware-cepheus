@@ -1,19 +1,7 @@
-# Scripts
+Examples for Cepheus-CEP and Cepheus-Broker with a complete setup.
 
-This folder contains some little bash scripts to act as clients to the Cepheus-CEP and Cepheus-Broker.
+* [Rooms and Floors](1_RoomsAndFloors/index.md) A first example demonstrating Cepheus-CEP
 
-# Examples
+* [Close Shutters](2_Close Shutters/index.md) A more complex example for Cepheus-CEP
 
-It also contains some examples of how to use Cepheus-CEP and Cepheus-Broker with a complete setup.
-
-* [Rooms and Floors example](RoomsAndFloorsExample/README.md)
-
-* [Rooms and Floors With Local Broker example](RoomsAndFloorsWithLocalBrokerExample/README.md)
-
-* [Rooms and Floors With Local and Remote Broker example](RoomsAndFloorsWithLocalAndRemoteBrokerExample/README.md)
-
-* [Room and Flap Query and Command With Local and Remote Broker example](RoomFlapQueryAndCommandWithLocalAndRemoteBrokerExample/README.md)
-
-* [Rooms and Flaps example](RoomsAndFlapsExample/README.md)
-
-* [Rooms and Flap Commands With Local Broker example](RoomsAndFlapCommandsWithLocalBrokerExample/README.md)
+* [CEP and Broker](3_CepAndBroker/index.md) Make Cepheus-CEP interact with Cepheus-Broker

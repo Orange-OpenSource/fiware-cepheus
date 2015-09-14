@@ -2,7 +2,6 @@
 # Rooms and Floors example
 
 CEP=localhost:8080
-LB=localhost:8081
 
 . ../common.sh
 
@@ -40,7 +39,7 @@ CONFIG=`cat config.json`
 updateConfig $CEP "$CONFIG"
 
 echo ""
-echo "#2 Then send T° of all the rooms to the Local Broker every 5 sec"
+echo "#2 Then send T° of all the rooms to the CEP every 5 sec"
 
 for temp in 12 14 18 20 24 19; do
 
@@ -54,7 +53,7 @@ for temp in 12 14 18 20 24 19; do
 			# compute a unique temp for each room
 			t=$(($temp + (2*$floor) + $room))
     		echo " - Send updateContext for Room$floor$room with T°=$t"
-    		out=$(sendRoomTemp $LB "Floor$floor" "Room$floor$room" "$t")
+    		out=$(sendRoomTemp $CEP "Floor$floor" "Room$floor$room" "$t")
 			echo "   $out"
 		done
 	done

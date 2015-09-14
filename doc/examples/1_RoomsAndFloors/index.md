@@ -1,14 +1,27 @@
-# Rooms and Floors example
+This example show a basic event processing with Cepheus-CEP.
 
-Lets consider we have :
- - a set of temperature sensors accross multiple rooms
- - multiple rooms over a set of Floors
+Let us consider we have :
+ - a set of NGSI-capable temperature sensors across multiple rooms
+ - multiple rooms over a set of floors
 
-We would like to get the average temperature (over the last 10 miniutes) on each floor (updated every 1 mininute).
+We would like to get the average temperature (over the last 10 minutes) on each floor (updated every 1 minute).
+
+## Architecture
+
+We will start with a very simple configuration where the NGSI sensors send directly to the CEP (using `updateContext` requests)
+the updated temperatures. The NGSI sensors requests are simulated by a simple script.
+
+![example1](../../../fig/example1-sequence.png)
+
+The components involved in this example are:
+
+![example1](../../../fig/example1.png)
+
+All the grayed parts are part of the reference architecture and are not used in this example.
 
 ## Setup
 
-We configure our NGSI compatible sensors to output their values as the following Context Entity:
+We must first configure our NGSI compatible sensors to output their values as the following Context Entity:
 
      {
          "id": "Room31", // Room 1 on floor 3 (could be anything else)
@@ -45,7 +58,7 @@ We are grouping results by floor and triggering the output every minute after wa
 
 ## Configuring the CEP
 
-Translated to the configuration format of the Cepheus-CEP, we get the folowing "in" section for accepting Room temperature as input :
+Translated to the configuration format of the Cepheus-CEP, we get the following "in" section for accepting Room temperature as input :
 
     "in": [
         {
@@ -82,14 +95,7 @@ to make the average show up quickly in the logs.
 You can run the [run.sh](run.sh) file in a terminal while checking the logs of Cepheus CEP
 to see the Rooms temperature sent to the CEP and the CEP reacting to the events.
 
-In a first terminal, launch Cepheus-lb:
-
-    cd cepheus-lb
-    mvn spring-boot:run
-
-Default configuration should launch it on port :8081 on your machine.
-
-Then in a second terminal, launch Cepheus-CEP:
+In a first terminal, launch Cepheus-CEP:
 
     cd cepheus-cep
     mvn spring-boot:run
@@ -98,29 +104,16 @@ Default configuration should launch it on port :8080 on your machine.
 
 Now in another terminal, trigger the [run.sh](run.sh) script:
 
-    cd scripts/RoomsAndFloorsWithLocalBrokerExample
+    cd doc/examples/1_RoomsAndFloors
     sh run.sh
 
-The script first sends the [config.json](config.json) file to Cepheus-CEP.
-Cepheus-CEP send susbcriptions to receive notifications from the provider Cepheus-lb.
-Then the script sending temperatures updates to Cepheus-lb that sends notifications to Cepheus-CEP.
+The script first sends the [config.json](config.json) file to Cepheus-CEP, then it starts
+sending temperatures updates.
 
-Go back to the terminal where you launched first the LB then after the CEP. You should see tempertures as "EventIn" beeing logged in CEP logs.
+Go back to the terminal where you launched the CEP. You should see temperatures as "EventIn" being logged.
 
 After a few seconds, the "EventOut" logs will show the CEP triggering the average temperature for each floor.
 
-
-## Sequence Diagram
-
-![sequence diagram](sequence-diagram.svg)
-
-```sequence
-run.sh->CEP: /v1/admin/config
-CEP->LB: /ngs10/subscribeContext Room*
-run.sh->LB: /v1/updateContext RoomXY ...
-LB->CEP: /ngsi10/notifyContext RoomXY ...
-```
-
 ## Next step
 
-You must now learn how to send the EventOut updates to a remote NGSI broker.
+You can go the the next example to lean more about complex event processing.

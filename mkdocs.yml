@@ -11,3 +11,7 @@ pages:
   - 'Configuration': 'cep/configuration.md'
   - 'NGSI mapping': 'cep/mapping.md'
 - 'Cepheus-Broker': 'broker/index.md'
+- 'Examples':
+  - '1 Rooms and Floors': examples/1_RoomsAndFloors/index.md
+  - '2 Close Shutters': examples/2_CloseShutters/index.md
+  - '3 CEP and Broker': examples/3_CepAndBroker/index.md
