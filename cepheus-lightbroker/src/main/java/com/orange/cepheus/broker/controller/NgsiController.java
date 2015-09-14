@@ -57,7 +57,7 @@ public class NgsiController extends NgsiBaseController {
 
     @Override
     public RegisterContextResponse registerContext(final RegisterContext register) throws RegistrationException {
-        logger.debug("registerContext incoming request id:{} duration:{}", register.getRegistrationId(), register.getDuration());
+        logger.debug("<= registerContext with id:{} duration:{}", register.getRegistrationId(), register.getDuration());
 
         RegisterContextResponse registerContextLocalResponse = new RegisterContextResponse();
         //register new registration or update previous registration (if registrationId != null) or remove registration (if duration = 0)
@@ -68,30 +68,28 @@ public class NgsiController extends NgsiBaseController {
 
     @Override
     public UpdateContextResponse updateContext(final UpdateContext update) throws ExecutionException, InterruptedException, URISyntaxException {
-        logger.debug("updateContext incoming request action:{}", update.getUpdateAction());
 
         //TODO : search providingApplication for all contextElement of updateContext
         ContextElement contextElement = update.getContextElements().get(0);
         Set<String> attributesName = contextElement.getContextAttributeList().stream().map(ContextAttribute::getName).collect(Collectors.toSet());
 
-        logger.debug("updateContext incoming request on entityId: {} and on attributes: {} ", contextElement.getEntityId().toString(), attributesName);
+        logger.debug("<= updateContext with entityId: {} and attributes: {} ", contextElement.getEntityId().toString(), attributesName);
 
         // Search registrations to forward updateContext
         Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
         if (providingApplication.hasNext()) {
             // Forward the update to the first providing Application (command)
             final String urlProvider = providingApplication.next().toString();
-            logger.debug("providingApplication to forward updateContext founded: {}", urlProvider);
+            logger.debug("=> updateContext forwarded to {}", urlProvider);
             return ngsiClient.updateContext(urlProvider, null, update).get();
         }
-
-        logger.debug("No matching registration, forward to the remote broker");
 
         // Forward the update to the remote broker
         final String brokerUrl = configuration.getRemoteUrl();
         if (brokerUrl == null || brokerUrl.isEmpty()) {
             logger.warn("No remote.url parameter defined to forward updateContext");
         } else {
+            logger.debug("=> updateContext forwarded to remote broker {}", brokerUrl);
             ngsiClient.updateContext(brokerUrl, getRemoteBrokerHeaders(), update).addCallback(
                     updateContextResponse -> logger.debug("UpdateContext completed for {} ", brokerUrl),
                     throwable -> logger.warn("UpdateContext failed for {}: {}", brokerUrl, throwable.toString()));
@@ -114,6 +112,9 @@ public class NgsiController extends NgsiBaseController {
                 NotifyContext notifyContext = new NotifyContext(subscribeContext.getSubscriptionId(), new URI(originator));
                 notifyContext.setContextElementResponseList(contextElementResponseList);
                 String providerUrl = subscribeContext.getReference().toString();
+
+                logger.debug("=> notifyContext to {}", providerUrl);
+
                 ngsiClient.notifyContext(providerUrl, null, notifyContext).addCallback(
                                 notifyContextResponse -> logger.debug("NotifyContext completed for {}", providerUrl),
                                 throwable -> logger.warn("NotifyContext failed for {}: {}", providerUrl, throwable.toString()));
@@ -127,7 +128,7 @@ public class NgsiController extends NgsiBaseController {
 
     @Override
     public QueryContextResponse queryContext(final QueryContext query) throws ExecutionException, InterruptedException, MissingRemoteBrokerException {
-        logger.debug("queryContext incoming request on entities:{}", query.getEntityIdList().toString());
+        logger.debug("<= queryContext on entities: {}", query.getEntityIdList().toString());
 
         Set<String> attributes = new HashSet<>();
         if (query.getAttributList() != null) {
@@ -139,6 +140,7 @@ public class NgsiController extends NgsiBaseController {
         if (providingApplication.hasNext()) {
             // forward to providing application
             final String urlProvider = providingApplication.next().toString();
+            logger.debug("=> queryContext forwarded to : {}", urlProvider);
             return ngsiClient.queryContext(urlProvider, null, query).get();
         }
 
@@ -147,12 +149,13 @@ public class NgsiController extends NgsiBaseController {
             throw new MissingRemoteBrokerException("No remote.url parameter defined to forward queryContext");
         }
         // forward query to remote broker
+        logger.debug("=> queryContext forwarded to remote broker : {}", brokerUrl);
         return ngsiClient.queryContext(brokerUrl, getRemoteBrokerHeaders(), query).get();
     }
 
     @Override
     public SubscribeContextResponse subscribeContext(final SubscribeContext subscribe) throws SubscriptionException {
-        logger.debug("subscribeContext incoming request on entities: {}", subscribe.getEntityIdList().toString());
+        logger.debug("<= subscribeContext on entities: {}", subscribe.getEntityIdList().toString());
 
         SubscribeContextResponse subscribeContextResponse = new SubscribeContextResponse();
         SubscribeResponse subscribeResponse = new SubscribeResponse();
@@ -169,7 +172,7 @@ public class NgsiController extends NgsiBaseController {
 
     @Override
     public UnsubscribeContextResponse unsubscribeContext(final UnsubscribeContext unsubscribe) {
-        logger.debug("unsubscribeContext in coming request with subscriptionId: {}", unsubscribe.getSubscriptionId());
+        logger.debug("<= unsubscribeContext with subscriptionId: {}", unsubscribe.getSubscriptionId());
 
         String subscriptionId = unsubscribe.getSubscriptionId();
         StatusCode statusCode;

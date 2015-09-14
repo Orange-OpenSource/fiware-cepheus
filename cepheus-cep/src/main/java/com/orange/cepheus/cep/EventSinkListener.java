@@ -64,7 +64,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
             final String type = eventBean.getEventType().getName();
             final EventTypeOut eventTypeOut = getEventTypeOut(type);
             if (eventTypeOut == null) {
-                logger.warn("EventTypeOut {} doesn't exist in Configuration, updateContext not sent", type);
+                logger.debug("EventTypeOut {} doesn't exist in Configuration, updateContext not sent", type);
             } else {
                 UpdateContext updateContext = buildUpdateContextRequest(eventBean, eventTypeOut);
                 if (updateContext != null) {

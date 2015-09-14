@@ -71,7 +71,7 @@ public class RemoteRegistrations {
             return;
         }
 
-        logger.debug("registering {} to remote broker {}", localRegistrationId, remoteUrl);
+        logger.debug("=> registerContext to remote broker {}", remoteUrl);
 
         // If we already had a remote registration, reset its registerContext
         String previousRemoteRegistrationId = resetRemoteRegistration(localRegistrationId);
