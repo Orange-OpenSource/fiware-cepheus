@@ -2,6 +2,7 @@
 This example shows a more complex event processing.
 
 Let us consider we have:
+
  - a NGSI-capable temperature sensor in each room
  - a NGSI-controlled shutter in each room which open and close to cool or heat the room.
 

@@ -8,14 +8,150 @@ Cepheus-CEP provides a Complex Event Processor (CEP) at the gateway level with a
 Cepheus-CEP allows to locally process basic events (from data provided by sensors) and generate higher-level aggregated events.
 All input and output of events is done though HTTP requests conforming to the NGSI information model.
 
-For more information about the Cepheus-CEP project, please refer to the project's [README](https://github.com/Orange-OpenSource/fiware-cepheus/blob/master/README.md) on Github.
+For more information about the Cepheus-CEP project, please refer to the project's [README](https://github.com/Orange-OpenSource/fiware-cepheus/blob/master/README.md) on Github
+or at the Cepheus-CEP [manual](http://fiware-cepheus.readthedocs.org/en/latest/).
 
-## Admin API [/v1/admin/config]
+## Configuration [/v1/admin/config]
 
-The admin endpoint defines a single REST endpoint where the whole configuration is available. The endpoint path is `/v1/admin/config`.
+The configuration endpoint defines a single REST endpoint where the whole configuration is available. The endpoint path is `/v1/admin/config`.
 The endpoint accepts two HTTP verbs : `GET` and `POST`.
 
 For more information about the JSON format, please see [JSON Configuration]()
+
++ Model (application/json)
+
+    + Body
+
+                    {
+                      "host":"http://localhost:8080",
+                      "in":[
+                          {
+                              "id":"RoomX",
+                              "type":"Room",
+                              "isPattern": false,
+                              "attributes":[
+                                  { "name":"temperature", "type":"double" },
+                                  { "name":"floor", "type":"string" }
+                              ],
+                              "providers":[
+                                  "http://localhost:8081"
+                              ]
+                          }
+                      ],
+                      "out":[
+                          {
+                              "id":"FloorX",
+                              "type":"Floor",
+                              "attributes":[
+                                  { "name":"temperature", "type":"double" }
+                              ],
+                              "brokers":[
+                                  { "url":"http://localhost:8081" }
+                              ]
+                          }
+                      ],
+                      "statements":[
+                          "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
+                      ]
+                  }
+
+    + Schema
+
+            {
+                "title": "Configuration",
+                "description": "The Cepheus-CEP configuration",
+                "type": "object",
+                "properties": {
+                    "host": { "type": "string" },
+                    "in": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id" : { "type": "string" },
+                                "type" : { "type": "string" },
+                                "attributes": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": { "type": "string" },
+                                            "type": { "type": "string" },
+                                            "metadata": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": { "type": "string" },
+                                                        "type": { "type": "string" }
+                                                    },
+                                                    "required": ["name", "type"]
+                                                }
+                                            }
+                                        },
+                                        "required": ["name", "type"]
+                                    }
+                                },
+                                "providers": {
+                                    "type": "array",
+                                    "items": { "type": "string" }
+                                }
+                            },
+                            "required": ["id", "type", "attributes"]
+                        }
+                    },
+                    "out": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id" : { "type": "string" },
+                                "type" : { "type": "string" },
+                                "attributes": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": { "type": "string" },
+                                            "type": { "type": "string" },
+                                            "metadata": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": { "type": "string" },
+                                                        "type": { "type": "string" }
+                                                    },
+                                                    "required": ["name", "type"]
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "brokers": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "url": { "type": "string" },
+                                            "serviceName": { "type": "string" },
+                                            "servicePath": { "type": "string" },
+                                            "authToken": { "type": "string" }
+                                        },
+                                        "required": [ "url" ]
+                                    }
+                                }
+                            },
+                            "required": ["id", "type", "attributes"]
+                        }
+                    },
+                    "statements": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                    }
+                },
+                "required" : ["host", "in", "out", "statements"]
+            }
 
 ### Retrieve the configuration [GET]
 
@@ -23,40 +159,9 @@ This endpoint returns the actual configuration as a JSON object with a `200 Ok` 
 
 It can also return a `404 Not found` code, if no configuration is available.
 
-+ Response 200 (application/json)
++ Response 200
 
-        {
-            "host":"http://localhost:8080",
-            "in":[
-                {
-                    "id":"RoomX",
-                    "type":"Room",
-                    "isPattern": false,
-                    "attributes":[
-                        { "name":"temperature", "type":"double" },
-                        { "name":"floor", "type":"string" }
-                    ],
-                    "providers":[
-                        "http://localhost:8081"
-                    ]
-                }
-            ],
-            "out":[
-                {
-                    "id":"FloorX",
-                    "type":"Floor",
-                    "attributes":[
-                        { "name":"temperature", "type":"double" }
-                    ],
-                    "brokers":[
-                        { "url":"http://localhost:8081" }
-                    ]
-                }
-            ],
-            "statements":[
-                "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
-            ]
-        }
+    [Configuration][]
 
 + Response 404
 
@@ -69,40 +174,9 @@ The endpoint will return `200 Ok` on a successful operation, or `400 Bad Request
 Once the new configuration has been successfully applied to the CEP, the configuration is persisted on disk.
 If the Cepheus-cep is later restarted, it will automatically load the last configuration on startup.
 
-+ Request (application/json)
++ Request
 
-        {
-            "host":"http://localhost:8080",
-            "in":[
-                {
-                    "id":"RoomX",
-                    "type":"Room",
-                    "isPattern": false,
-                    "attributes":[
-                        { "name":"temperature", "type":"double" },
-                        { "name":"floor", "type":"string" }
-                    ],
-                    "providers":[
-                        "http://localhost:8081"
-                    ]
-                }
-            ],
-            "out":[
-                {
-                    "id":"FloorX",
-                    "type":"Floor",
-                    "attributes":[
-                        { "name":"temperature", "type":"double" }
-                    ],
-                    "brokers":[
-                        { "url":"http://localhost:8081" }
-                    ]
-                }
-            ],
-            "statements":[
-                "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
-            ]
-        }
+    [Configuration][]
 
 + Response 200
 
@@ -112,13 +186,17 @@ If the Cepheus-cep is later restarted, it will automatically load the last confi
 
 To access the NGSI v1 API, there is two endpoinds : `/ngsi10` and `/ngsi9`.
 
-For compatibility purposes with Fiware-Orion, two alias are also supported : `/v1` and `/v1/registry`.
+For compatibility purposes with Fiware-Orion and IoT Agents, two alias are also supported : `/v1` and `/v1/registry`.
 
 The Cepheus-CEP exposes only two NGSI operations : `updateContext` and `notifyContext` operations.
 
 See the [NGSI v1 API from the Fiware-Orion project](https://github.com/telefonicaid/fiware-orion/blob/master/doc/apiary/orioncontextbroker.apib) for more information on these two requests.
 
+Theses requests will always return a `200 OK` HTTP status return code (required by NGSI V1).
+
 ### updateContext [POST /ngsi10/updateContext]
+
+The `updateContext` request is used to send directly new events to the CEP.
 
 + Request (application/json)
 
@@ -180,6 +258,42 @@ See the [NGSI v1 API from the Fiware-Orion project](https://github.com/telefonic
 
 ### notifyContext [POST /ngsi10/notifyContext]
 
+The `notifyRequest` will be sent by Context Providers that received a
+`subscribeContext` request from Cepheus-CEP.
+
 + Request (application/json)
 
+        {
+            "subscriptionId": "DEADBEEF",
+            "originator": "http://localhost:8080",
+            "contextElements": [
+                {
+                    "type": "Room",
+                    "isPattern": "false",
+                    "id": "room11",
+                    "attributes": [
+                        {
+                            "name": "temperature",
+                            "type": "double",
+                            "value": "24",
+                        },
+                        {
+                            "name": "floor",
+                            "type": "string",
+                            "value": "3",
+                        }
+                    ]
+                }
+            ]
+        }
+
+
 + Response 200
+
+        {
+            "responseCode": {
+                "code": "200",
+                "reasonPhrase": "OK",
+                "detail": "All is OK"
+            }
+        }

@@ -1,6 +1,7 @@
 This example show a basic event processing with Cepheus-CEP.
 
 Let us consider we have :
+
  - a set of NGSI-capable temperature sensors across multiple rooms
  - multiple rooms over a set of floors
 
