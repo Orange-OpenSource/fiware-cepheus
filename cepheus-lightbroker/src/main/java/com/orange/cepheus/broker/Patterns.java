@@ -66,12 +66,14 @@ public class Patterns {
 
         Predicate<EntityId> filterEntityId = entityId -> {
             // Match by type if any
-            if (searchType && (!hasType(entityId) || !searchEntityId.getType().equals(entityId.getType()))) {
+            if (!searchType) {
+                if (hasType(entityId)) {
+                    return false;
+                }
+            } else if (!searchEntityId.getType().equals(entityId.getType())) {
                 return false;
             }
-            if(!searchType && hasType(entityId)) {
-                return false;
-            }
+
             // Match pattern if any
             if (pattern != null) {
                 // Match two patterns by equality
@@ -83,7 +85,7 @@ public class Patterns {
                 if (entityId.getIsPattern()) {
                     return getPattern(entityId).matcher(searchEntityId.getId()).find();
                 }
-                // Match two patterns by equality
+                // Match two ids by equality
                 return searchEntityId.getId().equals(entityId.getId());
             }
         };
