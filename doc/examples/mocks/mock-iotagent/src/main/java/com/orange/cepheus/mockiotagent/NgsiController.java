@@ -27,14 +27,13 @@ public class NgsiController extends NgsiBaseController {
     @Override
     public UpdateContextResponse updateContext(final UpdateContext update) {
 
-        logger.info("updateContext incoming request : {}", update.toString());
-
         //send response with status 200 = OK
         UpdateContextResponse updateContextResponse = new UpdateContextResponse();
         List<ContextElementResponse> contextElementResponseList = new ArrayList<>();
         StatusCode statusCode = new StatusCode(CodeEnum.CODE_200);
-        for (ContextElement c : update.getContextElements()) {
-            contextElementResponseList.add(new ContextElementResponse(c, statusCode));
+        for (ContextElement contextElement : update.getContextElements()) {
+            logger.info("=> updateContext: {}", contextElement.toString());
+            contextElementResponseList.add(new ContextElementResponse(contextElement, statusCode));
         }
         updateContextResponse.setContextElementResponses(contextElementResponseList);
         return updateContextResponse;
@@ -42,14 +41,14 @@ public class NgsiController extends NgsiBaseController {
 
     @Override
     public QueryContextResponse queryContext(final QueryContext query) {
-        logger.info("queryContext incoming request : {}", query.toString());
+        logger.info("=> queryContext: {}", query.toString());
 
         //check if the incoming query is on Room
         EntityId queryEntityId = query.getEntityIdList().get(0);
         if (queryEntityId.getId().contains("Room")) {
             return createRoomQueryResponse(queryEntityId);
-        } else if (queryEntityId.getId().contains("Flap")) {
-            return createFlapQueryResponse(queryEntityId);
+        } else if (queryEntityId.getId().contains("Shutter")) {
+            return createShutterQueryResponse(queryEntityId);
         } else {
             QueryContextResponse queryResponse = new QueryContextResponse();
             queryResponse.setErrorCode(new StatusCode(CodeEnum.CODE_404, queryEntityId.getId()));
@@ -109,16 +108,16 @@ public class NgsiController extends NgsiBaseController {
         return queryContextResponse;
     }
 
-    private QueryContextResponse createFlapQueryResponse(EntityId queryEntityId) {
+    private QueryContextResponse createShutterQueryResponse(EntityId queryEntityId) {
         QueryContextResponse queryContextResponse = new QueryContextResponse();
 
         List<ContextElementResponse> contextElementResponseList = new ArrayList<>();
         Random rand = new Random();
-        if ((queryEntityId.getIsPattern()) && (queryEntityId.getId().equals("Flap*"))){
+        if ((queryEntityId.getIsPattern()) && (queryEntityId.getId().equals("Shutter*"))){
             for (int varRoom = 1 ; varRoom < 5 ; varRoom++) {
                 for (int varFloor = 1 ; varFloor < 4 ; varFloor++){
                     ContextElement contextElement = new ContextElement();
-                    String name = "Flap" + varFloor + varRoom;
+                    String name = "Shutter" + varFloor + varRoom;
                     EntityId entityId = new EntityId(name, "Room", false);
                     contextElement.setEntityId(entityId);
                     int i=rand.nextInt(statusTab.length);

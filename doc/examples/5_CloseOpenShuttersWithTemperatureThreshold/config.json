@@ -1,0 +1,36 @@
+{
+  "host":"http://localhost:8080",
+  "in":[
+    {
+      "id":"Room.*",
+      "type":"Room",
+      "isPattern":true,
+      "providers":[
+        "http://localhost:8081"
+      ],
+      "attributes":[
+        { "name":"temperature", "type":"double" },
+        { "name":"floor", "type":"string" },
+        { "name":"shutter", "type":"string" }
+      ]
+    }
+  ],
+  "out":[
+    {
+      "id":"ShutterX",
+      "type":"Shutter",
+      "brokers":[
+        {
+          "url":"http://localhost:8081"
+        }
+      ],
+      "attributes":[
+        { "name":"status", "type":"string" }
+      ]
+    }
+  ],
+  "statements":[
+    "INSERT INTO Shutter SELECT R.r.shutter as id, 'closed' as status FROM pattern [ every r=Room(temperature > 26.0) -> (timer:interval(5 sec) and not Room(temperature < 26.0 and id=r.id))] as R unidirectional LEFT OUTER JOIN Shutter.std:groupwin(id).std:lastevent() as S ON R.r.shutter = S.id WHERE S is null OR S.status = 'opened'",
+    "INSERT INTO Shutter SELECT R.r.shutter as id, 'opened' as status FROM pattern [ every r=Room(temperature < 24.0) -> (timer:interval(5 sec) and not Room(temperature > 24.0 and id=r.id))] as R unidirectional LEFT OUTER JOIN Shutter.std:groupwin(id).std:lastevent() as S ON R.r.shutter = S.id WHERE S is null OR S.status = 'closed'"
+  ]
+}

@@ -55,25 +55,25 @@ public class AdminController {
         ContextRegistrationAttribute floorAttribute = new ContextRegistrationAttribute("floor", false);
         floorAttribute.setType("string");
         attributeList.add(floorAttribute);
-        ContextRegistrationAttribute flapAttribute = new ContextRegistrationAttribute("flap", false);
-        flapAttribute.setType("string");
-        attributeList.add(flapAttribute);
+        ContextRegistrationAttribute shutterAttribute = new ContextRegistrationAttribute("shutter", false);
+        shutterAttribute.setType("string");
+        attributeList.add(shutterAttribute);
         registration.setContextRegistrationAttributeList(attributeList);
         registerContext.setContextRegistrationList(Collections.singletonList(registration));
         registerContext.setDuration("PT10M");
         RegisterContextResponse registerContextResponse = ngsiClient.registerContext(cepheusBroker, null, registerContext).get();
-        logger.info("RegisterContextResponse of type {} received from {}: RegistrationId {}", "Flap", cepheusBroker, registerContextResponse.getRegistrationId());
+        logger.info("RegisterContextResponse of type {} received from {}: RegistrationId {}", "Shutter", cepheusBroker, registerContextResponse.getRegistrationId());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/registerFlap", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity registerFlap() throws ExecutionException, InterruptedException, URISyntaxException {
+    @RequestMapping(value = "/registerShutter", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity registerShutter() throws ExecutionException, InterruptedException, URISyntaxException {
 
         RegisterContext registerContext = new RegisterContext();
         ContextRegistration registration = new ContextRegistration();
         registration.setProvidingApplication(new URI(providingApplication));
-        EntityId entityId = new EntityId("Flap*", "Flap", true);
+        EntityId entityId = new EntityId("Shutter*", "Shutter", true);
         registration.setEntityIdList(Collections.singletonList(entityId));
         ContextRegistrationAttribute attribute = new ContextRegistrationAttribute("status", false);
         attribute.setType("string");
@@ -81,7 +81,7 @@ public class AdminController {
         registerContext.setContextRegistrationList(Collections.singletonList(registration));
         registerContext.setDuration("PT10M");
         RegisterContextResponse registerContextResponse = ngsiClient.registerContext(cepheusBroker, null, registerContext).get();
-        logger.info("RegisterContextResponse of type {} received from {}: RegistrationId {}", "Flap", cepheusBroker, registerContextResponse.getRegistrationId());
+        logger.info("RegisterContextResponse of type {} received from {}: RegistrationId {}", "Shutter", cepheusBroker, registerContextResponse.getRegistrationId());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -101,11 +101,11 @@ public class AdminController {
                     int value = ((varTemp + (2*varFloor) + varRoom));
                     ContextAttribute tempContextAttribute = new ContextAttribute("temperature","double", String.valueOf(value));
                     ContextAttribute floorContextAttribute = new ContextAttribute("floor","string", "Floor" + varFloor);
-                    ContextAttribute flapContextAttribute = new ContextAttribute("flap","string", "Flap" + varFloor + varRoom);
+                    ContextAttribute shutterContextAttribute = new ContextAttribute("shutter","string", "Shutter" + varFloor + varRoom);
                     List<ContextAttribute> contextAttributeList = new ArrayList<>();
                     contextAttributeList.add(tempContextAttribute);
                     contextAttributeList.add(floorContextAttribute);
-                    contextAttributeList.add(flapContextAttribute);
+                    contextAttributeList.add(shutterContextAttribute);
                     contextElement.setContextAttributeList(contextAttributeList);
                     updateContext.setContextElements(Collections.singletonList(contextElement));
                     ngsiClient.updateContext(cepheusBroker , null, updateContext);
