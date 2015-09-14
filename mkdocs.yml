@@ -15,3 +15,4 @@ pages:
   - '1 Rooms and Floors': examples/1_RoomsAndFloors/index.md
   - '2 Close Shutters': examples/2_CloseShutters/index.md
   - '3 CEP and Broker': examples/3_CepAndBroker/index.md
+  - '4 CEP and Broker and Orion': examples/4_CepAndBrokerAndOrion/index.md
