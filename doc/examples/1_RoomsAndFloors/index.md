@@ -11,11 +11,11 @@ We would like to get the average temperature (over the last 10 minutes) on each 
 We will start with a very simple configuration where the NGSI sensors send directly to the CEP (using `updateContext` requests)
 the updated temperatures. The NGSI sensors requests are simulated by a simple script.
 
-![example1](../../../fig/example1-sequence.png)
+![example1](../../fig/example1-sequence.png)
 
 The components involved in this example are:
 
-![example1](../../../fig/example1.png)
+![example1](../../fig/example1.png)
 
 All the grayed parts are part of the reference architecture and are not used in this example.
 

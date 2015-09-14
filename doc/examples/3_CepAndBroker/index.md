@@ -8,11 +8,11 @@ But this time, temperature data will not be sent directly to the Cepheus-CEP, bu
 In this example, the NGSI sensors (simulated by the run.sh script) will send temperature data to the Cepheus-Broker.
 The Cepheus-CEP will subscribe to the broker for this data and therefore be notified when new data is received.
 
-![example1](../../../fig/example3-sequence.png)
+![example1](../../fig/example3-sequence.png)
 
 This is illustrated in the following figure:
 
-![example1](../../../fig/example3.png)
+![example1](../../fig/example3.png)
 
 All the grayed parts are part of the reference architecture and are not used in this example.
 
