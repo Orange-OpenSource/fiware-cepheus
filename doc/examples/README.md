@@ -8,8 +8,8 @@ Examples for Cepheus-CEP and Cepheus-Broker with a complete setup.
 
 * [CEP and Broker and Orion](4_CepAndBrokerAndOrion/index.md) Make Cepheus-CEP and Cepheus-Broker interact with Orion
 
-* [Close Open Shutters](5_CloseOpenShuttersWithTemperatureThreshold/index.md) Make Cepheus-CEP and Cepheus-Broker interact with IoT Agent (protocol adapter for device)
+* [Temperature Threshold](5_TemperatureThreshold/index.md) Make Cepheus-CEP and Cepheus-Broker interact with IoT Agent (protocol adapter for device)
 
-* [Query and Command](6_QueryAndCommandOnRoomAndShutter/index.md) Make Cepheus-Broker interact with Orion and IoT Agent (protocol adapter for device)
+* [Query and Command](6_QueryAndCommand/index.md) Make Cepheus-Broker interact with Orion and IoT Agent (protocol adapter for device)
 
 

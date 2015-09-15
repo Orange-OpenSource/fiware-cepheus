@@ -87,7 +87,7 @@ Default configuration should launch it on port :8080 on your machine.
 
 Now in another terminal, trigger the [run.sh](run.sh) script:
 
-    cd doc/examples/5_CloseOpenShuttersWithTemperatureThreshold
+    cd doc/examples/5_TemperatureThreshold
     sh run.sh
 
 The script first sends the [config.json](config.json) file to Cepheus-CEP.

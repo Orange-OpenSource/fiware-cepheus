@@ -54,7 +54,7 @@ Default configuration should launch it on port :8083 on your machine.
 
 Now in another terminal, trigger the [run.sh](run.sh) script:
 
-    cd scripts/6_QueryAndCommandOnRoomAndShutter
+    cd scripts/6_QueryAndCommand
     sh run.sh
 
 The script manage the mocks by Admin api to send register and query.

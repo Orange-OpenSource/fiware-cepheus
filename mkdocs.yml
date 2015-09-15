@@ -16,5 +16,5 @@ pages:
   - '2 Close Shutters': examples/2_CloseShutters/index.md
   - '3 CEP and Broker': examples/3_CepAndBroker/index.md
   - '4 CEP and Broker and Orion': examples/4_CepAndBrokerAndOrion/index.md
-  - '5 Close Open Shutters with Temperature Threshold': examples/5_CloseOpenShuttersWithTemperatureThreshold/index.md
-  - '6 Query and Command on Room and Shutter': examples/6_QueryAndCommandOnRoomAndShutter/index.md
+  - '5 Temperature Threshold': examples/5_TemperatureThreshold/index.md
+  - '6 Query and Command on Room and Shutter': examples/6_QueryAndCommand/index.md
