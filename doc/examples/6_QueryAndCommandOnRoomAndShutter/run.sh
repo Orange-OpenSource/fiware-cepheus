@@ -1,5 +1,5 @@
 #!/bin/sh
-# Windows Flaps commands example
+# Windows Shutters commands example
 
 IOT=localhost:8083
 ORION=localhost:8082
@@ -32,8 +32,8 @@ function sendUpdate() #(url, name, type, isPattern of entityId and name, type, v
 	send $1 "v1/admin/update" "$payload"
 }
 
-echo " - Send registerContext for Flap$floor$room"
-out=$(send $IOT "v1/admin/registerFlap" "")
+echo " - Send registerContext for Shutter$floor$room"
+out=$(send $IOT "v1/admin/registerShutter" "")
 echo "   $out"
 
 echo " - Send registerContext for Room$floor$room"
@@ -41,7 +41,7 @@ out=$(send $IOT "v1/admin/registerRoom" "")
 echo "   $out"
 
 echo ""
-echo "# Wait between flap update and query temperature..."
+echo "# Wait between shutter update and query temperature..."
 echo ""
 sleep 5
 
@@ -51,12 +51,12 @@ echo "   $out"
 
 sleep 1
 
-echo " - Send queryContext for flap21"
-out=$(sendQuery $ORION  "Flap21" "Flap" "false")
+echo " - Send queryContext for Shutter21"
+out=$(sendQuery $ORION  "Shutter21" "Shutter" "false")
 echo "   $out"
 
 sleep 1
-echo " - Send updateContext for flap21"
-out=$(sendUpdate $ORION  "Flap21" "Flap" "false" "status" "string" "closed")
+echo " - Send updateContext for Shutter21"
+out=$(sendUpdate $ORION  "Shutter21" "Shutter" "false" "status" "string" "opened")
 echo "   $out"
 
