@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Use a common patter for console and file logging -->
+    <property name="LOG_PATTERN" value="%d [%.15thread] %-5level %logger{10} - %msg%n"/>
+    <!-- Console logging -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>${LOG_PATTERN}</Pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="console"/>
+    </root>
+</configuration>

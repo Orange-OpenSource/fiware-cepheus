@@ -116,7 +116,6 @@
                 <artifactId>jdeb</artifactId>
                 <groupId>org.vafer</groupId>
                 <version>1.4</version>
-                <configuration><controlDir>${project.basedir}/deb</controlDir></configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -124,20 +123,42 @@
                             <goal>jdeb</goal>
                         </goals>
                         <configuration>
+                            <controlDir>${project.basedir}/deb</controlDir>
                             <dataSet>
+                                <!-- template -->
+                                <data>
+                                    <type>template</type>
+                                    <paths>
+                                        <path>/etc/cepheus</path>
+                                        <path>/var/log/cepheus</path>
+                                        <path>/var/run/cepheus</path>
+                                    </paths>
+                                </data>
+                                <!-- JAR file -->
                                 <data>
                                     <src>${project.build.directory}/${project.build.finalName}.jar</src>
                                     <type>file</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <prefix>/usr/share/cepheus</prefix>
                                     </mapper>
+                                    <dst>/usr/lib/cepheus/cepheus-cep.jar</dst>
                                 </data>
+                                <!-- properties file -->
                                 <data>
-                                    <type>link</type>
-                                    <symlink>true</symlink>
-                                    <linkName>/usr/share/java/cepheus-cep.jar</linkName>
-                                    <linkTarget>/usr/share/cepheus/${project.build.finalName}.jar</linkTarget>
+                                    <type>file</type>
+                                    <conffile>true</conffile>
+                                    <src>${project.basedir}/src/main/resources/application.properties</src>
+                                    <dst>/etc/cepheus/cep.properties</dst>
+                                </data>
+                                <!-- init.d file -->
+                                <data>
+                                    <type>file</type>
+                                    <src>${project.basedir}/deb/init.d/cepheus-cep.sh</src>
+                                    <mapper>
+                                        <type>perm</type>
+                                        <filemode>755</filemode>
+                                    </mapper>
+                                    <dst>/etc/init.d/cepheus-cep</dst>
                                 </data>
                             </dataSet>
                         </configuration>

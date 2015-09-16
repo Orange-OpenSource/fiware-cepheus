@@ -1,0 +1,3 @@
+#!/bin/sh
+update-rc.d -f cepheus-cep defaults
+service cepheus-cep start

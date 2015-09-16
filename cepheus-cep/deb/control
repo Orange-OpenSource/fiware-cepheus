@@ -5,4 +5,4 @@ Priority: low
 Architecture: all
 Depends: java8-runtime
 Description: [[description]]
-Maintainer: marc.capdevielle@orange.com, pascale.borscia@orange.com, christophe.azemar@orange.com
+Maintainer: fiware.d4m@orange.com
