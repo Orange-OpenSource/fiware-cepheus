@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91+devel+osxmenu r12911"
-   sodipodi:docname="example5.svg">
+   sodipodi:docname="example6.svg">
   <defs
      id="defs4">
     <marker
@@ -254,7 +254,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.0583699"
-     inkscape:cx="269.10555"
+     inkscape:cx="115.09512"
      inkscape:cy="288.32798"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -276,7 +276,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -287,7 +287,7 @@
      transform="translate(-8.6021923,-33.992605)">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;opacity:0.93999999;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter4203)"
+       style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;opacity:0.28;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
        x="150.03215"
        y="128.23096"
        id="text4141"
@@ -296,14 +296,14 @@
          id="tspan4143"
          x="150.03215"
          y="128.23096"
-         style="text-align:center;text-anchor:middle;stroke-width:0.26458332px">Cepheus</tspan><tspan
+         style="text-align:center;text-anchor:middle;stroke-width:0.26458332px;">Cepheus</tspan><tspan
          sodipodi:role="line"
          x="150.03215"
          y="141.46013"
-         style="text-align:center;text-anchor:middle;stroke-width:0.26458332px"
+         style="text-align:center;text-anchor:middle;stroke-width:0.26458332px;"
          id="tspan4145">CEP</tspan></text>
     <rect
-       style="opacity:0.93999999;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.79374999;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="opacity:0.28;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.79374999;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect4207"
        width="55.231579"
        height="31.263163"
@@ -312,7 +312,7 @@
     <g
        id="g4215"
        transform="translate(-19.278946,-83.889474)"
-       style="opacity:0.28000004">
+       style="opacity:1">
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;opacity:0.93999999;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter4203)"
@@ -404,11 +404,11 @@
        inkscape:connector-curvature="0"
        id="path8031"
        d="m 50.460745,66.045761 0.162727,48.978689"
-       style="opacity:0.28000004;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker10842);marker-end:url(#marker10690)"
+       style="opacity:1;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#marker10842);marker-end:url(#marker10690)"
        sodipodi:nodetypes="cc" />
     <path
        sodipodi:nodetypes="cc"
-       style="opacity:1;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#Arrow2Lstart);marker-end:url(#marker8879);"
+       style="opacity:0.28;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.69999999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-start:url(#Arrow2Lstart);marker-end:url(#marker8879);"
        d="m 122.5348,131.09352 -43.747331,0.0131"
        id="path8877"
        inkscape:connector-curvature="0" />
@@ -558,7 +558,7 @@
        id="text12470"
        y="128.48933"
        x="89.216141"
-       style="font-style:normal;font-weight:normal;font-size:21.16666603px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.52916664px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
+       style="font-style:normal;font-weight:normal;font-size:21.16666603px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;opacity:0.28;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.52916664px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
        xml:space="preserve"><tspan
          style="font-size:8.46666622px;stroke-width:0.52916664px;"
          y="128.48933"
@@ -567,7 +567,7 @@
          sodipodi:role="line">NGSI</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:21.16666603px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;opacity:0.28000004;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.52916664px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="font-style:normal;font-weight:normal;font-size:21.16666603px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.52916664px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
        x="52.100685"
        y="91.990601"
        id="text12474"
@@ -576,7 +576,7 @@
          id="tspan12476"
          x="52.100685"
          y="91.990601"
-         style="font-size:8.46666622px;stroke-width:0.52916664px">NGSI</tspan></text>
+         style="font-size:8.46666622px;stroke-width:0.52916664px;">NGSI</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text12478"
