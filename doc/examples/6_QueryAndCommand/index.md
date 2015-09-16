@@ -38,9 +38,9 @@ In a first terminal, launch mock-orion (default on port :8082 on your machine)
     cd doc/examples/mocks/mock-orion
     mvn spring-boot:run
 
-In a second terminal, launch Cepheus-lb:
+In a second terminal, launch Cepheus-Broker:
 
-    cd cepheus-lb
+    cd cepheus-broker
     mvn spring-boot:run
 
 Default configuration should launch it on port :8081 on your machine.
@@ -74,4 +74,3 @@ The mock-iotagent responds ok to the Cepheus-Broker.
 The Cepheus-Broker forwards the response to the mock-orion which print the response.
 
 We can see response of the mock-iotagent in the logs of the mock-orion.
- 

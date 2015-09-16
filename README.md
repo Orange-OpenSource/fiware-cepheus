@@ -21,12 +21,12 @@ FIWARE Cepheus provides NGSI-compatible gateway level components.
 This project contains two Spring Boot applications and a common library :
 
 * cepheus-cep: A CEP (Complex Event Processor) engine.
-* cepheus-lb: A light broker (NGSI forwarding-only).
+* cepheus-broker: A light broker (NGSI forwarding-only).
 * cepheus-ngsi : a client/server NGSI library.
 
 ## Build and Install
 
-More information about building can be found in [cepheus-cep/README](cepheus-cep/README.md) and [cepheus-lb/README](cepheus-lightbroker/README.md).
+More information about building can be found in [cepheus-cep/README](cepheus-cep/README.md) and [cepheus-broker/README](cepheus-lightbroker/README.md).
 
 ### Requirements
 
@@ -53,9 +53,9 @@ When you launch mvn install, you create two debian packages : cepheus-cep-{versi
 Then you can install these packages lauching :
 
     dpkg -i cepheus-cep-{version}.deb
-    dpkg -i cepheus-lb-{version}.deb
+    dpkg -i cepheus-broker-{version}.deb
 
-Each command install the file jar in /usr/share/cepheus directory and create a symbolic links /usr/share/java/cepheus-cep.jar /usr/share/java/cepheus-lb.jar
+Each command install the file jar in /usr/share/cepheus directory and create a symbolic links /usr/share/java/cepheus-cep.jar /usr/share/java/cepheus-broker.jar
 Each command verify java version requirement.
 
 ## Running
@@ -63,7 +63,7 @@ Each command verify java version requirement.
 The project provides two SpringBoot applications. You can run them simply with:
 
     java -jar cepheus-cep.jar
-    java -jar cepheus-lb.jar
+    java -jar cepheus-broker.jar
 
 ## User guide
 

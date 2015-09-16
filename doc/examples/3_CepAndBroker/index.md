@@ -59,7 +59,7 @@ to make the average show up quickly in the logs.
 
 In a first terminal, launch Cepheus-Broker:
 
-    cd cepheus-lb
+    cd cepheus-broker
     mvn spring-boot:run --remote.url=""
 
 Default configuration should launch it on port :8081 on your machine.
@@ -80,7 +80,7 @@ The script first sends the [config.json](config.json) file to Cepheus-CEP.
 
 Cepheus-CEP sends a `subscribeContext` request in order to receive notifications from the Cepheus-Broker for the Room Context Entity.
 
-Then the script sending temperatures updates to Cepheus-lb that sends notifications to Cepheus-CEP.
+Then the script sending temperatures updates to Cepheus-Broker that sends notifications to Cepheus-CEP.
 
 Go back to the terminal where you launched first the LB then after the CEP. You should see tempertures as "EventIn" beeing logged in CEP logs.
 

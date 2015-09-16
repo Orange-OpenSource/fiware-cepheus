@@ -30,28 +30,28 @@ Goal:
 
 ### Installing from [Sonatype Central Maven](http://central.sonatype.org/) with Maven
 
-    mvn dependency:get -DgroupId=com.orange.cepheus -DartifactId=cepheus-lb -Dversion=4.4.3-SNAPSHOT -Dtransitive=false
+    mvn dependency:get -DgroupId=com.orange.cepheus -DartifactId=cepheus-broker -Dversion=4.4.3-SNAPSHOT -Dtransitive=false
 
 ### Installing from [Sonatype Central Maven](http://central.sonatype.org/) using wget
 
-    wget "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-lb&v=LATEST"
+    wget "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-broker&v=LATEST"
 
 ### Installing from [Sonatype Central Maven](http://central.sonatype.org/) using wget and dpkg
 
-    wget "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-lb&v=LATEST&p=deb"
-    dpkg -i cepheus-lb.deb
+    wget "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-broker&v=LATEST&p=deb"
+    dpkg -i cepheus-broker.deb
 
 ## Running
 
 Fiware-cepheus is a SpringBoot application. You can run it as a service.
 
-    java -jar cepheus-lb.jar
+    java -jar cepheus-broker.jar
 
 ## Admin guide
 
 You can modify some properties in command line:
 
- 	java -jar cepheus-lb.jar --property=value
+ 	java -jar cepheus-broker.jar --property=value
 
 With properties :
 

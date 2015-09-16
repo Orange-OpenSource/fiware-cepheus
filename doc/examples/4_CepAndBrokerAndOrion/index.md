@@ -69,9 +69,9 @@ In a first terminal, launch mock-orion (default on port :8082 on your machine)
     cd doc/examples/mocks/mock-orion
     mvn spring-boot:run
 
-In a second terminal, launch Cepheus-lb:
+In a second terminal, launch Cepheus-Broker:
 
-    cd cepheus-lb
+    cd cepheus-broker
     mvn spring-boot:run
 
 Default configuration should launch it on port :8081 on your machine.
@@ -92,7 +92,7 @@ The script first sends the [config.json](config.json) file to Cepheus-CEP.
 
 Cepheus-CEP sends a `subscribeContext` request in order to receive notifications from the Cepheus-Broker for the Room Context Entity.
 
-Then the script sending temperatures updates to Cepheus-lb that sends notifications to Cepheus-CEP and forward updates to mock-orion.
+Then the script sending temperatures updates to Cepheus-Broker that sends notifications to Cepheus-CEP and forward updates to mock-orion.
 You can theses sends and forwards in the logs of the two applications.
 
 Go back to the terminal where you launched first the LB then after the CEP. You should see temperatures as "EventIn" beeing logged in CEP logs.

@@ -71,9 +71,9 @@ In a first terminal, launch mock-iotagent:
 
 Default configuration should launch it on port :8083 on your machine.
 
-In a second terminal, launch Cepheus-lb without remote broker:
+In a second terminal, launch Cepheus-Broker without remote broker:
 
-        cd cepheus-lb
+        cd cepheus-broker
         mvn spring-boot:run -Dremote.url=
 
 Default configuration should launch it on port :8081 on your machine.
@@ -94,10 +94,10 @@ The script first sends the [config.json](config.json) file to Cepheus-CEP.
 then it starts registering to mock-iotagent for shutter Events.
 Then it continues sending temperatures updates to mock-iotagent.
 
-Go back to the terminal where you launched the CEP. You should see temperatures as "EventIn" beeing logged coming from Cepheus-lb.
+Go back to the terminal where you launched the CEP. You should see temperatures as "EventIn" beeing logged coming from Cepheus-Broker.
 
 After a few seconds, the "EventOut" logs will show the CEP triggering the status for each shutter.
-Theses "EventOut" will send to mock-iotagent by Cepheus-lb.
+Theses "EventOut" will send to mock-iotagent by Cepheus-Broker.
 
 We can see in mock-iotagent logs the open commands or close commands received for shutters.
 
