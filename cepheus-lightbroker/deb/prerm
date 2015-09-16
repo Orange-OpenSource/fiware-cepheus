@@ -1,0 +1,7 @@
+#!/bin/sh
+
+service cepheus-broker stop
+
+if [ "$1" = "remove" ]; then
+    update-rc.d -f cepheus-broker remove
+fi

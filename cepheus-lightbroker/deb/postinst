@@ -1,0 +1,3 @@
+#!/bin/sh
+update-rc.d -f cepheus-broker defaults
+service cepheus-broker start
