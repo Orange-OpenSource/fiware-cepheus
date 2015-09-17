@@ -5,9 +5,9 @@
 [![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/fiware-cepheus/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/fiware-cepheus?branch=master)
 [![Docs Status](https://readthedocs.org/projects/fiware-cepheus/badge/?version=latest)](https://readthedocs.org/projects/fiware-cepheus/)
 
-This is the code repository for fiware-cepheus, the reference implementation of the Gateway Data Handling GE.
+This is the code repository for the Fiware-Cepheus project.
 
-This project is part of [FIWARE](http://www.fiware.org).
+This project is part of [FIWARE](http://www.fiware.org) under the Gateway Data Handling GE subproject.
 Check also the [FIWARE Catalogue entry for Cepheus](http://catalogue.fiware.org/enablers/gateway-data-handling-ge-espr4fastdata)
 
 ## Renaming
@@ -17,16 +17,16 @@ It was renamed to a more generic name (using the convention of other FIWARE Gene
 
 ## Overall description
 
-FIWARE Cepheus provides NGSI-compatible gateway level components.
+Fiware-Cepheus provides NGSI-compatible gateway level components.
 This project contains two Spring Boot applications and a common library :
 
 * cepheus-cep: A CEP (Complex Event Processor) engine.
 * cepheus-broker: A light broker (NGSI forwarding-only).
 * cepheus-ngsi : a client/server NGSI library.
 
-## Build and Install
+## Quick instructions
 
-More information about building can be found in [cepheus-cep/README](cepheus-cep/README.md) and [cepheus-broker/README](cepheus-lightbroker/README.md).
+You can find the complete build and installation instructions for each components in the administrator guide [here](doc/admin).
 
 ### Requirements
 
@@ -49,14 +49,11 @@ Our docker manual can be found [here](docker/README.md)
 
 ### Installing from Debian packaging
 
-When you launch mvn install, you create two debian packages : cepheus-cep-{version}.deb and cepeheus-lb-{version}.deb.
+Using `mvn install` will create two debian packages: cepheus-cep-{version}.deb and cepeheus-lb-{version}.deb.
 Then you can install these packages lauching :
 
     dpkg -i cepheus-cep-{version}.deb
     dpkg -i cepheus-broker-{version}.deb
-
-Each command install the file jar in /usr/share/cepheus directory and create a symbolic links /usr/share/java/cepheus-cep.jar /usr/share/java/cepheus-broker.jar
-Each command verify java version requirement.
 
 ## Running
 
@@ -65,12 +62,17 @@ The project provides two SpringBoot applications. You can run them simply with:
     java -jar cepheus-cep.jar
     java -jar cepheus-broker.jar
 
-## User guide
+## User & programming guide
 
-The complete user manual can be found under the [/doc](doc) folder.
-The user manual is also available though readthedocs.org: [User Manual](http://fiware-cepheus.readthedocs.org/en/latest/)
+The user & programming guide can be found under the [/doc](doc) folder.
+It is also available though readthedocs.org: [User guide](http://fiware-cepheus.readthedocs.org/en/latest/)
 
-### Example
+## Administrator manual
+
+The administrator manual can be found under the [/doc/admin](doc/admin) folder.
+It is also available though readthedocs.org: [Administrator manual](http://fiware-cepheus.readthedocs.org/en/latest/)
+
+## Examples
 
 Some simple examples to learn how to use Cepheus-CEP and Cepheus-Broker can be found under the [doc/examples](doc/examples) folder.
 
