@@ -7,7 +7,7 @@ ENV CEPHEUS_VERSION LATEST
 
 WORKDIR /opt/cepheus
 
-# Download CEP and Light Broker
+# Download CEP
 RUN wget -q -O cepheus-cep.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-cep&v=$CEPHEUS_VERSION"
 
 EXPOSE 8080
