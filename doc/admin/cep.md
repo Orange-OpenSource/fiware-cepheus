@@ -89,7 +89,7 @@ This is a short list of the application properties:
 <table>
     <tr><th>Name</th><th>Description</th><th>Default value</th></tr>
     <tr><td>server.port</td><td>port used</td><td>8080</td></tr>
-    <tr><td>config.file</td><td>data file location</td><td>/tmp/cepheus.json</td></tr>
+    <tr><td>data.file</td><td>data file location</td><td>/tmp/cepheus.json</td></tr>
     <tr><td>subscriptionManager.periodicity</td><td>Periodicity of the subscription manager task</td><td>300000</td></tr>
     <tr><td>subscriptionManager.duration</td><td>Duration of a NGSI subscription</td><td>PT1H</td></tr>
     <tr><td>logging.level.com.orange.cepheus.cep</td><td>log level</td><td>INFO</td></tr>
@@ -105,7 +105,7 @@ You can modify all the application properties from the command line:
 
 Example:
 
-    java -jar cepheus-cep.jar --server.port=8080 --config.file=/var/run/cepheus/cep.json
+    java -jar cepheus-cep.jar --server.port=8080 --data.file=/var/run/cepheus/cep.json
 
 ### External configuration file
 
@@ -123,7 +123,7 @@ You can either:
 ### Data file
 
 The Cepheus-CEP loads its data on startup and saves back data updates to a single JSON file.
-The default location of the data file is defined by the `config.file` property.
+The default location of the data file is defined by the `data.file` property.
 This Cepheus-CEP process must have write access rights on this file.
 
 ## User guide

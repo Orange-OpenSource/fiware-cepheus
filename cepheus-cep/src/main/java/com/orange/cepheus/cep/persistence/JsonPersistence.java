@@ -31,7 +31,7 @@ public class JsonPersistence implements Persistence {
 
     private static Logger logger = LoggerFactory.getLogger(JsonPersistence.class);
 
-    @Value("${config.file}")
+    @Value("${data.file}")
     private String ConfigurationFile;
 
     @Override
