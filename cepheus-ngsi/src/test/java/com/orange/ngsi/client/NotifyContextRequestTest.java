@@ -54,7 +54,7 @@ public class NotifyContextRequestTest {
     private MockRestServiceServer mockServer;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter mapping;
+    private MappingJackson2HttpMessageConverter jsonConverter;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -98,7 +98,7 @@ public class NotifyContextRequestTest {
     @Test
     public void notifyContextRequestOK() throws Exception {
 
-        String responseBody = json(mapping, createNotifyContextResponseTempSensor());
+        String responseBody = json(jsonConverter, createNotifyContextResponseTempSensor());
 
         this.mockServer.expect(requestTo(baseUrl+ "/ngsi10/notifyContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.subscriptionId").value("1"))

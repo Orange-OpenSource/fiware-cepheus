@@ -9,15 +9,22 @@
 package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import java.util.List;
 
 /**
  * Created by pborscia on 05/06/2015.
  */
+@JacksonXmlRootElement(localName = "updateContextResponse")
 public class UpdateContextResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     StatusCode errorCode;
+
+    @JacksonXmlElementWrapper(localName = "contextElementResponses")
+    @JacksonXmlProperty(localName = "contextElementResponse")
     List<ContextElementResponse> contextElementResponses;
 
     public UpdateContextResponse() {

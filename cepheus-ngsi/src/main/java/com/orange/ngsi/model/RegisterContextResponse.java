@@ -9,10 +9,12 @@
 package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 /**
  * Created by pborscia on 10/08/2015.
  */
+@JacksonXmlRootElement(localName = "registerContextResponse")
 public class RegisterContextResponse {
 
     private String duration;

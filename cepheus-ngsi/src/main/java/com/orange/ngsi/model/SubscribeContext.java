@@ -11,6 +11,9 @@ package com.orange.ngsi.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import java.net.URI;
 import java.time.Instant;
@@ -19,12 +22,17 @@ import java.util.List;
 /**
  * Created by pborscia on 17/07/2015.
  */
+@JacksonXmlRootElement(localName = "subscribeContext")
 public class SubscribeContext {
 
     @JsonProperty("entities")
+    @JacksonXmlElementWrapper(localName = "entityIdList")
+    @JacksonXmlProperty(localName = "entityId")
     List<EntityId> entityIdList;
 
     @JsonProperty("attributes")
+    @JacksonXmlElementWrapper(localName = "attributeList")
+    @JacksonXmlProperty(localName = "attribute")
     List<String> attributeList;
 
     URI reference;
@@ -35,6 +43,8 @@ public class SubscribeContext {
     Restriction restriction;
 
     @JsonProperty("notifyConditions")
+    @JacksonXmlElementWrapper(localName = "notifyConditionList")
+    @JacksonXmlProperty(localName = "notifyCondition")
     List<NotifyCondition> notifyConditionList;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

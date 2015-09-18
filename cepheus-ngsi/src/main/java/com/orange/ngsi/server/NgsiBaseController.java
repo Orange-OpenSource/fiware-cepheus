@@ -8,19 +8,19 @@
 
 package com.orange.ngsi.server;
 
+import com.orange.ngsi.Dispatcher;
 import com.orange.ngsi.exception.MissingRequestParameterException;
 import com.orange.ngsi.model.*;
+import org.apache.http.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,42 +35,46 @@ public class NgsiBaseController {
     @Autowired
     private NgsiValidation ngsiValidation;
 
+    @Autowired
+    private Dispatcher dispatcher;
+
     /*
      * NGSI v1 API mapping
      */
 
-    @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<NotifyContextResponse> notifyContextRequest(@RequestBody final NotifyContext notify) throws Exception {
+    @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<NotifyContextResponse> notifyContextRequest(@RequestBody final NotifyContext notify, @RequestHeader("Host") final String host, @RequestHeader("Accept") final String accept) throws Exception {
+        dispatcher.addJsonHost(host, accept, true);
         ngsiValidation.checkNotifyContext(notify);
         return new ResponseEntity<>(notifyContext(notify), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/updateContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<UpdateContextResponse> updateContextRequest(@RequestBody final UpdateContext updateContext) throws Exception {
+    @RequestMapping(value = "/updateContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<UpdateContextResponse> updateContextRequest(@RequestBody final UpdateContext updateContext, @RequestHeader("Host") final String host, @RequestHeader("Accept") final String accept) throws Exception {
         ngsiValidation.checkUpdateContext(updateContext);
         return new ResponseEntity<>(updateContext(updateContext), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/registerContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<RegisterContextResponse> registerContextRequest(@RequestBody final RegisterContext registerContext) throws Exception {
+    @RequestMapping(value = "/registerContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<RegisterContextResponse> registerContextRequest(@RequestBody final RegisterContext registerContext, @RequestHeader("Host") final String host, @RequestHeader("Accept") final String accept) throws Exception {
         ngsiValidation.checkRegisterContext(registerContext);
         return new ResponseEntity<>(registerContext(registerContext), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/subscribeContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<SubscribeContextResponse> subscribeContextRequest(@RequestBody final SubscribeContext subscribeContext) throws Exception {
+    @RequestMapping(value = "/subscribeContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<SubscribeContextResponse> subscribeContextRequest(@RequestBody final SubscribeContext subscribeContext, @RequestHeader("Host") final String host, @RequestHeader("Accept") final String accept) throws Exception {
         ngsiValidation.checkSubscribeContext(subscribeContext);
         return new ResponseEntity<>(subscribeContext(subscribeContext), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/unsubscribeContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<UnsubscribeContextResponse> unsubscribeContextRequest(@RequestBody final UnsubscribeContext unsubscribeContext) throws Exception {
+    @RequestMapping(value = "/unsubscribeContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<UnsubscribeContextResponse> unsubscribeContextRequest(@RequestBody final UnsubscribeContext unsubscribeContext, @RequestHeader("Host") final String host, @RequestHeader("Accept") final String accept) throws Exception {
         ngsiValidation.checkUnsubscribeContext(unsubscribeContext);
         return new ResponseEntity<>(unsubscribeContext(unsubscribeContext), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/queryContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<QueryContextResponse> queryContextRequest(@RequestBody final QueryContext queryContext) throws Exception {
+    @RequestMapping(value = "/queryContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<QueryContextResponse> queryContextRequest(@RequestBody final QueryContext queryContext, @RequestHeader("Host") final String host, @RequestHeader("Accept") final String accept) throws Exception {
         ngsiValidation.checkQueryContext(queryContext);
         return new ResponseEntity<>(queryContext(queryContext), HttpStatus.OK);
     }

@@ -8,13 +8,21 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 import java.util.List;
 
 /**
  * Created by pborscia on 05/06/2015.
  */
+@JacksonXmlRootElement(localName = "updateContextRequest")
 public class UpdateContext {
 
+
+    @JacksonXmlElementWrapper(localName="contextElementList")
+    @JacksonXmlProperty(localName="contextElement")
     List<ContextElement> contextElements;
 
     UpdateAction updateAction;

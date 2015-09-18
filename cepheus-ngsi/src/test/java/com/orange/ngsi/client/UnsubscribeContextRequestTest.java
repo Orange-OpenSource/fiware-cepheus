@@ -57,7 +57,7 @@ public class UnsubscribeContextRequestTest {
     private MockRestServiceServer mockServer;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter mapping;
+    private MappingJackson2HttpMessageConverter jsonConverter;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -101,7 +101,7 @@ public class UnsubscribeContextRequestTest {
     @Test
     public void unsubscribeContextRequestOK() throws Exception {
 
-        String responseBody = json(mapping, createUnsubscribeContextResponse(CodeEnum.CODE_200, subscriptionID));
+        String responseBody = json(jsonConverter, createUnsubscribeContextResponse(CodeEnum.CODE_200, subscriptionID));
 
         this.mockServer.expect(requestTo(baseUrl + "/ngsi10/unsubscribeContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.subscriptionId", hasToString(subscriptionID))).andRespond(

@@ -8,9 +8,12 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 /**
  * UnsubcribeContext
  */
+@JacksonXmlRootElement(localName = "unsubscribeContext")
 public class UnsubscribeContext {
 
     private String subscriptionId;

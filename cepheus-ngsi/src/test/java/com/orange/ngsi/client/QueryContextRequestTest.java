@@ -54,7 +54,7 @@ public class QueryContextRequestTest {
     private MockRestServiceServer mockServer;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter mapping;
+    private MappingJackson2HttpMessageConverter jsonConverter;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -98,7 +98,7 @@ public class QueryContextRequestTest {
     @Test
     public void queryContextRequestOK() throws Exception {
 
-        String responseBody = json(mapping, createQueryContextResponseTemperature());
+        String responseBody = json(jsonConverter, createQueryContextResponseTemperature());
 
         this.mockServer.expect(requestTo(baseUrl + "/ngsi10/queryContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.entities[*]", hasSize(1)))

@@ -9,6 +9,8 @@
 package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -27,6 +29,8 @@ public class ContextAttribute {
     private Object value;
 
     @JsonProperty("metadatas")
+    @JacksonXmlElementWrapper(localName = "metadata")
+    @JacksonXmlProperty(localName = "contextMetadata")
     private List<ContextMetadata> metadata;
 
     public ContextAttribute() {

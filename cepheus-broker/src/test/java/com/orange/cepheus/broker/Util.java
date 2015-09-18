@@ -198,7 +198,7 @@ public class Util {
     static public QueryContext createQueryContextTemperature() {
         QueryContext queryContext = new QueryContext();
         queryContext.setEntityIdList(Collections.singletonList(new EntityId("S*", "TempSensor", true)));
-        queryContext.setAttributList(Collections.singletonList("temp"));
+        queryContext.setAttributeList(Collections.singletonList("temp"));
         return queryContext;
     }
 

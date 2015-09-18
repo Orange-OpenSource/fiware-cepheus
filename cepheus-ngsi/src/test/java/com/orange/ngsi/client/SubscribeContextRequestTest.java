@@ -57,7 +57,7 @@ public class SubscribeContextRequestTest {
     private MockRestServiceServer mockServer;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter mapping;
+    private MappingJackson2HttpMessageConverter jsonConverter;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -101,7 +101,7 @@ public class SubscribeContextRequestTest {
     @Test
     public void subscribeContextRequestOK() throws Exception {
 
-        String responseBody = json(mapping, createSubscribeContextResponseTemperature());
+        String responseBody = json(jsonConverter, createSubscribeContextResponseTemperature());
 
         this.mockServer.expect(requestTo(baseUrl + "/ngsi10/subscribeContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.entities[*]", hasSize(1))).andExpect(jsonPath("$.entities[0].id").value("Room1"))

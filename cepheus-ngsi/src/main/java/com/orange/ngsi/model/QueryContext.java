@@ -10,12 +10,16 @@ package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import java.util.List;
 
 /**
  * Created by pborscia on 11/08/2015.
  */
+@JacksonXmlRootElement(localName = "queryContext")
 public class QueryContext {
 
     @JsonProperty(value = "entities", required = true)
@@ -23,7 +27,9 @@ public class QueryContext {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(value = "attributes")
-    private List<String> attributList;
+    @JacksonXmlElementWrapper(localName = "attributeList")
+    @JacksonXmlProperty(localName = "attribute")
+    private List<String> attributeList;
 
     private Restriction restriction;
 
@@ -42,12 +48,12 @@ public class QueryContext {
         this.entityIdList = entityIdList;
     }
 
-    public List<String> getAttributList() {
-        return attributList;
+    public List<String> getAttributeList() {
+        return attributeList;
     }
 
-    public void setAttributList(List<String> attributList) {
-        this.attributList = attributList;
+    public void setAttributeList(List<String> attributeList) {
+        this.attributeList = attributeList;
     }
 
     public Restriction getRestriction() {
@@ -62,7 +68,7 @@ public class QueryContext {
     public String toString() {
         return "QueryContext{" +
                 "entityIdList=" + entityIdList +
-                ", attributList=" + attributList +
+                ", attributeList=" + attributeList +
                 ", restriction=" + restriction +
                 '}';
     }

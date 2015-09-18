@@ -8,6 +8,9 @@
 
 package com.orange.ngsi.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.orange.ngsi.Dispatcher;
 import com.orange.ngsi.TestConfiguration;
 import com.orange.ngsi.model.UpdateAction;
 import com.orange.ngsi.model.UpdateContext;
@@ -16,7 +19,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -28,6 +33,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.ResponseCreator;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -38,6 +44,7 @@ import org.springframework.web.client.ResourceAccessException;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
@@ -56,14 +63,14 @@ import javax.inject.Inject;
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
 public class UpdateContextRequestTest {
 
-    private final String brokerUrl = "http://localhost/:8080";
+    private final String brokerUrl = "http://localhost:8080";
     private final String serviceName = "myTenant";
     private final String servicePath = "/root/test";
 
     private MockRestServiceServer mockServer;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter mapping;
+    private MappingJackson2HttpMessageConverter jsonConverter;
 
     @Inject
     private AsyncRestTemplate asyncRestTemplate;
@@ -74,12 +81,14 @@ public class UpdateContextRequestTest {
     @Autowired
     NgsiClient ngsiClient;
 
+    private ObjectMapper xmlmapper = new XmlMapper();
+
     private Consumer<UpdateContextResponse> onSuccess = Mockito.mock(Consumer.class);
 
     private Consumer<Throwable> onFailure = Mockito.mock(Consumer.class);
 
     @Before
-    public void setup() {
+    public void setup() throws URISyntaxException {
         this.mockServer = MockRestServiceServer.createServer(asyncRestTemplate);
     }
 
@@ -87,15 +96,39 @@ public class UpdateContextRequestTest {
     public void tearDown() {
         reset(onSuccess);
         reset(onFailure);
+
+    }
+
+    @Test
+    public void performPostXmlWith200() throws Exception {
+
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
+        httpHeaders.add("Fiware-Service", serviceName);
+        httpHeaders.add("Fiware-ServicePath", servicePath);
+
+        String responseBody = xmlmapper.writeValueAsString(createUpdateContextResponseTempSensor());
+
+        this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Fiware-Service", serviceName))
+                .andExpect(header("Fiware-ServicePath", servicePath))
+                .andExpect(xpath("updateContextRequest/updateAction").string(UpdateAction.UPDATE.getLabel()))
+                .andRespond(withSuccess(responseBody, MediaType.APPLICATION_XML));
+
+        ngsiClient.updateContext(brokerUrl, httpHeaders, createUpdateContextTempSensor(0)).get();
+
+        this.mockServer.verify();
     }
 
     @Test
     public void performPostWith200() throws Exception {
-        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders();
+
+        ngsiClient.dispatcher.addJsonHost(brokerUrl, MediaType.APPLICATION_JSON_VALUE, true);
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
         httpHeaders.add("Fiware-Service", serviceName);
         httpHeaders.add("Fiware-ServicePath", servicePath);
 
-        String responseBody = json(mapping, createUpdateContextResponseTempSensor());
+        String responseBody = json(jsonConverter, createUpdateContextResponseTempSensor());
 
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(header("Fiware-Service", serviceName))

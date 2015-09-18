@@ -8,6 +8,7 @@
 
 package com.orange.ngsi.client;
 
+import com.orange.ngsi.Dispatcher;
 import com.orange.ngsi.model.*;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.util.concurrent.ListenableFutureAdapter;
 import org.springframework.web.client.AsyncRestTemplate;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
@@ -37,6 +39,9 @@ public class NgsiClient {
     @Autowired
     public PoolingNHttpClientConnectionManager poolingNHttpClientConnectionManager;
 
+    @Autowired
+    public Dispatcher dispatcher;
+
     /**
      * Let some time for the client to shutdown gracefully
      * @throws IOException
@@ -52,7 +57,7 @@ public class NgsiClient {
      * @param updateContext the UpdateContext
      * @return a future for an UpdateContextReponse
      */
-    public ListenableFuture<UpdateContextResponse> updateContext(String url, HttpHeaders httpHeaders, UpdateContext updateContext) {
+    public ListenableFuture<UpdateContextResponse> updateContext(String url, HttpHeaders httpHeaders, UpdateContext updateContext) throws URISyntaxException {
         return request(url + "/ngsi10/updateContext", httpHeaders, updateContext, UpdateContextResponse.class);
     }
 
@@ -63,7 +68,7 @@ public class NgsiClient {
      * @param subscribeContext the SubscriptionContext
      * @return a future for a SubscribeContextResponse
      */
-    public ListenableFuture<SubscribeContextResponse> subscribeContext(String url, HttpHeaders httpHeaders, SubscribeContext subscribeContext) {
+    public ListenableFuture<SubscribeContextResponse> subscribeContext(String url, HttpHeaders httpHeaders, SubscribeContext subscribeContext) throws URISyntaxException {
         return request(url + "/ngsi10/subscribeContext", httpHeaders, subscribeContext, SubscribeContextResponse.class);
     }
 
@@ -74,7 +79,7 @@ public class NgsiClient {
      * @param subscriptionId the subscription ID to unsubscribe
      * @return a future for a UnsubscribeContextResponse
      */
-    public ListenableFuture<UnsubscribeContextResponse> unsubscribeContext(String url, HttpHeaders httpHeaders, String subscriptionId) {
+    public ListenableFuture<UnsubscribeContextResponse> unsubscribeContext(String url, HttpHeaders httpHeaders, String subscriptionId) throws URISyntaxException {
         return request(url + "/ngsi10/unsubscribeContext", httpHeaders, new UnsubscribeContext(subscriptionId), UnsubscribeContextResponse.class);
     }
 
@@ -85,7 +90,7 @@ public class NgsiClient {
      * @param notifyContext the notifyContext
      * @return a future for a NotifyContextResponse
      */
-    public ListenableFuture<NotifyContextResponse> notifyContext(String url, HttpHeaders httpHeaders, NotifyContext notifyContext) {
+    public ListenableFuture<NotifyContextResponse> notifyContext(String url, HttpHeaders httpHeaders, NotifyContext notifyContext) throws URISyntaxException {
         return request(url + "/ngsi10/notifyContext", httpHeaders, notifyContext, NotifyContextResponse.class);
     }
 
@@ -96,7 +101,7 @@ public class NgsiClient {
      * @param queryContext the queryContext
      * @return a future for a QueryContextResponse
      */
-    public ListenableFuture<QueryContextResponse> queryContext(String url, HttpHeaders httpHeaders, QueryContext queryContext) {
+    public ListenableFuture<QueryContextResponse> queryContext(String url, HttpHeaders httpHeaders, QueryContext queryContext) throws URISyntaxException {
         return request(url + "/ngsi10/queryContext", httpHeaders, queryContext, QueryContextResponse.class);
     }
 
@@ -107,7 +112,7 @@ public class NgsiClient {
      * @param registerContext the registerContext
      * @return a future for a RegisterContextResponse
      */
-    public ListenableFuture<RegisterContextResponse> registerContext(String url, HttpHeaders httpHeaders, RegisterContext registerContext) {
+    public ListenableFuture<RegisterContextResponse> registerContext(String url, HttpHeaders httpHeaders, RegisterContext registerContext) throws URISyntaxException {
         return request(url + "/ngsi9/registerContext", httpHeaders, registerContext, RegisterContextResponse.class);
     }
 
@@ -115,16 +120,22 @@ public class NgsiClient {
      * The default HTTP request headers used for the requests.
      * @return the HTTP request headers.
      */
-    public HttpHeaders getRequestHeaders() {
+    public HttpHeaders getRequestHeaders(String url) throws URISyntaxException {
         HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        if (dispatcher.getV1(url) != null) {
+            requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+            requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        } else {
+            requestHeaders.setContentType(MediaType.APPLICATION_XML);
+            requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
+        }
         return requestHeaders;
     }
 
-    private <T,U> ListenableFuture<T> request(String url, HttpHeaders httpHeaders, U body, Class<T> responseType) {
+    private <T,U> ListenableFuture<T> request(String url, HttpHeaders httpHeaders, U body, Class<T> responseType) throws URISyntaxException {
         if (httpHeaders == null) {
-            httpHeaders = getRequestHeaders();
+            httpHeaders = getRequestHeaders(url);
         }
         HttpEntity<U> requestEntity = new HttpEntity<>(body, httpHeaders);
 

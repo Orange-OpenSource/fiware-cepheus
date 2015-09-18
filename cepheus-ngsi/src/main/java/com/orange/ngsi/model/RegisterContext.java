@@ -10,6 +10,9 @@ package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import java.time.Instant;
 import java.util.List;
@@ -17,9 +20,12 @@ import java.util.List;
 /**
  * Created by pborscia on 10/08/2015.
  */
+@JacksonXmlRootElement(localName = "registerContext")
 public class RegisterContext {
 
     @JsonProperty(value = "contextRegistrations", required = true)
+    @JacksonXmlElementWrapper(localName = "contextRegistrationList")
+    @JacksonXmlProperty(localName = "contextRegistration")
     private List<ContextRegistration> contextRegistrationList;
 
     private String duration;

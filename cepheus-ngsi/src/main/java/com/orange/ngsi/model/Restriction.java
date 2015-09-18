@@ -8,6 +8,9 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
 import java.util.List;
 
 /**
@@ -17,6 +20,8 @@ public class Restriction {
 
     String attributeExpression;
 
+    @JacksonXmlElementWrapper(localName = "scopes")
+    @JacksonXmlProperty(localName = "operationScope")
     List<OperationScope> scopes;
 
     public Restriction() {

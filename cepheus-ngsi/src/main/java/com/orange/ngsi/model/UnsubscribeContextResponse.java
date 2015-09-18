@@ -8,9 +8,12 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 /**
  * UnsubcribeContextResponse
  */
+@JacksonXmlRootElement(localName = "unsubscribeContextResponse")
 public class UnsubscribeContextResponse {
 
     private StatusCode statusCode;

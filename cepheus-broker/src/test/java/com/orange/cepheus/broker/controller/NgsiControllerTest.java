@@ -12,7 +12,6 @@ import com.orange.cepheus.broker.Application;
 import com.orange.cepheus.broker.Configuration;
 import com.orange.cepheus.broker.LocalRegistrations;
 import com.orange.cepheus.broker.Subscriptions;
-import com.orange.cepheus.broker.exception.MissingRemoteBrokerException;
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
 import com.orange.ngsi.client.NgsiClient;
@@ -50,7 +49,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -830,7 +828,7 @@ public class NgsiControllerTest {
         when(ngsiClient.queryContext(any(), any(), any())).thenReturn(queryContextResponseListenableFuture);
 
         QueryContext queryContext = createQueryContextTemperature();
-        queryContext.setAttributList(null);
+        queryContext.setAttributeList(null);
 
         mockMvc.perform(post("/v1/queryContext")
                 .content(json(mapper, queryContext))
