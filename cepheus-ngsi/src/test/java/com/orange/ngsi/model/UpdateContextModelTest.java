@@ -1,14 +1,16 @@
+/*
+ * Copyright (C) 2015 Orange
+ *
+ * This software is distributed under the terms and conditions of the 'GNU GENERAL PUBLIC LICENSE
+ * Version 2' license which can be found in the file 'LICENSE.txt' in this package distribution or
+ * at 'http://www.gnu.org/licenses/gpl-2.0-standalone.html'.
+ */
+
 package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.orange.ngsi.TestConfiguration;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.xml.sax.InputSource;
 
 import javax.xml.xpath.XPath;
@@ -19,9 +21,7 @@ import java.io.StringReader;
 import java.net.URISyntaxException;
 
 import static com.orange.ngsi.Util.createUpdateContextTempSensor;
-import static com.orange.ngsi.Util.xml;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by pborscia on 17/09/2015.

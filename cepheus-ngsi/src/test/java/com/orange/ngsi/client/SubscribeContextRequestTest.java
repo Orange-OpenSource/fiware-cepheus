@@ -15,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -25,15 +24,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import javax.inject.Inject;
 
-import java.net.URISyntaxException;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
@@ -101,6 +97,7 @@ public class SubscribeContextRequestTest {
     @Test
     public void subscribeContextRequestOK() throws Exception {
 
+        ngsiClient.dispatcher.registerHost(baseUrl, MediaType.APPLICATION_JSON_VALUE, true);
         String responseBody = json(jsonConverter, createSubscribeContextResponseTemperature());
 
         this.mockServer.expect(requestTo(baseUrl + "/ngsi10/subscribeContext")).andExpect(method(HttpMethod.POST))

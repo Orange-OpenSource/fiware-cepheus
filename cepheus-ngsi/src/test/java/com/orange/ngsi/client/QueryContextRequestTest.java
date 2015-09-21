@@ -10,7 +10,6 @@ package com.orange.ngsi.client;
 
 import com.orange.ngsi.TestConfiguration;
 import com.orange.ngsi.model.CodeEnum;
-import com.orange.ngsi.model.NotifyContextResponse;
 import com.orange.ngsi.model.QueryContextResponse;
 import org.junit.After;
 import org.junit.Assert;
@@ -97,6 +96,8 @@ public class QueryContextRequestTest {
 
     @Test
     public void queryContextRequestOK() throws Exception {
+
+        ngsiClient.dispatcher.registerHost(baseUrl, MediaType.APPLICATION_JSON_VALUE, true);
 
         String responseBody = json(jsonConverter, createQueryContextResponseTemperature());
 

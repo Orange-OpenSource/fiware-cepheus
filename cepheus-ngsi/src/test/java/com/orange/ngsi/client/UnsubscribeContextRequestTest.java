@@ -15,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -31,7 +30,6 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import javax.inject.Inject;
 
-import java.net.URISyntaxException;
 import java.util.function.Consumer;
 
 import static org.hamcrest.Matchers.hasToString;
@@ -101,6 +99,7 @@ public class UnsubscribeContextRequestTest {
     @Test
     public void unsubscribeContextRequestOK() throws Exception {
 
+        ngsiClient.dispatcher.registerHost(baseUrl, MediaType.APPLICATION_JSON_VALUE, true);
         String responseBody = json(jsonConverter, createUnsubscribeContextResponse(CodeEnum.CODE_200, subscriptionID));
 
         this.mockServer.expect(requestTo(baseUrl + "/ngsi10/unsubscribeContext")).andExpect(method(HttpMethod.POST))

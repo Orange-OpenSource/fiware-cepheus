@@ -49,8 +49,8 @@ public class HttpConfiguration {
     @Value("${ngsi.http.requestTimeout:2000}")
     private int requestTimeout;
 
-
     @Bean
+    @Resource(name = "jsonV1Converter")
     public AsyncRestTemplate asyncRestTemplate(AsyncClientHttpRequestFactory asyncClientHttpRequestFactory,
             MappingJackson2HttpMessageConverter jsonConverter) {
         AsyncRestTemplate restTemplate = new AsyncRestTemplate(asyncClientHttpRequestFactory);

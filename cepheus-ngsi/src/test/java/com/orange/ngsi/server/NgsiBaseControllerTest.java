@@ -69,7 +69,7 @@ public class NgsiBaseControllerTest {
     @Test
     public void checkNotifyContextNotImplemented() throws Exception {
         mockMvc.perform(
-                post("/ni/notifyContext").content(json(jsonConverter, createNotifyContextTempSensor(0))).contentType(MediaType.APPLICATION_JSON))
+                post("/ni/notifyContext").content(json(jsonConverter, createNotifyContextTempSensor(0))).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
@@ -77,7 +77,7 @@ public class NgsiBaseControllerTest {
     @Test
     public void checkUpdateContextNotImplemented() throws Exception {
         mockMvc.perform(
-                post("/ni/updateContext").content(json(jsonConverter, createUpdateContextTempSensor(0))).contentType(MediaType.APPLICATION_JSON))
+                post("/ni/updateContext").content(json(jsonConverter, createUpdateContextTempSensor(0))).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
@@ -85,7 +85,7 @@ public class NgsiBaseControllerTest {
     @Test
     public void checkRegisterContextNotImplemented() throws Exception {
         mockMvc.perform(post("/ni/registerContext").content(json(jsonConverter, createRegisterContextTemperature()))
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
@@ -94,7 +94,7 @@ public class NgsiBaseControllerTest {
     public void checkSubscribeContextNotImplemented() throws Exception {
         mockMvc.perform(post("/ni/subscribeContext")
                 .content(json(jsonConverter, createSubscribeContextTemperature()))
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
@@ -103,7 +103,7 @@ public class NgsiBaseControllerTest {
     public void checkUnsubscribeContextNotImplemented() throws Exception {
         mockMvc.perform(post("/ni/unsubscribeContext")
                 .content(json(jsonConverter, createUnsubscribeContext()))
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
@@ -112,7 +112,7 @@ public class NgsiBaseControllerTest {
     public void checkQueryContextNotImplemented() throws Exception {
         mockMvc.perform(post("/ni/queryContext")
                 .content(json(jsonConverter, createQueryContextTemperature()))
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_403.getLabel()));
     }
@@ -121,21 +121,21 @@ public class NgsiBaseControllerTest {
     public void checkNotifyContextImplemented() throws Exception {
         mockMvc.perform(post("/i/notifyContext")
                 .content(json(jsonConverter, createNotifyContextTempSensor(0)))
-                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
 
     @Test
     public void checkNotifyContextImplementedInXml() throws Exception {
         mockMvc.perform(post("/i/notifyContext")
                 .content(xmlmapper.writeValueAsString(createNotifyContextTempSensor(0)))
-                .contentType(MediaType.APPLICATION_XML)).andExpect(status().isOk());
+                .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML)).andExpect(status().isOk());
     }
 
     @Test
     public void checkUpdateContextImplemented() throws Exception {
         mockMvc.perform(post("/i/updateContext")
                 .content(json(jsonConverter, createUpdateContextTempSensor(0)))
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -143,7 +143,7 @@ public class NgsiBaseControllerTest {
     public void checkUpdateContextImplementedInXml() throws Exception {
         mockMvc.perform(post("/i/updateContext")
                 .content(xmlmapper.writeValueAsString(createUpdateContextTempSensor(0)))
-                .contentType(MediaType.APPLICATION_XML))
+                .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
                 .andExpect(status().isOk());
     }
 
@@ -151,7 +151,7 @@ public class NgsiBaseControllerTest {
     public void checkRegisterContextImplemented() throws Exception {
         mockMvc.perform(post("/i/registerContext")
                 .content(json(jsonConverter, createRegisterContextTemperature()))
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -159,7 +159,7 @@ public class NgsiBaseControllerTest {
     public void checkRegisterContextImplementedInXml() throws Exception {
         mockMvc.perform(post("/i/registerContext")
                 .content(xmlmapper.writeValueAsString(createRegisterContextTemperature()))
-                .contentType(MediaType.APPLICATION_XML))
+                .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
                 .andExpect(status().isOk());
     }
 
@@ -167,7 +167,7 @@ public class NgsiBaseControllerTest {
     public void checkSubscribeContextImplemented() throws Exception {
         mockMvc.perform(post("/i/subscribeContext")
                 .content(json(jsonConverter, createSubscribeContextTemperature()))
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -175,7 +175,7 @@ public class NgsiBaseControllerTest {
     public void checkSubscribeContextImplementedInXml() throws Exception {
         mockMvc.perform(post("/i/subscribeContext")
                 .content(xmlmapper.writeValueAsString(createSubscribeContextTemperature()))
-                .contentType(MediaType.APPLICATION_XML))
+                .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
                 .andExpect(status().isOk());
     }
 
@@ -183,7 +183,7 @@ public class NgsiBaseControllerTest {
     public void checkUnsubscribeContextImplemented() throws Exception {
         mockMvc.perform(post("/i/unsubscribeContext")
                 .content(json(jsonConverter, createUnsubscribeContext()))
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
@@ -191,28 +191,28 @@ public class NgsiBaseControllerTest {
     public void checkUnsubscribeContextImplementedInXml() throws Exception {
         mockMvc.perform(post("/i/unsubscribeContext")
                 .content(xmlmapper.writeValueAsString(createUnsubscribeContext()))
-                .contentType(MediaType.APPLICATION_XML))
+                .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void checkQueryContextImplemented() throws Exception {
         mockMvc.perform(
-                post("/i/queryContext").content(json(jsonConverter, createQueryContextTemperature())).contentType(MediaType.APPLICATION_JSON))
+                post("/i/queryContext").content(json(jsonConverter, createQueryContextTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void checkQueryContextImplementedInXml() throws Exception {
         mockMvc.perform(
-                post("/i/queryContext").content(xmlmapper.writeValueAsString(createQueryContextTemperature())).contentType(MediaType.APPLICATION_XML))
+                post("/i/queryContext").content(xmlmapper.writeValueAsString(createQueryContextTemperature())).contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void jsonSyntaxErrorHandling() throws Exception {
 
-        mockMvc.perform(post("/ni/notifyContext").content("bad JSON").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/notifyContext").content("bad JSON").contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_400.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_400.getShortPhrase()))
@@ -222,11 +222,11 @@ public class NgsiBaseControllerTest {
     @Test
     public void xmlSyntaxErrorHandling() throws Exception {
 
-        mockMvc.perform(post("/ni/notifyContext").content("bad xml").contentType(MediaType.APPLICATION_XML))
+        mockMvc.perform(post("/ni/notifyContext").content("bad xml").contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_400.getLabel()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_400.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value(CodeEnum.CODE_400.getLongPhrase()));
+                .andExpect(MockMvcResultMatchers.xpath("notifyContextResponse/responseCode/code").string(CodeEnum.CODE_400.getLabel()))
+                .andExpect(MockMvcResultMatchers.xpath("notifyContextResponse/responseCode/reasonPhrase").string(CodeEnum.CODE_400.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.xpath("notifyContextResponse/responseCode/detail").string(CodeEnum.CODE_400.getLongPhrase()));
     }
 
     @Test
@@ -235,7 +235,7 @@ public class NgsiBaseControllerTest {
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
         notifyContext.setSubscriptionId(null);
 
-        mockMvc.perform(post("/ni/notifyContext").content(json(jsonConverter, notifyContext)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/notifyContext").content(json(jsonConverter, notifyContext)).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
@@ -249,7 +249,7 @@ public class NgsiBaseControllerTest {
         UpdateContext updateContext = createUpdateContextTempSensor(0);
         updateContext.setUpdateAction(null);
 
-        mockMvc.perform(post("/ni/updateContext").content(json(jsonConverter, updateContext)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/updateContext").content(json(jsonConverter, updateContext)).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
@@ -261,7 +261,7 @@ public class NgsiBaseControllerTest {
 
         RegisterContext registerContext = new RegisterContext();
 
-        mockMvc.perform(post("/ni/registerContext").content(json(jsonConverter, registerContext)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/registerContext").content(json(jsonConverter, registerContext)).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
@@ -273,7 +273,7 @@ public class NgsiBaseControllerTest {
 
         SubscribeContext subscribeContext = new SubscribeContext();
 
-        mockMvc.perform(post("/ni/subscribeContext").content(json(jsonConverter, subscribeContext)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/subscribeContext").content(json(jsonConverter, subscribeContext)).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
@@ -285,7 +285,7 @@ public class NgsiBaseControllerTest {
 
         UnsubscribeContext unsubscribeContext = new UnsubscribeContext();
 
-        mockMvc.perform(post("/ni/unsubscribeContext").content(json(jsonConverter, unsubscribeContext)).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/ni/unsubscribeContext").content(json(jsonConverter, unsubscribeContext)).contentType(MediaType.APPLICATION_JSON).header("Host","localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
@@ -299,7 +299,7 @@ public class NgsiBaseControllerTest {
 
         mockMvc.perform(post("/ni/queryContext")
                 .content(json(jsonConverter, queryContext))
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))

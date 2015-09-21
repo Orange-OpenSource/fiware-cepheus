@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -73,34 +74,42 @@ public class UpdateContextRequestTest {
     private MappingJackson2HttpMessageConverter jsonConverter;
 
     @Inject
-    private AsyncRestTemplate asyncRestTemplate;
+    public AsyncRestTemplate asyncRestTemplate;
 
     @Autowired
-    ApplicationContext applicationContext;
+    public ApplicationContext applicationContext;
+
+    @Mock
+    public Dispatcher dispatcher;
 
     @Autowired
-    NgsiClient ngsiClient;
+    @InjectMocks
+    public NgsiClient ngsiClient;
 
-    private ObjectMapper xmlmapper = new XmlMapper();
+    private XmlMapper xmlmapper = new XmlMapper();
 
-    private Consumer<UpdateContextResponse> onSuccess = Mockito.mock(Consumer.class);
+    public Consumer<UpdateContextResponse> onSuccess = Mockito.mock(Consumer.class);
 
-    private Consumer<Throwable> onFailure = Mockito.mock(Consumer.class);
+    public Consumer<Throwable> onFailure = Mockito.mock(Consumer.class);
 
     @Before
     public void setup() throws URISyntaxException {
         this.mockServer = MockRestServiceServer.createServer(asyncRestTemplate);
+        MockitoAnnotations.initMocks(this);
     }
 
     @After
     public void tearDown() {
         reset(onSuccess);
         reset(onFailure);
-
+        reset(dispatcher);
     }
 
     @Test
     public void performPostXmlWith200() throws Exception {
+
+        // prepare mock
+        when(dispatcher.supportXml(any())).thenReturn(true);
 
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
         httpHeaders.add("Fiware-Service", serviceName);
@@ -123,7 +132,9 @@ public class UpdateContextRequestTest {
     @Test
     public void performPostWith200() throws Exception {
 
-        ngsiClient.dispatcher.addJsonHost(brokerUrl, MediaType.APPLICATION_JSON_VALUE, true);
+        // prepare mock
+        when(dispatcher.supportXml(any())).thenReturn(false);
+
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
         httpHeaders.add("Fiware-Service", serviceName);
         httpHeaders.add("Fiware-ServicePath", servicePath);
@@ -143,6 +154,10 @@ public class UpdateContextRequestTest {
 
     @Test(expected = HttpClientErrorException.class)
     public void performPostWith404() throws Exception {
+
+        // prepare mock
+        when(dispatcher.supportXml(any())).thenReturn(false);
+
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
@@ -150,7 +165,11 @@ public class UpdateContextRequestTest {
     }
 
     @Test(expected = HttpServerErrorException.class)
-    public void performPostWith500() throws Exception {
+    public void dperformPostWith500() throws Exception {
+
+        // prepare mock
+        when(dispatcher.supportXml(any())).thenReturn(false);
+
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
@@ -158,7 +177,11 @@ public class UpdateContextRequestTest {
     }
 
     @Test(expected = ResourceAccessException.class)
-    public void performPostWithTimeout() throws Exception {
+    public void eperformPostWithTimeout() throws Exception {
+
+        // prepare mock
+        when(dispatcher.supportXml(any())).thenReturn(false);
+
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(TimeoutResponseCreator.withTimeout());
 

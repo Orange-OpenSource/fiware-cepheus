@@ -11,7 +11,6 @@ package com.orange.ngsi.client;
 import com.orange.ngsi.TestConfiguration;
 import com.orange.ngsi.model.CodeEnum;
 import com.orange.ngsi.model.NotifyContextResponse;
-import com.orange.ngsi.model.SubscribeContextResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -97,6 +96,8 @@ public class NotifyContextRequestTest {
 
     @Test
     public void notifyContextRequestOK() throws Exception {
+
+        ngsiClient.dispatcher.registerHost(baseUrl, MediaType.APPLICATION_JSON_VALUE, true);
 
         String responseBody = json(jsonConverter, createNotifyContextResponseTempSensor());
 

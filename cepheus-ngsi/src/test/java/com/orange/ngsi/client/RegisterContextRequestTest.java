@@ -10,7 +10,6 @@ package com.orange.ngsi.client;
 
 import com.orange.ngsi.TestConfiguration;
 import com.orange.ngsi.model.RegisterContextResponse;
-import com.orange.ngsi.model.SubscribeContextResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -96,6 +95,7 @@ public class RegisterContextRequestTest {
     @Test
     public void registerContextRequestOK() throws Exception {
 
+        ngsiClient.dispatcher.registerHost(baseUrl, MediaType.APPLICATION_JSON_VALUE, true);
         String responseBody = json(jsonConverter, createRegisterContextResponseTemperature());
 
         this.mockServer.expect(requestTo(baseUrl + "/ngsi9/registerContext")).andExpect(method(HttpMethod.POST))
