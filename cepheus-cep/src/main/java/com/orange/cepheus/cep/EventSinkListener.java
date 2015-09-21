@@ -152,7 +152,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
      * Set custom headers for Brokers
      */
     private HttpHeaders getHeadersForBroker(Broker broker) {
-        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders();
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(broker.getUrl());
         if (broker.getServiceName() != null) {
             httpHeaders.add("Fiware-Service", broker.getServiceName());
         }

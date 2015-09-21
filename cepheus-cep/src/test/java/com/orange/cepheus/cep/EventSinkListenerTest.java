@@ -26,8 +26,10 @@ import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -83,8 +85,12 @@ public class EventSinkListenerTest {
     @Test
     public void postMessageOnEventUpdate() {
 
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
         when(statement.getText()).thenReturn("statement");
-        when(ngsiClient.getRequestHeaders()).thenReturn(new HttpHeaders());
+        when(ngsiClient.getRequestHeaders(any())).thenReturn(httpHeaders);
 
         // Trigger event update
         List<ContextAttribute> attributes = new LinkedList<>();
@@ -106,6 +112,8 @@ public class EventSinkListenerTest {
 
         // Check headers are valid
         HttpHeaders headers = headersArg.getValue();
+        assertEquals(MediaType.APPLICATION_JSON, headers.getContentType());
+        assertTrue(headers.getAccept().contains(MediaType.APPLICATION_JSON));
         assertEquals("SN", headers.getFirst("Fiware-Service"));
         assertEquals("SP", headers.getFirst("Fiware-ServicePath"));
         assertEquals("AUTH_TOKEN", headers.getFirst("X-Auth-Token"));
