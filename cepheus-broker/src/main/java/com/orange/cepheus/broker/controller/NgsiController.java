@@ -78,9 +78,10 @@ public class NgsiController extends NgsiBaseController {
         Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
         if (providingApplication.hasNext()) {
             // Forward the update to the first providing Application (command)
-            final String urlProvider = providingApplication.next().toString();
-            logger.debug("=> updateContext forwarded to {}", urlProvider);
-            return ngsiClient.updateContext(urlProvider, null, update).get();
+            final String providerUrl = providingApplication.next().toString();
+            HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(providerUrl);
+            logger.debug("=> updateContext forwarded to {} with Content-Type {}", providerUrl, httpHeaders.getContentType());
+            return ngsiClient.updateContext(providerUrl, httpHeaders, update).get();
         }
 
         // Forward the update to the remote broker
@@ -88,8 +89,9 @@ public class NgsiController extends NgsiBaseController {
         if (brokerUrl == null || brokerUrl.isEmpty()) {
             logger.warn("No remote.url parameter defined to forward updateContext");
         } else {
-            logger.debug("=> updateContext forwarded to remote broker {}", brokerUrl);
-            ngsiClient.updateContext(brokerUrl, getRemoteBrokerHeaders(), update).addCallback(
+            HttpHeaders httpHeaders = getRemoteBrokerHeaders(brokerUrl);
+            logger.debug("=> updateContext forwarded to remote broker {} with Content-Type {}", brokerUrl, httpHeaders.getContentType());
+            ngsiClient.updateContext(brokerUrl, httpHeaders, update).addCallback(
                     updateContextResponse -> logger.debug("UpdateContext completed for {} ", brokerUrl),
                     throwable -> logger.warn("UpdateContext failed for {}: {}", brokerUrl, throwable.toString()));
         }
@@ -112,9 +114,10 @@ public class NgsiController extends NgsiBaseController {
                 notifyContext.setContextElementResponseList(contextElementResponseList);
                 String providerUrl = subscribeContext.getReference().toString();
 
-                logger.debug("=> notifyContext to {}", providerUrl);
+                HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(providerUrl);
+                logger.debug("=> notifyContext to {} with Content-Type {}", providerUrl, httpHeaders.getContentType());
 
-                ngsiClient.notifyContext(providerUrl, null, notifyContext).addCallback(
+                ngsiClient.notifyContext(providerUrl, httpHeaders, notifyContext).addCallback(
                                 notifyContextResponse -> logger.debug("NotifyContext completed for {}", providerUrl),
                                 throwable -> logger.warn("NotifyContext failed for {}: {}", providerUrl, throwable.toString()));
             }
@@ -138,9 +141,10 @@ public class NgsiController extends NgsiBaseController {
         Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(query.getEntityIdList().get(0), attributes);
         if (providingApplication.hasNext()) {
             // forward to providing application
-            final String urlProvider = providingApplication.next().toString();
-            logger.debug("=> queryContext forwarded to : {}", urlProvider);
-            return ngsiClient.queryContext(urlProvider, null, query).get();
+            final String providerUrl = providingApplication.next().toString();
+            HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(providerUrl);
+            logger.debug("=> queryContext forwarded to : {} with Content-Type {}", providerUrl, httpHeaders.getContentType());
+            return ngsiClient.queryContext(providerUrl, httpHeaders, query).get();
         }
 
         String brokerUrl = configuration.getRemoteUrl();
@@ -148,8 +152,9 @@ public class NgsiController extends NgsiBaseController {
             throw new MissingRemoteBrokerException("No remote.url parameter defined to forward queryContext");
         }
         // forward query to remote broker
-        logger.debug("=> queryContext forwarded to remote broker : {}", brokerUrl);
-        return ngsiClient.queryContext(brokerUrl, getRemoteBrokerHeaders(), query).get();
+        HttpHeaders httpHeaders = getRemoteBrokerHeaders(brokerUrl);
+        logger.debug("=> queryContext forwarded to remote broker : {} with Content-Type : {}", brokerUrl, httpHeaders.getContentType());
+        return ngsiClient.queryContext(brokerUrl, httpHeaders, query).get();
     }
 
     @Override
@@ -216,8 +221,8 @@ public class NgsiController extends NgsiBaseController {
         return errorResponse(req.getRequestURI(), statusCode);
     }
 
-    private HttpHeaders getRemoteBrokerHeaders() {
-        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders();
+    private HttpHeaders getRemoteBrokerHeaders(String brokerUrl) {
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
         configuration.addRemoteHeaders(httpHeaders);
         return httpHeaders;
     }
