@@ -26,12 +26,13 @@ public interface Persistence {
     /**
      * Load persited configuration to the CEP
      * @throws PersistenceException when the configuration could not be loaded successfully
+     * @return configuration
      */
     Configuration loadConfiguration() throws PersistenceException;
 
     /**
      * Save configuration
-     * @param configuration
+     * @param configuration cep configuration
      * @throws PersistenceException when the configuration could not be saved successfully
      */
     void saveConfiguration(Configuration configuration) throws PersistenceException;

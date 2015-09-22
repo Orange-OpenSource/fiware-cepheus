@@ -37,8 +37,7 @@ import java.util.stream.Collectors;
 /**
  * SubscriptionManager manage subscriptions of EventTypeIn to provider
  * When a configuration is loaded, SubscriptionManager send subscription to every provider
- * Every five minutes SubscriptionManager verify if subscription is valid (subscriptionDate
- * is not null or (subscriptionDate + duration) < current Date
+ * Every five minutes SubscriptionManager verify if subscription is valid
  */
 @Component
 public class SubscriptionManager {

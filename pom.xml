@@ -185,6 +185,10 @@
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
+                                <configuration>
+                                    <failOnError>false</failOnError>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
