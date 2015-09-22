@@ -22,7 +22,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <gpg.keyname>BA2F4249</gpg.keyname>
+                <gpg.executable>gpg2</gpg.executable>
             </properties>
         </profile>
     </profiles>
