@@ -97,7 +97,7 @@ public class SubscribeContextRequestTest {
     @Test
     public void subscribeContextRequestOK() throws Exception {
 
-        ngsiClient.dispatcher.registerHost(baseUrl, MediaType.APPLICATION_JSON_VALUE, true);
+        ngsiClient.dispatcher.registerHost(baseUrl, true);
         String responseBody = json(jsonConverter, createSubscribeContextResponseTemperature());
 
         this.mockServer.expect(requestTo(baseUrl + "/ngsi10/subscribeContext")).andExpect(method(HttpMethod.POST))

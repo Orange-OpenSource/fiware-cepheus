@@ -10,9 +10,7 @@ package com.orange.ngsi;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.ObjectError;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,81 +25,68 @@ public class Dispatcher {
 
     private static Logger logger = LoggerFactory.getLogger(Dispatcher.class);
 
+    /**
+     * Keeps track of hosts supporting json (true => v1, false => v2).
+     * Hosts only supporting xml are not added (returning null).
+     */
     private Map<String, Boolean> jsonHost = new HashMap<>();
 
     /**
-     * memorize the host accept json and api version
+     * memorize the host supports the JSON v1 or v2 APIs
      * @param url of the host
-     * @param accept of Request header
-     * @param v1 true if host accept api v1 false if host accept api v2
-     * @throws URISyntaxException
+     * @param v1 true if host accept api v1, false if host accept api v2
      */
-    public void registerHost(String url, String accept, boolean v1) {
-        String host = null;
-        host = getHost(url);
-        if (host != null) {
-            if ((jsonHost.get(host) == null) && (accept.contains(MediaType.APPLICATION_JSON_VALUE))) {
-                jsonHost.put(host, v1);
-            }
-        } else {
-            logger.warn("failed to registerHost into Dispatcher cause: host is null in requestUrl {}", url);
+    public void registerHost(String url, boolean v1) {
+        try {
+            jsonHost.put(getHost(url), v1);
+        } catch (URISyntaxException e) {
+            logger.warn("failed to register url {}", url);
         }
     }
 
     /**
      * indicate if the host support V1 Json
      * @param url of the host
-     * @return true if host support api v1, null can be returned if host do not support json
-     * @throws URISyntaxException
+     * @return true if host support api v1
      */
-    public Boolean supportV1Json(String url) {
-        if (supportXml(url)) {
+    public boolean supportV1Json(String url) {
+        try {
+            Boolean result = jsonHost.get(getHost(url));
+            return result != null && result;
+        } catch (URISyntaxException e) {
             return false;
         }
-        return jsonHost.get(getHost(url));
     }
 
     /**
      * indicate if the host support V2 Json
      * @param url of the host
-     * @return true if host support api v2, null can be returned if host do not support json
-     * @throws URISyntaxException
+     * @return true if host support api v2
      */
-    public Boolean supportV2Json(String url) throws URISyntaxException {
-        if (supportXml(url)) {
+    public boolean supportV2Json(String url) throws URISyntaxException {
+        try {
+            Boolean result = jsonHost.get(getHost(url));
+            return result != null && !result;
+        } catch (URISyntaxException e) {
             return false;
         }
-        return !jsonHost.get(getHost(url));
     }
 
     /**
-     * indicate if the host support Xml
+     * indicate if the host supports xml
      * @param url of the host
-     * @return true if host support xml else false
-     * @throws URISyntaxException
+     * @return false if host does not support v1 or v2 json
      */
-    public Boolean supportXml(String url) {
-        String host = getHost(url);
-        if (host != null) {
-            return jsonHost.get(getHost(url)) == null ? true : false ;
-        } else {
-            logger.warn("failed to registerHost into Dispatcher cause: host is null in requestUrl {}", url);
+    public boolean supportXml(String url) {
+        try {
+            return jsonHost.get(getHost(url)) == null;
+        } catch (URISyntaxException e) {
             return true;
         }
     }
 
-    private String getHost(String url) {
-        URI uri = null;
-        try {
-            uri = new URI(url);
-            StringBuffer hostAndPort = new StringBuffer(uri.getHost());
-            hostAndPort.append(":");
-            hostAndPort.append(uri.getPort());
-            return hostAndPort.toString();
-        } catch (URISyntaxException e) {
-            logger.warn("failed into Dispatcher cause: URISyntaxException {}", e.getMessage());
-        }
-        return null;
+    private String getHost(String url) throws URISyntaxException {
+        URI uri = new URI(url);
+        return uri.getHost() + ":" + uri.getPort();
     }
-
 }

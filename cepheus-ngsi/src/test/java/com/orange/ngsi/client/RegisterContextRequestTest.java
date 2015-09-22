@@ -95,7 +95,7 @@ public class RegisterContextRequestTest {
     @Test
     public void registerContextRequestOK() throws Exception {
 
-        ngsiClient.dispatcher.registerHost(baseUrl, MediaType.APPLICATION_JSON_VALUE, true);
+        ngsiClient.dispatcher.registerHost(baseUrl, true);
         String responseBody = json(jsonConverter, createRegisterContextResponseTemperature());
 
         this.mockServer.expect(requestTo(baseUrl + "/ngsi9/registerContext")).andExpect(method(HttpMethod.POST))

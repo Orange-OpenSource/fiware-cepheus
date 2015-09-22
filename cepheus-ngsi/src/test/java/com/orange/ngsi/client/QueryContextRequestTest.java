@@ -97,7 +97,7 @@ public class QueryContextRequestTest {
     @Test
     public void queryContextRequestOK() throws Exception {
 
-        ngsiClient.dispatcher.registerHost(baseUrl, MediaType.APPLICATION_JSON_VALUE, true);
+        ngsiClient.dispatcher.registerHost(baseUrl, true);
 
         String responseBody = json(jsonConverter, createQueryContextResponseTemperature());
 

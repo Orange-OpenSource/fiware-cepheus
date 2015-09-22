@@ -24,7 +24,7 @@ public class DispatcherTest {
 
     @Test
     public void supportV1JsonTest() throws URISyntaxException {
-        dispatcher.registerHost("http://localhost:8080", MediaType.APPLICATION_JSON_VALUE, true);
+        dispatcher.registerHost("http://localhost:8080", true);
         assertEquals(true, dispatcher.supportV1Json("http://localhost:8080"));
         assertEquals(false, dispatcher.supportV2Json("http://localhost:8080"));
         assertEquals(false, dispatcher.supportXml("http://localhost:8080"));
@@ -32,7 +32,7 @@ public class DispatcherTest {
 
     @Test
     public void supportV2JsonTest() throws URISyntaxException {
-        dispatcher.registerHost("http://localhost:8081", MediaType.APPLICATION_JSON_VALUE, false);
+        dispatcher.registerHost("http://localhost:8081", false);
         assertEquals(false, dispatcher.supportV1Json("http://localhost:8081"));
         assertEquals(true, dispatcher.supportV2Json("http://localhost:8081"));
         assertEquals(false, dispatcher.supportXml("http://localhost:8081"));
@@ -40,7 +40,6 @@ public class DispatcherTest {
 
     @Test
     public void supportXmlTest() throws URISyntaxException {
-        dispatcher.registerHost("http://localhost:8082", MediaType.APPLICATION_XML_VALUE, true);
         assertEquals(false, dispatcher.supportV1Json("http://localhost:8082"));
         assertEquals(false, dispatcher.supportV2Json("http://localhost:8082"));
         assertEquals(true, dispatcher.supportXml("http://localhost:8082"));
@@ -48,7 +47,7 @@ public class DispatcherTest {
 
     @Test
     public void registerHostWithURIExceptionTest() {
-        dispatcher.registerHost("http://localhost :8082", MediaType.APPLICATION_JSON_VALUE, true);
+        dispatcher.registerHost("http://localhost :8082", true);
     }
 
     @Test

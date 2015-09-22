@@ -97,7 +97,7 @@ public class NotifyContextRequestTest {
     @Test
     public void notifyContextRequestOK() throws Exception {
 
-        ngsiClient.dispatcher.registerHost(baseUrl, MediaType.APPLICATION_JSON_VALUE, true);
+        ngsiClient.dispatcher.registerHost(baseUrl, true);
 
         String responseBody = json(jsonConverter, createNotifyContextResponseTempSensor());
 

@@ -180,14 +180,21 @@ public class NgsiBaseController {
         return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 
-    private void registerIntoDispatcher(HttpServletRequest httpServletRequest){
+    /**
+     * Register the host to dispatcher if it supports JSON
+     * @param httpServletRequest the request
+     */
+    private void registerIntoDispatcher(HttpServletRequest httpServletRequest) {
+        String uri = httpServletRequest.getRequestURI();
+
+        // Use Accept or fallback to Content-Type if not defined
         String accept = httpServletRequest.getHeader("Accept");
-        String contentType = httpServletRequest.getHeader("Content-Type");
-        String uri = httpServletRequest.getRequestURL().toString();
-        if ((accept == null) || (accept.isEmpty())) {
-            dispatcher.registerHost(uri, contentType, true);
-        } else {
-            dispatcher.registerHost(uri, accept, true);
+        if (accept == null) {
+            accept = httpServletRequest.getHeader("Content-Type");
+        }
+
+        if (accept != null && accept.contains(MediaType.APPLICATION_JSON_VALUE)) {
+            dispatcher.registerHost(uri, true);
         }
     }
 }

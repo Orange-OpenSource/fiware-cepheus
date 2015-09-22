@@ -127,10 +127,15 @@ public class NgsiClient {
         return requestHeaders;
     }
 
+    /**
+     * The default HTTP request headers, depends on the host supporting xml or json
+     * @param url
+     * @return the HTTP request headers.
+     */
     public HttpHeaders getRequestHeaders(String url) {
         HttpHeaders requestHeaders = new HttpHeaders();
 
-        if ((url == null) || (dispatcher.supportXml(url))) {
+        if (url == null || dispatcher.supportXml(url)) {
             requestHeaders.setContentType(MediaType.APPLICATION_XML);
             requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
         } else {
