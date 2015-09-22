@@ -58,4 +58,12 @@ case $1 in
             echo "$SERVICE_NAME is not running ..."
         fi
     ;;
+    status)
+        if [ -f $PID_PATH_NAME ]; then
+            PID=$(cat $PID_PATH_NAME);
+            echo "$SERVICE_NAME is running";
+        else
+            echo "$SERVICE_NAME is not running ..."
+        fi
+    ;;
 esac
