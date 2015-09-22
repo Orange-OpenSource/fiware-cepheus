@@ -3,6 +3,6 @@ Version: [[version]]
 Section: misc
 Priority: low
 Architecture: all
-Depends: java8-runtime
+Depends: java8-runtime-headless
 Description: [[description]]
 Maintainer: fiware.d4m@orange.com
