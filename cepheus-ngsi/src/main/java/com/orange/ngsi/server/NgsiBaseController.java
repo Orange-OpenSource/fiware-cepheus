@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Controller for the NGSI 9/10 requests
  */
-@Resource(name = "jsonV1Converter")
 public class NgsiBaseController {
 
     private static Logger logger = LoggerFactory.getLogger(NgsiBaseController.class);

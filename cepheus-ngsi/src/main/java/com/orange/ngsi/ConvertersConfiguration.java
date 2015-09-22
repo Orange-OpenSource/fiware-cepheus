@@ -32,10 +32,10 @@ import java.io.IOException;
 public class ConvertersConfiguration {
 
     @Bean
-    public ObjectMapper jsonV1ObjectMapper(Jackson2ObjectMapperBuilder builder) {
+    public MappingJackson2HttpMessageConverter jsonV1Converter(ObjectMapper objectMapper) {
 
         // Serialize numbers as strings
-        builder.featuresToEnable(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS);
+        objectMapper.configure(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS, true);
 
         // Serialize booleans as strings
         SimpleModule booleanAsString = new SimpleModule("BooleanAsString");
@@ -46,17 +46,13 @@ public class ConvertersConfiguration {
 
             }
         });
-        builder.modulesToInstall(booleanAsString);
+        objectMapper.registerModule(booleanAsString);
 
-        builder.mixIn(ContextElement.class, ContextElementMixIn.class);
+        objectMapper.addMixIn(ContextElement.class, ContextElementMixIn.class);
 
-        return builder.build();
-    }
-
-    @Bean
-    @Resource(name = "jsonV1ObjectMapper")
-    public MappingJackson2HttpMessageConverter jsonV1Converter(ObjectMapper objectMapper) {
         return new MappingJackson2HttpMessageConverter(objectMapper);
     }
+
+
 
 }

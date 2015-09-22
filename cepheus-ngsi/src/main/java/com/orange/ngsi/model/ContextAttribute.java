@@ -26,6 +26,7 @@ public class ContextAttribute {
 
     private String type;
 
+    @JacksonXmlProperty(localName = "contextValue")
     private Object value;
 
     @JsonProperty("metadatas")

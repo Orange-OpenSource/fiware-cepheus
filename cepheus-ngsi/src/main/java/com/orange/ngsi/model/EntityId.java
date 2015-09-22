@@ -14,12 +14,13 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 /**
  * Created by pborscia on 04/06/2015.
  */
-//@JacksonXmlRootElement(localName = "entityId")
 public class EntityId {
 
     private String id;
+
     @JacksonXmlProperty(isAttribute = true)
     private String type;
+
     @JacksonXmlProperty(isAttribute = true)
     private Boolean isPattern;
 

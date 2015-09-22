@@ -32,7 +32,7 @@ public class ContextAttributeModelTest {
                 "        <contextAttribute>\n" +
                         "        <name>A</name>\n" +
                         "        <type>T</type>\n" +
-                        "        <value>22</value>\n" +
+                        "        <contextValue>22</contextValue>\n" +
                         "        </contextAttribute>\n";
 
         ObjectMapper xmlmapper = new XmlMapper();
