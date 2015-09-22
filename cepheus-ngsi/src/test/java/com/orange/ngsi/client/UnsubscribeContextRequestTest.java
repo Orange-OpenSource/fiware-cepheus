@@ -99,7 +99,7 @@ public class UnsubscribeContextRequestTest {
     @Test
     public void unsubscribeContextRequestOK() throws Exception {
 
-        ngsiClient.dispatcher.registerHost(baseUrl, true);
+        ngsiClient.protocolRegistry.registerHost(baseUrl, true);
         String responseBody = json(jsonConverter, createUnsubscribeContextResponse(CodeEnum.CODE_200, subscriptionID));
 
         this.mockServer.expect(requestTo(baseUrl + "/ngsi10/unsubscribeContext")).andExpect(method(HttpMethod.POST))

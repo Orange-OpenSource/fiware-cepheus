@@ -8,24 +8,20 @@
 
 package com.orange.ngsi.server;
 
-import com.orange.ngsi.Dispatcher;
+import com.orange.ngsi.ProtocolRegistry;
 import com.orange.ngsi.exception.MissingRequestParameterException;
 import com.orange.ngsi.model.*;
-import org.apache.http.impl.bootstrap.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.RequestContext;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.net.URISyntaxException;
 
 /**
  * Controller for the NGSI 9/10 requests
@@ -39,7 +35,7 @@ public class NgsiBaseController {
     private NgsiValidation ngsiValidation;
 
     @Autowired
-    private Dispatcher dispatcher;
+    private ProtocolRegistry protocolRegistry;
 
     /*
      * NGSI v1 API mapping
@@ -181,7 +177,7 @@ public class NgsiBaseController {
     }
 
     /**
-     * Register the host to dispatcher if it supports JSON
+     * Register the host to protocolRegistry if it supports JSON
      * @param httpServletRequest the request
      */
     private void registerIntoDispatcher(HttpServletRequest httpServletRequest) {
@@ -194,7 +190,7 @@ public class NgsiBaseController {
         }
 
         if (accept != null && accept.contains(MediaType.APPLICATION_JSON_VALUE)) {
-            dispatcher.registerHost(uri, true);
+            protocolRegistry.registerHost(uri, true);
         }
     }
 }

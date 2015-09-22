@@ -8,12 +8,10 @@
 
 package com.orange.cepheus.broker;
 
-import com.orange.ngsi.Dispatcher;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.RegisterContext;
 import com.orange.ngsi.model.RegisterContextResponse;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

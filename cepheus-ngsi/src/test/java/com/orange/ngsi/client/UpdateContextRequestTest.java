@@ -8,12 +8,10 @@
 
 package com.orange.ngsi.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.orange.ngsi.Dispatcher;
+import com.orange.ngsi.ProtocolRegistry;
 import com.orange.ngsi.TestConfiguration;
 import com.orange.ngsi.model.UpdateAction;
-import com.orange.ngsi.model.UpdateContext;
 import com.orange.ngsi.model.UpdateContextResponse;
 import org.junit.After;
 import org.junit.Before;
@@ -34,10 +32,8 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.ResponseCreator;
-import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -46,8 +42,6 @@ import org.springframework.web.client.ResourceAccessException;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -80,7 +74,7 @@ public class UpdateContextRequestTest {
     public ApplicationContext applicationContext;
 
     @Mock
-    public Dispatcher dispatcher;
+    public ProtocolRegistry protocolRegistry;
 
     @Autowired
     @InjectMocks
@@ -102,14 +96,14 @@ public class UpdateContextRequestTest {
     public void tearDown() {
         reset(onSuccess);
         reset(onFailure);
-        reset(dispatcher);
+        reset(protocolRegistry);
     }
 
     @Test
     public void performPostXmlWith200() throws Exception {
 
         // prepare mock
-        when(dispatcher.supportXml(any())).thenReturn(true);
+        when(protocolRegistry.supportXml(any())).thenReturn(true);
 
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
         httpHeaders.add("Fiware-Service", serviceName);
@@ -133,7 +127,7 @@ public class UpdateContextRequestTest {
     public void performPostWith200() throws Exception {
 
         // prepare mock
-        when(dispatcher.supportXml(any())).thenReturn(false);
+        when(protocolRegistry.supportXml(any())).thenReturn(false);
 
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
         httpHeaders.add("Fiware-Service", serviceName);
@@ -156,7 +150,7 @@ public class UpdateContextRequestTest {
     public void performPostWith404() throws Exception {
 
         // prepare mock
-        when(dispatcher.supportXml(any())).thenReturn(false);
+        when(protocolRegistry.supportXml(any())).thenReturn(false);
 
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
@@ -168,7 +162,7 @@ public class UpdateContextRequestTest {
     public void dperformPostWith500() throws Exception {
 
         // prepare mock
-        when(dispatcher.supportXml(any())).thenReturn(false);
+        when(protocolRegistry.supportXml(any())).thenReturn(false);
 
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
@@ -180,7 +174,7 @@ public class UpdateContextRequestTest {
     public void eperformPostWithTimeout() throws Exception {
 
         // prepare mock
-        when(dispatcher.supportXml(any())).thenReturn(false);
+        when(protocolRegistry.supportXml(any())).thenReturn(false);
 
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(TimeoutResponseCreator.withTimeout());

@@ -21,9 +21,9 @@ import java.util.Map;
  * Identify if host accept json or xml content
  */
 @Component
-public class Dispatcher {
+public class ProtocolRegistry {
 
-    private static Logger logger = LoggerFactory.getLogger(Dispatcher.class);
+    private static Logger logger = LoggerFactory.getLogger(ProtocolRegistry.class);
 
     /**
      * Keeps track of hosts supporting json (true => v1, false => v2).

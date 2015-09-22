@@ -8,7 +8,7 @@
 
 package com.orange.ngsi.client;
 
-import com.orange.ngsi.Dispatcher;
+import com.orange.ngsi.ProtocolRegistry;
 import com.orange.ngsi.model.*;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.slf4j.Logger;
@@ -21,7 +21,6 @@ import org.springframework.util.concurrent.ListenableFutureAdapter;
 import org.springframework.web.client.AsyncRestTemplate;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
@@ -40,7 +39,7 @@ public class NgsiClient {
     public PoolingNHttpClientConnectionManager poolingNHttpClientConnectionManager;
 
     @Autowired
-    public Dispatcher dispatcher;
+    public ProtocolRegistry protocolRegistry;
 
     /**
      * Let some time for the client to shutdown gracefully
@@ -135,14 +134,12 @@ public class NgsiClient {
     public HttpHeaders getRequestHeaders(String url) {
         HttpHeaders requestHeaders = new HttpHeaders();
 
-        if (url == null || dispatcher.supportXml(url)) {
-            requestHeaders.setContentType(MediaType.APPLICATION_XML);
-            requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
-        } else {
-            // host support json
-            requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-            requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        MediaType mediaType = MediaType.APPLICATION_JSON;
+        if (url == null || protocolRegistry.supportXml(url)) {
+            mediaType = MediaType.APPLICATION_XML;
         }
+        requestHeaders.setContentType(mediaType);
+        requestHeaders.setAccept(Collections.singletonList(mediaType));
         return requestHeaders;
     }
 

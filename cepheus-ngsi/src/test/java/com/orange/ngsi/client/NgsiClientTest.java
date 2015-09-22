@@ -8,7 +8,7 @@
 
 package com.orange.ngsi.client;
 
-import com.orange.ngsi.Dispatcher;
+import com.orange.ngsi.ProtocolRegistry;
 import com.orange.ngsi.TestConfiguration;
 import org.junit.After;
 import org.junit.Before;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 public class NgsiClientTest {
 
     @Mock
-    public Dispatcher dispatcher;
+    public ProtocolRegistry protocolRegistry;
 
     @Autowired
     @InjectMocks
@@ -52,7 +52,7 @@ public class NgsiClientTest {
 
     @After
     public void tearDown() {
-        reset(dispatcher);
+        reset(protocolRegistry);
     }
 
     @Test
@@ -75,8 +75,8 @@ public class NgsiClientTest {
     public void getRequestHeadersWithUrlXml() {
 
         // prepare mock
-        when(dispatcher.supportXml(any())).thenReturn(true);
-        when(dispatcher.supportV1Json(any())).thenReturn(false);
+        when(protocolRegistry.supportXml(any())).thenReturn(true);
+        when(protocolRegistry.supportV1Json(any())).thenReturn(false);
 
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders("localhost");
 
@@ -88,8 +88,8 @@ public class NgsiClientTest {
     public void getRequestHeadersWithUrlV1Json() {
 
         // prepare mock
-        when(dispatcher.supportXml(any())).thenReturn(false);
-        when(dispatcher.supportV1Json(any())).thenReturn(true);
+        when(protocolRegistry.supportXml(any())).thenReturn(false);
+        when(protocolRegistry.supportV1Json(any())).thenReturn(true);
 
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders("localhost");
 
@@ -101,8 +101,8 @@ public class NgsiClientTest {
     public void getRequestHeadersWithUrlV2Json() {
 
         // prepare mock
-        when(dispatcher.supportXml(any())).thenReturn(false);
-        when(dispatcher.supportV1Json(any())).thenReturn(false);
+        when(protocolRegistry.supportXml(any())).thenReturn(false);
+        when(protocolRegistry.supportV1Json(any())).thenReturn(false);
 
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders("localhost");
 
