@@ -2,9 +2,13 @@ sudo: false
 language: java
 jdk:
 - oraclejdk8
-script: mvn clean test jacoco:report coveralls:report deploy -q -settings=settings.xml
-after_success:
-- "curl -H \"Content-Type: application/json\" --data \"build=true\" -X POST https://registry.hub.docker.com/u/$DOCKER_USER/fiware-cepheus/trigger/$DOCKER_KEY/"
+script: mvn test jacoco:report coveralls:report -q
+deploy:
+  provider: script
+  script: fiware-lab/ci-deploy.sh
+  on:
+      branch: master
+  skip_cleanup: true
 cache:
   directories:
     - $HOME/.m2
@@ -17,13 +21,10 @@ env:
 
 # environment variables in order: SONATYPE_USER, SONTAYPE_PASSWORD, DOCKER_USER, DOCKER_KEY, COVERITY_SCAN_KEY
 
-
 addons:
     coverity_scan:
       project:
-        name: "Orange-OpenSource/EspR4FastData"
-        version: "4.4.3-SNAPSHOT"
-        description: "Build submitted via Travis CI"
+        name: "Orange-OpenSource/fiware-cepheus"
       notification_email: pascale.borscia@orange.com
       build_command_prepend: "mvn clean"
       build_command:   "mvn -DskipTests=true compile"
