@@ -14,6 +14,7 @@ import com.orange.ngsi.TestConfiguration;
 import com.orange.ngsi.model.UpdateAction;
 import com.orange.ngsi.model.UpdateContextResponse;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,12 +101,15 @@ public class UpdateContextRequestTest {
     }
 
     @Test
-    public void performPostXmlWith200() throws Exception {
+    public void performPostWith200_XML() throws Exception {
 
         // prepare mock
         when(protocolRegistry.supportXml(any())).thenReturn(true);
 
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
+        Assert.assertEquals("application/xml", httpHeaders.getFirst("Content-Type"));
+        Assert.assertEquals("application/xml", httpHeaders.getFirst("Accept"));
+
         httpHeaders.add("Fiware-Service", serviceName);
         httpHeaders.add("Fiware-ServicePath", servicePath);
 
@@ -113,9 +117,15 @@ public class UpdateContextRequestTest {
 
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext"))
                 .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_XML_VALUE))
                 .andExpect(header("Fiware-Service", serviceName))
                 .andExpect(header("Fiware-ServicePath", servicePath))
                 .andExpect(xpath("updateContextRequest/updateAction").string(UpdateAction.UPDATE.getLabel()))
+                .andExpect(xpath("updateContextRequest/contextElementList/contextElement/entityId/id").string("S1"))
+                .andExpect(xpath("updateContextRequest/contextElementList/contextElement/contextAttributeList/contextAttribute/name").string("temp"))
+                .andExpect(xpath("updateContextRequest/contextElementList/contextElement/contextAttributeList/contextAttribute/type").string("float"))
+                .andExpect(xpath("updateContextRequest/contextElementList/contextElement/contextAttributeList/contextAttribute/contextValue").string("15.5"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_XML));
 
         ngsiClient.updateContext(brokerUrl, httpHeaders, createUpdateContextTempSensor(0)).get();
@@ -130,12 +140,18 @@ public class UpdateContextRequestTest {
         when(protocolRegistry.supportXml(any())).thenReturn(false);
 
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
+        Assert.assertEquals("application/json", httpHeaders.getFirst("Content-Type"));
+        Assert.assertEquals("application/json", httpHeaders.getFirst("Accept"));
+
         httpHeaders.add("Fiware-Service", serviceName);
         httpHeaders.add("Fiware-ServicePath", servicePath);
 
         String responseBody = json(jsonConverter, createUpdateContextResponseTempSensor());
 
-        this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(header("Fiware-Service", serviceName))
                 .andExpect(header("Fiware-ServicePath", servicePath))
                 .andExpect(jsonPath("$.updateAction").value(UpdateAction.UPDATE.getLabel()))

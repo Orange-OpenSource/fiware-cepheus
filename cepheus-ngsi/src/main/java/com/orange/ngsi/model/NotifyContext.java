@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Created by pborscia on 04/06/2015.
  */
-@JacksonXmlRootElement(localName = "notifyContext")
+@JacksonXmlRootElement(localName = "notifyContextRequest")
 public class NotifyContext {
 
     @JsonProperty(required = true)
@@ -28,7 +28,7 @@ public class NotifyContext {
     private URI originator;
 
     @JsonProperty("contextResponses")
-    @JacksonXmlElementWrapper(localName = "contextElementResponseList")
+    @JacksonXmlElementWrapper(localName = "contextResponseList")
     @JacksonXmlProperty(localName = "contextElementResponse")
     private List<ContextElementResponse> contextElementResponseList;
 

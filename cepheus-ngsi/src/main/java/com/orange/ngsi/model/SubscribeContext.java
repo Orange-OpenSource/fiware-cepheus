@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Created by pborscia on 17/07/2015.
  */
-@JacksonXmlRootElement(localName = "subscribeContext")
+@JacksonXmlRootElement(localName = "subscribeContextRequest")
 public class SubscribeContext {
 
     @JsonProperty("entities")

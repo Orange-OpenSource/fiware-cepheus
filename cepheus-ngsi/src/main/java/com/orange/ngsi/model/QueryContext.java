@@ -19,10 +19,12 @@ import java.util.List;
 /**
  * Created by pborscia on 11/08/2015.
  */
-@JacksonXmlRootElement(localName = "queryContext")
+@JacksonXmlRootElement(localName = "queryContextRequest")
 public class QueryContext {
 
     @JsonProperty(value = "entities", required = true)
+    @JacksonXmlElementWrapper(localName = "entityIdList")
+    @JacksonXmlProperty(localName = "entityId")
     private List<EntityId> entityIdList;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -23,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.AsyncRestTemplate;
@@ -35,9 +36,7 @@ import java.util.function.Consumer;
 import static com.orange.ngsi.Util.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.reset;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -54,6 +53,9 @@ public class QueryContextRequestTest {
 
     @Autowired
     private MappingJackson2HttpMessageConverter jsonConverter;
+
+    @Autowired
+    private MappingJackson2XmlHttpMessageConverter xmlConverter;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -101,7 +103,10 @@ public class QueryContextRequestTest {
 
         String responseBody = json(jsonConverter, createQueryContextResponseTemperature());
 
-        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/queryContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/queryContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.entities[*]", hasSize(1)))
                 .andExpect(jsonPath("$.entities[0].id").value("S*"))
                 .andExpect(jsonPath("$.entities[0].type").value("TempSensor"))
@@ -109,6 +114,39 @@ public class QueryContextRequestTest {
                 .andExpect(jsonPath("$.attributes[*]", hasSize(1)))
                 .andExpect(jsonPath("$.attributes[0]").value("temp"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+
+        QueryContextResponse response = ngsiClient.queryContext(baseUrl, null, createQueryContextTemperature()).get();
+        this.mockServer.verify();
+
+        Assert.assertEquals(1, response.getContextElementResponses().size());
+        Assert.assertEquals(CodeEnum.CODE_200.getLabel(), response.getContextElementResponses().get(0).getStatusCode().getCode());
+        Assert.assertEquals("S1", response.getContextElementResponses().get(0).getContextElement().getEntityId().getId());
+        Assert.assertEquals("TempSensor", response.getContextElementResponses().get(0).getContextElement().getEntityId().getType());
+        Assert.assertEquals(false, response.getContextElementResponses().get(0).getContextElement().getEntityId().getIsPattern());
+        Assert.assertEquals(1, response.getContextElementResponses().get(0).getContextElement().getContextAttributeList().size());
+        Assert.assertEquals("temp", response.getContextElementResponses().get(0).getContextElement().getContextAttributeList().get(0).getName());
+        Assert.assertEquals("float", response.getContextElementResponses().get(0).getContextElement().getContextAttributeList().get(0).getType());
+        Assert.assertEquals("15.5", response.getContextElementResponses().get(0).getContextElement().getContextAttributeList().get(0).getValue());
+    }
+
+    @Test
+    public void queryContextRequestOK_XML() throws Exception {
+
+        ngsiClient.protocolRegistry.unregisterHost(baseUrl);
+
+        String responseBody = xml(xmlConverter, createQueryContextResponseTemperature());
+
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/queryContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(xpath("queryContextRequest/entityIdList/entityId[*]").nodeCount(1))
+                .andExpect(xpath("queryContextRequest/entityIdList/entityId/id").string("S*"))
+                .andExpect(xpath("queryContextRequest/entityIdList/entityId/@type").string("TempSensor"))
+                .andExpect(xpath("queryContextRequest/entityIdList/entityId/@isPattern").string("true"))
+                .andExpect(xpath("queryContextRequest/attributeList/*").nodeCount(1))
+                .andExpect(xpath("queryContextRequest/attributeList/attribute").string("temp"))
+                .andRespond(withSuccess(responseBody, MediaType.APPLICATION_XML));
 
         QueryContextResponse response = ngsiClient.queryContext(baseUrl, null, createQueryContextTemperature()).get();
         this.mockServer.verify();

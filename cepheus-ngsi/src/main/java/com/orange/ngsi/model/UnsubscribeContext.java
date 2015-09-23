@@ -13,7 +13,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 /**
  * UnsubcribeContext
  */
-@JacksonXmlRootElement(localName = "unsubscribeContext")
+@JacksonXmlRootElement(localName = "unsubscribeContextRequest")
 public class UnsubscribeContext {
 
     private String subscriptionId;

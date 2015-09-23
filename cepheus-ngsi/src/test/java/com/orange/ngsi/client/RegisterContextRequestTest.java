@@ -22,6 +22,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.AsyncRestTemplate;
@@ -34,9 +35,8 @@ import java.util.function.Consumer;
 import static com.orange.ngsi.Util.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.reset;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -53,6 +53,9 @@ public class RegisterContextRequestTest {
 
     @Autowired
     private MappingJackson2HttpMessageConverter jsonConverter;
+
+    @Autowired
+    private MappingJackson2XmlHttpMessageConverter xmlConverter;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -92,13 +95,17 @@ public class RegisterContextRequestTest {
 
         ngsiClient.registerContext(baseUrl, null, createRegisterContextTemperature()).get();
     }
+
     @Test
     public void registerContextRequestOK() throws Exception {
 
         ngsiClient.protocolRegistry.registerHost(baseUrl, true);
         String responseBody = json(jsonConverter, createRegisterContextResponseTemperature());
 
-        this.mockServer.expect(requestTo(baseUrl + "/ngsi9/registerContext")).andExpect(method(HttpMethod.POST))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi9/registerContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.contextRegistrations[*]", hasSize(1)))
                 .andExpect(jsonPath("$.contextRegistrations[0].providingApplication").value("http://localhost:1028/accumulate"))
                 .andExpect(jsonPath("$.contextRegistrations[0].entities[*]", hasSize(1))).andExpect(jsonPath("$.contextRegistrations[0].entities[0].id").value("Room*"))
@@ -108,6 +115,38 @@ public class RegisterContextRequestTest {
                 .andExpect(jsonPath("$.contextRegistrations[0].attributes[0].isDomain").value("false"))
                 .andExpect(jsonPath("$.duration").value("PT10S"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+
+        RegisterContextResponse response = ngsiClient.registerContext(baseUrl, null, createRegisterContextTemperature()).get();
+        this.mockServer.verify();
+
+        Assert.assertNull(response.getErrorCode());
+        Assert.assertEquals("123456789", response.getRegistrationId());
+        Assert.assertEquals("PT10S", response.getDuration());
+    }
+
+    @Test
+    public void registerContextRequestOK_XML() throws Exception {
+
+        ngsiClient.protocolRegistry.unregisterHost(baseUrl);
+
+        String responseBody = xml(xmlConverter, createRegisterContextResponseTemperature());
+
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi9/registerContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(xpath("registerContextRequest/contextRegistrationList/contextRegistration[*]").nodeCount(1))
+                .andExpect(xpath("registerContextRequest/contextRegistrationList/contextRegistration/providingApplication").string("http://localhost:1028/accumulate"))
+                .andExpect(xpath("registerContextRequest/contextRegistrationList/contextRegistration/entityIdList/entityId[*]").nodeCount(1))
+                .andExpect(xpath("registerContextRequest/contextRegistrationList/contextRegistration/entityIdList/entityId/id").string("Room*"))
+                .andExpect(xpath("registerContextRequest/contextRegistrationList/contextRegistration/entityIdList/entityId/@type").string("Room"))
+                .andExpect(xpath("registerContextRequest/contextRegistrationList/contextRegistration/entityIdList/entityId/@isPattern").string("true"))
+                .andExpect(xpath("registerContextRequest/contextRegistrationList/contextRegistration/contextRegistrationAttributeList/contextRegistrationAttribute[*]").nodeCount(1))
+                .andExpect(xpath("registerContextRequest/contextRegistrationList/contextRegistration/contextRegistrationAttributeList/contextRegistrationAttribute/name").string("temperature"))
+                .andExpect(xpath("registerContextRequest/contextRegistrationList/contextRegistration/contextRegistrationAttributeList/contextRegistrationAttribute/type").string("float"))
+                .andExpect(xpath("registerContextRequest/contextRegistrationList/contextRegistration/contextRegistrationAttributeList/contextRegistrationAttribute/isDomain").string("false"))
+                .andExpect(xpath("registerContextRequest/duration").string("PT10S"))
+                .andRespond(withSuccess(responseBody, MediaType.APPLICATION_XML));
 
         RegisterContextResponse response = ngsiClient.registerContext(baseUrl, null, createRegisterContextTemperature()).get();
         this.mockServer.verify();

@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by pborscia on 10/08/2015.
  */
-@JacksonXmlRootElement(localName = "registerContext")
+@JacksonXmlRootElement(localName = "registerContextRequest")
 public class RegisterContext {
 
     @JsonProperty(value = "contextRegistrations", required = true)

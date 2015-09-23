@@ -23,7 +23,7 @@ import java.util.List;
 public class QueryContextResponse {
 
     @JsonProperty("contextResponses")
-    @JacksonXmlElementWrapper(localName = "contextElementResponses")
+    @JacksonXmlElementWrapper(localName = "contextResponseList")
     @JacksonXmlProperty(localName = "contextElementResponse")
     List<ContextElementResponse> contextElementResponses;
 

@@ -22,6 +22,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.AsyncRestTemplate;
@@ -33,9 +34,8 @@ import javax.inject.Inject;
 import java.util.function.Consumer;
 
 import static org.hamcrest.Matchers.hasToString;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.mockito.Mockito.*;
@@ -56,6 +56,9 @@ public class UnsubscribeContextRequestTest {
 
     @Autowired
     private MappingJackson2HttpMessageConverter jsonConverter;
+
+    @Autowired
+    private MappingJackson2XmlHttpMessageConverter xmlConverter;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -102,9 +105,34 @@ public class UnsubscribeContextRequestTest {
         ngsiClient.protocolRegistry.registerHost(baseUrl, true);
         String responseBody = json(jsonConverter, createUnsubscribeContextResponse(CodeEnum.CODE_200, subscriptionID));
 
-        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/unsubscribeContext")).andExpect(method(HttpMethod.POST))
-                .andExpect(jsonPath("$.subscriptionId", hasToString(subscriptionID))).andRespond(
-                withSuccess(responseBody, MediaType.APPLICATION_JSON));
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/unsubscribeContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.subscriptionId", hasToString(subscriptionID)))
+                .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+
+        UnsubscribeContextResponse response = ngsiClient.unsubscribeContext(baseUrl, null, subscriptionID).get();
+
+        this.mockServer.verify();
+
+        Assert.assertEquals(subscriptionID, response.getSubscriptionId());
+        Assert.assertEquals(CodeEnum.CODE_200.getLabel(), response.getStatusCode().getCode());
+    }
+
+    @Test
+    public void unsubscribeContextRequestOK_XML() throws Exception {
+
+        ngsiClient.protocolRegistry.unregisterHost(baseUrl);
+
+        String responseBody = xml(xmlConverter, createUnsubscribeContextResponse(CodeEnum.CODE_200, subscriptionID));
+
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/unsubscribeContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(xpath("unsubscribeContextRequest/subscriptionId").string(subscriptionID))
+                .andRespond(withSuccess(responseBody, MediaType.APPLICATION_XML));
 
         UnsubscribeContextResponse response = ngsiClient.unsubscribeContext(baseUrl, null, subscriptionID).get();
 
