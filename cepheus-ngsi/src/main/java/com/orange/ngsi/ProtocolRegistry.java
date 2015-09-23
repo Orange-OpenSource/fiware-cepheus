@@ -33,12 +33,24 @@ public class ProtocolRegistry {
 
     /**
      * memorize the host supports the JSON v1 or v2 APIs
-     * @param url of the host
+     * @param url url of the host
      * @param v1 true if host accept api v1, false if host accept api v2
      */
     public void registerHost(String url, boolean v1) {
         try {
             jsonHost.put(getHost(url), v1);
+        } catch (URISyntaxException e) {
+            logger.warn("failed to register url {}", url);
+        }
+    }
+
+    /**
+     * unregister a host (mainly usefull for testing purpose).
+     * @param url url of the host
+     */
+    public void unregisterHost(String url) {
+        try {
+            jsonHost.remove(getHost(url));
         } catch (URISyntaxException e) {
             logger.warn("failed to register url {}", url);
         }
