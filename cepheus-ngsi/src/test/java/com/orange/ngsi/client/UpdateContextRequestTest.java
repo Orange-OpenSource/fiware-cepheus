@@ -32,6 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.ResponseCreator;
@@ -68,20 +69,20 @@ public class UpdateContextRequestTest {
     @Autowired
     private MappingJackson2HttpMessageConverter jsonConverter;
 
-    @Inject
+    @Autowired
+    private MappingJackson2XmlHttpMessageConverter xmlConverter;
+
+    @Autowired
     public AsyncRestTemplate asyncRestTemplate;
 
     @Autowired
     public ApplicationContext applicationContext;
 
-    @Mock
+    @Autowired
     public ProtocolRegistry protocolRegistry;
 
     @Autowired
-    @InjectMocks
     public NgsiClient ngsiClient;
-
-    private XmlMapper xmlmapper = new XmlMapper();
 
     public Consumer<UpdateContextResponse> onSuccess = Mockito.mock(Consumer.class);
 
@@ -97,14 +98,12 @@ public class UpdateContextRequestTest {
     public void tearDown() {
         reset(onSuccess);
         reset(onFailure);
-        reset(protocolRegistry);
     }
 
     @Test
     public void performPostWith200_XML() throws Exception {
 
-        // prepare mock
-        when(protocolRegistry.supportXml(any())).thenReturn(true);
+        protocolRegistry.unregisterHost(brokerUrl);
 
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
         Assert.assertEquals("application/xml", httpHeaders.getFirst("Content-Type"));
@@ -113,7 +112,7 @@ public class UpdateContextRequestTest {
         httpHeaders.add("Fiware-Service", serviceName);
         httpHeaders.add("Fiware-ServicePath", servicePath);
 
-        String responseBody = xmlmapper.writeValueAsString(createUpdateContextResponseTempSensor());
+        String responseBody = xml(xmlConverter, createUpdateContextResponseTempSensor());
 
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext"))
                 .andExpect(method(HttpMethod.POST))
@@ -136,8 +135,7 @@ public class UpdateContextRequestTest {
     @Test
     public void performPostWith200() throws Exception {
 
-        // prepare mock
-        when(protocolRegistry.supportXml(any())).thenReturn(false);
+        protocolRegistry.registerHost(brokerUrl, true);
 
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
         Assert.assertEquals("application/json", httpHeaders.getFirst("Content-Type"));
@@ -165,8 +163,7 @@ public class UpdateContextRequestTest {
     @Test(expected = HttpClientErrorException.class)
     public void performPostWith404() throws Exception {
 
-        // prepare mock
-        when(protocolRegistry.supportXml(any())).thenReturn(false);
+        protocolRegistry.registerHost(brokerUrl, true);
 
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
@@ -177,8 +174,7 @@ public class UpdateContextRequestTest {
     @Test(expected = HttpServerErrorException.class)
     public void dperformPostWith500() throws Exception {
 
-        // prepare mock
-        when(protocolRegistry.supportXml(any())).thenReturn(false);
+        protocolRegistry.registerHost(brokerUrl, true);
 
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
@@ -189,8 +185,7 @@ public class UpdateContextRequestTest {
     @Test(expected = ResourceAccessException.class)
     public void eperformPostWithTimeout() throws Exception {
 
-        // prepare mock
-        when(protocolRegistry.supportXml(any())).thenReturn(false);
+        protocolRegistry.registerHost(brokerUrl, true);
 
         this.mockServer.expect(requestTo(brokerUrl + "/ngsi10/updateContext")).andExpect(method(HttpMethod.POST))
                 .andRespond(TimeoutResponseCreator.withTimeout());
