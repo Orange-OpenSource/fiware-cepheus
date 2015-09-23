@@ -11,7 +11,6 @@ package com.orange.ngsi.client;
 import com.orange.ngsi.TestConfiguration;
 import com.orange.ngsi.model.CodeEnum;
 import com.orange.ngsi.model.NotifyContextResponse;
-import com.orange.ngsi.model.SubscribeContextResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.AsyncRestTemplate;
@@ -36,9 +36,7 @@ import java.util.function.Consumer;
 import static com.orange.ngsi.Util.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.reset;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -54,7 +52,10 @@ public class NotifyContextRequestTest {
     private MockRestServiceServer mockServer;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter mapping;
+    private MappingJackson2HttpMessageConverter jsonConverter;
+
+    @Autowired
+    private MappingJackson2XmlHttpMessageConverter xmlConverter;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -98,7 +99,9 @@ public class NotifyContextRequestTest {
     @Test
     public void notifyContextRequestOK() throws Exception {
 
-        String responseBody = json(mapping, createNotifyContextResponseTempSensor());
+        ngsiClient.protocolRegistry.registerHost(baseUrl, true);
+
+        String responseBody = json(jsonConverter, createNotifyContextResponseTempSensor());
 
         this.mockServer.expect(requestTo(baseUrl+ "/ngsi10/notifyContext")).andExpect(method(HttpMethod.POST))
                 .andExpect(jsonPath("$.subscriptionId").value("1"))
@@ -112,6 +115,35 @@ public class NotifyContextRequestTest {
                 .andExpect(jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
                 .andExpect(jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value("15.5"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+
+        NotifyContextResponse response = ngsiClient.notifyContext(baseUrl, null, createNotifyContextTempSensor(0)).get();
+        this.mockServer.verify();
+
+        Assert.assertEquals(CodeEnum.CODE_200.getLabel(), response.getResponseCode().getCode());
+    }
+
+    @Test
+    public void notifyContextRequestOK_XML() throws Exception {
+
+        ngsiClient.protocolRegistry.unregisterHost(baseUrl);
+
+        String responseBody = xml(xmlConverter, createNotifyContextResponseTempSensor());
+
+        this.mockServer.expect(requestTo(baseUrl+ "/ngsi10/notifyContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(xpath("notifyContextRequest/subscriptionId").string("1"))
+                .andExpect(xpath("notifyContextRequest/originator").string("http://iotAgent"))
+                .andExpect(xpath("notifyContextRequest/contextResponseList/contextElementResponse[*]").nodeCount(1))
+                .andExpect(xpath("notifyContextRequest/contextResponseList/contextElementResponse/contextElement/entityId/id").string("S1"))
+                .andExpect(xpath("notifyContextRequest/contextResponseList/contextElementResponse/contextElement/entityId/@type").string("TempSensor"))
+                .andExpect(xpath("notifyContextRequest/contextResponseList/contextElementResponse/contextElement/entityId/@isPattern").string("false"))
+                .andExpect(xpath("notifyContextRequest/contextResponseList/contextElementResponse/contextElement/contextAttributeList/contextAttribute[*]").nodeCount(1))
+                .andExpect(xpath("notifyContextRequest/contextResponseList/contextElementResponse/contextElement/contextAttributeList/contextAttribute/name").string("temp"))
+                .andExpect(xpath("notifyContextRequest/contextResponseList/contextElementResponse/contextElement/contextAttributeList/contextAttribute/type").string("float"))
+                .andExpect(xpath("notifyContextRequest/contextResponseList/contextElementResponse/contextElement/contextAttributeList/contextAttribute/contextValue").string("15.5"))
+                .andRespond(withSuccess(responseBody, MediaType.APPLICATION_XML));
 
         NotifyContextResponse response = ngsiClient.notifyContext(baseUrl, null, createNotifyContextTempSensor(0)).get();
         this.mockServer.verify();

@@ -9,6 +9,8 @@
 package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.net.URI;
 import java.util.List;
@@ -19,12 +21,18 @@ import java.util.List;
 public class ContextRegistration {
 
     @JsonProperty("entities")
+    @JacksonXmlElementWrapper(localName = "entityIdList")
+    @JacksonXmlProperty(localName = "entityId")
     private List<EntityId> entityIdList;
 
     @JsonProperty("attributes")
+    @JacksonXmlElementWrapper(localName = "contextRegistrationAttributeList")
+    @JacksonXmlProperty(localName = "contextRegistrationAttribute")
     private List<ContextRegistrationAttribute> contextRegistrationAttributeList;
 
     @JsonProperty("metadata")
+    @JacksonXmlElementWrapper(localName = "registrationMetadataList")
+    @JacksonXmlProperty(localName = "contextMetadata")
     private List<ContextMetadata> registrationMetadataList;
 
     @JsonProperty(required = true)

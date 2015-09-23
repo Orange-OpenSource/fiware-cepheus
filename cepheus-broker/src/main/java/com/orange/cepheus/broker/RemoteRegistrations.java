@@ -71,14 +71,14 @@ public class RemoteRegistrations {
             return;
         }
 
-        logger.debug("=> registerContext to remote broker {}", remoteUrl);
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(remoteUrl);
+        logger.debug("=> registerContext to remote broker {} with Content-Type {}", remoteUrl, httpHeaders.getContentType());
 
         // If we already had a remote registration, reset its registerContext
         String previousRemoteRegistrationId = resetRemoteRegistration(localRegistrationId);
         // Update the registerContext with the previous remote registrationId if any
         registerContext.setRegistrationId(previousRemoteRegistrationId);
 
-        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders();
         configuration.addRemoteHeaders(httpHeaders);
 
         ngsiClient.registerContext(remoteUrl, httpHeaders, registerContext).addCallback(

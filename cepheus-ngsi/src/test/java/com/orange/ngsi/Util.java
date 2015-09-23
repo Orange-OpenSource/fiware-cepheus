@@ -3,6 +3,7 @@ package com.orange.ngsi;
 import com.orange.ngsi.model.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.mock.http.MockHttpOutputMessage;
 
 import java.io.IOException;
@@ -157,7 +158,7 @@ public class Util {
     static public QueryContext createQueryContextTemperature() {
         QueryContext queryContext = new QueryContext();
         queryContext.setEntityIdList(Collections.singletonList(new EntityId("S*", "TempSensor", true)));
-        queryContext.setAttributList(Collections.singletonList("temp"));
+        queryContext.setAttributeList(Collections.singletonList("temp"));
         return queryContext;
     }
 
@@ -171,6 +172,12 @@ public class Util {
     static public String json(MappingJackson2HttpMessageConverter mapping, Object o) throws IOException {
         MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
         mapping.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+        return mockHttpOutputMessage.getBodyAsString();
+    }
+
+    static public String xml(MappingJackson2XmlHttpMessageConverter mapping, Object o) throws IOException {
+        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+        mapping.write(o, MediaType.APPLICATION_XML, mockHttpOutputMessage);
         return mockHttpOutputMessage.getBodyAsString();
     }
 }

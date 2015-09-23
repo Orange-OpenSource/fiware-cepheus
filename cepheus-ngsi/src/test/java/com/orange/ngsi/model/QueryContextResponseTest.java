@@ -9,7 +9,12 @@
 package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.orange.ngsi.TestConfiguration;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 
@@ -19,14 +24,18 @@ import static org.junit.Assert.assertNull;
 /**
  * Created by pborscia on 11/08/2015.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = TestConfiguration.class)
 public class QueryContextResponseTest {
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Test
     public void deserializationSimpleQueryContextResponse() throws IOException {
 
         String json = getJsonOrionQueryContextResponse();
-        ObjectMapper mapper = new ObjectMapper();
-        QueryContextResponse queryContextResponse = mapper.readValue(json, QueryContextResponse.class);
+        QueryContextResponse queryContextResponse = objectMapper.readValue(json, QueryContextResponse.class);
 
         assertNull(queryContextResponse.getErrorCode());
         assertEquals(2, queryContextResponse.getContextElementResponses().size());

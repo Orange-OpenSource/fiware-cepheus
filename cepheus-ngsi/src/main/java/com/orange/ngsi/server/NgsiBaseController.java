@@ -8,6 +8,7 @@
 
 package com.orange.ngsi.server;
 
+import com.orange.ngsi.ProtocolRegistry;
 import com.orange.ngsi.exception.MissingRequestParameterException;
 import com.orange.ngsi.model.*;
 import org.slf4j.Logger;
@@ -17,61 +18,67 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Controller for the NGSI 9/10 requests
  */
-
 public class NgsiBaseController {
 
-    private static Logger logger = LoggerFactory.getLogger(ExceptionHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(NgsiBaseController.class);
 
     @Autowired
     private NgsiValidation ngsiValidation;
+
+    @Autowired
+    private ProtocolRegistry protocolRegistry;
 
     /*
      * NGSI v1 API mapping
      */
 
-    @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<NotifyContextResponse> notifyContextRequest(@RequestBody final NotifyContext notify) throws Exception {
+    @RequestMapping(value = "/notifyContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<NotifyContextResponse> notifyContextRequest(@RequestBody final NotifyContext notify, HttpServletRequest httpServletRequest) throws Exception {
         ngsiValidation.checkNotifyContext(notify);
+        registerIntoDispatcher(httpServletRequest);
         return new ResponseEntity<>(notifyContext(notify), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/updateContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<UpdateContextResponse> updateContextRequest(@RequestBody final UpdateContext updateContext) throws Exception {
+    @RequestMapping(value = "/updateContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<UpdateContextResponse> updateContextRequest(@RequestBody final UpdateContext updateContext, HttpServletRequest httpServletRequest) throws Exception {
         ngsiValidation.checkUpdateContext(updateContext);
+        registerIntoDispatcher(httpServletRequest);
         return new ResponseEntity<>(updateContext(updateContext), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/registerContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<RegisterContextResponse> registerContextRequest(@RequestBody final RegisterContext registerContext) throws Exception {
+    @RequestMapping(value = "/registerContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<RegisterContextResponse> registerContextRequest(@RequestBody final RegisterContext registerContext, HttpServletRequest httpServletRequest) throws Exception {
         ngsiValidation.checkRegisterContext(registerContext);
+        registerIntoDispatcher(httpServletRequest);
         return new ResponseEntity<>(registerContext(registerContext), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/subscribeContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<SubscribeContextResponse> subscribeContextRequest(@RequestBody final SubscribeContext subscribeContext) throws Exception {
+    @RequestMapping(value = "/subscribeContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<SubscribeContextResponse> subscribeContextRequest(@RequestBody final SubscribeContext subscribeContext, HttpServletRequest httpServletRequest) throws Exception {
         ngsiValidation.checkSubscribeContext(subscribeContext);
+        registerIntoDispatcher(httpServletRequest);
         return new ResponseEntity<>(subscribeContext(subscribeContext), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/unsubscribeContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<UnsubscribeContextResponse> unsubscribeContextRequest(@RequestBody final UnsubscribeContext unsubscribeContext) throws Exception {
+    @RequestMapping(value = "/unsubscribeContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<UnsubscribeContextResponse> unsubscribeContextRequest(@RequestBody final UnsubscribeContext unsubscribeContext, HttpServletRequest httpServletRequest) throws Exception {
         ngsiValidation.checkUnsubscribeContext(unsubscribeContext);
+        registerIntoDispatcher(httpServletRequest);
         return new ResponseEntity<>(unsubscribeContext(unsubscribeContext), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/queryContext", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    final public ResponseEntity<QueryContextResponse> queryContextRequest(@RequestBody final QueryContext queryContext) throws Exception {
+    @RequestMapping(value = "/queryContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<QueryContextResponse> queryContextRequest(@RequestBody final QueryContext queryContext, HttpServletRequest httpServletRequest) throws Exception {
         ngsiValidation.checkQueryContext(queryContext);
+        registerIntoDispatcher(httpServletRequest);
         return new ResponseEntity<>(queryContext(queryContext), HttpStatus.OK);
     }
 
@@ -166,5 +173,23 @@ public class NgsiBaseController {
             entity = new NotifyContextResponse(statusCode);
         }
         return new ResponseEntity<>(entity, HttpStatus.OK);
+    }
+
+    /**
+     * Register the host to protocolRegistry if it supports JSON
+     * @param httpServletRequest the request
+     */
+    private void registerIntoDispatcher(HttpServletRequest httpServletRequest) {
+        String uri = httpServletRequest.getRequestURI();
+
+        // Use Accept or fallback to Content-Type if not defined
+        String accept = httpServletRequest.getHeader("Accept");
+        if (accept == null) {
+            accept = httpServletRequest.getHeader("Content-Type");
+        }
+
+        if (accept != null && accept.contains(MediaType.APPLICATION_JSON_VALUE)) {
+            protocolRegistry.registerHost(uri, true);
+        }
     }
 }

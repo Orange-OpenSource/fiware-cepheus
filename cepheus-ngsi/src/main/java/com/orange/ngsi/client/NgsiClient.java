@@ -8,6 +8,7 @@
 
 package com.orange.ngsi.client;
 
+import com.orange.ngsi.ProtocolRegistry;
 import com.orange.ngsi.model.*;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.slf4j.Logger;
@@ -36,6 +37,9 @@ public class NgsiClient {
 
     @Autowired
     public PoolingNHttpClientConnectionManager poolingNHttpClientConnectionManager;
+
+    @Autowired
+    public ProtocolRegistry protocolRegistry;
 
     /**
      * Let some time for the client to shutdown gracefully
@@ -117,14 +121,31 @@ public class NgsiClient {
      */
     public HttpHeaders getRequestHeaders() {
         HttpHeaders requestHeaders = new HttpHeaders();
-        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-        requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        requestHeaders.setContentType(MediaType.APPLICATION_XML);
+        requestHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
+        return requestHeaders;
+    }
+
+    /**
+     * The default HTTP request headers, depends on the host supporting xml or json
+     * @param url
+     * @return the HTTP request headers.
+     */
+    public HttpHeaders getRequestHeaders(String url) {
+        HttpHeaders requestHeaders = new HttpHeaders();
+
+        MediaType mediaType = MediaType.APPLICATION_JSON;
+        if (url == null || protocolRegistry.supportXml(url)) {
+            mediaType = MediaType.APPLICATION_XML;
+        }
+        requestHeaders.setContentType(mediaType);
+        requestHeaders.setAccept(Collections.singletonList(mediaType));
         return requestHeaders;
     }
 
     private <T,U> ListenableFuture<T> request(String url, HttpHeaders httpHeaders, U body, Class<T> responseType) {
         if (httpHeaders == null) {
-            httpHeaders = getRequestHeaders();
+            httpHeaders = getRequestHeaders(url);
         }
         HttpEntity<U> requestEntity = new HttpEntity<>(body, httpHeaders);
 

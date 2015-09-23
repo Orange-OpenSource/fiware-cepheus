@@ -12,7 +12,6 @@ import com.orange.cepheus.broker.Application;
 import com.orange.cepheus.broker.Configuration;
 import com.orange.cepheus.broker.LocalRegistrations;
 import com.orange.cepheus.broker.Subscriptions;
-import com.orange.cepheus.broker.exception.MissingRemoteBrokerException;
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
 import com.orange.ngsi.client.NgsiClient;
@@ -35,6 +34,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -50,7 +50,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -107,6 +106,8 @@ public class NgsiControllerTest {
     @Autowired
     private NgsiController ngsiController;
 
+    private HttpHeaders httpHeaders = new HttpHeaders();
+
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -120,6 +121,9 @@ public class NgsiControllerTest {
         doNothing().when(updateContextResponseListenableFuture).addCallback(any(), any());
         when(queryContextResponseListenableFuture.get()).thenReturn(createQueryContextResponseTemperature());
         doNothing().when(notifyContextResponseListenableFuture).addCallback(any(), any());
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        when(ngsiClient.getRequestHeaders(any())).thenReturn(httpHeaders);
     }
 
     @After
@@ -241,7 +245,7 @@ public class NgsiControllerTest {
         verify(updateContextResponseListenableFuture, atLeastOnce()).addCallback(any(), any());
 
         //check ngsiClient.getRequestHeaders() is called at least Once
-        verify(ngsiClient, atLeastOnce()).getRequestHeaders();
+        verify(ngsiClient, atLeastOnce()).getRequestHeaders(eq("http://orionhost:9999"));
 
         //check configuration.getHeadersForBroker() is called at least Once
         verify(configuration, atLeastOnce()).addRemoteHeaders(any());
@@ -830,7 +834,7 @@ public class NgsiControllerTest {
         when(ngsiClient.queryContext(any(), any(), any())).thenReturn(queryContextResponseListenableFuture);
 
         QueryContext queryContext = createQueryContextTemperature();
-        queryContext.setAttributList(null);
+        queryContext.setAttributeList(null);
 
         mockMvc.perform(post("/v1/queryContext")
                 .content(json(mapper, queryContext))
@@ -916,7 +920,7 @@ public class NgsiControllerTest {
         verify(queryContextResponseListenableFuture, atLeastOnce()).get();
 
         //check ngsiClient.getRequestHeaders() is called at least Once
-        verify(ngsiClient, atLeastOnce()).getRequestHeaders();
+        verify(ngsiClient, atLeastOnce()).getRequestHeaders(eq("http://orionhost:9999"));
 
         //check configuration.getHeadersForBroker() is called at least Once
         verify(configuration, atLeastOnce()).addRemoteHeaders(any());

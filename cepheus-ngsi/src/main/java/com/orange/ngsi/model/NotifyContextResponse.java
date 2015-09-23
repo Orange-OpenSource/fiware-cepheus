@@ -8,9 +8,12 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 /**
  * Created by pborscia on 03/07/2015.
  */
+@JacksonXmlRootElement(localName = "notifyContextResponse")
 public class NotifyContextResponse {
 
     private StatusCode responseCode;

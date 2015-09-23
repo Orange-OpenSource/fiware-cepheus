@@ -15,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -23,22 +22,19 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import javax.inject.Inject;
 
-import java.net.URISyntaxException;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.hamcrest.Matchers.hasSize;
@@ -57,7 +53,10 @@ public class SubscribeContextRequestTest {
     private MockRestServiceServer mockServer;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter mapping;
+    private MappingJackson2HttpMessageConverter jsonConverter;
+
+    @Autowired
+    private MappingJackson2XmlHttpMessageConverter xmlConverter;
 
     @Autowired
     NgsiClient ngsiClient;
@@ -101,14 +100,50 @@ public class SubscribeContextRequestTest {
     @Test
     public void subscribeContextRequestOK() throws Exception {
 
-        String responseBody = json(mapping, createSubscribeContextResponseTemperature());
+        ngsiClient.protocolRegistry.registerHost(baseUrl, true);
+        String responseBody = json(jsonConverter, createSubscribeContextResponseTemperature());
 
-        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/subscribeContext")).andExpect(method(HttpMethod.POST))
-                .andExpect(jsonPath("$.entities[*]", hasSize(1))).andExpect(jsonPath("$.entities[0].id").value("Room1"))
-                .andExpect(jsonPath("$.entities[0].type").value("Room")).andExpect(jsonPath("$.entities[0].isPattern").value("false"))
-                .andExpect(jsonPath("$.attributes[*]", hasSize(1))).andExpect(jsonPath("$.attributes[0]").value("temperature"))
-                .andExpect(jsonPath("$.reference").value("http://localhost:1028/accumulate")).andExpect(jsonPath("$.duration").value("P1M"))
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/subscribeContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(jsonPath("$.entities[*]", hasSize(1)))
+                .andExpect(jsonPath("$.entities[0].id").value("Room1"))
+                .andExpect(jsonPath("$.entities[0].type").value("Room"))
+                .andExpect(jsonPath("$.entities[0].isPattern").value("false"))
+                .andExpect(jsonPath("$.attributes[*]", hasSize(1)))
+                .andExpect(jsonPath("$.attributes[0]").value("temperature"))
+                .andExpect(jsonPath("$.reference").value("http://localhost:1028/accumulate"))
+                .andExpect(jsonPath("$.duration").value("P1M"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+
+        SubscribeContextResponse response = ngsiClient.subscribeContext(baseUrl, null, createSubscribeContextTemperature()).get();
+        this.mockServer.verify();
+
+        Assert.assertNull(response.getSubscribeError());
+        Assert.assertEquals("12345678", response.getSubscribeResponse().getSubscriptionId());
+        Assert.assertEquals("P1M", response.getSubscribeResponse().getDuration());
+    }
+
+    @Test
+    public void subscribeContextRequestOK_XML() throws Exception {
+
+        ngsiClient.protocolRegistry.unregisterHost(baseUrl);
+        String responseBody = xml(xmlConverter, createSubscribeContextResponseTemperature());
+
+        this.mockServer.expect(requestTo(baseUrl + "/ngsi10/subscribeContext"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("Content-Type", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(header("Accept", MediaType.APPLICATION_XML_VALUE))
+                .andExpect(xpath("subscribeContextRequest/entityIdList/*").nodeCount(1))
+                .andExpect(xpath("subscribeContextRequest/entityIdList/entityId/id").string("Room1"))
+                .andExpect(xpath("subscribeContextRequest/entityIdList/entityId/@type").string("Room"))
+                .andExpect(xpath("subscribeContextRequest/entityIdList/entityId/@isPattern").string("false"))
+                .andExpect(xpath("subscribeContextRequest/attributeList/*").nodeCount(1))
+                .andExpect(xpath("subscribeContextRequest/attributeList/attribute").string("temperature"))
+                .andExpect(xpath("subscribeContextRequest/reference").string("http://localhost:1028/accumulate"))
+                .andExpect(xpath("subscribeContextRequest/duration").string("P1M"))
+                .andRespond(withSuccess(responseBody, MediaType.APPLICATION_XML));
 
         SubscribeContextResponse response = ngsiClient.subscribeContext(baseUrl, null, createSubscribeContextTemperature()).get();
         this.mockServer.verify();

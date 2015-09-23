@@ -12,18 +12,21 @@ import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.RegisterContext;
 import com.orange.ngsi.model.RegisterContextResponse;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.SuccessCallback;
+
+import java.util.Collections;
 
 import static com.orange.cepheus.broker.Util.*;
 import static org.junit.Assert.assertEquals;
@@ -53,6 +56,8 @@ public class RemoteRegistrationsTest {
     @Mock
     private ListenableFuture<RegisterContextResponse> registerFuture;
 
+    private HttpHeaders httpHeaders = new HttpHeaders();
+
     @Mock
     NgsiClient ngsiClient;
 
@@ -63,6 +68,8 @@ public class RemoteRegistrationsTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
     }
 
     @After
@@ -83,6 +90,7 @@ public class RemoteRegistrationsTest {
         // prepare mocks
         doNothing().when(registerFuture).addCallback(successCaptor.capture(), any());
         when(ngsiClient.registerContext(any(), any(), any())).thenReturn(registerFuture);
+        when(ngsiClient.getRequestHeaders(any())).thenReturn(httpHeaders);
         when(configuration.getRemoteUrl()).thenReturn(remoteBrokerUrl);
 
         // make *the* call
@@ -98,7 +106,7 @@ public class RemoteRegistrationsTest {
         successCaptor.getValue().onSuccess(response);
 
         // check NGSI client is called
-        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(null), eq(registerContext));
+        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(httpHeaders), eq(registerContext));
 
         // check pending will not retrigger a successful register
         remoteRegistrations.registerPendingRemoteRegistrations();
@@ -122,13 +130,14 @@ public class RemoteRegistrationsTest {
         // prepare mocks
         doNothing().when(registerFuture).addCallback(successCaptor.capture(), failureCaptor.capture());
         when(ngsiClient.registerContext(any(), any(), any())).thenReturn(registerFuture);
+        when(ngsiClient.getRequestHeaders(any())).thenReturn(httpHeaders);
         when(configuration.getRemoteUrl()).thenReturn(remoteBrokerUrl);
 
         // make *the* call
         remoteRegistrations.registerContext(registerContext, localRegistrationId);
 
         // check NGSI client is called
-        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(null), eq(registerContext));
+        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(httpHeaders), eq(registerContext));
 
         // fake response from ngsi client to registerContext
         failureCaptor.getValue().onFailure(new RuntimeException("fail"));
@@ -138,7 +147,7 @@ public class RemoteRegistrationsTest {
 
         // check register is called another time
         remoteRegistrations.registerPendingRemoteRegistrations();
-        verify(ngsiClient, times(2)).registerContext(eq(remoteBrokerUrl), eq(null), eq(registerContext));
+        verify(ngsiClient, times(2)).registerContext(eq(remoteBrokerUrl), eq(httpHeaders), eq(registerContext));
 
         // fake response from ngsi client to registerContext
         RegisterContextResponse response = new RegisterContextResponse();
@@ -160,6 +169,7 @@ public class RemoteRegistrationsTest {
         // prepare mocks
         doNothing().when(registerFuture).addCallback(successCaptor.capture(), any());
         when(ngsiClient.registerContext(any(), any(), any())).thenReturn(registerFuture);
+        when(ngsiClient.getRequestHeaders(any())).thenReturn(httpHeaders);
         when(configuration.getRemoteUrl()).thenReturn(remoteBrokerUrl);
 
 
@@ -173,7 +183,7 @@ public class RemoteRegistrationsTest {
         successCaptor.getValue().onSuccess(response);
 
         // rechecks
-        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(null), eq(registerContext));
+        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(httpHeaders), eq(registerContext));
         assertEquals(remoteRegistrationId, remoteRegistrations.getRemoteRegistrationId(localRegistrationId));
 
         // Prepare a new registerContext
@@ -193,7 +203,7 @@ public class RemoteRegistrationsTest {
         successCaptor.getValue().onSuccess(response2);
 
         // rechecks
-        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(null), eq(registerContextUpdate));
+        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(httpHeaders), eq(registerContextUpdate));
         assertEquals(remoteRegistrationId, remoteRegistrations.getRemoteRegistrationId(localRegistrationId));
     }
 

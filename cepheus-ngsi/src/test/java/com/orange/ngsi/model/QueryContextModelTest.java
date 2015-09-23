@@ -8,7 +8,6 @@
 
 package com.orange.ngsi.model;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -37,8 +36,8 @@ public class QueryContextModelTest {
         assertEquals("Room.*", queryContext.getEntityIdList().get(0).getId());
         assertEquals("Room", queryContext.getEntityIdList().get(0).getType());
         assertEquals(true, queryContext.getEntityIdList().get(0).getIsPattern());
-        assertEquals(1, queryContext.getAttributList().size());
-        assertEquals("temperature", queryContext.getAttributList().get(0));
+        assertEquals(1, queryContext.getAttributeList().size());
+        assertEquals("temperature", queryContext.getAttributeList().get(0));
         assertNull(queryContext.getRestriction());
     }
 

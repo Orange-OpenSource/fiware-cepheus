@@ -10,7 +10,11 @@ package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,10 +22,11 @@ import java.util.List;
  * Context Entity
  */
 public class ContextElement {
-    @JsonUnwrapped
+
     private EntityId entityId;
 
-    @JsonProperty("attributes")
+    @JacksonXmlElementWrapper(localName = "contextAttributeList")
+    @JacksonXmlProperty(localName = "contextAttribute")
     private List<ContextAttribute> contextAttributeList;
 
     public ContextElement() {

@@ -9,6 +9,7 @@
 package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 /**
  * Created by pborscia on 17/07/2015.

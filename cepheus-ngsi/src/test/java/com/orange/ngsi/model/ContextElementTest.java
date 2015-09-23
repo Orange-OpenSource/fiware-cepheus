@@ -8,9 +8,21 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.orange.ngsi.TestConfiguration;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,20 +30,25 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static com.orange.ngsi.Util.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for ContextElement
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = TestConfiguration.class)
 public class ContextElementTest {
+
+    private ObjectMapper xmlmapper = new XmlMapper();
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Test
     public void convertContextElementToJsonWithoutEntityId() throws JsonProcessingException {
+
         ContextElement contextElement = createTemperatureContextElement(0);
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        String json = mapper.writeValueAsString(contextElement);
-
+        String json = objectMapper.writeValueAsString(contextElement);
         assertFalse(json.contains("EntityId"));
     }
 
@@ -68,12 +85,11 @@ public class ContextElementTest {
                 "           ]\n" +
                 "       }";
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        ContextElement contextElement = mapper.readValue(json, ContextElement.class);
+        ContextElement contextElement = objectMapper.readValue(json, ContextElement.class);
         assertEquals("E1", contextElement.getEntityId().getId());
         assertEquals("A", contextElement.getContextAttributeList().get(0).getName());
         assertEquals(3, ((List<?>)contextElement.getContextAttributeList().get(0).getValue()).size());
+
     }
 
     @Test
@@ -92,10 +108,58 @@ public class ContextElementTest {
                 "           ]\n" +
                 "       }";
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        ContextElement contextElement = mapper.readValue(json, ContextElement.class);
+        ContextElement contextElement = objectMapper.readValue(json, ContextElement.class);
         assertEquals("E1", contextElement.getEntityId().getId());
         assertEquals("A", contextElement.getContextAttributeList().get(0).getName());
+
+    }
+
+    @Test
+    public void deserializationXMLSimpleContextElement() throws IOException {
+
+        String xml = "<contextElement>\n" +
+                "        <entityId type=\"T1\" isPattern=\"false\">\n" +
+                "        <id>E1</id>\n" +
+                "        </entityId>\n" +
+                "        <contextAttributeList>\n" +
+                "        <contextAttribute>\n" +
+                "        <name>A</name>\n" +
+                "        <type>T</type>\n" +
+                "        <contextValue>22</contextValue>\n" +
+                "        </contextAttribute>\n" +
+                "        </contextAttributeList>\n" +
+                "        </contextElement>";
+
+        ContextElement contextElement2 = xmlmapper.readValue(xml, ContextElement.class);
+        assertEquals("E1", contextElement2.getEntityId().getId());
+        assertEquals("A", contextElement2.getContextAttributeList().get(0).getName());
+
+    }
+
+    @Test
+    public void deserializationXMLMoreSimpleContextElement() throws IOException {
+
+        String xml = "<contextElement>\n" +
+                "        <entityId type=\"T1\" isPattern=\"false\">\n" +
+                "        <id>E1</id>\n" +
+                "        </entityId>\n" +
+                "        </contextElement>";
+
+        ContextElement contextElement2 = xmlmapper.readValue(xml, ContextElement.class);
+        assertEquals("E1", contextElement2.getEntityId().getId());
+
+    }
+
+    @Test
+    public void serializationXMLMoreSimpleContextElement() throws IOException {
+
+        ContextElement contextElement = new ContextElement();
+        EntityId entityId = new EntityId("E1", "T1", false);
+        contextElement.setEntityId(entityId);
+
+
+        String xml = xmlmapper.writeValueAsString(contextElement);
+        assertTrue(xml.contains("E1"));
+
     }
 }

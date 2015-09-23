@@ -9,6 +9,9 @@
 package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 import java.net.URI;
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.List;
 /**
  * Created by pborscia on 04/06/2015.
  */
+@JacksonXmlRootElement(localName = "notifyContextRequest")
 public class NotifyContext {
 
     @JsonProperty(required = true)
@@ -24,6 +28,8 @@ public class NotifyContext {
     private URI originator;
 
     @JsonProperty("contextResponses")
+    @JacksonXmlElementWrapper(localName = "contextResponseList")
+    @JacksonXmlProperty(localName = "contextElementResponse")
     private List<ContextElementResponse> contextElementResponseList;
 
     public NotifyContext() {
