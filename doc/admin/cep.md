@@ -26,13 +26,13 @@ If you have `maven`, you can run the following command:
 
     mvn dependency:get -DgroupId=com.orange.cepheus -DartifactId=cepheus-cep -Dversion=XXXX -Dtransitive=false
 
-where `XXXX` is the version you want, like `0.1.0-SNAPSHOT` or `LATEST`.
+where `XXXX` is the version you want, like `0.1.0` or `LATEST`.
 
 ### Download from [Sonatype Central repository](http://central.sonatype.org/) using wget
 
 If you don't have `maven` installed on your machine, you can still download the standalone JAR using `wget` or any browser:
 
-    wget "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-cep&v=LATEST"
+    wget "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=com.orange.cepheus&a=cepheus-cep&v=LATEST"
 
 ## Running
 
@@ -52,7 +52,7 @@ The Cepheus-CEP is also provided in a preconfigured Debian package to ease deplo
 
 Download the Debian package from [Sonatype Central repository](http://central.sonatype.org/) using `wget`:
 
-    wget "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-cep&v=LATEST&p=deb"
+    wget "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=com.orange.cepheus&a=cepheus-cep&v=LATEST&p=deb"
 
 ### Installing
 
