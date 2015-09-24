@@ -3,7 +3,7 @@
 
 # Cepheus version
 REPO="snapshots" # "releases"
-VERSION="0.1.0-SNAPSHOT" # "0.1.0"
+VERSION="0.1.1-SNAPSHOT" # "0.1.1"
 
 # Check and echo all commands
 set -e

@@ -1,3 +1,10 @@
+# 0.1.1
+
+## Major features
+
+## Minor features
+
+## Bug fixes
 
 # 0.1.0
 
