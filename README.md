@@ -4,6 +4,7 @@
 [![Coverity Scan Status](https://scan.coverity.com/projects/5913/badge.svg)](https://scan.coverity.com/projects/5913)
 [![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/fiware-cepheus/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/fiware-cepheus?branch=master)
 [![Docs Status](https://readthedocs.org/projects/fiware-cepheus/badge/?version=latest)](https://readthedocs.org/projects/fiware-cepheus/)
+[![GNU GPL Version 2 Licence](http://img.shields.io/:license-gpl2-blue.svg)](LICENSE.txt)
 
 This is the code repository for the Fiware-Cepheus project.
 
@@ -78,7 +79,7 @@ Some simple examples to learn how to use Cepheus-CEP and Cepheus-Broker can be f
 
 ## License
 
-FIWARE Cepheus is licensed under the [GNU General Public License Version 2](LICENCE.txt).
+FIWARE Cepheus is licensed under the [GNU General Public License Version 2](LICENSE.txt).
 
 ## Support
 
