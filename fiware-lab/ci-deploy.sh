@@ -1,4 +1,5 @@
 #!/bin/bash
+# This script is triggered by Travis-CI when a new commit is added to master branch
 
 set -e
 set -x

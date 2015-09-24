@@ -4,11 +4,17 @@ jdk:
 - oraclejdk8
 script: mvn test jacoco:report coveralls:report -q
 deploy:
-  provider: script
-  script: fiware-lab/ci-deploy.sh
-  on:
-      branch: master
-  skip_cleanup: true
+  - provider: script
+    script: fiware-lab/ci-deploy.sh
+    skip_cleanup: true
+    on:
+        branch: master
+  - provider: script
+    script: fiware-lab/ci-release.sh
+    skip_cleanup: true
+    on:
+        tags: true
+
 cache:
   directories:
     - $HOME/.m2
