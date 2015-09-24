@@ -3,7 +3,8 @@
 FROM java:8-jre
 MAINTAINER FIWARE Cepheus Team
 
-ENV CEPHEUS_VERSION LATEST
+ENV CEPHEUS_VERSION 0.1.0-SNAPSHOT
+ENV CEPHEUS_REPO snapshots
 
 # Install Supervisor
 RUN apt-get update && apt-get install -y supervisor wget
@@ -13,8 +14,8 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 WORKDIR /opt/cepheus
 
 # Download CEP and Light Broker
-RUN wget -q -O cepheus-cep.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-cep&v=$CEPHEUS_VERSION"
-RUN wget -q -O cepheus-broker.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-broker&v=$CEPHEUS_VERSION"
+RUN wget -q -O cepheus-cep.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=$CEPHEUS_REPO&g=com.orange.cepheus&a=cepheus-cep&v=$CEPHEUS_VERSION"
+RUN wget -q -O cepheus-broker.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=$CEPHEUS_REPO&g=com.orange.cepheus&a=cepheus-broker&v=$CEPHEUS_VERSION"
 
 # Expose 8080 for CEP, 8081 for broker
 EXPOSE 8080 8081

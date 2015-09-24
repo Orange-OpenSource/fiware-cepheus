@@ -3,12 +3,13 @@
 FROM java:8-jre
 MAINTAINER FIWARE Cepheus Team
 
-ENV CEPHEUS_VERSION LATEST
+ENV CEPHEUS_VERSION 0.1.0-SNAPSHOT
+ENV CEPHEUS_REPO snapshots
 
 WORKDIR /opt/cepheus
 
 # Download CEP
-RUN wget -q -O cepheus-cep.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-cep&v=$CEPHEUS_VERSION"
+RUN wget -q -O cepheus-cep.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=$CEPHEUS_REPO&g=com.orange.cepheus&a=cepheus-cep&v=$CEPHEUS_VERSION"
 
 EXPOSE 8080
 

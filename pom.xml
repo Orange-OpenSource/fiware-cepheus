@@ -6,7 +6,7 @@
     <groupId>com.orange.cepheus</groupId>
     <artifactId>cepheus</artifactId>
     <packaging>pom</packaging>
-    <version>4.4.3-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <modules>
         <module>cepheus-ngsi</module>
         <module>cepheus-cep</module>
