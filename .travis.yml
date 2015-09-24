@@ -5,12 +5,12 @@ jdk:
 script: mvn test jacoco:report coveralls:report -q
 deploy:
   - provider: script
-    script: fiware-lab/ci-deploy.sh
+    script: scripts/ci-deploy.sh
     skip_cleanup: true
     on:
         branch: master
   - provider: script
-    script: fiware-lab/ci-release.sh
+    script: scripts/ci-release.sh
     skip_cleanup: true
     on:
         tags: true
