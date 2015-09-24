@@ -5,6 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/fiware-cepheus/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/fiware-cepheus?branch=master)
 [![Docs Status](https://readthedocs.org/projects/fiware-cepheus/badge/?version=latest)](https://readthedocs.org/projects/fiware-cepheus/)
 [![GNU GPL Version 2 Licence](http://img.shields.io/:license-gpl2-blue.svg)](LICENSE.txt)
+[![Join the chat at https://gitter.im/Orange-OpenSource/fiware-cepheus](https://img.shields.io/badge/gitter-join%20chat%20→-brightgreen.svg)](https://gitter.im/Orange-OpenSource/fiware-cepheus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This is the code repository for the Fiware-Cepheus project.
 
