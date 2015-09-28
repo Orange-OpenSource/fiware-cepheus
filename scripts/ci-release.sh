@@ -4,8 +4,8 @@
 set -e
 set -x
 
-# Deploy JAR to Sonatype Mave Repository
-#mvn deploy -q -settings=settings.xml -DskipTests=true
+# Build and Deploy on staging release
+#mvn clean nexus-staging:release -Prelease -settings=settings.xml -DskipTests=true -Dgpg.passphrase=$GPG_PASSPHRASE -Dgpg.keyname=$GPG_KEYNAME
 
 # Trigger Docker Automated build
 #curl -s -H "Content-Type: application/json" --data "build=true" -X POST "https://registry.hub.docker.com/u/$DOCKER_USER/fiware-cepheus/trigger/$DOCKER_KEY/"
