@@ -83,11 +83,12 @@ public class SubscriptionsTest {
         Assert.notNull(subscribeContext.getExpirationDate());
         Assert.notNull(subscribeContext.getSubscriptionId());
         assertEquals(subscriptionId, subscribeContext.getSubscriptionId());
-        Instant now = Instant.now();
-        Instant after = now.plus(31, ChronoUnit.DAYS).plus(10, ChronoUnit.MINUTES);
-        Instant before = now.plus(30, ChronoUnit.DAYS).minus(10, ChronoUnit.MINUTES);
-        assertFalse(subscribeContext.getExpirationDate().isAfter(after));
-        assertFalse(subscribeContext.getExpirationDate().isBefore(before));
+        Calendar c = (Calendar) Calendar.getInstance().clone();
+        c.add(Calendar.MONTH, 1);
+        c.add(Calendar.HOUR, 24);
+        assertFalse(subscribeContext.getExpirationDate().isAfter(c.toInstant()));
+        c.add(Calendar.HOUR, -48);
+        assertFalse(subscribeContext.getExpirationDate().isBefore(c.toInstant()));
     }
 
     @Test

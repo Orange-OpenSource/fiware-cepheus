@@ -94,11 +94,12 @@ public class LocalRegistrationsTest {
         registerContext.setDuration("P1M");
         localRegistrations.updateRegistrationContext(registerContext);
 
-        Instant now = Instant.now();
-        Instant after = now.plus(31, ChronoUnit.DAYS).plus(10, ChronoUnit.MINUTES);
-        Instant before = now.plus(30, ChronoUnit.DAYS).minus(10, ChronoUnit.MINUTES);
-        assertFalse(registerContext.getExpirationDate().isAfter(after));
-        assertFalse(registerContext.getExpirationDate().isBefore(before));
+        Calendar c = (Calendar) Calendar.getInstance().clone();
+        c.add(Calendar.MONTH, 1);
+        c.add(Calendar.HOUR, 24);
+        assertFalse(registerContext.getExpirationDate().isAfter(c.toInstant()));
+        c.add(Calendar.HOUR, -48);
+        assertFalse(registerContext.getExpirationDate().isBefore(c.toInstant()));
     }
 
     @Test
