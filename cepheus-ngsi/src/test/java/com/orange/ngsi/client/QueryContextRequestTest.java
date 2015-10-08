@@ -113,6 +113,7 @@ public class QueryContextRequestTest {
                 .andExpect(jsonPath("$.entities[0].isPattern").value("true"))
                 .andExpect(jsonPath("$.attributes[*]", hasSize(1)))
                 .andExpect(jsonPath("$.attributes[0]").value("temp"))
+                .andExpect(jsonPath("*.restriction").doesNotExist())
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
         QueryContextResponse response = ngsiClient.queryContext(baseUrl, null, createQueryContextTemperature()).get();
@@ -146,6 +147,7 @@ public class QueryContextRequestTest {
                 .andExpect(xpath("queryContextRequest/entityIdList/entityId/@isPattern").string("true"))
                 .andExpect(xpath("queryContextRequest/attributeList/*").nodeCount(1))
                 .andExpect(xpath("queryContextRequest/attributeList/attribute").string("temp"))
+                .andExpect(xpath("queryContextRequest/restriction").doesNotExist())
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_XML));
 
         QueryContextResponse response = ngsiClient.queryContext(baseUrl, null, createQueryContextTemperature()).get();

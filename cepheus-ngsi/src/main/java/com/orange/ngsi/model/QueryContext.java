@@ -33,6 +33,7 @@ public class QueryContext {
     @JacksonXmlProperty(localName = "attribute")
     private List<String> attributeList;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Restriction restriction;
 
     public QueryContext() {
