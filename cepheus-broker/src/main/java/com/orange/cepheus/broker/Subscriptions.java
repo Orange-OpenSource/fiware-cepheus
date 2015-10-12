@@ -8,12 +8,15 @@
 
 package com.orange.cepheus.broker;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
+import com.orange.cepheus.broker.persistence.SubscriptionsRepository;
 import com.orange.ngsi.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.xml.datatype.DatatypeFactory;
 import java.time.Duration;
 import java.time.Instant;
@@ -33,13 +36,21 @@ public class Subscriptions {
     @Autowired
     private Patterns patterns;
 
+    @Autowired
+    SubscriptionsRepository subscriptionsRepository;
+
+    @PostConstruct
+    protected void loadSubscriptionsOnStartup() {
+        subscriptions = subscriptionsRepository.getAllSubscriptions();
+    }
+
     /**
      * Add a subscription.
      * @param subscribeContext
      * @return the subscriptionId
      * @throws SubscriptionException
      */
-    public String addSubscription(SubscribeContext subscribeContext) throws SubscriptionException {
+    public String addSubscription(SubscribeContext subscribeContext) throws SubscriptionException{
         //if duration is not present, then lb set duration to P1M
         Duration duration = convertDuration(subscribeContext.getDuration());
         if (duration.isNegative()) {
@@ -64,6 +75,11 @@ public class Subscriptions {
         subscribeContext.setSubscriptionId(subscriptionId);
 
         subscriptions.put(subscriptionId, subscribeContext);
+        try {
+            subscriptionsRepository.saveSubscription(subscriptionId, subscribeContext);
+        } catch (JsonProcessingException e) {
+            throw new SubscriptionException("Impossible to save subscription", e);
+        }
 
         return subscriptionId;
     }
@@ -74,7 +90,9 @@ public class Subscriptions {
      * @return false if there is not subscription to delete
      */
     public boolean deleteSubscription(UnsubscribeContext unsubscribeContext) {
-        SubscribeContext subscribeContext = subscriptions.remove(unsubscribeContext.getSubscriptionId());
+        String subscriptionId = unsubscribeContext.getSubscriptionId();
+        SubscribeContext subscribeContext = subscriptions.remove(subscriptionId);
+        subscriptionsRepository.removeSubscription(subscriptionId);
         return (subscribeContext != null);
     }
 
@@ -114,6 +132,7 @@ public class Subscriptions {
         subscriptions.forEach((subscriptionId, subscribeContext) -> {
             if (subscribeContext.getExpirationDate().isBefore(now)) {
                 subscriptions.remove(subscriptionId);
+                subscriptionsRepository.removeSubscription(subscriptionId);
             }
         });
     }
@@ -140,6 +159,5 @@ public class Subscriptions {
             throw new SubscriptionException("bad duration: " + duration, e);
         }
     }
-
 
 }

@@ -8,12 +8,22 @@
 package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.SubscriptionException;
+import com.orange.cepheus.broker.persistence.SubscriptionsRepository;
 import com.orange.ngsi.model.*;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 import org.junit.Rule;
@@ -24,16 +34,22 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.orange.cepheus.broker.Util.createSubscribeContext;
 import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
 
 /**
  * Tests for Subscriptions management
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
+@TestPropertySource(locations="classpath:test.properties")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SubscriptionsTest {
 
@@ -42,6 +58,9 @@ public class SubscriptionsTest {
 
     @Autowired
     public Subscriptions subscriptions;
+
+    @Autowired
+    SubscriptionsRepository subscriptionsRepository;
 
     @Test
     public void addSubscriptionTest() throws URISyntaxException, SubscriptionException {
@@ -52,6 +71,7 @@ public class SubscriptionsTest {
         Assert.hasLength(subscriptionId);
         Assert.notNull(subscriptions.getSubscription(subscriptionId));
         Assert.notNull(subscribeContext.getExpirationDate());
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==1);
     }
 
     @Test
@@ -61,6 +81,7 @@ public class SubscriptionsTest {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         subscribeContext.setDuration("-PT10S");
         subscriptions.addSubscription(subscribeContext);
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==0);
     }
 
     @Test
@@ -70,6 +91,7 @@ public class SubscriptionsTest {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         subscribeContext.setDuration("PIPO");
         subscriptions.addSubscription(subscribeContext);
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==0);
     }
 
     @Test
@@ -89,6 +111,7 @@ public class SubscriptionsTest {
         assertFalse(subscribeContext.getExpirationDate().isAfter(c.toInstant()));
         c.add(Calendar.HOUR, -48);
         assertFalse(subscribeContext.getExpirationDate().isBefore(c.toInstant()));
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==1);
     }
 
     @Test
@@ -100,14 +123,17 @@ public class SubscriptionsTest {
         subscribeContext.getEntityIdList().get(0).setIsPattern(true);
 
         subscriptions.addSubscription(subscribeContext);
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==0);
     }
 
     @Test
     public void deleteExistSubscriptions() throws URISyntaxException, SubscriptionException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         String subscriptionId = subscriptions.addSubscription(subscribeContext);
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==1);
         UnsubscribeContext unsubscribeContext = new UnsubscribeContext(subscriptionId);
         assertTrue(subscriptions.deleteSubscription(unsubscribeContext));
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==0);
     }
 
     @Test
@@ -121,11 +147,13 @@ public class SubscriptionsTest {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         subscribeContext.setDuration("PT1S"); // 1s only
         String subscriptionId = subscriptions.addSubscription(subscribeContext);
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==1);
 
         Thread.sleep(1500);
 
         subscriptions.purgeExpiredSubscriptions();
         assertNull(subscriptions.getSubscription(subscriptionId));
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==0);
     }
 
     @Test
