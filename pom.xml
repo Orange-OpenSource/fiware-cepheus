@@ -21,6 +21,7 @@
     <properties>
         <java.version>1.8</java.version>
         <jackson-annotations-version>2.6.0</jackson-annotations-version>
+        <spring-boot-version>1.2.3.RELEASE</spring-boot-version>
         <jacoco.dataPath>${project.basedir}/target/jacoco.exec</jacoco.dataPath>
         <jacoco.reportPath>${project.basedir}/../coverage</jacoco.reportPath>
     </properties>
@@ -31,13 +32,18 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <type>pom</type>
-                <version>1.2.3.RELEASE</version>
+                <version>${spring-boot-version}</version>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
-                <version>1.2.3.RELEASE</version>
+                <version>${spring-boot-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-jdbc</artifactId>
+                <version>${spring-boot-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -90,6 +96,12 @@
                 <artifactId>javax.inject</artifactId>
                 <version>1</version>
                 <scope>test</scope>
+            </dependency>
+            <!-- persistence -->
+            <dependency>
+                <groupId>org.xerial</groupId>
+                <artifactId>sqlite-jdbc</artifactId>
+                <version>3.8.11.2</version>
             </dependency>
             <!-- log -->
             <dependency>
