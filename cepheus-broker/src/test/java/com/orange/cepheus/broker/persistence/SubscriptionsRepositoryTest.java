@@ -23,8 +23,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.net.URISyntaxException;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -35,7 +33,7 @@ import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-//@TestPropertySource(locations="classpath:test.properties")
+@TestPropertySource(locations="classpath:test.properties")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SubscriptionsRepositoryTest {
 
@@ -47,13 +45,7 @@ public class SubscriptionsRepositoryTest {
 
     @Before
     public void init() throws SQLException {
-        /*DatabaseMetaData md = jdbcTemplate.getDataSource().getConnection().getMetaData();
-        ResultSet rs = md.getTables(null, null, "t_subscriptions", null);
-        if (rs.next()) {
-            jdbcTemplate.execute("drop table t_subscriptions");
-        }*/
-        jdbcTemplate.execute("drop table if exists t_subscriptions");
-        jdbcTemplate.execute("create table t_subscriptions (id varchar, subscribeContext varchar)");
+        jdbcTemplate.execute("delete from t_subscriptions");
     }
 
     @Test

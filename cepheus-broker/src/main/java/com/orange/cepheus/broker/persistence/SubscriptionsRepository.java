@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -59,6 +60,12 @@ public class SubscriptionsRepository {
         public String getSubscribeContextString() {
             return subscribeContextString;
         }
+    }
+
+    @PostConstruct
+    protected void createTableOnStartup() {
+        jdbcTemplate.execute("create table if not exists t_subscriptions (id varchar, subscribeContext varchar)");
+        jdbcTemplate.execute("create unique index if not exists index_subscriptionId on t_subscriptions (id)");
     }
 
     /**
