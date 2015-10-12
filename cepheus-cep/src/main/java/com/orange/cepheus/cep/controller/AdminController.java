@@ -66,12 +66,14 @@ public class AdminController {
         final Configuration previousConfiguration = complexEventProcessor.getConfiguration();
         try {
             complexEventProcessor.setConfiguration(configuration);
+            eventMapper.setConfiguration(configuration);
             subscriptionManager.setConfiguration(configuration);
             persistence.saveConfiguration(configuration);
         } catch (ConfigurationException e) {
             // try to restore previous configuration
             if (previousConfiguration != null) {
                 complexEventProcessor.restoreConfiguration(previousConfiguration);
+                eventMapper.setConfiguration(previousConfiguration);
                 subscriptionManager.setConfiguration(previousConfiguration);
             }
             throw e;

@@ -1,11 +1,11 @@
 package com.orange.cepheus.cep;
 
+import com.jayway.jsonpath.*;
+import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.EventProcessingException;
 import com.orange.cepheus.cep.exception.TypeNotFoundException;
-import com.orange.cepheus.cep.model.Event;
-import com.orange.cepheus.cep.model.Attribute;
-import com.orange.cepheus.cep.model.EventType;
-import com.orange.cepheus.cep.model.Metadata;
+import com.orange.cepheus.cep.model.*;
+import com.orange.cepheus.cep.model.Configuration;
 import com.orange.ngsi.model.ContextAttribute;
 import com.orange.ngsi.model.ContextElement;
 import com.orange.ngsi.model.ContextMetadata;
@@ -19,6 +19,46 @@ import java.util.Map;
  */
 @Component
 public class EventMapper {
+
+    private Map<String, JsonPath> jsonpaths = new HashMap<>();
+
+    /**
+     * Compile JSON paths from Attributes and Metadata of the new configuration
+     * @param configuration the new configuration
+     */
+    public void setConfiguration(Configuration configuration) throws ConfigurationException {
+        Map<String, JsonPath> jsonpaths = new HashMap<>();
+
+            for (EventTypeIn eventTypeIn : configuration.getEventTypeIns()) {
+                for (Attribute attribute : eventTypeIn.getAttributes()) {
+                    String jsonpath = attribute.getJsonpath();
+                    if (jsonpath != null) {
+                        // JsonPath caches paths internally, no need to reuse them from one configuration to another.
+                        // Aggregate path by event type / attribute name
+                        try {
+                            jsonpaths.put(eventTypeIn.getType() + "/" + attribute.getName(), JsonPath.compile(jsonpath));
+                        } catch (IllegalArgumentException|InvalidPathException e) {
+                            throw new ConfigurationException("invalid jsonpath expression for attribute "+attribute.getName(), e);
+                        }
+                    }
+
+                    for (Metadata metadata : attribute.getMetadata()) {
+                        jsonpath = metadata.getJsonpath();
+                        if (jsonpath != null) {
+                            // Same as attribute but with metadata name
+                            try {
+                                jsonpaths.put(eventTypeIn.getType() + "/" + attribute.getName() + "/" + metadata.getName(), JsonPath.compile(jsonpath));
+                            } catch (IllegalArgumentException|InvalidPathException e) {
+                                throw new ConfigurationException("invalid jsonpath expression for metadata "+attribute.getName()+"/"+metadata.getName(), e);
+                            }
+                        }
+                    }
+                }
+            }
+
+
+        this.jsonpaths = jsonpaths;
+    }
 
     /**
      * Map an EventType go an Esper event type.
@@ -39,7 +79,6 @@ public class EventMapper {
         // Override with event type properties, plus the reserved id attribute
         for (Attribute attribute : eventType.getAttributes()) {
             properties.put(attribute.getName(), classForType(attribute.getType()));
-
         }
         properties.put("id", String.class);
         return properties;
@@ -54,18 +93,27 @@ public class EventMapper {
      * @throws EventProcessingException if the conversion fails
      */
     public Event eventFromContextElement(ContextElement contextElement) throws EventProcessingException, TypeNotFoundException {
-        String id = contextElement.getEntityId().getId();
-        String type = contextElement.getEntityId().getType();
+        String eventId = contextElement.getEntityId().getId();
+        String eventType = contextElement.getEntityId().getType();
 
-        Event event = new Event(type);
+        Event event = new Event(eventType);
 
         // Add metadata values first
         for(ContextAttribute contextAttribute : contextElement.getContextAttributeList()) {
             String attrName = contextAttribute.getName();
             for (ContextMetadata contextMetada : contextAttribute.getMetadata()) {
                 String name = contextMetada.getName();
-                type = contextMetada.getType();
-                Object value = valueForType(contextAttribute.getValue(), type, name);
+                String type = contextMetada.getType();
+
+                Object value = contextMetada.getValue();
+
+                // Extract value from jsonpath if any
+                JsonPath jsonPath = jsonpaths.get(eventType + "/" + attrName + "/" + name);
+                if (jsonPath != null) {
+                    value = jsonPath.read(value);
+                }
+
+                value = valueForType(value, type, name);
                 event.addValue(attrName + "_" + name, value);
             }
         }
@@ -73,9 +121,17 @@ public class EventMapper {
         // Override with attributes values
         for(ContextAttribute contextAttribute : contextElement.getContextAttributeList()) {
             String name = contextAttribute.getName();
-            type = contextAttribute.getType();
+            String type = contextAttribute.getType();
 
-            Object value = valueForType(contextAttribute.getValue(), type, name);
+            Object value = contextAttribute.getValue();
+
+            // Extract value from jsonpath if any
+            JsonPath jsonPath = jsonpaths.get(eventType + "/" + name);
+            if (jsonPath != null) {
+                value = jsonPath.read(value);
+            }
+
+            value = valueForType(value, type, name);
             if (value == null) {
                 throw new EventProcessingException("Value cannot be null for attribute "+name);
             }
@@ -84,7 +140,7 @@ public class EventMapper {
         }
 
         // Override with id
-        event.addValue("id", id);
+        event.addValue("id", eventId);
 
         return event;
     }

@@ -36,17 +36,22 @@ public class Init {
     @Autowired
     protected SubscriptionManager subscriptionManager;
 
+    @Autowired
+    protected EventMapper eventMapper;
+
     @PostConstruct
     protected void loadConfigurationOnStartup() {
         // Try restoring the persisted configuration if any
         try {
             if (persistence.checkConfigurationDirectory()) {
                 Configuration configuration = persistence.loadConfiguration();
+                eventMapper.setConfiguration(configuration);
                 complexEventProcessor.setConfiguration(configuration);
                 subscriptionManager.setConfiguration(configuration);
             }
         } catch (PersistenceException | ConfigurationException e) {
             logger.error("Failed to load or apply persisted configuration", e);
         }
+
     }
 }

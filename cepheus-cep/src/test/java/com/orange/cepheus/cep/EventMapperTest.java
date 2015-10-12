@@ -8,10 +8,9 @@
 
 package com.orange.cepheus.cep;
 
+import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.EventProcessingException;
-import com.orange.cepheus.cep.model.Attribute;
-import com.orange.cepheus.cep.model.Event;
-import com.orange.cepheus.cep.model.EventType;
+import com.orange.cepheus.cep.model.*;
 import com.orange.ngsi.model.ContextAttribute;
 import com.orange.ngsi.model.ContextElement;
 import com.orange.ngsi.model.ContextMetadata;
@@ -194,5 +193,72 @@ public class EventMapperTest {
         ca.setMetadata(metadatas);
 
         eventMapper.eventFromContextElement(ce).getValues();
+    }
+
+    /**
+     * Test that the ContextElement with string metadata is correctly converted to an Esper map
+     * @throws Exception
+     */
+    @Test
+    public void testContextElementJsonPath_OK() throws Exception {
+
+        Attribute a = new Attribute("Attr", "string");
+        a.setJsonpath("$.test[0]");
+
+        EventTypeIn e = new EventTypeIn("S.*", "TempSensor", true);
+        e.setAttributes(Collections.singleton(a));
+
+        Configuration configuration = new Configuration();
+        configuration.setEventTypeIns(Collections.singletonList(e));
+
+        eventMapper.setConfiguration(configuration);
+
+        ContextElement ce = new ContextElement();
+        ce.setEntityId(new EntityId("S1", "TempSensor", false));
+        ContextAttribute ca = new ContextAttribute("Attr", "string", Collections.singletonMap("test", Collections.singletonList("hello")));
+        ce.setContextAttributeList(Collections.singletonList(ca));
+
+        Map<String, Object> values = eventMapper.eventFromContextElement(ce).getValues();
+        assertEquals("hello", values.get("Attr"));
+    }
+
+    /**
+     * Test that the ContextElement with a bad jsonpath in attribute will trigger exception
+     * @throws Exception
+     */
+    @Test(expected = ConfigurationException.class)
+    public void testContextElementWithBadJsonPathInAttribute() throws ConfigurationException {
+
+        Attribute a = new Attribute("Attr", "string");
+        a.setJsonpath("$BADJSONPATH");
+
+        EventTypeIn e = new EventTypeIn("S.*", "TempSensor", true);
+        e.setAttributes(Collections.singleton(a));
+
+        Configuration configuration = new Configuration();
+        configuration.setEventTypeIns(Collections.singletonList(e));
+
+        eventMapper.setConfiguration(configuration);
+    }
+
+    /**
+     * Test that the ContextElement with a bad jsonpath in metadata will trigger exception
+     * @throws Exception
+     */
+    @Test(expected = ConfigurationException.class)
+    public void testContextElementWithBadJsonPathInMetadata() throws ConfigurationException {
+        Metadata m = new Metadata("Meta", "string");
+        m.setJsonpath("$BADJSONPATH2");
+
+        Attribute a = new Attribute("Attr", "string");
+        a.setMetadata(Collections.singleton(m));
+
+        EventTypeIn e = new EventTypeIn("S.*", "TempSensor", true);
+        e.setAttributes(Collections.singleton(a));
+
+        Configuration configuration = new Configuration();
+        configuration.setEventTypeIns(Collections.singletonList(e));
+
+        eventMapper.setConfiguration(configuration);
     }
 }
