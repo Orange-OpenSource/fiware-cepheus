@@ -14,6 +14,7 @@ import com.orange.cepheus.broker.LocalRegistrations;
 import com.orange.cepheus.broker.Subscriptions;
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
+import com.orange.cepheus.broker.model.Subscription;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import org.junit.After;
@@ -34,6 +35,8 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
@@ -79,7 +82,7 @@ public class NgsiControllerTest {
     Iterator<URI> providingApplication;
 
     @Mock
-    Iterator<SubscribeContext> matchedSubscriptions;
+    Iterator<Subscription> matchedSubscriptions;
 
     @Mock
     ListenableFuture<UpdateContextResponse> updateContextResponseListenableFuture;
@@ -273,8 +276,8 @@ public class NgsiControllerTest {
         //subscriptions mock return always with matched subscriptions
         when(matchedSubscriptions.hasNext()).thenReturn(true, false);
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
-        subscribeContext.setSubscriptionId("999999");
-        when(matchedSubscriptions.next()).thenReturn(subscribeContext);
+        Subscription subscription = new Subscription("999999", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
+        when(matchedSubscriptions.next()).thenReturn(subscription);
         when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
 
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
@@ -342,8 +345,8 @@ public class NgsiControllerTest {
         //subscriptions mock return always with matched subscriptions
         when(matchedSubscriptions.hasNext()).thenReturn(true, false);
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
-        subscribeContext.setSubscriptionId("999999");
-        when(matchedSubscriptions.next()).thenReturn(subscribeContext);
+        Subscription subscription = new Subscription("999999", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
+        when(matchedSubscriptions.next()).thenReturn(subscription);
         when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
 
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
@@ -411,8 +414,8 @@ public class NgsiControllerTest {
         //subscriptions mock return always with matched subscriptions
         when(matchedSubscriptions.hasNext()).thenReturn(true, false);
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
-        subscribeContext.setSubscriptionId("999999");
-        when(matchedSubscriptions.next()).thenReturn(subscribeContext);
+        Subscription subscription = new Subscription("999999", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
+        when(matchedSubscriptions.next()).thenReturn(subscription);
         when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
 
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
@@ -481,8 +484,8 @@ public class NgsiControllerTest {
         //subscriptions mock return always with matched subscriptions
         when(matchedSubscriptions.hasNext()).thenReturn(true, false);
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
-        subscribeContext.setSubscriptionId("999999");
-        when(matchedSubscriptions.next()).thenReturn(subscribeContext);
+        Subscription subscription = new Subscription("999999", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
+        when(matchedSubscriptions.next()).thenReturn(subscription);
         when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
 
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
@@ -543,8 +546,8 @@ public class NgsiControllerTest {
         //subscriptions mock return always with matched subscriptions
         when(matchedSubscriptions.hasNext()).thenReturn(true, false);
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
-        subscribeContext.setSubscriptionId("999999");
-        when(matchedSubscriptions.next()).thenReturn(subscribeContext);
+        Subscription subscription = new Subscription("999999", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
+        when(matchedSubscriptions.next()).thenReturn(subscription);
         when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
 
         //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
@@ -1077,9 +1080,9 @@ public class NgsiControllerTest {
     public void postNewSubscribeContext() throws Exception {
 
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
-
+        Subscription subscription = new Subscription("12345678", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
         when(subscriptions.addSubscription(any())).thenReturn("12345678");
-        when(subscriptions.getSubscription("12345678")).thenReturn(subscribeContext);
+        when(subscriptions.getSubscription("12345678")).thenReturn(subscription);
 
         mockMvc.perform(post("/v1/subscribeContext")
                 .content(json(mapper, subscribeContext))
@@ -1099,9 +1102,9 @@ public class NgsiControllerTest {
         subscribeContext.setDuration(null);
 
         SubscribeContext subscribeContextInSubscription = createSubscribeContextTemperature();
-
+        Subscription subscription = new Subscription("12345678", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContextInSubscription);
         when(subscriptions.addSubscription(any())).thenReturn("12345678");
-        when(subscriptions.getSubscription("12345678")).thenReturn(subscribeContextInSubscription);
+        when(subscriptions.getSubscription("12345678")).thenReturn(subscription);
 
         mockMvc.perform(post("/v1/subscribeContext")
                 .content(json(mapper, subscribeContext))

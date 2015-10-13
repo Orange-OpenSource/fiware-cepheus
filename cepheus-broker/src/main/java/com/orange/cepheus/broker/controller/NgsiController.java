@@ -14,6 +14,7 @@ import com.orange.cepheus.broker.Subscriptions;
 import com.orange.cepheus.broker.exception.MissingRemoteBrokerException;
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
+import com.orange.cepheus.broker.model.Subscription;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import com.orange.ngsi.server.NgsiBaseController;
@@ -107,12 +108,12 @@ public class NgsiController extends NgsiBaseController {
             logger.warn("No local.url parameter defined to use as originator for sending notifyContext");
         } else {
             // Send notifications to matching subscriptions
-            Iterator<SubscribeContext> matchingSubscriptions = subscriptions.findSubscriptions(contextElement.getEntityId(), attributesName);
+            Iterator<Subscription> matchingSubscriptions = subscriptions.findSubscriptions(contextElement.getEntityId(), attributesName);
             while (matchingSubscriptions.hasNext()) {
-                SubscribeContext subscribeContext = matchingSubscriptions.next();
-                NotifyContext notifyContext = new NotifyContext(subscribeContext.getSubscriptionId(), new URI(originator));
+                Subscription subscription = matchingSubscriptions.next();
+                NotifyContext notifyContext = new NotifyContext(subscription.getSubscriptionId(), new URI(originator));
                 notifyContext.setContextElementResponseList(contextElementResponseList);
-                String providerUrl = subscribeContext.getReference().toString();
+                String providerUrl = subscription.getSubscribeContext().getReference().toString();
 
                 HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(providerUrl);
                 logger.debug("=> notifyContext to {} with Content-Type {}", providerUrl, httpHeaders.getContentType());
@@ -168,7 +169,7 @@ public class NgsiController extends NgsiBaseController {
         String subscriptionId = subscriptions.addSubscription(subscribe);
         subscribeResponse.setSubscriptionId(subscriptionId);
         //return in the response the duration because it is set by the subscriptions class if the duration is null in the request
-        subscribeResponse.setDuration(subscriptions.getSubscription(subscriptionId).getDuration());
+        subscribeResponse.setDuration(subscriptions.getSubscription(subscriptionId).getSubscribeContext().getDuration());
         subscribeContextResponse.setSubscribeResponse(subscribeResponse);
 
         return subscribeContextResponse;

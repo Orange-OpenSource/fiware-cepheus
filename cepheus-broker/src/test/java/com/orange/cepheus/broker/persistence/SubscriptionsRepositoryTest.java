@@ -10,6 +10,8 @@ package com.orange.cepheus.broker.persistence;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orange.cepheus.broker.Application;
+import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
+import com.orange.cepheus.broker.model.Subscription;
 import com.orange.ngsi.model.SubscribeContext;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,61 +53,55 @@ public class SubscriptionsRepositoryTest {
     }
 
     @Test
-    public void saveSubscriptionTest() throws URISyntaxException, JsonProcessingException {
+    public void saveSubscriptionTest() throws URISyntaxException, SubscriptionPersistenceException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
-        subscribeContext.setSubscriptionId("12345");
-        subscribeContext.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
-        subscriptionsRepository.saveSubscription("12345", subscribeContext);
-        Map<String, SubscribeContext> subscriptions = subscriptionsRepository.getAllSubscriptions();
+        Subscription subscription = new Subscription("12345", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
+        subscriptionsRepository.saveSubscription(subscription);
+        Map<String, Subscription> subscriptions = subscriptionsRepository.getAllSubscriptions();
         Assert.assertEquals(1, subscriptions.size());
-        Assert.assertEquals(subscribeContext.getSubscriptionId(), subscriptions.get("12345").getSubscriptionId());
-        Assert.assertEquals(subscribeContext.getExpirationDate(), subscriptions.get("12345").getExpirationDate());
-        Assert.assertEquals(subscribeContext.getDuration(), subscriptions.get("12345").getDuration());
+        Assert.assertEquals(subscription.getSubscriptionId(), subscriptions.get("12345").getSubscriptionId());
+        Assert.assertEquals(subscription.getExpirationDate(), subscriptions.get("12345").getExpirationDate());
+        Assert.assertEquals(subscribeContext.getDuration(), subscriptions.get("12345").getSubscribeContext().getDuration());
     }
 
     @Test
-    public void updateSubscriptionTest() throws URISyntaxException, JsonProcessingException {
+    public void updateSubscriptionTest() throws URISyntaxException, SubscriptionPersistenceException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
-        subscribeContext.setSubscriptionId("12345");
-        subscribeContext.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
-        subscriptionsRepository.saveSubscription("12345", subscribeContext);
-        Map<String, SubscribeContext> subscriptions = subscriptionsRepository.getAllSubscriptions();
+        Subscription subscription = new Subscription("12345", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
+        subscriptionsRepository.saveSubscription(subscription);
+        Map<String, Subscription> subscriptions = subscriptionsRepository.getAllSubscriptions();
         Assert.assertEquals(1, subscriptions.size());
-        Assert.assertEquals("P1M", subscriptions.get("12345").getDuration());
+        Assert.assertEquals("P1M", subscriptions.get("12345").getSubscribeContext().getDuration());
         subscribeContext.setDuration("PT1D");
-        subscribeContext.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
-        subscriptionsRepository.updateSubscription("12345", subscribeContext);
+        subscription.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
+        subscriptionsRepository.updateSubscription(subscription);
         subscriptions = subscriptionsRepository.getAllSubscriptions();
         Assert.assertEquals(1, subscriptions.size());
-        Assert.assertEquals("PT1D", subscriptions.get("12345").getDuration());
-        Assert.assertEquals(subscribeContext.getExpirationDate(), subscriptions.get("12345").getExpirationDate());
+        Assert.assertEquals("PT1D", subscriptions.get("12345").getSubscribeContext().getDuration());
+        Assert.assertEquals(subscription.getExpirationDate(), subscriptions.get("12345").getExpirationDate());
     }
 
     @Test
-    public void removeSubscriptionTest() throws URISyntaxException, JsonProcessingException {
+    public void removeSubscriptionTest() throws URISyntaxException, SubscriptionPersistenceException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
-        subscribeContext.setSubscriptionId("12345");
-        subscribeContext.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
-        subscriptionsRepository.saveSubscription("12345", subscribeContext);
+        Subscription subscription = new Subscription("12345", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
+        subscriptionsRepository.saveSubscription(subscription);
         Assert.assertEquals(1, subscriptionsRepository.getAllSubscriptions().size());
         subscriptionsRepository.removeSubscription("12345");
         Assert.assertEquals(0, subscriptionsRepository.getAllSubscriptions().size());
     }
 
     @Test
-    public void getAllSubscriptionsTest() throws URISyntaxException, JsonProcessingException {
+    public void getAllSubscriptionsTest() throws URISyntaxException, SubscriptionPersistenceException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
-        subscribeContext.setSubscriptionId("12345");
-        subscribeContext.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
-        subscriptionsRepository.saveSubscription("12345", subscribeContext);
+        Subscription subscription = new Subscription("12345", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
+        subscriptionsRepository.saveSubscription(subscription);
         SubscribeContext subscribeContext2 = createSubscribeContextTemperature();
-        subscribeContext2.setSubscriptionId("12346");
-        subscribeContext2.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
-        subscriptionsRepository.saveSubscription("12346", subscribeContext);
+        Subscription subscription2 = new Subscription("12346", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext2);
+        subscriptionsRepository.saveSubscription(subscription2);
         SubscribeContext subscribeContext3 = createSubscribeContextTemperature();
-        subscribeContext3.setSubscriptionId("12347");
-        subscribeContext3.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
-        subscriptionsRepository.saveSubscription("12347", subscribeContext);
+        Subscription subscription3 = new Subscription("12347", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext3);
+        subscriptionsRepository.saveSubscription(subscription3);
         Assert.assertEquals(3, subscriptionsRepository.getAllSubscriptions().size());
     }
 

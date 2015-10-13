@@ -10,8 +10,12 @@ package com.orange.cepheus.broker;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
+import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
+import com.orange.cepheus.broker.model.Subscription;
 import com.orange.cepheus.broker.persistence.SubscriptionsRepository;
 import com.orange.ngsi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -31,7 +35,9 @@ import java.util.regex.PatternSyntaxException;
 @Component
 public class Subscriptions {
 
-    private Map<String, SubscribeContext> subscriptions;
+    private static Logger logger = LoggerFactory.getLogger(Subscriptions.class);
+
+    private Map<String, Subscription> subscriptions;
 
     @Autowired
     private Patterns patterns;
@@ -41,7 +47,11 @@ public class Subscriptions {
 
     @PostConstruct
     protected void loadSubscriptionsOnStartup() {
-        subscriptions = subscriptionsRepository.getAllSubscriptions();
+        try {
+            subscriptions = subscriptionsRepository.getAllSubscriptions();
+        } catch (SubscriptionPersistenceException e) {
+            logger.error("Failed to load subscriptions", e);
+        }
     }
 
     /**
@@ -70,14 +80,13 @@ public class Subscriptions {
         // Generate a subscription id
         String subscriptionId = UUID.randomUUID().toString();
 
-        //set the expiration date and subscriptionId
-        subscribeContext.setExpirationDate(Instant.now().plus(duration));
-        subscribeContext.setSubscriptionId(subscriptionId);
+        //create subscription and set the expiration date and subscriptionId
+        Subscription subscription = new Subscription(subscriptionId, Instant.now().plus(duration), subscribeContext);
 
-        subscriptions.put(subscriptionId, subscribeContext);
+        subscriptions.put(subscriptionId, subscription);
         try {
-            subscriptionsRepository.saveSubscription(subscriptionId, subscribeContext);
-        } catch (JsonProcessingException e) {
+            subscriptionsRepository.saveSubscription(subscription);
+        } catch (SubscriptionPersistenceException e) {
             throw new SubscriptionException("Impossible to save subscription", e);
         }
 
@@ -91,9 +100,9 @@ public class Subscriptions {
      */
     public boolean deleteSubscription(UnsubscribeContext unsubscribeContext) {
         String subscriptionId = unsubscribeContext.getSubscriptionId();
-        SubscribeContext subscribeContext = subscriptions.remove(subscriptionId);
+        Subscription subscription = subscriptions.remove(subscriptionId);
         subscriptionsRepository.removeSubscription(subscriptionId);
-        return (subscribeContext != null);
+        return (subscription != null);
     }
 
     /**
@@ -102,10 +111,10 @@ public class Subscriptions {
      * @param searchAttributes the attributes to search
      * @return list of matching subscription
      */
-    public Iterator<SubscribeContext> findSubscriptions(EntityId searchEntityId, Set<String> searchAttributes) {
+    public Iterator<Subscription> findSubscriptions(EntityId searchEntityId, Set<String> searchAttributes) {
 
         // Filter out expired subscriptions
-        Predicate<SubscribeContext> filterExpired = subscribeContext -> subscribeContext.getExpirationDate().isAfter(Instant.now());
+        Predicate<Subscription> filterExpired = subscription -> subscription.getExpirationDate().isAfter(Instant.now());
 
         // Filter only matching entity ids
         Predicate<EntityId> filterEntityId = patterns.getFilterEntityId(searchEntityId);
@@ -113,13 +122,13 @@ public class Subscriptions {
         // Only filter by attributes if search is looking for them
         final boolean noAttributes = searchAttributes == null || searchAttributes.size() == 0;
 
-        // Filter each registration (remove expired) and return its providing application
+        // Filter each subscription (remove expired) and return its providing application
         // if at least one of its listed entities matches the searched context element
-        // and if all searched attributes are defined in the registration (if any)
+        // and if all searched attributes are defined in the subscription (if any)
         return subscriptions.values().stream()
                 .filter(filterExpired)
-                .filter(subscribeContext -> subscribeContext.getEntityIdList().stream().filter(filterEntityId).findFirst().isPresent()
-                        && (noAttributes || subscribeContext.getAttributeList().containsAll(searchAttributes))).iterator();
+                .filter(subscription -> subscription.getSubscribeContext().getEntityIdList().stream().filter(filterEntityId).findFirst().isPresent()
+                        && (noAttributes || subscription.getSubscribeContext().getAttributeList().containsAll(searchAttributes))).iterator();
 
     }
 
@@ -142,8 +151,9 @@ public class Subscriptions {
      * @param subscriptionId the id of the subscription
      * @return the corresponding subscription or null if not found
      */
-    public SubscribeContext getSubscription(String subscriptionId) {
-        return subscriptions.get(subscriptionId);
+    public Subscription getSubscription(String subscriptionId) {
+        Subscription subscription = subscriptions.get(subscriptionId);
+        return subscription;
     }
 
     /**

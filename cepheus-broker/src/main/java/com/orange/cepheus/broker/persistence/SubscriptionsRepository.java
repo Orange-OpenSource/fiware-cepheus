@@ -12,10 +12,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
+import com.orange.cepheus.broker.model.Subscription;
 import com.orange.ngsi.model.SubscribeContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -45,12 +48,12 @@ public class SubscriptionsRepository {
     /**
      * Subscription Bean used for the mapping between a subscription and the table
      */
-    private static class Subscription {
+    private static class SubscriptionDataBase {
         String subscriptionId;
         String expirationDate;
         String subscribeContextString;
 
-        public Subscription() {
+        public SubscriptionDataBase() {
         }
 
         public void setSubscriptionId(String subscriptionId) {
@@ -86,49 +89,64 @@ public class SubscriptionsRepository {
 
     /**
      * Save a subscription.
-     * @param subscriptionId
-     * @param subscribeContext
-     * @throws JsonProcessingException
+     * @param subscription
+     * @throws SubscriptionPersistenceException
      */
-    public void saveSubscription(String subscriptionId, SubscribeContext subscribeContext) throws JsonProcessingException {
-        //serialization
-        ObjectWriter writer = mapper.writer();
-        String susbcribeContextString = writer.writeValueAsString(subscribeContext);
-        String expirationDate = subscribeContext.getExpirationDate().toString();
-        jdbcTemplate.update("insert into t_subscriptions(id,expirationDate,subscribeContext) values(?,?,?)", subscriptionId, expirationDate, susbcribeContextString);
+    public void saveSubscription(Subscription subscription) throws SubscriptionPersistenceException {
+
+        try {
+            //Mapping from model to database model
+            ObjectWriter writer = mapper.writer();
+            String susbcribeContextString = writer.writeValueAsString(subscription.getSubscribeContext());
+            String expirationDate = subscription.getExpirationDate().toString();
+            //insert into database
+            jdbcTemplate.update("insert into t_subscriptions(id,expirationDate,subscribeContext) values(?,?,?)", subscription.getSubscriptionId(), expirationDate, susbcribeContextString);
+        } catch (Exception e) {
+            throw new SubscriptionPersistenceException(e.getMessage(), e.getCause());
+        }
     }
 
     /**
      * Save a subscription updated
-     * @param subscriptionId
-     * @param subscribeContext
-     * @throws JsonProcessingException
+     * @param subscription
+     * @throws SubscriptionPersistenceException
      */
-    public void updateSubscription(String subscriptionId, SubscribeContext subscribeContext) throws JsonProcessingException {
+    public void updateSubscription(Subscription subscription) throws SubscriptionPersistenceException {
+
+        try {
         //serialization
         ObjectWriter writer = mapper.writer();
-        String susbcribeContextString = writer.writeValueAsString(subscribeContext);
-        String expirationDate = subscribeContext.getExpirationDate().toString();
-        jdbcTemplate.update("update t_subscriptions set expirationDate=? , subscribeContext=? where id=?", expirationDate, susbcribeContextString, subscriptionId);
+        String susbcribeContextString = writer.writeValueAsString(subscription.getSubscribeContext());
+        String expirationDate = subscription.getExpirationDate().toString();
+        jdbcTemplate.update("update t_subscriptions set expirationDate=? , subscribeContext=? where id=?", expirationDate, susbcribeContextString, subscription.getSubscriptionId());
+        } catch (Exception e) {
+            throw new SubscriptionPersistenceException(e.getMessage(), e.getCause());
+        }
     }
 
     /**
      * Get all subscriptions saved
      * @return subscriptions map
+     * @throws SubscriptionPersistenceException
      */
-    public Map<String, SubscribeContext> getAllSubscriptions() {
-        Map<String, SubscribeContext> subscriptions = new ConcurrentHashMap<>();
-        List<Subscription> subscriptionList = jdbcTemplate.query( "select id, expirationDate, subscribeContext from t_subscriptions", new SubscriptionMapper());
-        subscriptionList.forEach(subscription -> {
-            try {
-                SubscribeContext subscribeContext = mapper.readValue(subscription.getSubscribeContextString(), SubscribeContext.class);
-                subscribeContext.setSubscriptionId(subscription.getSubscriptionId());
-                subscribeContext.setExpirationDate(Instant.parse(subscription.getExpirationDate()));
-                subscriptions.put(subscription.getSubscriptionId(), subscribeContext);
-            } catch (IOException e) {
-                logger.warn("failed to get subscription {}", subscription.getSubscribeContextString());
-            }
-        });
+    public Map<String, Subscription> getAllSubscriptions() throws SubscriptionPersistenceException {
+        Map<String, Subscription> subscriptions = new ConcurrentHashMap<>();
+        try {
+            List<SubscriptionDataBase> subscriptionDataBaseList = jdbcTemplate.query("select id, expirationDate, subscribeContext from t_subscriptions", new SubscriptionMapper());
+            subscriptionDataBaseList.forEach(subscriptionDataBase -> {
+                try {
+                    SubscribeContext subscribeContext = mapper.readValue(subscriptionDataBase.getSubscribeContextString(), SubscribeContext.class);
+                    Instant expirationDate = Instant.parse(subscriptionDataBase.getExpirationDate());
+                    String subscriptionId = subscriptionDataBase.getSubscriptionId();
+                    Subscription subscription = new Subscription(subscriptionId, expirationDate, subscribeContext);
+                    subscriptions.put(subscriptionId, subscription);
+                } catch (IOException e) {
+                    logger.warn("failed to get subscription {}", subscriptionDataBase.getSubscribeContextString());
+                }
+            });
+        } catch (DataAccessException e) {
+            throw new SubscriptionPersistenceException(e.getMessage(),e.getCause());
+        }
         return subscriptions;
     }
 
@@ -140,14 +158,14 @@ public class SubscriptionsRepository {
         jdbcTemplate.update("delete from t_subscriptions where id=?", subscriptionId);
     }
 
-    private static final class SubscriptionMapper implements RowMapper<Subscription> {
+    private static final class SubscriptionMapper implements RowMapper<SubscriptionDataBase> {
 
-        public Subscription mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Subscription subscription = new Subscription();
-            subscription.setSubscriptionId(rs.getString("id"));
-            subscription.setExpirationDate(rs.getString("expirationDate"));
-            subscription.setSubscribeContextString(rs.getString("subscribeContext"));
-            return subscription;
+        public SubscriptionDataBase mapRow(ResultSet rs, int rowNum) throws SQLException {
+            SubscriptionDataBase subscriptionDataBase = new SubscriptionDataBase();
+            subscriptionDataBase.setSubscriptionId(rs.getString("id"));
+            subscriptionDataBase.setExpirationDate(rs.getString("expirationDate"));
+            subscriptionDataBase.setSubscribeContextString(rs.getString("subscribeContext"));
+            return subscriptionDataBase;
         }
     }
 
