@@ -78,6 +78,10 @@ It is also available though readthedocs.org: [Administrator manual](http://fiwar
 
 Some simple examples to learn how to use Cepheus-CEP and Cepheus-Broker can be found under the [doc/examples](doc/examples) folder.
 
+## LinkSprite-NGSI Sample
+
+An example to transform a RaspberryPi with LinkSprite components to a NGSI sensors communicating with cepheus can be found [here](https://github.com/Orange-OpenSource/fiware-cepheus/tree/linksprite-ngsi)
+
 ## License
 
 FIWARE Cepheus is licensed under the [GNU General Public License Version 2](LICENSE.txt).
