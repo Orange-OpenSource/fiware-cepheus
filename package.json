@@ -1,0 +1,48 @@
+{
+  "name": "NGSIMock",
+  "version": "0.0.1",
+  "description": "Sprite-NGSI",
+  "keywords": [
+    "Fiware",
+    "Node.js",
+    "IoTAgent",
+    "Cepheus",
+    "LinkSprite"
+  ],
+  "author": {
+    "name": "Christophe Azemar",
+    "email": "christophe.azemar@orange.com",
+    "url":  "http://www.orange.fr"
+  },
+  "homepage": "http://www.fiware.org",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+
+  "engines": {
+    "node": ">= 0.10.0",
+    "npm": ">= 1.0.0"
+  },
+
+  "dependencies": {
+      "express": "3.4.8",
+      "request" : "2.34.0",
+      "command-node": "*",
+      "request": "*",
+      "async": "*",
+      "iotagent-node-lib": "0.8.2",
+      "body-parser": "1.11.0",
+      "logops": "*",
+      "sleep" : "*",
+      "zerorpc" : "*",
+      "pi-gpio" : "*",
+      "pi-spi" : "*",
+      "cron" : "*"
+  },
+  "devDependencies": {},
+  "bundleDependencies": [],
+
+  "private": true,
+  "main": "app.js"
+}
