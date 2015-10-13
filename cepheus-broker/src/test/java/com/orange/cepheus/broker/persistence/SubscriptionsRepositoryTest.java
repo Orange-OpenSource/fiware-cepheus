@@ -24,6 +24,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
@@ -51,30 +53,39 @@ public class SubscriptionsRepositoryTest {
     @Test
     public void saveSubscriptionTest() throws URISyntaxException, JsonProcessingException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        subscribeContext.setSubscriptionId("12345");
+        subscribeContext.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
         subscriptionsRepository.saveSubscription("12345", subscribeContext);
         Map<String, SubscribeContext> subscriptions = subscriptionsRepository.getAllSubscriptions();
         Assert.assertEquals(1, subscriptions.size());
+        Assert.assertEquals(subscribeContext.getSubscriptionId(), subscriptions.get("12345").getSubscriptionId());
+        Assert.assertEquals(subscribeContext.getExpirationDate(), subscriptions.get("12345").getExpirationDate());
         Assert.assertEquals(subscribeContext.getDuration(), subscriptions.get("12345").getDuration());
     }
 
     @Test
     public void updateSubscriptionTest() throws URISyntaxException, JsonProcessingException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        subscribeContext.setSubscriptionId("12345");
+        subscribeContext.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
         subscriptionsRepository.saveSubscription("12345", subscribeContext);
         Map<String, SubscribeContext> subscriptions = subscriptionsRepository.getAllSubscriptions();
         Assert.assertEquals(1, subscriptions.size());
         Assert.assertEquals("P1M", subscriptions.get("12345").getDuration());
-        subscribeContext.setDuration("PT10S");
+        subscribeContext.setDuration("PT1D");
+        subscribeContext.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
         subscriptionsRepository.updateSubscription("12345", subscribeContext);
         subscriptions = subscriptionsRepository.getAllSubscriptions();
         Assert.assertEquals(1, subscriptions.size());
-        Assert.assertEquals("PT10S", subscriptions.get("12345").getDuration());
-
+        Assert.assertEquals("PT1D", subscriptions.get("12345").getDuration());
+        Assert.assertEquals(subscribeContext.getExpirationDate(), subscriptions.get("12345").getExpirationDate());
     }
 
     @Test
     public void removeSubscriptionTest() throws URISyntaxException, JsonProcessingException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        subscribeContext.setSubscriptionId("12345");
+        subscribeContext.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
         subscriptionsRepository.saveSubscription("12345", subscribeContext);
         Assert.assertEquals(1, subscriptionsRepository.getAllSubscriptions().size());
         subscriptionsRepository.removeSubscription("12345");
@@ -84,8 +95,16 @@ public class SubscriptionsRepositoryTest {
     @Test
     public void getAllSubscriptionsTest() throws URISyntaxException, JsonProcessingException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        subscribeContext.setSubscriptionId("12345");
+        subscribeContext.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
         subscriptionsRepository.saveSubscription("12345", subscribeContext);
+        SubscribeContext subscribeContext2 = createSubscribeContextTemperature();
+        subscribeContext2.setSubscriptionId("12346");
+        subscribeContext2.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
         subscriptionsRepository.saveSubscription("12346", subscribeContext);
+        SubscribeContext subscribeContext3 = createSubscribeContextTemperature();
+        subscribeContext3.setSubscriptionId("12347");
+        subscribeContext3.setExpirationDate(Instant.now().plus(1, ChronoUnit.DAYS));
         subscriptionsRepository.saveSubscription("12347", subscribeContext);
         Assert.assertEquals(3, subscriptionsRepository.getAllSubscriptions().size());
     }

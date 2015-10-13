@@ -10,7 +10,7 @@ This keeps the implementation simple and sufficient for the use cases handled by
 The main goal of the Cepheus-broker is to sit between the IoT Agents or NGSI devices, forward their requests to a remote NGSI broker (like Orion)
 while allowing other NGSI components to subscribe to some the the updated Context Elements.
 
-The broker persists the subscriptions not only on memory but also on Sqlite database.
+The broker persists the subscriptions on Sqlite database.
  
 ![broker](../fig/broker.png)
 

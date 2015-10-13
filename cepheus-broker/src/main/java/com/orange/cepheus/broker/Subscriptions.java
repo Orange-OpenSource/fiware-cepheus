@@ -31,7 +31,7 @@ import java.util.regex.PatternSyntaxException;
 @Component
 public class Subscriptions {
 
-    private Map<String, SubscribeContext> subscriptions = new ConcurrentHashMap<>();
+    private Map<String, SubscribeContext> subscriptions;
 
     @Autowired
     private Patterns patterns;
@@ -50,7 +50,7 @@ public class Subscriptions {
      * @return the subscriptionId
      * @throws SubscriptionException
      */
-    public String addSubscription(SubscribeContext subscribeContext) throws SubscriptionException{
+    public String addSubscription(SubscribeContext subscribeContext) throws SubscriptionException {
         //if duration is not present, then lb set duration to P1M
         Duration duration = convertDuration(subscribeContext.getDuration());
         if (duration.isNegative()) {

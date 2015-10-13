@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,8 +39,15 @@ public class SubscriptionsRepository {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private ObjectMapper mapper;
+
+    /**
+     * Subscription Bean used for the mapping between a subscription and the table
+     */
     private static class Subscription {
         String subscriptionId;
+        String expirationDate;
         String subscribeContextString;
 
         public Subscription() {
@@ -53,6 +61,14 @@ public class SubscriptionsRepository {
             this.subscribeContextString = subscribeContextString;
         }
 
+        public String getExpirationDate() {
+            return expirationDate;
+        }
+
+        public void setExpirationDate(String expirationDate) {
+            this.expirationDate = expirationDate;
+        }
+
         public String getSubscriptionId() {
             return subscriptionId;
         }
@@ -64,7 +80,7 @@ public class SubscriptionsRepository {
 
     @PostConstruct
     protected void createTableOnStartup() {
-        jdbcTemplate.execute("create table if not exists t_subscriptions (id varchar, subscribeContext varchar)");
+        jdbcTemplate.execute("create table if not exists t_subscriptions (id varchar, expirationDate varchar, subscribeContext varchar)");
         jdbcTemplate.execute("create unique index if not exists index_subscriptionId on t_subscriptions (id)");
     }
 
@@ -76,11 +92,10 @@ public class SubscriptionsRepository {
      */
     public void saveSubscription(String subscriptionId, SubscribeContext subscribeContext) throws JsonProcessingException {
         //serialization
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+        ObjectWriter writer = mapper.writer();
         String susbcribeContextString = writer.writeValueAsString(subscribeContext);
-
-        jdbcTemplate.update("insert into t_subscriptions(id,subscribeContext) values(?,?)", subscriptionId, susbcribeContextString);
+        String expirationDate = subscribeContext.getExpirationDate().toString();
+        jdbcTemplate.update("insert into t_subscriptions(id,expirationDate,subscribeContext) values(?,?,?)", subscriptionId, expirationDate, susbcribeContextString);
     }
 
     /**
@@ -91,11 +106,10 @@ public class SubscriptionsRepository {
      */
     public void updateSubscription(String subscriptionId, SubscribeContext subscribeContext) throws JsonProcessingException {
         //serialization
-        ObjectMapper mapper = new ObjectMapper();
         ObjectWriter writer = mapper.writer();
         String susbcribeContextString = writer.writeValueAsString(subscribeContext);
-
-        jdbcTemplate.update("update t_subscriptions set subscribeContext=? where id=?", susbcribeContextString, subscriptionId);
+        String expirationDate = subscribeContext.getExpirationDate().toString();
+        jdbcTemplate.update("update t_subscriptions set expirationDate=? , subscribeContext=? where id=?", expirationDate, susbcribeContextString, subscriptionId);
     }
 
     /**
@@ -104,11 +118,12 @@ public class SubscriptionsRepository {
      */
     public Map<String, SubscribeContext> getAllSubscriptions() {
         Map<String, SubscribeContext> subscriptions = new ConcurrentHashMap<>();
-        List<Subscription> subscriptionList = jdbcTemplate.query( "select id, subscribeContext from t_subscriptions", new SubscriptionMapper());
-        ObjectMapper mapper = new ObjectMapper();
+        List<Subscription> subscriptionList = jdbcTemplate.query( "select id, expirationDate, subscribeContext from t_subscriptions", new SubscriptionMapper());
         subscriptionList.forEach(subscription -> {
             try {
                 SubscribeContext subscribeContext = mapper.readValue(subscription.getSubscribeContextString(), SubscribeContext.class);
+                subscribeContext.setSubscriptionId(subscription.getSubscriptionId());
+                subscribeContext.setExpirationDate(Instant.parse(subscription.getExpirationDate()));
                 subscriptions.put(subscription.getSubscriptionId(), subscribeContext);
             } catch (IOException e) {
                 logger.warn("failed to get subscription {}", subscription.getSubscribeContextString());
@@ -130,6 +145,7 @@ public class SubscriptionsRepository {
         public Subscription mapRow(ResultSet rs, int rowNum) throws SQLException {
             Subscription subscription = new Subscription();
             subscription.setSubscriptionId(rs.getString("id"));
+            subscription.setExpirationDate(rs.getString("expirationDate"));
             subscription.setSubscribeContextString(rs.getString("subscribeContext"));
             return subscription;
         }
