@@ -65,12 +65,14 @@ Each Context Attributes is defined by:
  - `type`: the type of the attribute, mandatory.
            Only simple types are supported for now : `string`, `double`, `float`, `int`, `bool`.
  - `metadata`: the list of attribute Context Metadata, optional.
+ - `jsonpath`: a jsonpath to allow accessing the value inside a "complex" object, optional.
 
 Each Context Metadata is defined by:
 
 - `name`: the name of the metadata, mandatory.
 - `type`: the type of the metadata, mandatory.
           Only simple types are supported for now : `string`, `double`, `float`, `int`, `bool`.
+- `jsonpath`: a jsonpath to allow accessing the value inside a "complex" object, optional.
 
 ### Outgoing events
 
@@ -156,5 +158,72 @@ participant Remote broker as B
 A->B: update(S1.temp, 25)
 A->B: update(S1.tep, 26)
 ```-->
+
+### jsonpath field
+
+The `jsonpath` field of an Context Attribute or Context Metadata allows to extract
+the value from a deeply nested structure using a [JsonPath](https://github.com/jayway/JsonPath) expression.
+
+This works both for JSON and XML formats (with some limitations for the XML format).
+
+For example, if an `/updateContext` request sends the following payload:
+
+```
+    {
+        "contextElements": [
+            {
+                "type": "Room",
+                "isPattern": "false",
+                "id": "Room1",
+                "attributes": [
+                    {
+                        "name": "temperature",
+                        "type": "double",
+                        "value": { "raw": ["16.2", "°C", "Celcus"] }
+                    },
+                    {
+                        "name": "floor",
+                        "type": "string",
+                        "value": "1"
+                    }
+                ]
+            }
+        ],
+        "updateAction": "UPDATE"
+    }
+```
+
+The `16.2` value can be extracted from the JSON object `{ "raw": ["16.2", "°C", "Celcus"] }`
+by using the JsonPath expression : `$.raw[0]`.
+
+Here is an example configuration to handle this payload by exposing the temperature value to the CEP:
+
+```
+    {
+        "host":"http://localhost:8080",
+        "in":[
+            {
+                "id":"Room1",
+                "type":"Room",
+                "attributes":[
+                    { "name":"temperature", "type":"double", "jsonpath":"$.raw[0]" },
+                    { "name":"floor", "type":"string" }
+                ]
+            }
+        ],
+        "out":[
+            {
+                "id":"Floor1",
+                "type":"Floor",
+                "attributes":[
+                    { "name":"temperature", "type":"double" }
+                ]
+            }
+        ],
+        "statements":[
+            "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
+        ]
+    }
+```
 
 
