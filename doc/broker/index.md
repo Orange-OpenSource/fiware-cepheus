@@ -10,6 +10,8 @@ This keeps the implementation simple and sufficient for the use cases handled by
 The main goal of the Cepheus-broker is to sit between the IoT Agents or NGSI devices, forward their requests to a remote NGSI broker (like Orion)
 while allowing other NGSI components to subscribe to some the the updated Context Elements.
 
+The broker persists the subscriptions not only on memory but also on Sqlite database.
+ 
 ![broker](../fig/broker.png)
 
 # Forwarding support
@@ -41,7 +43,7 @@ The broker has many limitations due to its simple design compared to a complete 
 - Broker only supports `registerContext`, `updateContext`, `queryContext`, `subscribeContext`, `unsubscribeContext` and `notifyContext` operations from NGSI v1 API (json formated).
 - Subscriptions only support `ONCHANGE` as type of notification.
 - Subscriptions do not handle throttling.
-- All subscriptions and registrations are lost on restart of the application (not persisted on disk, kept in memory only).
+- All registrations are lost on restart of the application (not persisted on disk, kept in memory only).
 - If multiple NGSI providers register the same Context Entities, only the first provider will get the forwarded `queryContext` or `updateContext` requests.
 - When a `queryContext` or `updateContext` request contains references to multiple Context Entities, the request is forwarded only to the Context Provider of the first Context Entity.
 - Broker does not keep the any value of Context Entities, all requests will get forwarded to a Context Provider or the remote Broker.

@@ -28,7 +28,7 @@ curl -L -o cepheus-broker.jar "http://oss.sonatype.org/service/local/artifact/ma
 
 # launch Cepheus-CEP and Cepheus-Broker
 nohup java -jar -Djava.security.egd=file:/dev/./urandom cepheus-cep.jar --logging.config=file --logging.file=cep.log --port=8080 2>> /dev/null >> /dev/null &
-nohup java -jar -Djava.security.egd=file:/dev/./urandom cepheus-broker.jar --logging.config=file --logging.file=broker.log --port=8081 2>> /dev/null >> /dev/null &
+nohup java -jar -Djava.security.egd=file:/dev/./urandom cepheus-broker.jar --spring.datasource.url=jdbc:sqlite:cepheus-broker.db --logging.config=file --logging.file=broker.log --port=8081 2>> /dev/null >> /dev/null &
 
 
 
