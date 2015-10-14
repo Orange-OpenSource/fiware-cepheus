@@ -15,4 +15,8 @@ public class SubscriptionPersistenceException extends Exception {
     public SubscriptionPersistenceException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public SubscriptionPersistenceException(Throwable cause) {
+        super(cause);
+    }
 }

@@ -58,9 +58,9 @@ public class Subscriptions {
      * Add a subscription.
      * @param subscribeContext
      * @return the subscriptionId
-     * @throws SubscriptionException
+     * @throws SubscriptionException, SubscriptionPersistenceException
      */
-    public String addSubscription(SubscribeContext subscribeContext) throws SubscriptionException {
+    public String addSubscription(SubscribeContext subscribeContext) throws SubscriptionException, SubscriptionPersistenceException {
         //if duration is not present, then lb set duration to P1M
         Duration duration = convertDuration(subscribeContext.getDuration());
         if (duration.isNegative()) {
@@ -83,12 +83,9 @@ public class Subscriptions {
         //create subscription and set the expiration date and subscriptionId
         Subscription subscription = new Subscription(subscriptionId, Instant.now().plus(duration), subscribeContext);
 
+        //save subscription
+        subscriptionsRepository.saveSubscription(subscription);
         subscriptions.put(subscriptionId, subscription);
-        try {
-            subscriptionsRepository.saveSubscription(subscription);
-        } catch (SubscriptionPersistenceException e) {
-            logger.error("Failed to save subscription into database", e);
-        }
 
         return subscriptionId;
     }
@@ -97,15 +94,13 @@ public class Subscriptions {
      * Removes a subscription.
      * @param unsubscribeContext
      * @return false if there is not subscription to delete
+     * @throws SubscriptionPersistenceException
      */
-    public boolean deleteSubscription(UnsubscribeContext unsubscribeContext) {
+    public boolean deleteSubscription(UnsubscribeContext unsubscribeContext) throws SubscriptionPersistenceException {
         String subscriptionId = unsubscribeContext.getSubscriptionId();
+        subscriptionsRepository.removeSubscription(subscriptionId);
         Subscription subscription = subscriptions.remove(subscriptionId);
-        try {
-            subscriptionsRepository.removeSubscription(subscriptionId);
-        } catch (SubscriptionPersistenceException e) {
-            logger.error("Failed to remove subscription from database", e);
-        }
+
         return (subscription != null);
     }
 

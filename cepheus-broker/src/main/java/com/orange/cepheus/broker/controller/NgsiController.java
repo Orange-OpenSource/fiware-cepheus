@@ -14,6 +14,7 @@ import com.orange.cepheus.broker.Subscriptions;
 import com.orange.cepheus.broker.exception.MissingRemoteBrokerException;
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
+import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
 import com.orange.cepheus.broker.model.Subscription;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
@@ -159,7 +160,7 @@ public class NgsiController extends NgsiBaseController {
     }
 
     @Override
-    public SubscribeContextResponse subscribeContext(final SubscribeContext subscribe) throws SubscriptionException {
+    public SubscribeContextResponse subscribeContext(final SubscribeContext subscribe) throws SubscriptionException, SubscriptionPersistenceException {
         logger.debug("<= subscribeContext on entities: {}", subscribe.getEntityIdList().toString());
 
         SubscribeContextResponse subscribeContextResponse = new SubscribeContextResponse();
@@ -176,7 +177,7 @@ public class NgsiController extends NgsiBaseController {
     }
 
     @Override
-    public UnsubscribeContextResponse unsubscribeContext(final UnsubscribeContext unsubscribe) {
+    public UnsubscribeContextResponse unsubscribeContext(final UnsubscribeContext unsubscribe) throws SubscriptionPersistenceException {
         logger.debug("<= unsubscribeContext with subscriptionId: {}", unsubscribe.getSubscriptionId());
 
         String subscriptionId = unsubscribe.getSubscriptionId();
@@ -219,6 +220,17 @@ public class NgsiController extends NgsiBaseController {
         statusCode.setCode("400");
         statusCode.setReasonPhrase("subscription error");
         statusCode.setDetail(subscriptionException.getMessage());
+        return errorResponse(req.getRequestURI(), statusCode);
+    }
+
+    @ExceptionHandler(SubscriptionPersistenceException.class)
+    public ResponseEntity<Object> subscriptionPersistenceExceptionHandler(HttpServletRequest req, SubscriptionPersistenceException subscriptionPersistenceException) {
+        logger.error("SubscriptionPersistenceException error: {}", subscriptionPersistenceException.getMessage());
+
+        StatusCode statusCode = new StatusCode();
+        statusCode.setCode("500");
+        statusCode.setReasonPhrase("error in subscription persistence");
+        statusCode.setDetail(subscriptionPersistenceException.getMessage());
         return errorResponse(req.getRequestURI(), statusCode);
     }
 

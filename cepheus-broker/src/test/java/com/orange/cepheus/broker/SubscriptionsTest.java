@@ -141,7 +141,7 @@ public class SubscriptionsTest {
     }
 
     @Test
-    public void deleteNotExistSubscriptions() throws URISyntaxException, SubscriptionException {
+    public void deleteNotExistSubscriptions() throws URISyntaxException, SubscriptionException, SubscriptionPersistenceException {
         UnsubscribeContext unsubscribeContext = new UnsubscribeContext("12345");
         assertFalse(subscriptions.deleteSubscription(unsubscribeContext));
     }

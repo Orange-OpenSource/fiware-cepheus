@@ -8,8 +8,6 @@
 
 package com.orange.cepheus.broker.persistence;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
@@ -20,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
@@ -66,7 +63,7 @@ public class SubscriptionsRepository {
             //insert into database
             jdbcTemplate.update("insert into t_subscriptions(id,expirationDate,subscribeContext) values(?,?,?)", subscription.getSubscriptionId(), expirationDate, susbcribeContextString);
         } catch (Exception e) {
-            throw new SubscriptionPersistenceException(e.getMessage(), e.getCause());
+            throw new SubscriptionPersistenceException(e);
         }
     }
 
@@ -84,7 +81,7 @@ public class SubscriptionsRepository {
         String expirationDate = subscription.getExpirationDate().toString();
         jdbcTemplate.update("update t_subscriptions set expirationDate=? , subscribeContext=? where id=?", expirationDate, susbcribeContextString, subscription.getSubscriptionId());
         } catch (Exception e) {
-            throw new SubscriptionPersistenceException(e.getMessage(), e.getCause());
+            throw new SubscriptionPersistenceException(e);
         }
     }
 
@@ -97,8 +94,7 @@ public class SubscriptionsRepository {
         Map<String, Subscription> subscriptions = new ConcurrentHashMap<>();
         try {
             List<Subscription> subscriptionList = jdbcTemplate.query("select id, expirationDate, subscribeContext from t_subscriptions",
-                    new RowMapper<Subscription>() {
-                        public Subscription mapRow(ResultSet rs, int rowNum) throws SQLException, DataAccessException {
+                    (ResultSet rs, int rowNum) ->  {
                             Subscription subscription = new Subscription();
                             try {
                                 subscription.setSubscriptionId(rs.getString("id"));
@@ -106,14 +102,13 @@ public class SubscriptionsRepository {
 
                                 subscription.setSubscribeContext(mapper.readValue(rs.getString("subscribeContext"), SubscribeContext.class));
                             } catch (IOException e) {
-                                    logger.error("Fail to load subscription message: {} cause: {}", e.getMessage(), e.getCause());
+                                    throw new SQLException(e);
                             }
                             return subscription;
-                        }
-                    });
+                        });
             subscriptionList.forEach(subscription -> subscriptions.put(subscription.getSubscriptionId(), subscription));
         } catch (DataAccessException e) {
-            throw new SubscriptionPersistenceException(e.getMessage(),e.getCause());
+            throw new SubscriptionPersistenceException(e);
         }
         return subscriptions;
     }
@@ -127,7 +122,7 @@ public class SubscriptionsRepository {
         try {
             jdbcTemplate.update("delete from t_subscriptions where id=?", subscriptionId);
         } catch (DataAccessException e) {
-            throw new SubscriptionPersistenceException(e.getMessage(), e.getCause());
+            throw new SubscriptionPersistenceException(e);
         }
     }
 

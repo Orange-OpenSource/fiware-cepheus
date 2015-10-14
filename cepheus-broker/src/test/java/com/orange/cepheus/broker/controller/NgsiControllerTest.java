@@ -14,6 +14,7 @@ import com.orange.cepheus.broker.LocalRegistrations;
 import com.orange.cepheus.broker.Subscriptions;
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
+import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
 import com.orange.cepheus.broker.model.Subscription;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
@@ -24,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -1118,6 +1120,22 @@ public class NgsiControllerTest {
     }
 
     @Test
+    public void postSubscribeContextWithPersistenceFailure() throws Exception {
+
+        SubscribeContext subscribeContext = createSubscribeContextTemperature();
+
+        when(subscriptions.addSubscription(any())).thenThrow(new SubscriptionPersistenceException("table not exist", new RuntimeException()));
+
+        mockMvc.perform(post("/v1/subscribeContext")
+                .content(json(mapper, subscribeContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value("500"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value("error in subscription persistence"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.detail").value("table not exist"));
+    }
+
+    @Test
     public void postUnSubscribeContextWhichExist() throws Exception {
 
         UnsubscribeContext unsubscribeContext = new UnsubscribeContext("12345678");
@@ -1147,6 +1165,23 @@ public class NgsiControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_470.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value(CodeEnum.CODE_470.getShortPhrase()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.detail").value("The subscription ID specified 12345678 does not correspond to an active subscription"));
+
+        verify(subscriptions, atLeastOnce()).deleteSubscription(any());
+    }
+
+    @Test
+    public void postUnSubscribeContextWithPersistenceFailure() throws Exception {
+
+        UnsubscribeContext unsubscribeContext = new UnsubscribeContext("12345678");
+        when(subscriptions.deleteSubscription(any())).thenThrow(new SubscriptionPersistenceException("table not exist", new RuntimeException()));
+
+        mockMvc.perform(post("/v1/unsubscribeContext")
+                .content(json(mapper, unsubscribeContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_500.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value("error in subscription persistence"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.detail").value("table not exist"));
 
         verify(subscriptions, atLeastOnce()).deleteSubscription(any());
     }
