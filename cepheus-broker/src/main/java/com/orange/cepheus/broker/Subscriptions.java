@@ -50,7 +50,7 @@ public class Subscriptions {
         try {
             subscriptions = subscriptionsRepository.getAllSubscriptions();
         } catch (SubscriptionPersistenceException e) {
-            logger.error("Failed to load subscriptions", e);
+            logger.error("Failed to load subscriptions from database", e);
         }
     }
 
@@ -87,7 +87,7 @@ public class Subscriptions {
         try {
             subscriptionsRepository.saveSubscription(subscription);
         } catch (SubscriptionPersistenceException e) {
-            throw new SubscriptionException("Impossible to save subscription", e);
+            logger.error("Failed to save subscription into database", e);
         }
 
         return subscriptionId;
@@ -101,7 +101,11 @@ public class Subscriptions {
     public boolean deleteSubscription(UnsubscribeContext unsubscribeContext) {
         String subscriptionId = unsubscribeContext.getSubscriptionId();
         Subscription subscription = subscriptions.remove(subscriptionId);
-        subscriptionsRepository.removeSubscription(subscriptionId);
+        try {
+            subscriptionsRepository.removeSubscription(subscriptionId);
+        } catch (SubscriptionPersistenceException e) {
+            logger.error("Failed to remove subscription from database", e);
+        }
         return (subscription != null);
     }
 
@@ -141,7 +145,11 @@ public class Subscriptions {
         subscriptions.forEach((subscriptionId, subscribeContext) -> {
             if (subscribeContext.getExpirationDate().isBefore(now)) {
                 subscriptions.remove(subscriptionId);
-                subscriptionsRepository.removeSubscription(subscriptionId);
+                try {
+                    subscriptionsRepository.removeSubscription(subscriptionId);
+                } catch (SubscriptionPersistenceException e) {
+                    logger.error("Failed to remove subscription from database", e);
+                }
             }
         });
     }

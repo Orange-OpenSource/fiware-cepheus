@@ -45,45 +45,9 @@ public class SubscriptionsRepository {
     @Autowired
     private ObjectMapper mapper;
 
-    /**
-     * Subscription Bean used for the mapping between a subscription and the table
-     */
-    private static class SubscriptionDataBase {
-        String subscriptionId;
-        String expirationDate;
-        String subscribeContextString;
-
-        public SubscriptionDataBase() {
-        }
-
-        public void setSubscriptionId(String subscriptionId) {
-            this.subscriptionId = subscriptionId;
-        }
-
-        public void setSubscribeContextString(String subscribeContextString) {
-            this.subscribeContextString = subscribeContextString;
-        }
-
-        public String getExpirationDate() {
-            return expirationDate;
-        }
-
-        public void setExpirationDate(String expirationDate) {
-            this.expirationDate = expirationDate;
-        }
-
-        public String getSubscriptionId() {
-            return subscriptionId;
-        }
-
-        public String getSubscribeContextString() {
-            return subscribeContextString;
-        }
-    }
-
     @PostConstruct
     protected void createTableOnStartup() {
-        jdbcTemplate.execute("create table if not exists t_subscriptions (id varchar, expirationDate varchar, subscribeContext varchar)");
+        jdbcTemplate.execute("create table if not exists t_subscriptions (id varchar primary key, expirationDate varchar not null, subscribeContext varchar not null)");
         jdbcTemplate.execute("create unique index if not exists index_subscriptionId on t_subscriptions (id)");
     }
 
@@ -132,18 +96,22 @@ public class SubscriptionsRepository {
     public Map<String, Subscription> getAllSubscriptions() throws SubscriptionPersistenceException {
         Map<String, Subscription> subscriptions = new ConcurrentHashMap<>();
         try {
-            List<SubscriptionDataBase> subscriptionDataBaseList = jdbcTemplate.query("select id, expirationDate, subscribeContext from t_subscriptions", new SubscriptionMapper());
-            subscriptionDataBaseList.forEach(subscriptionDataBase -> {
-                try {
-                    SubscribeContext subscribeContext = mapper.readValue(subscriptionDataBase.getSubscribeContextString(), SubscribeContext.class);
-                    Instant expirationDate = Instant.parse(subscriptionDataBase.getExpirationDate());
-                    String subscriptionId = subscriptionDataBase.getSubscriptionId();
-                    Subscription subscription = new Subscription(subscriptionId, expirationDate, subscribeContext);
-                    subscriptions.put(subscriptionId, subscription);
-                } catch (IOException e) {
-                    logger.warn("failed to get subscription {}", subscriptionDataBase.getSubscribeContextString());
-                }
-            });
+            List<Subscription> subscriptionList = jdbcTemplate.query("select id, expirationDate, subscribeContext from t_subscriptions",
+                    new RowMapper<Subscription>() {
+                        public Subscription mapRow(ResultSet rs, int rowNum) throws SQLException, DataAccessException {
+                            Subscription subscription = new Subscription();
+                            try {
+                                subscription.setSubscriptionId(rs.getString("id"));
+                                subscription.setExpirationDate(Instant.parse(rs.getString("expirationDate")));
+
+                                subscription.setSubscribeContext(mapper.readValue(rs.getString("subscribeContext"), SubscribeContext.class));
+                            } catch (IOException e) {
+                                    logger.error("Fail to load subscription message: {} cause: {}", e.getMessage(), e.getCause());
+                            }
+                            return subscription;
+                        }
+                    });
+            subscriptionList.forEach(subscription -> subscriptions.put(subscription.getSubscriptionId(), subscription));
         } catch (DataAccessException e) {
             throw new SubscriptionPersistenceException(e.getMessage(),e.getCause());
         }
@@ -153,19 +121,13 @@ public class SubscriptionsRepository {
     /**
      * Remove a subscription.
      * @param subscriptionId
+     * @throws SubscriptionPersistenceException
      */
-    public void removeSubscription(String subscriptionId) {
-        jdbcTemplate.update("delete from t_subscriptions where id=?", subscriptionId);
-    }
-
-    private static final class SubscriptionMapper implements RowMapper<SubscriptionDataBase> {
-
-        public SubscriptionDataBase mapRow(ResultSet rs, int rowNum) throws SQLException {
-            SubscriptionDataBase subscriptionDataBase = new SubscriptionDataBase();
-            subscriptionDataBase.setSubscriptionId(rs.getString("id"));
-            subscriptionDataBase.setExpirationDate(rs.getString("expirationDate"));
-            subscriptionDataBase.setSubscribeContextString(rs.getString("subscribeContext"));
-            return subscriptionDataBase;
+    public void removeSubscription(String subscriptionId) throws SubscriptionPersistenceException {
+        try {
+            jdbcTemplate.update("delete from t_subscriptions where id=?", subscriptionId);
+        } catch (DataAccessException e) {
+            throw new SubscriptionPersistenceException(e.getMessage(), e.getCause());
         }
     }
 

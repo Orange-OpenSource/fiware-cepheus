@@ -8,14 +8,17 @@
 
 package com.orange.cepheus.broker.persistence;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orange.cepheus.broker.Application;
 import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
 import com.orange.cepheus.broker.model.Subscription;
 import com.orange.ngsi.model.SubscribeContext;
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -41,6 +44,9 @@ import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SubscriptionsRepositoryTest {
 
+    @Rule
+    public ExpectedException thrown= ExpectedException.none();
+
     @Autowired
     SubscriptionsRepository subscriptionsRepository;
 
@@ -65,6 +71,23 @@ public class SubscriptionsRepositoryTest {
     }
 
     @Test
+    public void saveSubscriptionWithExceptionTest() throws URISyntaxException, SubscriptionPersistenceException {
+        thrown.expect(SubscriptionPersistenceException.class);
+        Subscription subscription = new Subscription();
+        subscription.setSubscribeContext(new SubscribeContext());
+        subscriptionsRepository.saveSubscription(subscription);
+    }
+
+    @Test
+    public void saveSubscriptionWithDuplicateKeyExceptionTest() throws URISyntaxException, SubscriptionPersistenceException {
+        thrown.expect(SubscriptionPersistenceException.class);
+        SubscribeContext subscribeContext = createSubscribeContextTemperature();
+        Subscription subscription = new Subscription("12345", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
+        subscriptionsRepository.saveSubscription(subscription);
+        subscriptionsRepository.saveSubscription(subscription);
+    }
+
+    @Test
     public void updateSubscriptionTest() throws URISyntaxException, SubscriptionPersistenceException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         Subscription subscription = new Subscription("12345", Instant.now().plus(1, ChronoUnit.DAYS), subscribeContext);
@@ -79,6 +102,14 @@ public class SubscriptionsRepositoryTest {
         Assert.assertEquals(1, subscriptions.size());
         Assert.assertEquals("PT1D", subscriptions.get("12345").getSubscribeContext().getDuration());
         Assert.assertEquals(subscription.getExpirationDate(), subscriptions.get("12345").getExpirationDate());
+    }
+
+    @Test
+    public void updateSubscriptionWithExceptionTest() throws URISyntaxException, SubscriptionPersistenceException {
+        thrown.expect(SubscriptionPersistenceException.class);
+        Subscription subscription = new Subscription();
+        subscription.setSubscribeContext(new SubscribeContext());
+        subscriptionsRepository.updateSubscription(subscription);
     }
 
     @Test

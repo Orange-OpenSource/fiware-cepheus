@@ -4,6 +4,7 @@ This is the administrative guide to Cepheus-Broker.
 
 * JAVA 8
 * Maven 2 (for building only)
+* OS/CPU supported by [Sqlite-JDBC](https://github.com/xerial/sqlite-jdbc)
 
 ## Building from source
 

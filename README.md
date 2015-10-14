@@ -34,6 +34,7 @@ You can find the complete build and installation instructions for each component
 
 * JAVA 8
 * Maven 2 (for build)
+* OS/CPU supported by [Sqlite-JDBC](https://github.com/xerial/sqlite-jdbc) (for cepheus-broker)
 
 ### Build via Maven
 
