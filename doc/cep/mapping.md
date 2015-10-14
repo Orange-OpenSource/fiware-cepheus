@@ -15,7 +15,7 @@ The Esper CEP engine imposes several restrictions to the Context Entities.
 
 ### Type is mandatory
 
-All events must have a given type (an Event type) that define a strict set of typed attributes.
+All events must have a given **unique** type (an Event type) that define a strict set of typed attributes.
 Event types must be declared before any event can be processed by the CEP engine.
 
 Based on this strong requirement, the fiware-cepheus implementation **requires** the updates made by
@@ -31,8 +31,6 @@ Therefore no Context Attribute is allowed to be named `id`.
 
 The current version of the CEP engine only handle simple attribute types (like string, int, float, ...)
 and cannot execute statements for complex types like objects or arrays because of the strongly typed nature of the CEP engine.
-
-Note: A later version might support complex values by flattening values using [JSON path](http://goessner.net/articles/JsonPath/) expressions.
 
 ### Accessing attributes metadata
 
@@ -55,16 +53,32 @@ For example, the following Context Entities :
     "id": "SENSOR1",
     "type":"RoomSensors",
     "attributes": [
-      { "name": "T°", "type": "float", "value": "21" },
-      { "name": "Pressure", "type": "integer", "value": "560" }
+      { "name": "temperature", "type": "float", "value": "21",
+        "metadatas": [
+          { "name": "unit", "type": "string", "value": "celsius" }
+        ]
+      },
+      { "name": "pressure", "type": "integer", "value": "560",
+        "metadatas": [
+          { "name": "unit", "type": "string", "value": "PSI" }
+        ]
+      }
     ]
   },
   {
     "id": "SENSOR2",
     "type":"RoomSensors",
     "attribtues": [
-      { "name": "T°", "type": "float", "value": "30" },
-      { "name": "Pressure", "type": "integer", "value": "1342" }
+      { "name": "temperature", "type": "float", "value": "30",
+        "metadatas": [
+          { "name": "unit", "type": "string", "value": "celsius" }
+        ]
+      },
+      { "name": "pressure", "type": "integer", "value": "1342",
+        "metadatas": [
+          { "name": "unit", "type": "string", "value": "PSI" }
+        ]
+      }
     ]
   }
 ```
@@ -72,8 +86,8 @@ For example, the following Context Entities :
 can be seen as this table (or event stream) named "RoomSensors":
 
 <table>
-<tr><th>ID</th><th>T°</th><th>Pressure</th></tr>
-<tr><td>SENSOR1</td><td>21</td><td>560</td></tr>
-<tr><td>SENSOR2</td><td>30</td><td>1342</td></tr>
-<tr><td>...</td><td>...</td><td>...</td></tr>
+<tr><th>ID</th><th>temperature</th><th>temperature_unit</th><th>pressure</th><th>pressure_unit</th></tr>
+<tr><td>SENSOR1</td><td>21</td><td>celsius</td><td>560</td></tr>
+<tr><td>SENSOR2</td><td>30</td><td>celsius</td><td>1342</td></tr>
+<tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>
 </table>

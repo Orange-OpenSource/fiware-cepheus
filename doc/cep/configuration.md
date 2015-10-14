@@ -10,11 +10,16 @@ Here is an example:
   "host":"http://localhost:8080",
   "in":[
     {
-      "id":"RoomX",
+      "id":"Room.*",
       "type":"Room",
-      "isPattern": false,
+      "isPattern": true,
       "attributes":[
-        { "name":"temperature", "type":"double" },
+        {
+          "name":"temperature", "type":"double",
+          "metadata": [
+            { "name":"unit", "type":"string" }
+          ]
+        },
         { "name":"floor", "type":"string" }
       ]
       "providers":[
@@ -27,15 +32,25 @@ Here is an example:
       "id":"FloorX",
       "type":"Floor",
       "attributes":[
-        { "name":"temperature", "type":"double" }
+        {
+          "name":"temperature", "type":"double",
+          "metadata": [
+            { "name":"unit", "type":"string" }
+          ]
+        }
       ]
       "brokers":[
-        { "url":"http://localhost:8081" }
+        {
+          "url":"http://orion.fiware.org:3000",
+          "serviceName": "tenant",
+          "servicePath": "test/example",
+          "authToken": "OAUTH_TOKEN"
+        }
       ]
     }
   ],
   "statements":[
-    "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
+    "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature, temperature_unit FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
   ]
 }
 ```
@@ -53,7 +68,7 @@ The `in` array defines the list of incoming events (NGSI Context Entities update
 
 Each Context Entity must be defined by:
 
- - `id`: the ID of the Context Entity, can be a patten if `isPattern` is `true`, mandatory.
+ - `id`: the ID of the Context Entity, can be a pattern if `isPattern` is `true`, mandatory.
  - `type`: the type of the Context Entity, mandatory.
  - `isPattern`: if the `id` is a pattern, optional, default: `false`.
  - `attributes`: the list of Context Attributes to match, mandatory, cannot be empty.
