@@ -8,12 +8,19 @@
 
 package com.orange.cepheus.broker;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
+import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
+import com.orange.cepheus.broker.model.Subscription;
+import com.orange.cepheus.broker.persistence.SubscriptionsRepository;
 import com.orange.ngsi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.xml.datatype.DatatypeFactory;
 import java.time.Duration;
 import java.time.Instant;
@@ -28,18 +35,32 @@ import java.util.regex.PatternSyntaxException;
 @Component
 public class Subscriptions {
 
-    private Map<String, SubscribeContext> subscriptions = new ConcurrentHashMap<>();
+    private static Logger logger = LoggerFactory.getLogger(Subscriptions.class);
+
+    private Map<String, Subscription> subscriptions;
 
     @Autowired
     private Patterns patterns;
+
+    @Autowired
+    SubscriptionsRepository subscriptionsRepository;
+
+    @PostConstruct
+    protected void loadSubscriptionsOnStartup() {
+        try {
+            subscriptions = subscriptionsRepository.getAllSubscriptions();
+        } catch (SubscriptionPersistenceException e) {
+            logger.error("Failed to load subscriptions from database", e);
+        }
+    }
 
     /**
      * Add a subscription.
      * @param subscribeContext
      * @return the subscriptionId
-     * @throws SubscriptionException
+     * @throws SubscriptionException, SubscriptionPersistenceException
      */
-    public String addSubscription(SubscribeContext subscribeContext) throws SubscriptionException {
+    public String addSubscription(SubscribeContext subscribeContext) throws SubscriptionException, SubscriptionPersistenceException {
         //if duration is not present, then lb set duration to P1M
         Duration duration = convertDuration(subscribeContext.getDuration());
         if (duration.isNegative()) {
@@ -59,11 +80,12 @@ public class Subscriptions {
         // Generate a subscription id
         String subscriptionId = UUID.randomUUID().toString();
 
-        //set the expiration date and subscriptionId
-        subscribeContext.setExpirationDate(Instant.now().plus(duration));
-        subscribeContext.setSubscriptionId(subscriptionId);
+        //create subscription and set the expiration date and subscriptionId
+        Subscription subscription = new Subscription(subscriptionId, Instant.now().plus(duration), subscribeContext);
 
-        subscriptions.put(subscriptionId, subscribeContext);
+        //save subscription
+        subscriptionsRepository.saveSubscription(subscription);
+        subscriptions.put(subscriptionId, subscription);
 
         return subscriptionId;
     }
@@ -72,10 +94,14 @@ public class Subscriptions {
      * Removes a subscription.
      * @param unsubscribeContext
      * @return false if there is not subscription to delete
+     * @throws SubscriptionPersistenceException
      */
-    public boolean deleteSubscription(UnsubscribeContext unsubscribeContext) {
-        SubscribeContext subscribeContext = subscriptions.remove(unsubscribeContext.getSubscriptionId());
-        return (subscribeContext != null);
+    public boolean deleteSubscription(UnsubscribeContext unsubscribeContext) throws SubscriptionPersistenceException {
+        String subscriptionId = unsubscribeContext.getSubscriptionId();
+        subscriptionsRepository.removeSubscription(subscriptionId);
+        Subscription subscription = subscriptions.remove(subscriptionId);
+
+        return (subscription != null);
     }
 
     /**
@@ -84,10 +110,10 @@ public class Subscriptions {
      * @param searchAttributes the attributes to search
      * @return list of matching subscription
      */
-    public Iterator<SubscribeContext> findSubscriptions(EntityId searchEntityId, Set<String> searchAttributes) {
+    public Iterator<Subscription> findSubscriptions(EntityId searchEntityId, Set<String> searchAttributes) {
 
         // Filter out expired subscriptions
-        Predicate<SubscribeContext> filterExpired = subscribeContext -> subscribeContext.getExpirationDate().isAfter(Instant.now());
+        Predicate<Subscription> filterExpired = subscription -> subscription.getExpirationDate().isAfter(Instant.now());
 
         // Filter only matching entity ids
         Predicate<EntityId> filterEntityId = patterns.getFilterEntityId(searchEntityId);
@@ -95,13 +121,13 @@ public class Subscriptions {
         // Only filter by attributes if search is looking for them
         final boolean noAttributes = searchAttributes == null || searchAttributes.size() == 0;
 
-        // Filter each registration (remove expired) and return its providing application
+        // Filter each subscription (remove expired) and return its providing application
         // if at least one of its listed entities matches the searched context element
-        // and if all searched attributes are defined in the registration (if any)
+        // and if all searched attributes are defined in the subscription (if any)
         return subscriptions.values().stream()
                 .filter(filterExpired)
-                .filter(subscribeContext -> subscribeContext.getEntityIdList().stream().filter(filterEntityId).findFirst().isPresent()
-                        && (noAttributes || subscribeContext.getAttributeList().containsAll(searchAttributes))).iterator();
+                .filter(subscription -> subscription.getSubscribeContext().getEntityIdList().stream().filter(filterEntityId).findFirst().isPresent()
+                        && (noAttributes || subscription.getSubscribeContext().getAttributeList().containsAll(searchAttributes))).iterator();
 
     }
 
@@ -114,6 +140,11 @@ public class Subscriptions {
         subscriptions.forEach((subscriptionId, subscribeContext) -> {
             if (subscribeContext.getExpirationDate().isBefore(now)) {
                 subscriptions.remove(subscriptionId);
+                try {
+                    subscriptionsRepository.removeSubscription(subscriptionId);
+                } catch (SubscriptionPersistenceException e) {
+                    logger.error("Failed to remove subscription from database", e);
+                }
             }
         });
     }
@@ -123,8 +154,9 @@ public class Subscriptions {
      * @param subscriptionId the id of the subscription
      * @return the corresponding subscription or null if not found
      */
-    public SubscribeContext getSubscription(String subscriptionId) {
-        return subscriptions.get(subscriptionId);
+    public Subscription getSubscription(String subscriptionId) {
+        Subscription subscription = subscriptions.get(subscriptionId);
+        return subscription;
     }
 
     /**
@@ -140,6 +172,5 @@ public class Subscriptions {
             throw new SubscriptionException("bad duration: " + duration, e);
         }
     }
-
 
 }

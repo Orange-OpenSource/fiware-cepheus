@@ -4,6 +4,7 @@ This is the administrative guide to Cepheus-Broker.
 
 * JAVA 8
 * Maven 2 (for building only)
+* OS/CPU supported by [Sqlite-JDBC](https://github.com/xerial/sqlite-jdbc)
 
 ## Building from source
 
@@ -94,6 +95,7 @@ This is a short list of the application properties:
     <tr><td>remote.servicePath</td><td>remote broker Service Path</td><td></td></tr>
     <tr><td>remote.authToken</td><td>OAuth token for secured broker</td><td></td></tr>
     <tr><td>logging.level.com.orange.cepheus.broker</td><td>log level</td><td>INFO</td></tr>
+    <tr><td>spring.datasource.url</td><td>DataBase url</td><td>jdbc:sqlite:${java.io.tmpdir:-/tmp}/cepheus-broker.db</td></tr>
 </table>
 
 

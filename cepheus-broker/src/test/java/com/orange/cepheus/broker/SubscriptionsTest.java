@@ -8,12 +8,24 @@
 package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.SubscriptionException;
+import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
+import com.orange.cepheus.broker.model.Subscription;
+import com.orange.cepheus.broker.persistence.SubscriptionsRepository;
 import com.orange.ngsi.model.*;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 import org.junit.Rule;
@@ -24,16 +36,22 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.orange.cepheus.broker.Util.createSubscribeContext;
 import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
 
 /**
  * Tests for Subscriptions management
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
+@TestPropertySource(locations="classpath:test.properties")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SubscriptionsTest {
 
@@ -43,56 +61,65 @@ public class SubscriptionsTest {
     @Autowired
     public Subscriptions subscriptions;
 
+    @Autowired
+    SubscriptionsRepository subscriptionsRepository;
+
     @Test
-    public void addSubscriptionTest() throws URISyntaxException, SubscriptionException {
+    public void addSubscriptionTest() throws URISyntaxException, SubscriptionException, SubscriptionPersistenceException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         String subscriptionId = subscriptions.addSubscription(subscribeContext);
 
         Assert.notNull(subscriptionId);
         Assert.hasLength(subscriptionId);
         Assert.notNull(subscriptions.getSubscription(subscriptionId));
-        Assert.notNull(subscribeContext.getExpirationDate());
+        Map<String, Subscription> subscriptions = subscriptionsRepository.getAllSubscriptions();
+        Assert.isTrue(subscriptions.size()==1);
+        Assert.notNull(subscriptions.get(subscriptionId).getExpirationDate());
     }
 
     @Test
-    public void addSubscriptionWithNegativeDurationTest() throws SubscriptionException, URISyntaxException {
+    public void addSubscriptionWithNegativeDurationTest() throws SubscriptionException, URISyntaxException, SubscriptionPersistenceException {
         thrown.expect(SubscriptionException.class);
         thrown.expectMessage("negative duration is not allowed");
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         subscribeContext.setDuration("-PT10S");
         subscriptions.addSubscription(subscribeContext);
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==0);
     }
 
     @Test
-    public void addSubscriptionWithBadDurationTest() throws SubscriptionException, URISyntaxException {
+    public void addSubscriptionWithBadDurationTest() throws SubscriptionException, URISyntaxException, SubscriptionPersistenceException {
         thrown.expect(SubscriptionException.class);
         thrown.expectMessage("bad duration: PIPO");
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         subscribeContext.setDuration("PIPO");
         subscriptions.addSubscription(subscribeContext);
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==0);
     }
 
     @Test
-    public void addSubscriptionWithZeroDurationTest() throws SubscriptionException, URISyntaxException {
+    public void addSubscriptionWithZeroDurationTest() throws SubscriptionException, URISyntaxException, SubscriptionPersistenceException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         subscribeContext.setDuration("PT0S");
         String subscriptionId = subscriptions.addSubscription(subscribeContext);
         Assert.notNull(subscriptionId);
         Assert.hasLength(subscriptionId);
-        Assert.notNull(subscriptions.getSubscription(subscriptionId));
-        Assert.notNull(subscribeContext.getExpirationDate());
-        Assert.notNull(subscribeContext.getSubscriptionId());
-        assertEquals(subscriptionId, subscribeContext.getSubscriptionId());
+        Subscription subscription = subscriptions.getSubscription(subscriptionId);
+        Assert.notNull(subscription);
+        Assert.notNull(subscription.getExpirationDate());
+        Assert.notNull(subscription.getSubscriptionId());
+        assertEquals(subscriptionId, subscription.getSubscriptionId());
         Calendar c = (Calendar) Calendar.getInstance().clone();
         c.add(Calendar.MONTH, 1);
         c.add(Calendar.HOUR, 24);
-        assertFalse(subscribeContext.getExpirationDate().isAfter(c.toInstant()));
+        assertFalse(subscription.getExpirationDate().isAfter(c.toInstant()));
         c.add(Calendar.HOUR, -48);
-        assertFalse(subscribeContext.getExpirationDate().isBefore(c.toInstant()));
+        assertFalse(subscription.getExpirationDate().isBefore(c.toInstant()));
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==1);
     }
 
     @Test
-    public void addSubscriptionWithBadPatternTest() throws SubscriptionException, URISyntaxException {
+    public void addSubscriptionWithBadPatternTest() throws SubscriptionException, URISyntaxException, SubscriptionPersistenceException {
         thrown.expect(SubscriptionException.class);
         thrown.expectMessage("bad pattern");
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
@@ -100,32 +127,37 @@ public class SubscriptionsTest {
         subscribeContext.getEntityIdList().get(0).setIsPattern(true);
 
         subscriptions.addSubscription(subscribeContext);
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==0);
     }
 
     @Test
-    public void deleteExistSubscriptions() throws URISyntaxException, SubscriptionException {
+    public void deleteExistSubscriptions() throws URISyntaxException, SubscriptionException, SubscriptionPersistenceException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         String subscriptionId = subscriptions.addSubscription(subscribeContext);
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==1);
         UnsubscribeContext unsubscribeContext = new UnsubscribeContext(subscriptionId);
         assertTrue(subscriptions.deleteSubscription(unsubscribeContext));
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==0);
     }
 
     @Test
-    public void deleteNotExistSubscriptions() throws URISyntaxException, SubscriptionException {
+    public void deleteNotExistSubscriptions() throws URISyntaxException, SubscriptionException, SubscriptionPersistenceException {
         UnsubscribeContext unsubscribeContext = new UnsubscribeContext("12345");
         assertFalse(subscriptions.deleteSubscription(unsubscribeContext));
     }
 
     @Test
-    public void purgeExpiredSubscriptionsTest() throws URISyntaxException, SubscriptionException, InterruptedException {
+    public void purgeExpiredSubscriptionsTest() throws URISyntaxException, SubscriptionException, InterruptedException, SubscriptionPersistenceException {
         SubscribeContext subscribeContext = createSubscribeContextTemperature();
         subscribeContext.setDuration("PT1S"); // 1s only
         String subscriptionId = subscriptions.addSubscription(subscribeContext);
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==1);
 
         Thread.sleep(1500);
 
         subscriptions.purgeExpiredSubscriptions();
         assertNull(subscriptions.getSubscription(subscriptionId));
+        Assert.isTrue(subscriptionsRepository.getAllSubscriptions().size()==0);
     }
 
     @Test
@@ -136,9 +168,9 @@ public class SubscriptionsTest {
         }
         // Find B
         EntityId searchedEntityId = new EntityId("B", "string", false);
-        Iterator<SubscribeContext> it = subscriptions.findSubscriptions(searchedEntityId, null);
+        Iterator<Subscription> it = subscriptions.findSubscriptions(searchedEntityId, null);
         assertTrue(it.hasNext());
-        assertEquals("http://B", it.next().getReference().toString());
+        assertEquals("http://B", it.next().getSubscribeContext().getReference().toString());
         assertFalse(it.hasNext());
     }
 
@@ -156,7 +188,7 @@ public class SubscriptionsTest {
         // Find the two B
         EntityId searchedEntityId = new EntityId("B", "string", false);
         List<String> results = new LinkedList<>();
-        subscriptions.findSubscriptions(searchedEntityId, null).forEachRemaining(subscribeContext -> results.add(subscribeContext.getReference().toString()));
+        subscriptions.findSubscriptions(searchedEntityId, null).forEachRemaining(subscription -> results.add(subscription.getSubscribeContext().getReference().toString()));
         Collections.sort(results);
         assertEquals(2, results.size());
         assertEquals("http://B", results.get(0));
@@ -173,7 +205,7 @@ public class SubscriptionsTest {
         // Find A and B
         EntityId searchedEntityId = new EntityId("A|B", "string", true);
         List<String> results = new LinkedList<>();
-        subscriptions.findSubscriptions(searchedEntityId, null).forEachRemaining(subscribeContext -> results.add(subscribeContext.getReference().toString()));
+        subscriptions.findSubscriptions(searchedEntityId, null).forEachRemaining(subscription -> results.add(subscription.getSubscribeContext().getReference().toString()));
         Collections.sort(results);
         assertEquals(2, results.size());
         assertEquals("http://A", results.get(0));
@@ -191,7 +223,7 @@ public class SubscriptionsTest {
         // Find A and B
         EntityId searchedEntityId = new EntityId("A", "string", false);
         List<String> results = new LinkedList<>();
-        subscriptions.findSubscriptions(searchedEntityId, null).forEachRemaining(subscribeContext -> results.add(subscribeContext.getReference().toString()));
+        subscriptions.findSubscriptions(searchedEntityId, null).forEachRemaining(subscription -> results.add(subscription.getSubscribeContext().getReference().toString()));
         Collections.sort(results);
         assertEquals(1, results.size());
         assertEquals("http://AB", results.get(0));
@@ -221,9 +253,9 @@ public class SubscriptionsTest {
         EntityId searchedEntityId = new EntityId(".*", "string", true);
         Set<String> attributes = new HashSet<>();
         Collections.addAll(attributes, "temp2", "temp3");
-        Iterator<SubscribeContext> it = subscriptions.findSubscriptions(searchedEntityId, attributes);
+        Iterator<Subscription> it = subscriptions.findSubscriptions(searchedEntityId, attributes);
         assertTrue(it.hasNext());
-        assertEquals("http://C", it.next().getReference().toString());
+        assertEquals("http://C", it.next().getSubscribeContext().getReference().toString());
         assertFalse(it.hasNext());
     }
 
@@ -235,7 +267,7 @@ public class SubscriptionsTest {
         }
 
         EntityId searchedEntityId = new EntityId("D", "string", false);
-        Iterator<SubscribeContext> it = subscriptions.findSubscriptions(searchedEntityId, null);
+        Iterator<Subscription> it = subscriptions.findSubscriptions(searchedEntityId, null);
         assertFalse(it.hasNext());
 
         searchedEntityId = new EntityId("B", "wrongtype", false);
@@ -256,7 +288,7 @@ public class SubscriptionsTest {
         Thread.sleep(1500);
 
         EntityId searchedEntityId = new EntityId("A", "string", false);
-        Iterator<SubscribeContext> it = subscriptions.findSubscriptions(searchedEntityId, null);
+        Iterator<Subscription> it = subscriptions.findSubscriptions(searchedEntityId, null);
         assertFalse(it.hasNext());
 
         searchedEntityId = new EntityId("B", "string", false);
