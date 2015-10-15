@@ -43,7 +43,7 @@ public class SubscribeContext {
     Restriction restriction;
 
     @JsonProperty("notifyConditions")
-    @JacksonXmlElementWrapper(localName = "notifyConditionList")
+    @JacksonXmlElementWrapper(localName = "notifyConditions")
     @JacksonXmlProperty(localName = "notifyCondition")
     List<NotifyCondition> notifyConditionList;
 

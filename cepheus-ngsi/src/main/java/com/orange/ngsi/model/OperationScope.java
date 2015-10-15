@@ -8,31 +8,48 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
 /**
  * Created by pborscia on 17/07/2015.
  */
 public class OperationScope {
 
-    String scopeType;
+    @JacksonXmlProperty(localName = "scopeType")
+    String type;
 
-    Object scopeValue;
+    @JacksonXmlProperty(localName = "scopeValue")
+    Object value;
 
     public OperationScope() {
     }
 
-    public String getScopeType() {
-        return scopeType;
+    public OperationScope(String type, Object scopeValue) {
+        this.type = type;
+        this.value = scopeValue;
     }
 
-    public void setScopeType(String scopeType) {
-        this.scopeType = scopeType;
+    public String getType() {
+        return type;
     }
 
-    public Object getScopeValue() {
-        return scopeValue;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public void setScopeValue(Object scopeValue) {
-        this.scopeValue = scopeValue;
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "OperationScope{" +
+                "type='" + type + '\'' +
+                ", value=" + value +
+                '}';
     }
 }

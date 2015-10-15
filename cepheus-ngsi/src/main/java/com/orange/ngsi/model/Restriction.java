@@ -20,7 +20,7 @@ public class Restriction {
 
     String attributeExpression;
 
-    @JacksonXmlElementWrapper(localName = "scopes")
+    @JacksonXmlElementWrapper(localName = "scope")
     @JacksonXmlProperty(localName = "operationScope")
     List<OperationScope> scopes;
 
@@ -41,5 +41,13 @@ public class Restriction {
 
     public void setScopes(List<OperationScope> scopes) {
         this.scopes = scopes;
+    }
+
+    @Override
+    public String toString() {
+        return "Restriction{" +
+                "attributeExpression='" + attributeExpression + '\'' +
+                ", scopes=" + scopes +
+                '}';
     }
 }
