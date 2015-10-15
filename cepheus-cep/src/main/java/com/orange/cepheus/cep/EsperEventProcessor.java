@@ -79,9 +79,6 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             this.configuration = configuration;
             eventSinkListener.setConfiguration(configuration);
         } catch (Exception e) {
-            // Try to restore the previous configuration (if any)
-            restoreConfiguration();
-
             throw new ConfigurationException("Failed to apply new configuration", e);
         }
     }
@@ -95,13 +92,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
      * This operation will lock the entire CEP engine.
      * @return true if the restoration was successful, false if the CEP failed to reinitialize from the active configuration
      */
-    private boolean restoreConfiguration() {
-        // Cannot restore when no previous configuration is defined
-        Configuration previousConfiguration = this.configuration;
-        if (previousConfiguration == null) {
-            return false;
-        }
-
+    public boolean restoreConfiguration(Configuration previousConfiguration) {
         epServiceProvider.getEngineInstanceWideLock().writeLock().lock();
 
         try {

@@ -41,6 +41,9 @@ public class InitTest {
     @Mock
     public SubscriptionManager subscriptionManager;
 
+    @Mock
+    public EventMapper eventMapper;
+
     @Autowired
     @InjectMocks
     public Init init;
@@ -62,6 +65,7 @@ public class InitTest {
 
         verify(complexEventProcessor).setConfiguration(eq(configuration));
         verify(subscriptionManager).setConfiguration(eq(configuration));
+        verify(eventMapper).setConfiguration(configuration);
     }
 
     /**

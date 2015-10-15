@@ -27,6 +27,8 @@ public class Attribute {
 
     private Set<Metadata> metadata = Collections.emptySet();
 
+    private String jsonpath;
+
     public Attribute() {
     }
 
@@ -62,6 +64,14 @@ public class Attribute {
         this.metadata = metadata;
     }
 
+    public String getJsonpath() {
+        return jsonpath;
+    }
+
+    public void setJsonpath(String jsonpath) {
+        this.jsonpath = jsonpath;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -75,7 +85,9 @@ public class Attribute {
             return false;
         if (type != null ? !type.equals(attribute.type) : attribute.type != null)
             return false;
-        return !(metadata != null ? !metadata.equals(attribute.metadata) : attribute.metadata != null);
+        if (metadata != null ? !metadata.equals(attribute.metadata) : attribute.metadata != null)
+            return false;
+        return !(jsonpath != null ? !jsonpath.equals(attribute.jsonpath) : attribute.jsonpath != null);
 
     }
 
@@ -84,14 +96,17 @@ public class Attribute {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
+        result = 31 * result + (jsonpath != null ? jsonpath.hashCode() : 0);
         return result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Attribute{" +
                 "name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", metadata=" + metadata +
+                ", jsonpath='" + jsonpath + '\'' +
                 '}';
     }
 }

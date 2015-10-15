@@ -151,6 +151,7 @@ public class EsperEventProcessorTest {
         } catch (ConfigurationException e) {
             // ok
         }
+        assertEquals(true, esperEventProcessor.restoreConfiguration(configuration));
 
         Map<String, Attribute> attributes = esperEventProcessor.getEventTypeAttributes("TempSensor");
         assertEquals(2, attributes.size());
@@ -164,6 +165,24 @@ public class EsperEventProcessorTest {
 
         assertEquals(1, esperEventProcessor.getStatements().size());
         assertEquals(configuration.getStatements().get(0), esperEventProcessor.getStatements().get(0));
+    }
+
+    /**
+     * Check that a bad configuration reset returns false
+     * @throws ConfigurationException
+     * @throws EventTypeNotFoundException
+     */
+    @Test
+    public void checkFailPreviousConfigurationRestoration() throws ConfigurationException, EventTypeNotFoundException {
+        Configuration configuration = getBasicConf();
+        esperEventProcessor.setConfiguration(configuration);
+
+        Configuration badConfiguration = new Configuration();
+        badConfiguration.setEventTypeIns(Collections.emptyList());
+        badConfiguration.setEventTypeOuts(Collections.emptyList());
+        badConfiguration.setStatements(Collections.singletonList("BAD STATEMENT"));
+
+        assertEquals(false, esperEventProcessor.restoreConfiguration(badConfiguration));
     }
 
 

@@ -21,13 +21,20 @@ public interface ComplexEventProcessor {
     /**
      * Apply a new configuration to the CEP
      * @param configuration the new configuration to apply
-     * @throws ConfigurationException when the configuration could not be applied successfully
+     * @throws ConfigurationException when the configuration could not be applied successfully, restoreConfiguration can be attempted
      */
     void setConfiguration(Configuration configuration) throws ConfigurationException;
 
     /**
-     * @return the active configuration or null
+     * Try to restore a previous valid configuration after a ConfigurationException
+     * @param previousConfiguration
+     * @return true if previous configuration could be restored
      */
+    boolean restoreConfiguration(Configuration previousConfiguration);
+
+        /**
+         * @return the active configuration or null
+         */
     Configuration getConfiguration();
 
     /**

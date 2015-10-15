@@ -21,6 +21,8 @@ public class Metadata {
     @NotEmpty(message = "All metadata must have a type")
     private String type;
 
+    private String jsonpath;
+
     public Metadata() {
     }
 
@@ -45,6 +47,14 @@ public class Metadata {
         this.type = type;
     }
 
+    public String getJsonpath() {
+        return jsonpath;
+    }
+
+    public void setJsonpath(String jsonpath) {
+        this.jsonpath = jsonpath;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -56,7 +66,9 @@ public class Metadata {
 
         if (name != null ? !name.equals(metadata.name) : metadata.name != null)
             return false;
-        return !(type != null ? !type.equals(metadata.type) : metadata.type != null);
+        if (type != null ? !type.equals(metadata.type) : metadata.type != null)
+            return false;
+        return !(jsonpath != null ? !jsonpath.equals(metadata.jsonpath) : metadata.jsonpath != null);
 
     }
 
@@ -64,6 +76,7 @@ public class Metadata {
     public int hashCode() {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (jsonpath != null ? jsonpath.hashCode() : 0);
         return result;
     }
 
@@ -71,6 +84,7 @@ public class Metadata {
         return "Metadata{" +
                 "name='" + name + '\'' +
                 ", type='" + type + '\'' +
+                ", jsonpath='" + jsonpath + '\'' +
                 '}';
     }
 }

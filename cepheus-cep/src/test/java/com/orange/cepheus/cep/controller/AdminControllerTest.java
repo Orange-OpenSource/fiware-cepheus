@@ -10,6 +10,7 @@ package com.orange.cepheus.cep.controller;
 
 import com.orange.cepheus.cep.Application;
 import com.orange.cepheus.cep.ComplexEventProcessor;
+import com.orange.cepheus.cep.EventMapper;
 import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.PersistenceException;
 import com.orange.cepheus.cep.model.Configuration;
@@ -18,9 +19,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -41,23 +40,9 @@ import static com.orange.cepheus.cep.Util.*;
  * Test the Admin controller
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {Application.class, AdminControllerTest.TestConfig.class})
+@SpringApplicationConfiguration(classes = {Application.class})
 @WebAppConfiguration
 public class AdminControllerTest {
-
-    @SpringBootApplication
-    static class TestConfig {
-
-        @Bean
-        public ComplexEventProcessor complexEventProcessor() {
-            return Mockito.mock(ComplexEventProcessor.class);
-        }
-
-        @Bean
-        public Persistence persistence() {
-            return Mockito.mock(Persistence.class);
-        }
-    }
 
     private MockMvc mockMvc;
 
@@ -67,14 +52,22 @@ public class AdminControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @Autowired
+    @Mock
     private ComplexEventProcessor complexEventProcessor;
 
-    @Autowired
+    @Mock
     private Persistence persistence;
+
+    @Mock
+    private EventMapper eventMapper;
+
+    @Autowired
+    @InjectMocks
+    AdminController adminController;
 
     @Before
     public void setup() throws Exception {
+        MockitoAnnotations.initMocks(this);
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
@@ -82,6 +75,7 @@ public class AdminControllerTest {
     public void resetMocks() {
         reset(complexEventProcessor);
         reset(persistence);
+        reset(eventMapper);
     }
 
     @Test
@@ -132,6 +126,19 @@ public class AdminControllerTest {
         Configuration configuration = getBasicConf();
 
         doThrow(new ConfigurationException("ERROR", new Exception("DETAIL ERROR"))).when(complexEventProcessor).setConfiguration(any(Configuration.class));
+
+        mockMvc.perform(post("/v1/admin/config").content(json(mapping, configuration)).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.reasonPhrase").value("ERROR"))
+                .andExpect(jsonPath("$.detail").value("DETAIL ERROR"));
+    }
+
+    @Test
+    public void eventMapperErrorHandling() throws Exception {
+        Configuration configuration = getBasicConf();
+
+        doThrow(new ConfigurationException("ERROR", new Exception("DETAIL ERROR"))).when(eventMapper).setConfiguration(any(Configuration.class));
 
         mockMvc.perform(post("/v1/admin/config").content(json(mapping, configuration)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())

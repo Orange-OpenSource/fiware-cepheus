@@ -8,6 +8,7 @@
 
 package com.orange.cepheus.cep.controller;
 
+import com.orange.cepheus.cep.EventMapper;
 import com.orange.cepheus.cep.SubscriptionManager;
 import com.orange.cepheus.cep.exception.PersistenceException;
 import com.orange.ngsi.model.CodeEnum;
@@ -46,6 +47,9 @@ public class AdminController {
     public Persistence persistence;
 
     @Autowired
+    public EventMapper eventMapper;
+
+    @Autowired
     public SubscriptionManager subscriptionManager;
 
     // Synchronization note:
@@ -55,11 +59,25 @@ public class AdminController {
     public synchronized ResponseEntity<?> configuration(@Valid @RequestBody final Configuration configuration) throws ConfigurationException, PersistenceException {
         logger.info("Update configuration");
 
-        complexEventProcessor.setConfiguration(configuration);
-
-        subscriptionManager.setConfiguration(configuration);
-
-        persistence.saveConfiguration(configuration);
+        /*
+         * Try to apply a new configuration, in case of configuration error
+         * try to restore the previous configuration if any
+         */
+        final Configuration previousConfiguration = complexEventProcessor.getConfiguration();
+        try {
+            complexEventProcessor.setConfiguration(configuration);
+            eventMapper.setConfiguration(configuration);
+            subscriptionManager.setConfiguration(configuration);
+            persistence.saveConfiguration(configuration);
+        } catch (ConfigurationException e) {
+            // try to restore previous configuration
+            if (previousConfiguration != null) {
+                complexEventProcessor.restoreConfiguration(previousConfiguration);
+                eventMapper.setConfiguration(previousConfiguration);
+                subscriptionManager.setConfiguration(previousConfiguration);
+            }
+            throw e;
+        }
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
