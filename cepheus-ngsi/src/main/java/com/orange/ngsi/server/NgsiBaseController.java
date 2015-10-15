@@ -68,6 +68,13 @@ public class NgsiBaseController {
         return new ResponseEntity<>(subscribeContext(subscribeContext), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/updateContextSubscription", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<UpdateContextSubscriptionResponse> updateContextSubscription(@RequestBody final UpdateContextSubscription updateContextSubscription, HttpServletRequest httpServletRequest) throws Exception {
+        ngsiValidation.checkUpdateContextSubscription(updateContextSubscription);
+        registerIntoDispatcher(httpServletRequest);
+        return new ResponseEntity<>(updateContextSubscription(updateContextSubscription), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/unsubscribeContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     final public ResponseEntity<UnsubscribeContextResponse> unsubscribeContextRequest(@RequestBody final UnsubscribeContext unsubscribeContext, HttpServletRequest httpServletRequest) throws Exception {
         ngsiValidation.checkUnsubscribeContext(unsubscribeContext);
@@ -127,6 +134,10 @@ public class NgsiBaseController {
         throw new UnsupportedOperationException("subscribeContext");
     }
 
+    protected UpdateContextSubscriptionResponse updateContextSubscription(final UpdateContextSubscription updateContextSubscription) throws Exception {
+        throw new UnsupportedOperationException("updateContextSubscription");
+    }
+
     protected UnsubscribeContextResponse unsubscribeContext(final UnsubscribeContext unsubscribe) throws Exception {
         throw new UnsupportedOperationException("unsubscribeContext");
     }
@@ -160,6 +171,12 @@ public class NgsiBaseController {
             error.setErrorCode(statusCode);
             subscribeContextResponse.setSubscribeError(error);
             entity = subscribeContextResponse;
+        } else if (path.contains("/updateContextSubscription")) {
+            UpdateContextSubscriptionResponse response = new UpdateContextSubscriptionResponse();
+            SubscribeError error = new SubscribeError();
+            error.setErrorCode(statusCode);
+            response.setSubscribeError(error);
+            entity = response;
         } else if (path.contains("/unsubscribeContext")) {
             UnsubscribeContextResponse unsubscribeContextResponse = new UnsubscribeContextResponse();
             unsubscribeContextResponse.setStatusCode(statusCode);

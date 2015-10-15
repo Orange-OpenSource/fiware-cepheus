@@ -75,6 +75,17 @@ public class NgsiValidation {
         }
     }
 
+    public void checkUpdateContextSubscription(UpdateContextSubscription updateContextSubscription) throws MissingRequestParameterException {
+        if ((updateContextSubscription.getSubscriptionId() == null) || (updateContextSubscription.getSubscriptionId().isEmpty())){
+            throw new MissingRequestParameterException("subscriptionId", "String");
+        }
+        if (updateContextSubscription.getRestriction() != null) {
+            if ((updateContextSubscription.getRestriction().getAttributeExpression() == null) || (updateContextSubscription.getRestriction().getAttributeExpression().isEmpty())) {
+                throw new MissingRequestParameterException("attributeExpression", "string");
+            }
+        }
+    }
+
     public void checkUnsubscribeContext(UnsubscribeContext unsubscribeContext) throws MissingRequestParameterException {
         if (nullOrEmpty(unsubscribeContext.getSubscriptionId())){
             throw new MissingRequestParameterException("subscriptionId", "String");
