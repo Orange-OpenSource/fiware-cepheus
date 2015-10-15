@@ -9,6 +9,7 @@
 package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.RegistrationException;
+import com.orange.cepheus.broker.model.Registration;
 import com.orange.ngsi.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -40,9 +41,9 @@ public class LocalRegistrations {
     private Patterns patterns;
 
     /**
-     * List of all context registrations
+     * List of all registrations
      */
-    Map<String, RegisterContext> registrations = new ConcurrentHashMap<>();
+    Map<String, Registration> registrations = new ConcurrentHashMap<>();
 
     /**
      * Add or update a new context registration.
@@ -74,10 +75,10 @@ public class LocalRegistrations {
             registerContext.setRegistrationId(registrationId);
         }
 
-        // Set the expiration date
-        registerContext.setExpirationDate(Instant.now().plus(duration));
+        //create registration and set the expiration date
+        Registration registration = new Registration(Instant.now().plus(duration), registerContext);
 
-        registrations.put(registrationId, registerContext);
+        registrations.put(registrationId, registration);
 
         // Forward to remote broker
         remoteRegistrations.registerContext(registerContext, registrationId);
@@ -90,7 +91,7 @@ public class LocalRegistrations {
      * @param registrationId the id of the registration
      * @return the corresponding registration or null if not found
      */
-    public RegisterContext getRegistration(String registrationId) {
+    public Registration getRegistration(String registrationId) {
         return registrations.get(registrationId);
     }
 
@@ -103,7 +104,7 @@ public class LocalRegistrations {
     public Iterator<URI> findProvidingApplication(EntityId searchEntityId, Set<String> searchAttributes) {
 
         // Filter out expired registrations
-        Predicate<RegisterContext> filterExpired = registerContext -> registerContext.getExpirationDate().isAfter(Instant.now());
+        Predicate<Registration> filterExpired = registration -> registration.getExpirationDate().isAfter(Instant.now());
 
         // Filter only matching entity ids
         Predicate<EntityId> filterEntityId = patterns.getFilterEntityId(searchEntityId);
@@ -115,7 +116,7 @@ public class LocalRegistrations {
         // if at least one of its listed entities matches the searched context element
         // and if all searched attributes are defined in the registration (if any)
         return registrations.values().stream()
-                .filter(filterExpired).map(RegisterContext::getContextRegistrationList)
+                .filter(filterExpired).map(registration -> registration.getRegisterContext().getContextRegistrationList())
                 .flatMap(List::stream)
                 .filter(c -> c.getEntityIdList().stream().filter(filterEntityId).findFirst().isPresent()
                         && (noAttributes || allContextRegistrationAttributes(c).containsAll(searchAttributes)))
@@ -135,8 +136,8 @@ public class LocalRegistrations {
     @Scheduled(fixedDelay = 60000)
     public void purgeExpiredContextRegistrations() {
         final Instant now = Instant.now();
-        registrations.forEach((registrationId, registerContext) -> {
-            if (registerContext.getExpirationDate().isBefore(now)) {
+        registrations.forEach((registrationId, registration) -> {
+            if (registration.getExpirationDate().isBefore(now)) {
                 registrations.remove(registrationId);
                 remoteRegistrations.removeRegistration(registrationId);
             }

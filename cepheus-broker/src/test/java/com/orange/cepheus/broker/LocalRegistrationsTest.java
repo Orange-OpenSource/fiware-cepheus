@@ -9,6 +9,7 @@
 package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.RegistrationException;
+import com.orange.cepheus.broker.model.Registration;
 import com.orange.ngsi.model.ContextRegistrationAttribute;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.RegisterContext;
@@ -66,8 +67,9 @@ public class LocalRegistrationsTest {
         RegisterContext registerContext = createRegistrationContext();
         String registrationId = localRegistrations.updateRegistrationContext(registerContext);
         Assert.hasLength(registrationId);
-        assertNotNull(localRegistrations.getRegistration(registrationId));
-        assertNotNull(registerContext.getExpirationDate());
+        Registration registration = localRegistrations.getRegistration(registrationId);
+        assertNotNull(registration);
+        assertNotNull(registration.getExpirationDate());
 
         verify(remoteRegistrations).registerContext(eq(registerContext), eq(registrationId));
     }
@@ -97,9 +99,10 @@ public class LocalRegistrationsTest {
         Calendar c = (Calendar) Calendar.getInstance().clone();
         c.add(Calendar.MONTH, 1);
         c.add(Calendar.HOUR, 24);
-        assertFalse(registerContext.getExpirationDate().isAfter(c.toInstant()));
+        Registration registration = localRegistrations.getRegistration(registerContext.getRegistrationId());
+        assertFalse(registration.getExpirationDate().isAfter(c.toInstant()));
         c.add(Calendar.HOUR, -48);
-        assertFalse(registerContext.getExpirationDate().isBefore(c.toInstant()));
+        assertFalse(registration.getExpirationDate().isBefore(c.toInstant()));
     }
 
     @Test
