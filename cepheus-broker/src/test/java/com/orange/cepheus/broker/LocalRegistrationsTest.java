@@ -10,6 +10,7 @@ package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.RegistrationException;
 import com.orange.cepheus.broker.model.Registration;
+import com.orange.cepheus.broker.persistence.RegistrationsRepository;
 import com.orange.ngsi.model.ContextRegistrationAttribute;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.RegisterContext;
@@ -23,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
@@ -48,22 +50,30 @@ public class LocalRegistrationsTest {
     @Mock
     protected RemoteRegistrations remoteRegistrations;
 
+    @Mock
+    protected RegistrationsRepository registrationsRepository;
+
     @Autowired
     @InjectMocks
     protected LocalRegistrations localRegistrations;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
+
+        //setup registrationsRepository mock to respond the registration not exists in to the database
+        when(registrationsRepository.getRegistration(any())).thenThrow(EmptyResultDataAccessException.class);
     }
 
     @After
     public void resetMocks() {
         reset(remoteRegistrations);
+        reset(registrationsRepository);
     }
 
     @Test
     public void testRegistration() throws Exception {
+
         RegisterContext registerContext = createRegistrationContext();
         String registrationId = localRegistrations.updateRegistrationContext(registerContext);
         Assert.hasLength(registrationId);
@@ -72,6 +82,31 @@ public class LocalRegistrationsTest {
         assertNotNull(registration.getExpirationDate());
 
         verify(remoteRegistrations).registerContext(eq(registerContext), eq(registrationId));
+        verify(registrationsRepository).getRegistration(eq(registrationId));
+        verify(registrationsRepository).saveRegistration(eq(registration));
+    }
+
+    @Test
+    public void testUpdateRegistration() throws Exception {
+
+        RegisterContext registerContext = createRegistrationContext();
+        registerContext.setRegistrationId("12345");
+
+        Registration registration = new Registration(Instant.now().plus(1, ChronoUnit.DAYS), registerContext);
+
+        reset(registrationsRepository);
+        when(registrationsRepository.getRegistration(any())).thenReturn(registration);
+
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+        Assert.hasLength(registrationId);
+        assertNotEquals("12345", registrationId);
+        Registration registration2 = localRegistrations.getRegistration(registrationId);
+        assertNotNull(registration2);
+        assertNotNull(registration2.getExpirationDate());
+
+        verify(remoteRegistrations).registerContext(eq(registerContext), eq(registrationId));
+        verify(registrationsRepository).getRegistration(eq(registrationId));
+        verify(registrationsRepository).updateRegistration(eq(registration));
     }
 
     @Test
@@ -88,6 +123,7 @@ public class LocalRegistrationsTest {
         Assert.isNull(localRegistrations.getRegistration(registrationId));
 
         verify(remoteRegistrations).removeRegistration(registrationId);
+        verify(registrationsRepository).removeRegistration(eq(registrationId));
     }
 
     @Test

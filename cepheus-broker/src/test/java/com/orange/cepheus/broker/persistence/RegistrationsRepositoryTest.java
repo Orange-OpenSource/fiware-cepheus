@@ -23,6 +23,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
@@ -144,5 +145,36 @@ public class RegistrationsRepositoryTest {
         Instant expirationDate = Instant.now().plus(1, ChronoUnit.DAYS);
         jdbcTemplate.update("insert into t_registrations(id,expirationDate,registerContext) values(?,?,?)", "12345", expirationDate.toString(), "aaaaaa");
         Map<String, Registration> registrations = registrationsRepository.getAllRegistrations();
+    }
+
+    @Test
+    public void getAllRegistrationsEmptyTest() throws URISyntaxException, RegistrationPersistenceException {
+        Assert.assertEquals(0, registrationsRepository.getAllRegistrations().size());
+    }
+
+    @Test
+    public void getRegistrationTest() throws URISyntaxException, RegistrationPersistenceException, EmptyResultDataAccessException {
+        RegisterContext registerContext = createRegisterContextTemperature();
+        registerContext.setRegistrationId("12345");
+        Instant expirationDate = Instant.now().plus(1, ChronoUnit.DAYS);
+        Registration registration = new Registration(expirationDate, registerContext);
+        registrationsRepository.saveRegistration(registration);
+        Registration foundRegistration = registrationsRepository.getRegistration("12345");
+        Assert.assertNotNull(foundRegistration);
+        Assert.assertEquals(expirationDate, foundRegistration.getExpirationDate());
+    }
+
+    @Test
+    public void getRegistrationWhichNotExistTest() throws URISyntaxException, RegistrationPersistenceException, EmptyResultDataAccessException {
+        thrown.expect(EmptyResultDataAccessException.class);
+        registrationsRepository.getRegistration("12345");
+    }
+
+    @Test
+    public void getRegistrationWithExceptionTest() throws URISyntaxException, RegistrationPersistenceException, EmptyResultDataAccessException {
+        thrown.expect(RegistrationPersistenceException.class);
+        Instant expirationDate = Instant.now().plus(1, ChronoUnit.DAYS);
+        jdbcTemplate.update("insert into t_registrations(id,expirationDate,registerContext) values(?,?,?)", "12345", expirationDate.toString(), "aaaaaa");
+        Registration foundRegistration = registrationsRepository.getRegistration("12345");
     }
 }

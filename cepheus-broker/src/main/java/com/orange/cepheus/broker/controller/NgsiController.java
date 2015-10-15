@@ -11,10 +11,7 @@ package com.orange.cepheus.broker.controller;
 import com.orange.cepheus.broker.Configuration;
 import com.orange.cepheus.broker.LocalRegistrations;
 import com.orange.cepheus.broker.Subscriptions;
-import com.orange.cepheus.broker.exception.MissingRemoteBrokerException;
-import com.orange.cepheus.broker.exception.RegistrationException;
-import com.orange.cepheus.broker.exception.SubscriptionException;
-import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
+import com.orange.cepheus.broker.exception.*;
 import com.orange.cepheus.broker.model.Subscription;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
@@ -57,7 +54,7 @@ public class NgsiController extends NgsiBaseController {
     Configuration configuration;
 
     @Override
-    public RegisterContextResponse registerContext(final RegisterContext register) throws RegistrationException {
+    public RegisterContextResponse registerContext(final RegisterContext register) throws RegistrationException, RegistrationPersistenceException {
         logger.debug("<= registerContext with id:{} duration:{}", register.getRegistrationId(), register.getDuration());
 
         RegisterContextResponse registerContextLocalResponse = new RegisterContextResponse();
@@ -231,6 +228,17 @@ public class NgsiController extends NgsiBaseController {
         statusCode.setCode("500");
         statusCode.setReasonPhrase("error in subscription persistence");
         statusCode.setDetail(subscriptionPersistenceException.getMessage());
+        return errorResponse(req.getRequestURI(), statusCode);
+    }
+
+    @ExceptionHandler(RegistrationPersistenceException.class)
+    public ResponseEntity<Object> registrationPersistenceExceptionHandler(HttpServletRequest req, RegistrationPersistenceException registrationPersistenceException) {
+        logger.error("RegistrationPersistenceException error: {}", registrationPersistenceException.getMessage());
+
+        StatusCode statusCode = new StatusCode();
+        statusCode.setCode("500");
+        statusCode.setReasonPhrase("error in registration persistence");
+        statusCode.setDetail(registrationPersistenceException.getMessage());
         return errorResponse(req.getRequestURI(), statusCode);
     }
 

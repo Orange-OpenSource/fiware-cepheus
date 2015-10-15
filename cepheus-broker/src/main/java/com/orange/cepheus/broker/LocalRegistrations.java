@@ -9,9 +9,12 @@
 package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.RegistrationException;
+import com.orange.cepheus.broker.exception.RegistrationPersistenceException;
 import com.orange.cepheus.broker.model.Registration;
+import com.orange.cepheus.broker.persistence.RegistrationsRepository;
 import com.orange.ngsi.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +43,9 @@ public class LocalRegistrations {
     @Autowired
     private Patterns patterns;
 
+    @Autowired
+    protected RegistrationsRepository registrationsRepository;
+
     /**
      * List of all registrations
      */
@@ -51,12 +57,13 @@ public class LocalRegistrations {
      * @param registerContext
      * @return contextRegistrationId
      */
-    public String updateRegistrationContext(RegisterContext registerContext) throws RegistrationException {
+    public String updateRegistrationContext(RegisterContext registerContext) throws RegistrationException, RegistrationPersistenceException {
         Duration duration = registrationDuration(registerContext);
         String registrationId = registerContext.getRegistrationId();
 
         // Handle a zero duration as a special remove operation
         if (duration.isZero() && registrationId != null) {
+            registrationsRepository.removeRegistration(registrationId);
             registrations.remove(registrationId);
             remoteRegistrations.removeRegistration(registrationId);
             return registrationId;
@@ -75,8 +82,20 @@ public class LocalRegistrations {
             registerContext.setRegistrationId(registrationId);
         }
 
-        //create registration and set the expiration date
-        Registration registration = new Registration(Instant.now().plus(duration), registerContext);
+        // Exists in database
+        Instant expirationDate = Instant.now().plus(duration);
+        Registration registration;
+        try {
+            registration = registrationsRepository.getRegistration(registerContext.getRegistrationId());
+            // update registration
+            registration.setExpirationDate(expirationDate);
+            registration.setRegisterContext(registerContext);
+            registrationsRepository.updateRegistration(registration);
+        } catch (EmptyResultDataAccessException e) {
+            // Create registration and set the expiration date
+            registration = new Registration(expirationDate, registerContext);
+            registrationsRepository.saveRegistration(registration);
+        }
 
         registrations.put(registrationId, registration);
 

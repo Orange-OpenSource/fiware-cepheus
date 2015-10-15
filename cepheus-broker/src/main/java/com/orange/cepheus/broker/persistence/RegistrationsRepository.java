@@ -20,7 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
@@ -113,6 +115,32 @@ public class RegistrationsRepository {
             throw new RegistrationPersistenceException(e);
         }
         return registrations;
+    }
+
+    /**
+     * Get registration
+     * @param registrationId
+     * @return registration
+     * @throws RegistrationPersistenceException, EmptyResultDataAccessException
+     */
+    public Registration getRegistration(String registrationId) throws RegistrationPersistenceException, EmptyResultDataAccessException {
+        try {
+            return jdbcTemplate.queryForObject("select expirationDate, registerContext from t_registrations where id=?", new Object[]{registrationId},
+                    (ResultSet rs, int rowNum) ->  {
+                            Registration registration = new Registration();
+                            try {
+                                registration.setExpirationDate(Instant.parse(rs.getString("expirationDate")));
+                                registration.setRegisterContext(mapper.readValue(rs.getString("registerContext"), RegisterContext.class));
+                            } catch (IOException e) {
+                                throw new SQLException(e);
+                            }
+                            return registration;
+                    });
+        } catch (EmptyResultDataAccessException e) {
+            throw e;
+        } catch (DataAccessException e) {
+            throw new RegistrationPersistenceException(e);
+        }
     }
 
     /**
