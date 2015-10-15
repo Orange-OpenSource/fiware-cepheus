@@ -115,6 +115,10 @@ public class SubscribeContextRequestTest {
                 .andExpect(jsonPath("$.attributes[0]").value("temperature"))
                 .andExpect(jsonPath("$.reference").value("http://localhost:1028/accumulate"))
                 .andExpect(jsonPath("$.duration").value("P1M"))
+                .andExpect(jsonPath("$.throttling").value("PT1S"))
+                .andExpect(jsonPath("$.restriction.attributeExpression").value("xpath/expression"))
+                .andExpect(jsonPath("$.restriction.scopes[0].type").value("type"))
+                .andExpect(jsonPath("$.restriction.scopes[0].value").value("value"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
         SubscribeContextResponse response = ngsiClient.subscribeContext(baseUrl, null, createSubscribeContextTemperature()).get();
@@ -143,6 +147,10 @@ public class SubscribeContextRequestTest {
                 .andExpect(xpath("subscribeContextRequest/attributeList/attribute").string("temperature"))
                 .andExpect(xpath("subscribeContextRequest/reference").string("http://localhost:1028/accumulate"))
                 .andExpect(xpath("subscribeContextRequest/duration").string("P1M"))
+                .andExpect(xpath("subscribeContextRequest/throttling").string("PT1S"))
+                .andExpect(xpath("subscribeContextRequest/restriction/attributeExpression").string("xpath/expression"))
+                .andExpect(xpath("subscribeContextRequest/restriction/scope/operationScope/scopeType").string("type"))
+                .andExpect(xpath("subscribeContextRequest/restriction/scope/operationScope/scopeValue").string("value"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_XML));
 
         SubscribeContextResponse response = ngsiClient.subscribeContext(baseUrl, null, createSubscribeContextTemperature()).get();

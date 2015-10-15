@@ -114,6 +114,13 @@ public class Util {
         notifyConditionList.add(notifyCondition);
         subscribeContext.setNotifyConditionList(notifyConditionList);
 
+        Restriction restriction = new Restriction();
+        restriction.setAttributeExpression("xpath/expression");
+        restriction.setScopes(Collections.singletonList(new OperationScope("type", "value")));
+        subscribeContext.setRestriction(restriction);
+
+        subscribeContext.setThrottling("PT1S");
+
         return subscribeContext;
     }
 

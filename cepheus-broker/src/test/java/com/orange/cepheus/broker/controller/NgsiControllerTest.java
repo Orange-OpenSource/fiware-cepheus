@@ -197,7 +197,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter updateAction of type UpdateAction is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter updateAction of type string is missing in the request"));
     }
 
     @Test

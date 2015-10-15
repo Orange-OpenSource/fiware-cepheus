@@ -30,7 +30,7 @@ public class NgsiValidationTest {
     static NgsiValidation ngsiValidation = new NgsiValidation();
 
     @Rule
-    public ExpectedException thrown= ExpectedException.none();
+    public ExpectedException thrown = ExpectedException.none();
 
     // Tests for validation of updateContext
     @Test
@@ -42,16 +42,18 @@ public class NgsiValidationTest {
     }
 
     @Test
-    public void missingContextElementWithDeleteInUpdateContext() throws MissingRequestParameterException {
+    public void emptyContextElementInUpdateContext() throws MissingRequestParameterException {
         UpdateContext updateContext = new UpdateContext();
         updateContext.setUpdateAction(UpdateAction.DELETE);
         List<ContextElement> contextElements = new ArrayList<>();
         updateContext.setContextElements(contextElements);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("contextElements");
         ngsiValidation.checkUpdateContext(updateContext);
     }
 
     @Test
-    public void missingContextElementWithUpdateInUpdateContext() throws MissingRequestParameterException {
+    public void nullContextElementInUpdateContext() throws MissingRequestParameterException {
         UpdateContext updateContext = new UpdateContext();
         updateContext.setUpdateAction(UpdateAction.UPDATE);
         thrown.expect(MissingRequestParameterException.class);
