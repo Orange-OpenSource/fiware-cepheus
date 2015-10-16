@@ -13,6 +13,8 @@ import com.orange.cepheus.broker.exception.RegistrationPersistenceException;
 import com.orange.cepheus.broker.model.Registration;
 import com.orange.cepheus.broker.persistence.RegistrationsRepository;
 import com.orange.ngsi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,6 +35,8 @@ import java.util.stream.Collectors;
  */
 @Component
 public class LocalRegistrations {
+
+    private static Logger logger = LoggerFactory.getLogger(LocalRegistrations.class);
 
     /**
      * All registrations updates are forwarded to the remote broker
@@ -85,6 +89,7 @@ public class LocalRegistrations {
         // Exists in database
         Instant expirationDate = Instant.now().plus(duration);
         Registration registration;
+        //TODO: instead of use insert or update, use replace instruction of sqlite
         try {
             registration = registrationsRepository.getRegistration(registerContext.getRegistrationId());
             // update registration
@@ -159,6 +164,11 @@ public class LocalRegistrations {
             if (registration.getExpirationDate().isBefore(now)) {
                 registrations.remove(registrationId);
                 remoteRegistrations.removeRegistration(registrationId);
+                try {
+                    registrationsRepository.removeRegistration(registrationId);
+                } catch (RegistrationPersistenceException e) {
+                    logger.error("Failed to remove registration from database", e);
+                }
             }
         });
     }

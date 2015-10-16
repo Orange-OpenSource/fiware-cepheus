@@ -15,6 +15,11 @@ import java.security.PrivilegedActionException;
  */
 public class RegistrationPersistenceException extends Exception {
 
+
+    public RegistrationPersistenceException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     /**
      * Constructs a new exception with the specified cause and a detail
      * message of <tt>(cause==null ? null : cause.toString())</tt> (which
