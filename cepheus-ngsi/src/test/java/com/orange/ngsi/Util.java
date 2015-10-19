@@ -134,6 +134,33 @@ public class Util {
         return subscribeContextResponse;
     }
 
+    static public UpdateContextSubscription createUpdateContextSubscriptionTemperature() {
+        UpdateContextSubscription updateContextSubscription = new UpdateContextSubscription();
+        updateContextSubscription.setDuration("P1M");
+        updateContextSubscription.setThrottling("PT1S");
+        updateContextSubscription.setSubscriptionId("12345678");
+
+        NotifyCondition notifyCondition = new NotifyCondition(NotifyConditionEnum.ONTIMEINTERVAL, Collections.singletonList("PT10S"));
+        updateContextSubscription.setNotifyConditions(Collections.singletonList(notifyCondition));
+
+        Restriction restriction = new Restriction();
+        restriction.setAttributeExpression("xpath/expression");
+        restriction.setScopes(Collections.singletonList(new OperationScope("type", "value")));
+        updateContextSubscription.setRestriction(restriction);
+
+        return updateContextSubscription;
+    }
+
+    static public UpdateContextSubscriptionResponse createUpdateContextSubscriptionResponseTemperature() {
+        UpdateContextSubscriptionResponse updateContextSubscriptionResponse = new UpdateContextSubscriptionResponse();
+
+        SubscribeResponse subscribeResponse = new SubscribeResponse();
+        subscribeResponse.setDuration("P1M");
+        subscribeResponse.setSubscriptionId("12345678");
+        updateContextSubscriptionResponse.setSubscribeResponse(subscribeResponse);
+        return updateContextSubscriptionResponse;
+    }
+
     static public RegisterContext createRegisterContextTemperature() throws URISyntaxException {
         RegisterContext registerContext = new RegisterContext();
 

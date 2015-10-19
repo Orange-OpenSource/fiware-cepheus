@@ -157,6 +157,12 @@ public class NgsiBaseController {
         Object entity;
         if (path.contains("/notifyContext")) {
             entity = new NotifyContextResponse(statusCode);
+        } else if (path.contains("/updateContextSubscription")) {
+            UpdateContextSubscriptionResponse response = new UpdateContextSubscriptionResponse();
+            SubscribeError error = new SubscribeError();
+            error.setErrorCode(statusCode);
+            response.setSubscribeError(error);
+            entity = response;
         } else if (path.contains("/updateContext")) {
             UpdateContextResponse updateContextResponse = new UpdateContextResponse();
             updateContextResponse.setErrorCode(statusCode);
@@ -171,12 +177,6 @@ public class NgsiBaseController {
             error.setErrorCode(statusCode);
             subscribeContextResponse.setSubscribeError(error);
             entity = subscribeContextResponse;
-        } else if (path.contains("/updateContextSubscription")) {
-            UpdateContextSubscriptionResponse response = new UpdateContextSubscriptionResponse();
-            SubscribeError error = new SubscribeError();
-            error.setErrorCode(statusCode);
-            response.setSubscribeError(error);
-            entity = response;
         } else if (path.contains("/unsubscribeContext")) {
             UnsubscribeContextResponse unsubscribeContextResponse = new UnsubscribeContextResponse();
             unsubscribeContextResponse.setStatusCode(statusCode);
