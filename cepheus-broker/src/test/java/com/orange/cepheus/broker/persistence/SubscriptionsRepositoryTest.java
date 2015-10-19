@@ -9,7 +9,9 @@
 package com.orange.cepheus.broker.persistence;
 
 import com.orange.cepheus.broker.Application;
+import com.orange.cepheus.broker.exception.RegistrationPersistenceException;
 import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
+import com.orange.cepheus.broker.model.Registration;
 import com.orange.cepheus.broker.model.Subscription;
 import com.orange.ngsi.model.SubscribeContext;
 import org.hamcrest.Matcher;
@@ -136,4 +138,11 @@ public class SubscriptionsRepositoryTest {
         Assert.assertEquals(3, subscriptionsRepository.getAllSubscriptions().size());
     }
 
+    @Test
+    public void getAllSubscriptionsWithExceptionTest() throws SubscriptionPersistenceException {
+        thrown.expect(SubscriptionPersistenceException.class);
+        Instant expirationDate = Instant.now().plus(1, ChronoUnit.DAYS);
+        jdbcTemplate.update("insert into t_subscriptions(id,expirationDate,subscribeContext) values(?,?,?)", "12345", expirationDate.toString(), "aaaaaa");
+        Map<String, Subscription> subscriptions = subscriptionsRepository.getAllSubscriptions();
+    }
 }

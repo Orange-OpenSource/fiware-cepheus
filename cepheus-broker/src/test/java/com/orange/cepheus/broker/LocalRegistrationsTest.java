@@ -9,19 +9,25 @@
 package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.RegistrationException;
+import com.orange.cepheus.broker.exception.RegistrationPersistenceException;
+import com.orange.cepheus.broker.model.Registration;
+import com.orange.cepheus.broker.persistence.RegistrationsRepository;
 import com.orange.ngsi.model.ContextRegistrationAttribute;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.RegisterContext;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
@@ -44,32 +50,87 @@ import static org.mockito.Mockito.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class LocalRegistrationsTest {
 
+    @Rule
+    public ExpectedException thrown= ExpectedException.none();
+
     @Mock
     protected RemoteRegistrations remoteRegistrations;
+
+    @Mock
+    protected RegistrationsRepository registrationsRepository;
 
     @Autowired
     @InjectMocks
     protected LocalRegistrations localRegistrations;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
+
+        //setup registrationsRepository mock to respond the registration not exists in to the database
+        when(registrationsRepository.getRegistration(any())).thenThrow(EmptyResultDataAccessException.class);
     }
 
     @After
     public void resetMocks() {
         reset(remoteRegistrations);
+        reset(registrationsRepository);
     }
 
     @Test
     public void testRegistration() throws Exception {
+
         RegisterContext registerContext = createRegistrationContext();
         String registrationId = localRegistrations.updateRegistrationContext(registerContext);
         Assert.hasLength(registrationId);
-        assertNotNull(localRegistrations.getRegistration(registrationId));
-        assertNotNull(registerContext.getExpirationDate());
+        Registration registration = localRegistrations.getRegistration(registrationId);
+        assertNotNull(registration);
+        assertNotNull(registration.getExpirationDate());
 
         verify(remoteRegistrations).registerContext(eq(registerContext), eq(registrationId));
+        verify(registrationsRepository).getRegistration(eq(registrationId));
+        verify(registrationsRepository).saveRegistration(eq(registration));
+    }
+
+    @Test
+    public void testRegistrationWithPersistenceException() throws Exception {
+
+        thrown.expect(RegistrationPersistenceException.class);
+        doThrow(RegistrationPersistenceException.class).when(registrationsRepository).saveRegistration(any());
+
+        RegisterContext registerContext = createRegistrationContext();
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+        Assert.hasLength(registrationId);
+        Registration registration = localRegistrations.getRegistration(registrationId);
+        assertNotNull(registration);
+        assertNotNull(registration.getExpirationDate());
+
+        verify(remoteRegistrations, never()).registerContext(eq(registerContext), eq(registrationId));
+        verify(registrationsRepository).getRegistration(eq(registrationId));
+        verify(registrationsRepository).saveRegistration(eq(registration));
+    }
+
+    @Test
+    public void testUpdateRegistration() throws Exception {
+
+        RegisterContext registerContext = createRegistrationContext();
+        registerContext.setRegistrationId("12345");
+
+        Registration registration = new Registration(Instant.now().plus(1, ChronoUnit.DAYS), registerContext);
+
+        reset(registrationsRepository);
+        when(registrationsRepository.getRegistration(any())).thenReturn(registration);
+
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+        Assert.hasLength(registrationId);
+        assertNotEquals("12345", registrationId);
+        Registration registration2 = localRegistrations.getRegistration(registrationId);
+        assertNotNull(registration2);
+        assertNotNull(registration2.getExpirationDate());
+
+        verify(remoteRegistrations).registerContext(eq(registerContext), eq(registrationId));
+        verify(registrationsRepository).getRegistration(eq(registrationId));
+        verify(registrationsRepository).updateRegistration(eq(registration));
     }
 
     @Test
@@ -86,6 +147,27 @@ public class LocalRegistrationsTest {
         Assert.isNull(localRegistrations.getRegistration(registrationId));
 
         verify(remoteRegistrations).removeRegistration(registrationId);
+        verify(registrationsRepository).removeRegistration(eq(registrationId));
+    }
+
+    @Test
+    public void testUnregisterWithZeroDurationWithPersistenceException() throws Exception {
+        thrown.expect(RegistrationPersistenceException.class);
+        doThrow(RegistrationPersistenceException.class).when(registrationsRepository).removeRegistration(any());
+
+        RegisterContext registerContext = createRegistrationContext();
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+
+        // Remove registration using a zero duration
+        RegisterContext zeroDuration = createRegistrationContext();
+        zeroDuration.setRegistrationId(registrationId);
+        zeroDuration.setDuration("PT0S");
+        localRegistrations.updateRegistrationContext(zeroDuration);
+
+        Assert.isNull(localRegistrations.getRegistration(registrationId));
+
+        verify(remoteRegistrations, never()).removeRegistration(registrationId);
+        verify(registrationsRepository).removeRegistration(eq(registrationId));
     }
 
     @Test
@@ -97,9 +179,10 @@ public class LocalRegistrationsTest {
         Calendar c = (Calendar) Calendar.getInstance().clone();
         c.add(Calendar.MONTH, 1);
         c.add(Calendar.HOUR, 24);
-        assertFalse(registerContext.getExpirationDate().isAfter(c.toInstant()));
+        Registration registration = localRegistrations.getRegistration(registerContext.getRegistrationId());
+        assertFalse(registration.getExpirationDate().isAfter(c.toInstant()));
         c.add(Calendar.HOUR, -48);
-        assertFalse(registerContext.getExpirationDate().isBefore(c.toInstant()));
+        assertFalse(registration.getExpirationDate().isBefore(c.toInstant()));
     }
 
     @Test
@@ -149,6 +232,27 @@ public class LocalRegistrationsTest {
         assertNull(localRegistrations.getRegistration(registrationId));
 
         verify(remoteRegistrations).removeRegistration(registrationId);
+    }
+
+    @Test
+    public void testRegistrationPurgeWithPersistenceException() throws Exception {
+
+        doThrow(RegistrationPersistenceException.class).when(registrationsRepository).removeRegistration(any());
+
+        RegisterContext registerContext = createRegistrationContext();
+        registerContext.setDuration("PT1S"); // 1 s only
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+
+        // Wait for expiration
+        Thread.sleep(1500);
+
+        // Force trigger of scheduled purge
+        localRegistrations.purgeExpiredContextRegistrations();
+
+        assertNull(localRegistrations.getRegistration(registrationId));
+
+        verify(remoteRegistrations).removeRegistration(registrationId);
+        verify(registrationsRepository).removeRegistration(registrationId);
     }
 
     @Test

@@ -9,8 +9,14 @@
 package com.orange.cepheus.broker;
 
 import com.orange.cepheus.broker.exception.RegistrationException;
+import com.orange.cepheus.broker.exception.RegistrationPersistenceException;
+import com.orange.cepheus.broker.model.Registration;
+import com.orange.cepheus.broker.persistence.RegistrationsRepository;
 import com.orange.ngsi.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +36,8 @@ import java.util.stream.Collectors;
 @Component
 public class LocalRegistrations {
 
+    private static Logger logger = LoggerFactory.getLogger(LocalRegistrations.class);
+
     /**
      * All registrations updates are forwarded to the remote broker
      */
@@ -39,10 +47,13 @@ public class LocalRegistrations {
     @Autowired
     private Patterns patterns;
 
+    @Autowired
+    protected RegistrationsRepository registrationsRepository;
+
     /**
-     * List of all context registrations
+     * List of all registrations
      */
-    Map<String, RegisterContext> registrations = new ConcurrentHashMap<>();
+    Map<String, Registration> registrations = new ConcurrentHashMap<>();
 
     /**
      * Add or update a new context registration.
@@ -50,12 +61,13 @@ public class LocalRegistrations {
      * @param registerContext
      * @return contextRegistrationId
      */
-    public String updateRegistrationContext(RegisterContext registerContext) throws RegistrationException {
+    public String updateRegistrationContext(RegisterContext registerContext) throws RegistrationException, RegistrationPersistenceException {
         Duration duration = registrationDuration(registerContext);
         String registrationId = registerContext.getRegistrationId();
 
         // Handle a zero duration as a special remove operation
         if (duration.isZero() && registrationId != null) {
+            registrationsRepository.removeRegistration(registrationId);
             registrations.remove(registrationId);
             remoteRegistrations.removeRegistration(registrationId);
             return registrationId;
@@ -74,10 +86,23 @@ public class LocalRegistrations {
             registerContext.setRegistrationId(registrationId);
         }
 
-        // Set the expiration date
-        registerContext.setExpirationDate(Instant.now().plus(duration));
+        // Exists in database
+        Instant expirationDate = Instant.now().plus(duration);
+        Registration registration;
+        //TODO: instead of use insert or update, use replace instruction of sqlite
+        try {
+            registration = registrationsRepository.getRegistration(registerContext.getRegistrationId());
+            // update registration
+            registration.setExpirationDate(expirationDate);
+            registration.setRegisterContext(registerContext);
+            registrationsRepository.updateRegistration(registration);
+        } catch (EmptyResultDataAccessException e) {
+            // Create registration and set the expiration date
+            registration = new Registration(expirationDate, registerContext);
+            registrationsRepository.saveRegistration(registration);
+        }
 
-        registrations.put(registrationId, registerContext);
+        registrations.put(registrationId, registration);
 
         // Forward to remote broker
         remoteRegistrations.registerContext(registerContext, registrationId);
@@ -90,7 +115,7 @@ public class LocalRegistrations {
      * @param registrationId the id of the registration
      * @return the corresponding registration or null if not found
      */
-    public RegisterContext getRegistration(String registrationId) {
+    public Registration getRegistration(String registrationId) {
         return registrations.get(registrationId);
     }
 
@@ -103,7 +128,7 @@ public class LocalRegistrations {
     public Iterator<URI> findProvidingApplication(EntityId searchEntityId, Set<String> searchAttributes) {
 
         // Filter out expired registrations
-        Predicate<RegisterContext> filterExpired = registerContext -> registerContext.getExpirationDate().isAfter(Instant.now());
+        Predicate<Registration> filterExpired = registration -> registration.getExpirationDate().isAfter(Instant.now());
 
         // Filter only matching entity ids
         Predicate<EntityId> filterEntityId = patterns.getFilterEntityId(searchEntityId);
@@ -115,7 +140,7 @@ public class LocalRegistrations {
         // if at least one of its listed entities matches the searched context element
         // and if all searched attributes are defined in the registration (if any)
         return registrations.values().stream()
-                .filter(filterExpired).map(RegisterContext::getContextRegistrationList)
+                .filter(filterExpired).map(registration -> registration.getRegisterContext().getContextRegistrationList())
                 .flatMap(List::stream)
                 .filter(c -> c.getEntityIdList().stream().filter(filterEntityId).findFirst().isPresent()
                         && (noAttributes || allContextRegistrationAttributes(c).containsAll(searchAttributes)))
@@ -135,10 +160,15 @@ public class LocalRegistrations {
     @Scheduled(fixedDelay = 60000)
     public void purgeExpiredContextRegistrations() {
         final Instant now = Instant.now();
-        registrations.forEach((registrationId, registerContext) -> {
-            if (registerContext.getExpirationDate().isBefore(now)) {
+        registrations.forEach((registrationId, registration) -> {
+            if (registration.getExpirationDate().isBefore(now)) {
                 registrations.remove(registrationId);
                 remoteRegistrations.removeRegistration(registrationId);
+                try {
+                    registrationsRepository.removeRegistration(registrationId);
+                } catch (RegistrationPersistenceException e) {
+                    logger.error("Failed to remove registration from database", e);
+                }
             }
         });
     }

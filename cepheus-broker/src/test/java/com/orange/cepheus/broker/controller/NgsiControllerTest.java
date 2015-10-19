@@ -13,6 +13,7 @@ import com.orange.cepheus.broker.Configuration;
 import com.orange.cepheus.broker.LocalRegistrations;
 import com.orange.cepheus.broker.Subscriptions;
 import com.orange.cepheus.broker.exception.RegistrationException;
+import com.orange.cepheus.broker.exception.RegistrationPersistenceException;
 import com.orange.cepheus.broker.exception.SubscriptionException;
 import com.orange.cepheus.broker.exception.SubscriptionPersistenceException;
 import com.orange.cepheus.broker.model.Subscription;
@@ -171,6 +172,19 @@ public class NgsiControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("400"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("registration error"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("bad pattern"));
+    }
+
+    @Test
+    public void postRegisterContextWithPersistenceException() throws Exception {
+
+        when(localRegistrations.updateRegistrationContext(any())).thenThrow(new RegistrationPersistenceException("Failed to save", new RuntimeException()));
+
+        mockMvc.perform(post("/v1/registerContext").content(json(mapper, createRegisterContextTemperature())).contentType(MediaType.APPLICATION_JSON))
+                .andDo(mvcResult -> System.out.println(mvcResult.getResponse().getContentAsString()))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("error in registration persistence"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("Failed to save"));
     }
 
     @Test

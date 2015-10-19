@@ -32,9 +32,6 @@ public class RegisterContext {
 
     private String registrationId;
 
-    @JsonIgnore
-    private Instant expirationDate;
-
     public RegisterContext() {
     }
 
@@ -64,14 +61,6 @@ public class RegisterContext {
 
     public void setRegistrationId(String registrationId) {
         this.registrationId = registrationId;
-    }
-
-    public Instant getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(Instant expirationDate) {
-        this.expirationDate = expirationDate;
     }
 
     @Override
