@@ -69,8 +69,21 @@ public class NgsiValidation {
             throw new MissingRequestParameterException("reference", "URI");
         }
         if (subscribeContext.getRestriction() != null) {
-            if (nullOrEmpty(subscribeContext.getRestriction().getAttributeExpression())) {
-                throw new MissingRequestParameterException("attributeExpression", "string");
+            if (nullOrEmpty(subscribeContext.getRestriction().getAttributeExpression())
+                    && nullOrEmpty(subscribeContext.getRestriction().getScopes())) {
+                throw new MissingRequestParameterException("attributeExpression or scopes", "string");
+            }
+        }
+    }
+
+    public void checkUpdateContextSubscription(UpdateContextSubscription updateContextSubscription) throws MissingRequestParameterException {
+        if (nullOrEmpty(updateContextSubscription.getSubscriptionId())){
+            throw new MissingRequestParameterException("subscriptionId", "String");
+        }
+        if (updateContextSubscription.getRestriction() != null) {
+            if (nullOrEmpty(updateContextSubscription.getRestriction().getAttributeExpression())
+                    && nullOrEmpty(updateContextSubscription.getRestriction().getScopes())) {
+                throw new MissingRequestParameterException("attributeExpression or scopes", "string");
             }
         }
     }

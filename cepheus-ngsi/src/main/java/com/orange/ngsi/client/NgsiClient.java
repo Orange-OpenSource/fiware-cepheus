@@ -72,6 +72,17 @@ public class NgsiClient {
     }
 
     /**
+     * Send a update subscription request
+     * @param url the URL of the subscription provider
+     * @param httpHeaders the HTTP header to use, or null for default
+     * @param updateContextSubscription the UpdateContextSubscription
+     * @return a future for a UpdateContextSubscriptionResponse
+     */
+    public ListenableFuture<UpdateContextSubscriptionResponse> updateContextSubscription(String url, HttpHeaders httpHeaders, UpdateContextSubscription updateContextSubscription) {
+        return request(url + "/ngsi10/updateContextSubscription", httpHeaders, updateContextSubscription, UpdateContextSubscriptionResponse.class);
+    }
+
+    /**
      * Send an unsubscription request
      * @param url the URL of the subscription provider
      * @param httpHeaders the HTTP header to use, or null for default

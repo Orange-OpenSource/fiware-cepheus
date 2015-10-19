@@ -456,6 +456,48 @@ public class NgsiValidationTest {
         ngsiValidation.checkSubscribeContext(subscribeContext);
     }
 
+    // Tests for validation of updateContextSubscription
+    @Test
+    public void nullSubscriptionIdInUpdateContextSubscription() throws MissingRequestParameterException {
+        UpdateContextSubscription updateContextSubscription = new UpdateContextSubscription();
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("subscriptionId");
+        ngsiValidation.checkUpdateContextSubscription(updateContextSubscription);
+    }
+
+    @Test
+    public void emptySubscriptionIdInUpdateContextSubscription() throws MissingRequestParameterException {
+        UpdateContextSubscription updateContextSubscription = new UpdateContextSubscription();
+        updateContextSubscription.setSubscriptionId("");
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("subscriptionId");
+        ngsiValidation.checkUpdateContextSubscription(updateContextSubscription);
+    }
+
+    @Test
+    public void nullAttributeExpressionOfRestrictionInUpdateContextSubscription() throws MissingRequestParameterException, URISyntaxException {
+        UpdateContextSubscription updateContextSubscription = new UpdateContextSubscription();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        updateContextSubscription.setSubscriptionId("12345");
+        updateContextSubscription.setRestriction(new Restriction());
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("attributeExpression");
+        ngsiValidation.checkUpdateContextSubscription(updateContextSubscription);
+    }
+
+    @Test
+    public void emptyAttributeExpressionOfRestrictionInUpdateContextSubscription() throws MissingRequestParameterException, URISyntaxException {
+        UpdateContextSubscription updateContextSubscription = new UpdateContextSubscription();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        updateContextSubscription.setSubscriptionId("12345");
+        Restriction restriction = new Restriction();
+        restriction.setAttributeExpression("");
+        updateContextSubscription.setRestriction(restriction);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("attributeExpression");
+        ngsiValidation.checkUpdateContextSubscription(updateContextSubscription);
+    }
+
     // Tests for validation of unsubscribeContext
     @Test
     public void nullSubscriptionIdInUnSubscribeContext() throws MissingRequestParameterException {

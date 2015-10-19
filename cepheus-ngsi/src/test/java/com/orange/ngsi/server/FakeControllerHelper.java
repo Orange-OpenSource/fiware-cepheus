@@ -29,6 +29,11 @@ public class FakeControllerHelper extends NgsiBaseController {
     }
 
     @Override
+    protected UpdateContextSubscriptionResponse updateContextSubscription(UpdateContextSubscription updateContextSubscription) throws Exception {
+        return new UpdateContextSubscriptionResponse();
+    }
+
+    @Override
     protected UnsubscribeContextResponse unsubscribeContext(final UnsubscribeContext unsubscribe) throws Exception {
         return new UnsubscribeContextResponse();
     }

@@ -100,6 +100,15 @@ public class NgsiBaseControllerTest {
     }
 
     @Test
+    public void checkUpdateContextSubscriptionNotImplemented() throws Exception {
+        mockMvc.perform(post("/ni/updateContextSubscription")
+                .content(json(jsonConverter, createUpdateContextSubscriptionTemperature()))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value(CodeEnum.CODE_403.getLabel()));
+    }
+
+    @Test
     public void checkUnsubscribeContextNotImplemented() throws Exception {
         mockMvc.perform(post("/ni/unsubscribeContext")
                 .content(json(jsonConverter, createUnsubscribeContext()))
@@ -175,6 +184,22 @@ public class NgsiBaseControllerTest {
     public void checkSubscribeContextImplementedInXml() throws Exception {
         mockMvc.perform(post("/i/subscribeContext")
                 .content(xmlmapper.writeValueAsString(createSubscribeContextTemperature()))
+                .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void checkUpdateContextSubscriptionImplemented() throws Exception {
+        mockMvc.perform(post("/i/updateContextSubscription")
+                .content(json(jsonConverter, createUpdateContextSubscriptionTemperature()))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void checkUpdateContextSubscriptionImplementedInXml() throws Exception {
+        mockMvc.perform(post("/i/updateContextSubscription")
+                .content(xmlmapper.writeValueAsString(createUpdateContextSubscriptionTemperature()))
                 .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
                 .andExpect(status().isOk());
     }
