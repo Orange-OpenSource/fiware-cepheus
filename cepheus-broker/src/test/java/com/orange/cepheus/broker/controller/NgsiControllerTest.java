@@ -123,6 +123,7 @@ public class NgsiControllerTest {
         when(configuration.getRemoteServiceName()).thenReturn(null);
         when(configuration.getRemoteServicePath()).thenReturn(null);
         when(configuration.getRemoteAuthToken()).thenReturn(null);
+        when(configuration.isRemoteForwardUpdateContext()).thenReturn(true);
         when(updateContextResponseListenableFuture.get()).thenReturn(createUpdateContextResponseTempSensorAndPressure());
         doNothing().when(updateContextResponseListenableFuture).addCallback(any(), any());
         when(queryContextResponseListenableFuture.get()).thenReturn(createQueryContextResponseTemperature());
@@ -242,6 +243,7 @@ public class NgsiControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value("1015"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
 
+        verify(configuration, atLeastOnce()).isRemoteForwardUpdateContext();
 
         //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
         verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
@@ -278,6 +280,31 @@ public class NgsiControllerTest {
 
         //check ngsiClient.notify is not called
         verify(ngsiClient, never()).notifyContext(any(), any(), any());
+    }
+
+    @Test
+    public void checkRemoteBrokerNotCalledWhenForwardIsDisabled() throws Exception {
+        // Disable updateContext forwarding to remote broker
+        when(configuration.isRemoteForwardUpdateContext()).thenReturn(false);
+
+        //localRegistrations mock return always without providingApplication
+        when(providingApplication.hasNext()).thenReturn(false);
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+        //subscriptions mock return always without matched subscriptions
+        when(matchedSubscriptions.hasNext()).thenReturn(false);
+        when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/updateContext")
+                .content(json(mapper, createUpdateContextTempSensorAndPressure()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+
+        verify(configuration, atLeastOnce()).isRemoteForwardUpdateContext();
+        verify(ngsiClient, never()).updateContext(eq("http://orionhost:9999"), any(), any());
     }
 
     @Test

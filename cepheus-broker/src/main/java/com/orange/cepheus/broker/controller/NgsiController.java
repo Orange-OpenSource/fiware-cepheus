@@ -73,6 +73,11 @@ public class NgsiController extends NgsiBaseController {
 
         logger.debug("<= updateContext with entityId: {} and attributes: {} ", contextElement.getEntityId().toString(), attributesName);
 
+        /*
+         * If a registration matches the updateContext, the updateContext is forwarded to the corresponding providingURL.
+         * Else, the update is forwarded to the remote broker and the subscribers are notified.
+         */
+
         // Search registrations to forward updateContext
         Iterator<URI> providingApplication = localRegistrations.findProvidingApplication(contextElement.getEntityId(), attributesName);
         if (providingApplication.hasNext()) {
@@ -84,15 +89,17 @@ public class NgsiController extends NgsiBaseController {
         }
 
         // Forward the update to the remote broker
-        final String brokerUrl = configuration.getRemoteUrl();
-        if (brokerUrl == null || brokerUrl.isEmpty()) {
-            logger.warn("No remote.url parameter defined to forward updateContext");
-        } else {
-            HttpHeaders httpHeaders = getRemoteBrokerHeaders(brokerUrl);
-            logger.debug("=> updateContext forwarded to remote broker {} with Content-Type {}", brokerUrl, httpHeaders.getContentType());
-            ngsiClient.updateContext(brokerUrl, httpHeaders, update).addCallback(
-                    updateContextResponse -> logger.debug("UpdateContext completed for {} ", brokerUrl),
-                    throwable -> logger.warn("UpdateContext failed for {}: {}", brokerUrl, throwable.toString()));
+        if (configuration.isRemoteForwardUpdateContext()) {
+            final String brokerUrl = configuration.getRemoteUrl();
+            if (brokerUrl == null || brokerUrl.isEmpty()) {
+                logger.warn("No remote.url parameter defined to forward updateContext");
+            } else {
+                HttpHeaders httpHeaders = getRemoteBrokerHeaders(brokerUrl);
+                logger.debug("=> updateContext forwarded to remote broker {} with Content-Type {}", brokerUrl, httpHeaders.getContentType());
+                ngsiClient.updateContext(brokerUrl, httpHeaders, update)
+                        .addCallback(updateContextResponse -> logger.debug("UpdateContext completed for {} ", brokerUrl),
+                                throwable -> logger.warn("UpdateContext failed for {}: {}", brokerUrl, throwable.toString()));
+            }
         }
 
         List<ContextElementResponse> contextElementResponseList = new ArrayList<>();
