@@ -94,6 +94,7 @@ This is a short list of the application properties:
     <tr><td>remote.serviceName</td><td>remote broker Service Name</td><td></td></tr>
     <tr><td>remote.servicePath</td><td>remote broker Service Path</td><td></td></tr>
     <tr><td>remote.authToken</td><td>OAuth token for secured broker</td><td></td></tr>
+    <tr><td>remote.forward.updateContext</td><td>updateContext forwarding to remote broker</td><td>true</td></tr>
     <tr><td>logging.level.com.orange.cepheus.broker</td><td>log level</td><td>INFO</td></tr>
     <tr><td>spring.datasource.url</td><td>DataBase url</td><td>jdbc:sqlite:${java.io.tmpdir:-/tmp}/cepheus-broker.db</td></tr>
 </table>
