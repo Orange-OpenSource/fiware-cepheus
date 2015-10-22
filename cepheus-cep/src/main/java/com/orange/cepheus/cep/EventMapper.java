@@ -29,33 +29,32 @@ public class EventMapper {
     public void setConfiguration(Configuration configuration) throws ConfigurationException {
         Map<String, JsonPath> jsonpaths = new HashMap<>();
 
-            for (EventTypeIn eventTypeIn : configuration.getEventTypeIns()) {
-                for (Attribute attribute : eventTypeIn.getAttributes()) {
-                    String jsonpath = attribute.getJsonpath();
-                    if (jsonpath != null) {
-                        // JsonPath caches paths internally, no need to reuse them from one configuration to another.
-                        // Aggregate path by event type / attribute name
-                        try {
-                            jsonpaths.put(eventTypeIn.getType() + "/" + attribute.getName(), JsonPath.compile(jsonpath));
-                        } catch (IllegalArgumentException|InvalidPathException e) {
-                            throw new ConfigurationException("invalid jsonpath expression for attribute "+attribute.getName(), e);
-                        }
+        for (EventTypeIn eventTypeIn : configuration.getEventTypeIns()) {
+            for (Attribute attribute : eventTypeIn.getAttributes()) {
+                String jsonpath = attribute.getJsonpath();
+                if (jsonpath != null) {
+                    // JsonPath caches paths internally, no need to reuse them from one configuration to another.
+                    // Aggregate path by event type / attribute name
+                    try {
+                        jsonpaths.put(eventTypeIn.getType() + "/" + attribute.getName(), JsonPath.compile(jsonpath));
+                    } catch (IllegalArgumentException|InvalidPathException e) {
+                        throw new ConfigurationException("invalid jsonpath expression for attribute "+attribute.getName(), e);
                     }
+                }
 
-                    for (Metadata metadata : attribute.getMetadata()) {
-                        jsonpath = metadata.getJsonpath();
-                        if (jsonpath != null) {
-                            // Same as attribute but with metadata name
-                            try {
-                                jsonpaths.put(eventTypeIn.getType() + "/" + attribute.getName() + "/" + metadata.getName(), JsonPath.compile(jsonpath));
-                            } catch (IllegalArgumentException|InvalidPathException e) {
-                                throw new ConfigurationException("invalid jsonpath expression for metadata "+attribute.getName()+"/"+metadata.getName(), e);
-                            }
+                for (Metadata metadata : attribute.getMetadata()) {
+                    jsonpath = metadata.getJsonpath();
+                    if (jsonpath != null) {
+                        // Same as attribute but with metadata name
+                        try {
+                            jsonpaths.put(eventTypeIn.getType() + "/" + attribute.getName() + "/" + metadata.getName(), JsonPath.compile(jsonpath));
+                        } catch (IllegalArgumentException|InvalidPathException e) {
+                            throw new ConfigurationException("invalid jsonpath expression for metadata "+attribute.getName()+"/"+metadata.getName(), e);
                         }
                     }
                 }
             }
-
+        }
 
         this.jsonpaths = jsonpaths;
     }
