@@ -12,6 +12,7 @@ pages:
     - 'Overview': 'cep/index.md'
     - 'Configuration': 'cep/configuration.md'
     - 'NGSI mapping': 'cep/mapping.md'
+    - 'Attributes types': 'cep/types.md'
   - 'Cepheus-Broker': 'broker/index.md'
   - 'Examples':
     - '1 Rooms and Floors': 'examples/1_RoomsAndFloors/index.md'
