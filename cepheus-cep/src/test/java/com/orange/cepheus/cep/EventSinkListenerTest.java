@@ -10,15 +10,10 @@ package com.orange.cepheus.cep;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.EventType;
-import com.orange.cepheus.cep.model.Attribute;
-import com.orange.cepheus.cep.model.Broker;
-import com.orange.cepheus.cep.model.EventTypeOut;
+import com.orange.cepheus.cep.model.*;
 import com.orange.cepheus.cep.model.Configuration;
 import com.orange.ngsi.client.NgsiClient;
-import com.orange.ngsi.model.ContextAttribute;
-import com.orange.ngsi.model.ContextElement;
-import com.orange.ngsi.model.UpdateAction;
-import com.orange.ngsi.model.UpdateContext;
+import com.orange.ngsi.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,11 +63,14 @@ public class EventSinkListenerTest {
         broker.setServicePath("SP");
         broker.setAuthToken("AUTH_TOKEN");
 
+        Attribute attr = new Attribute("avgTemp", "double");
+        attr.setMetadata(Collections.singleton(new Metadata("unit", "string")));
+
         // TestConfiguration setup
         Configuration configuration = new Configuration();
         EventTypeOut eventTypeOut = new EventTypeOut("OUT1", "TempSensorAvg", false);
         eventTypeOut.addBroker(broker);
-        eventTypeOut.addAttribute(new Attribute("avgTemp", "double"));
+        eventTypeOut.addAttribute(attr);
         configuration.setEventTypeOuts(Collections.singletonList(eventTypeOut));
 
         eventSinkListener.setConfiguration(configuration);
@@ -96,6 +94,7 @@ public class EventSinkListenerTest {
         List<ContextAttribute> attributes = new LinkedList<>();
         attributes.add(new ContextAttribute("id", "string", "OUT1234"));
         attributes.add(new ContextAttribute("avgTemp", "double", 10.25));
+        attributes.add(new ContextAttribute("avgTemp_unit","string","celcius"));
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
         eventSinkListener.update(beans, null, statement, provider);
 
@@ -128,6 +127,10 @@ public class EventSinkListenerTest {
         assertEquals("avgTemp", attr.getName());
         assertEquals("double", attr.getType());
         assertEquals(10.25, attr.getValue());
+        assertEquals(1, attr.getMetadata().size());
+        assertEquals("unit", attr.getMetadata().get(0).getName());
+        assertEquals("string", attr.getMetadata().get(0).getType());
+        assertEquals("celcius", attr.getMetadata().get(0).getValue());
     }
 
     /**
