@@ -40,6 +40,7 @@ public class ConfigurationTest {
         assertEquals("gateway", configuration.getRemoteServiceName());
         assertEquals("gateway1", configuration.getRemoteServicePath());
         assertEquals("XXXXXXXXX", configuration.getRemoteAuthToken());
+        assertEquals(true, configuration.isRemoteForwardUpdateContext());
     }
 
     @Test
@@ -47,6 +48,7 @@ public class ConfigurationTest {
         configuration.setRemoteServiceName("SERVICE");
         configuration.setRemoteServicePath("PATH");
         configuration.setRemoteAuthToken("TOKEN");
+        configuration.setRemoteForwardUpdateContext(false);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         configuration.addRemoteHeaders(httpHeaders);

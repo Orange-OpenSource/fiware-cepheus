@@ -48,6 +48,17 @@ public class Configuration {
     @Value("${remote.authToken:}")
     private String remoteAuthToken;
 
+    /**
+     * Disable forwarding updateContext requests to the remote broker
+     *
+     * All NGSI requests are forwarded by the Cepheus-Broker to the remote broker.
+     * Except:
+     *  - subscribeContext/updateContextSubscription/unsubscribeContext (handled by the app)
+     *  - updateContext (if
+     */
+    @Value("${remote.forward.updateContext:true}")
+    private boolean remoteForwardUpdateContext = true;
+
     public Configuration() {
     }
 
@@ -91,6 +102,14 @@ public class Configuration {
         this.remoteAuthToken = remoteAuthToken;
     }
 
+    public boolean isRemoteForwardUpdateContext() {
+        return remoteForwardUpdateContext;
+    }
+
+    public void setRemoteForwardUpdateContext(boolean remoteForwardUpdateContext) {
+        this.remoteForwardUpdateContext = remoteForwardUpdateContext;
+    }
+
     /*
      * Inject Orion-specific headers into the given HttpHeaders list
      * @param httpHeaders
@@ -115,6 +134,7 @@ public class Configuration {
                 ", remoteServiceName='" + remoteServiceName + '\'' +
                 ", remoteServicePath='" + remoteServicePath + '\'' +
                 ", remoteAuthToken='" + remoteAuthToken + '\'' +
+                ", remoteForwardUpdateContext=" + remoteForwardUpdateContext +
                 '}';
     }
 }
