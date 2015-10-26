@@ -32,6 +32,9 @@ public class EventSinkListener implements StatementAwareUpdateListener {
     @Autowired
     private NgsiClient ngsiClient;
 
+    @Autowired
+    private EventMapper eventMapper;
+
     /**
      * All outgoing outgoingEvents accessible by type
      */
@@ -108,41 +111,10 @@ public class EventSinkListener implements StatementAwareUpdateListener {
      * @return An updateContext request, or null if no attributes are updated
      */
     private UpdateContext buildUpdateContextRequest(EventBean eventBean, EventTypeOut eventTypeOut) {
-
-        // When id is undefined or empty in the event, reuse the one defined in the configuration
-        String id = (String)eventBean.get("id");
-        if (id == null || "".equals(id)) {
-            id = eventTypeOut.getId();
-        }
-
-        // Add each attribute as a context attribute
-        List<ContextAttribute> contextAttributes = new LinkedList<>();
-        for (Attribute attribute : eventTypeOut.getAttributes()) {
-            String name = attribute.getName();
-            Object value = eventBean.get(name);
-            if (value != null) {
-                ContextAttribute contextAttribute = new ContextAttribute(name, attribute.getType(), value);
-                // Add each metadata as a ContextMetadata of the attribute
-                for (Metadata metadata : attribute.getMetadata()) {
-                    Object metaValue = eventBean.get(name+"_"+metadata.getName());
-                    if (metaValue != null) {
-                        ContextMetadata contextMetadata = new ContextMetadata(metadata.getName(), metadata.getType(), metaValue);
-                        contextAttribute.addMetadata(contextMetadata);
-                    }
-                }
-                contextAttributes.add(contextAttribute);
-            }
-        }
-
-        // When no attributes was updated (?!), there is no point to trigger a request
-        if (contextAttributes.size() == 0) {
+        ContextElement contextElement = eventMapper.contextElementFromEvent(eventBean, eventTypeOut);
+        if (contextElement == null) {
             return null;
         }
-
-        ContextElement contextElement = new ContextElement();
-        contextElement.setEntityId(new EntityId(id, eventTypeOut.getType(), eventTypeOut.isPattern()));
-        contextElement.setContextAttributeList(contextAttributes);
-
         UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
         updateContext.setContextElements(Collections.singletonList(contextElement));
         return updateContext;
