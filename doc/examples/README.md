@@ -13,3 +13,5 @@ Examples for Cepheus-CEP and Cepheus-Broker with a complete setup.
 * [Query and Command](6_QueryAndCommand/index.md) Make Cepheus-Broker interact with Orion and IoT Agent (protocol adapter for device)
 
 * [Metadata](7_Metadata/index.md) Simple example of the Cepheus-CEP metadata handling
+
+* [Date and Geo:Point](8_Date and Geo:Point) Simple example of Cepheus-CEP handling dates and geo:point attributes

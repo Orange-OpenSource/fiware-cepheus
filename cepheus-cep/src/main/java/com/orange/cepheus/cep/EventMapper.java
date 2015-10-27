@@ -1,5 +1,7 @@
 package com.orange.cepheus.cep;
 
+import com.espertech.esper.client.EventBean;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.jayway.jsonpath.*;
 import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.EventProcessingException;
@@ -9,10 +11,12 @@ import com.orange.cepheus.cep.model.Configuration;
 import com.orange.ngsi.model.ContextAttribute;
 import com.orange.ngsi.model.ContextElement;
 import com.orange.ngsi.model.ContextMetadata;
+import com.orange.ngsi.model.EntityId;
+import com.orange.ngsi.model.GeoPoint;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.text.ParseException;
+import java.util.*;
 
 /**
  * Map a NGSI ContextElement to an CEP event
@@ -22,6 +26,8 @@ public class EventMapper {
 
     private Map<String, JsonPath> jsonpaths = new HashMap<>();
 
+    private ISO8601DateFormat iso8691DateFormat = new ISO8601DateFormat();
+
     /**
      * Compile JSON paths from Attributes and Metadata of the new configuration
      * @param configuration the new configuration
@@ -29,33 +35,32 @@ public class EventMapper {
     public void setConfiguration(Configuration configuration) throws ConfigurationException {
         Map<String, JsonPath> jsonpaths = new HashMap<>();
 
-            for (EventTypeIn eventTypeIn : configuration.getEventTypeIns()) {
-                for (Attribute attribute : eventTypeIn.getAttributes()) {
-                    String jsonpath = attribute.getJsonpath();
-                    if (jsonpath != null) {
-                        // JsonPath caches paths internally, no need to reuse them from one configuration to another.
-                        // Aggregate path by event type / attribute name
-                        try {
-                            jsonpaths.put(eventTypeIn.getType() + "/" + attribute.getName(), JsonPath.compile(jsonpath));
-                        } catch (IllegalArgumentException|InvalidPathException e) {
-                            throw new ConfigurationException("invalid jsonpath expression for attribute "+attribute.getName(), e);
-                        }
+        for (EventTypeIn eventTypeIn : configuration.getEventTypeIns()) {
+            for (Attribute attribute : eventTypeIn.getAttributes()) {
+                String jsonpath = attribute.getJsonpath();
+                if (jsonpath != null) {
+                    // JsonPath caches paths internally, no need to reuse them from one configuration to another.
+                    // Aggregate path by event type / attribute name
+                    try {
+                        jsonpaths.put(eventTypeIn.getType() + "/" + attribute.getName(), JsonPath.compile(jsonpath));
+                    } catch (IllegalArgumentException|InvalidPathException e) {
+                        throw new ConfigurationException("invalid jsonpath expression for attribute "+attribute.getName(), e);
                     }
+                }
 
-                    for (Metadata metadata : attribute.getMetadata()) {
-                        jsonpath = metadata.getJsonpath();
-                        if (jsonpath != null) {
-                            // Same as attribute but with metadata name
-                            try {
-                                jsonpaths.put(eventTypeIn.getType() + "/" + attribute.getName() + "/" + metadata.getName(), JsonPath.compile(jsonpath));
-                            } catch (IllegalArgumentException|InvalidPathException e) {
-                                throw new ConfigurationException("invalid jsonpath expression for metadata "+attribute.getName()+"/"+metadata.getName(), e);
-                            }
+                for (Metadata metadata : attribute.getMetadata()) {
+                    jsonpath = metadata.getJsonpath();
+                    if (jsonpath != null) {
+                        // Same as attribute but with metadata name
+                        try {
+                            jsonpaths.put(eventTypeIn.getType() + "/" + attribute.getName() + "/" + metadata.getName(), JsonPath.compile(jsonpath));
+                        } catch (IllegalArgumentException|InvalidPathException e) {
+                            throw new ConfigurationException("invalid jsonpath expression for metadata "+attribute.getName()+"/"+metadata.getName(), e);
                         }
                     }
                 }
             }
-
+        }
 
         this.jsonpaths = jsonpaths;
     }
@@ -145,6 +150,74 @@ public class EventMapper {
         return event;
     }
 
+    /**
+     * Convert an Esper event back to a ContextElement.
+     * @param eventBean the Esper event
+     * @param eventType the associated EventType
+     * @return the ContextElement or null when no matching attribute in the event
+     */
+    public ContextElement contextElementFromEvent(EventBean eventBean, EventType eventType) {
+        // When id is undefined or empty in the event, reuse the one defined in the configuration
+        String id = (String)eventBean.get("id");
+        if (id == null || "".equals(id)) {
+            id = eventType.getId();
+        }
+
+        // Add each attribute as a context attribute
+        List<ContextAttribute> contextAttributes = new LinkedList<>();
+        for (Attribute attribute : eventType.getAttributes()) {
+            String type = attribute.getType();
+            String name = attribute.getName();
+            Object value = eventBean.get(name);
+            if (value != null) {
+                value = attributeValueFromEventProperty(value, type);
+                ContextAttribute contextAttribute = new ContextAttribute(name, type, value);
+                // Add each metadata as a ContextMetadata of the attribute
+                for (Metadata metadata : attribute.getMetadata()) {
+                    String metaType = metadata.getType();
+                    String metaName = metadata.getName();
+                    Object metaValue = eventBean.get(name+"_"+metaName);
+                    if (metaValue != null) {
+                        metaValue = attributeValueFromEventProperty(metaValue, metaType);
+                        contextAttribute.addMetadata(new ContextMetadata(metaName, metaType, metaValue));
+                    }
+                }
+                contextAttributes.add(contextAttribute);
+            }
+        }
+
+        // When no attributes was updated (?!), there is no point to trigger a request
+        if (contextAttributes.size() == 0) {
+            return null;
+        }
+
+        ContextElement contextElement = new ContextElement();
+        contextElement.setEntityId(new EntityId(id, eventType.getType(), eventType.isPattern()));
+        contextElement.setContextAttributeList(contextAttributes);
+        return contextElement;
+    }
+
+    /**
+     * Convert an EventBean property back to an ContextElement attribute.
+     * Convert GeoPoint and Date to special string representation
+     * @param value the value property to convert
+     * @param type the type of the ContextAttribute
+     * @return the ContextAttribute value
+     */
+    public Object attributeValueFromEventProperty(Object value, String type) {
+        if ("geo:point".equals(type) && value instanceof GeoPoint) {
+            return ((GeoPoint)value).toNGSIString();
+        } else if ("date".equals(type) && value instanceof Date) {
+            return iso8691DateFormat.format((Date) value);
+        }
+        return value;
+    }
+
+    /**
+     * The class corresponding to the configuration type
+     * @param attributeType
+     * @return
+     */
     private Class classForType(String attributeType) {
         switch (attributeType) {
             case "string":
@@ -157,6 +230,10 @@ public class EventMapper {
                 return double.class;
             case "boolean":
                 return boolean.class;
+            case "date":
+                return Date.class;
+            case "geo:point":
+                return GeoPoint.class;
             default:
                 return Object.class;
         }
@@ -192,6 +269,7 @@ public class EventMapper {
         if (type == null) {
             return value;
         }
+
         try {
             switch (type) {
                 case "string":
@@ -204,10 +282,14 @@ public class EventMapper {
                     return Float.valueOf(value);
                 case "double":
                     return Double.valueOf(value);
+                case "date":
+                    return iso8691DateFormat.parse(value);
+                case "geo:point":
+                    return GeoPoint.parse(value);
                 default:
                     return value;
             }
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException|ParseException e) {
             throw new EventProcessingException("Failed to parse value "+value+" for attribute "+name);
         }
     }
