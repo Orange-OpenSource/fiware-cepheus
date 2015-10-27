@@ -22,6 +22,7 @@ pages:
     - '5 Temperature Threshold': 'examples/5_TemperatureThreshold/index.md'
     - '6 Query and Command on Room and Shutter': 'examples/6_QueryAndCommand/index.md'
     - '7 Metadata mapping': 'examples/7_Metadata/index.md'
+    - '8 Date and GeoPoint': 'examples/8_DateAndGeoPoint/index.md'
 - "Administrator manual":
   - 'Cepheus-CEP': 'admin/cep.md'
   - 'Cepheus-Broker': 'admin/broker.md'

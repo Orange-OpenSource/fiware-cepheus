@@ -1,0 +1,40 @@
+{
+  "host":"http://localhost:8080",
+  "in":[
+    {
+      "id":"Room1",
+      "type":"Room",
+      "attributes":[
+        { 
+          "name":"temperature",
+          "type":"double",
+          "metadata":[
+            { "name":"time", "type":"date" },
+            { "name":"location", "type":"geo:point" }
+          ]
+        },
+        { "name":"floor", "type":"string" }
+      ]
+    }
+  ],
+  "out":[
+    {
+      "id":"Floor1",
+      "type":"Floor",
+      "attributes":[
+        {
+          "name":"temperature",
+          "type":"double",
+          "metadata":[
+            { "name":"time", "type":"date" },
+            { "name":"location", "type":"geo:point" }
+          ]
+        }
+      ],
+      "brokers": [{"url":"http://localhost:9090"}]
+    }
+  ],
+  "statements":[
+    "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature, temperature_time, temperature_location FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
+  ]
+}
