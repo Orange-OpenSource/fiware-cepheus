@@ -2,9 +2,22 @@
 
 ## Major features
 
+* Date and Geo:Point type support in Cepheus-CEP #14
+* Filter forward updateContext requests in Cepheus-CEP #13
+* Registration persistence in Cepheus-Broker #8
+* Subscription persistence in Cepheus-Broker #6
+* Linksprite demo application #7
+* Jsonpath support in Cepheus-CEP #5
+
 ## Minor features
 
+* Updated documentation
+
 ## Bug fixes
+
+* Add support for updateContextSubscription request #12
+* Fix XMl serialization #11 #9
+* QueryContext sends empty restriction #4
 
 # 0.1.0
 
