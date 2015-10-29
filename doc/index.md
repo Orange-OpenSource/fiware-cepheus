@@ -20,7 +20,7 @@ except for non-NGSI devices which are proxied by the IoT Agent.
 This manual suppose you already have a good knowledge of the FIWARE NGSI v1 API.
 We strongly recommend you start by reading the [FIWARE NGSI APIv1 Walkthough](https://fiware-orion.readthedocs.org/en/develop/user/walkthrough_apiv1/index.html) from the Fiware-Orion project.
 
-Note: the Cepheus-Broker and Cepheus-CEP components currently only support NGSI v1 API restricted to the JSON format.
+Note: the Cepheus-Broker and Cepheus-CEP components support NGSI v1 API with both JSON and XML formats.
 
 # Glossary
 
