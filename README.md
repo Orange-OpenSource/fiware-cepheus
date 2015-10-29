@@ -9,8 +9,8 @@
 
 This is the code repository for the Fiware-Cepheus project.
 
-This project is part of [FIWARE](http://www.fiware.org) under the Gateway Data Handling GE subproject.
-Check also the [FIWARE Catalogue entry for Cepheus](http://catalogue.fiware.org/enablers/gateway-data-handling-ge-cepheus)
+This project is part of [FIWARE](http://www.fiware.org) under the IoT Data Edge Consolidation GE project.
+Check also the [FIWARE Catalogue entry for Cepheus](http://catalogue.fiware.org/enablers/iot-data-edge-consolidation-ge-cepheus)
 
 ## Renaming
 
