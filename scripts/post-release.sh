@@ -18,11 +18,11 @@ NEWVERSION="$2"
 git checkout master
 git branch -D release
 
-# Replace {version}-SNAPSHOT by {NEWVERSION} except ci-release.sh
-find . -name "*.xml" -type f -exec sed -i '' "s/$OLDVERSION-SNAPSHOT/$NEWVERSION-SNAPSHOT/g" {} \;
-find . -name "*.md" -type f -exec sed -i '' "s/$OLDVERSION-SNAPSHOT/$NEWVERSION-SNAPSHOT/g" {} \;
-find . -name "Dockerfile" -type f -exec sed -i '' "s/$OLDVERSION-SNAPSHOT/$NEWVERSION-SNAPSHOT/g" {} \;
-find . -name "*.sh" ! -name 'ci-release.sh'  -type f -exec sed -i '' "s/$OLDVERSION-SNAPSHOT/$NEWVERSION-SNAPSHOT/g" {} \;
+# Replace {version} by {NEWVERSION} except ci-release.sh
+find . -name "*.xml" -type f -exec sed -i '' "s/$OLDVERSION/$NEWVERSION/g" {} \;
+find . -name "*.md" -type f -exec sed -i '' "s/$OLDVERSION/$NEWVERSION/g" {} \;
+find . -name "Dockerfile" -type f -exec sed -i '' "s/$OLDVERSION/$NEWVERSION/g" {} \;
+find . -name "*.sh" ! -name 'ci-release.sh'  -type f -exec sed -i '' "s/$OLDVERSION/$NEWVERSION/g" {} \;
 
 # Push modifications
 git commit -m "prepare $NEWVERSION"

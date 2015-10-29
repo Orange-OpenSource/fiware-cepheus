@@ -12,16 +12,16 @@ git pull origin master
 git branch -f release master
 git checkout release
 
-# Replace {version}-SNAPSHOT by {version} except ci-release.sh
-find . -name "*.xml" -type f -exec sed -i '' "s/-SNAPSHOT//g" {} \;
-find . -name "*.md" -type f -exec sed -i '' "s/-SNAPSHOT//g" {} \;
-find . -name "Dockerfile" -type f -exec sed -i '' "s/-SNAPSHOT//g" {} \;
-find . -name "*.sh" ! -name 'ci-release.sh'  -type f -exec sed -i '' "s/-SNAPSHOT//g" {} \;
+# Replace {version} by {version} except ci-release.sh
+find . -name "*.xml" -type f -exec sed -i '' "s///g" {} \;
+find . -name "*.md" -type f -exec sed -i '' "s///g" {} \;
+find . -name "Dockerfile" -type f -exec sed -i '' "s///g" {} \;
+find . -name "*.sh" ! -name 'ci-release.sh'  -type f -exec sed -i '' "s///g" {} \;
 
-# Replace snapshots by releases except in .xml files
-find . -name "*.md" -type f -exec sed -i '' "s/snapshots/releases/g" {} \;
-find . -name "Dockerfile" -type f -exec sed -i '' "s/snapshots/releases/g" {} \;
-find . -name "*.sh" ! -name 'ci-release.sh'  -type f -exec sed -i '' "s/snapshots/releases/g" {} \;
+# Replace releases by releases except in .xml files
+find . -name "*.md" -type f -exec sed -i '' "s/releases/releases/g" {} \;
+find . -name "Dockerfile" -type f -exec sed -i '' "s/releases/releases/g" {} \;
+find . -name "*.sh" ! -name 'ci-release.sh'  -type f -exec sed -i '' "s/releases/releases/g" {} \;
 
 # Push modifications
 git commit -a -m "prepare $VERSION"
