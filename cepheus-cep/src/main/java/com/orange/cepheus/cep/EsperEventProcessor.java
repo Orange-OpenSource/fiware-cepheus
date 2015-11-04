@@ -9,6 +9,7 @@
 package com.orange.cepheus.cep;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.EventProcessingException;
 import com.orange.cepheus.cep.exception.EventTypeNotFoundException;
@@ -36,6 +37,12 @@ public class EsperEventProcessor implements ComplexEventProcessor {
 
     private final EPServiceProvider epServiceProvider;
     private Configuration configuration;
+
+    /**
+     * Keep a list of statements that declare a variable (create variable),
+     * required to properly remove them on updates as Esper does not provide this.
+     */
+    private HashMap<String, String> variablesByStatementName = new HashMap<>();
 
     @Autowired
     public EventMapper eventMapper;
@@ -103,6 +110,9 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             for (com.espertech.esper.client.EventType eventType : operations.getEventTypes()) {
                 operations.removeEventType(eventType.getName(), true);
             }
+
+            // Remove all statements to variables associations
+            variablesByStatementName.clear();
 
             // Adding back in/out events, then statements
             Collection<EventType> inEventTypes = Collections.unmodifiableList(previousConfiguration.getEventTypeIns());
@@ -225,30 +235,34 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     private void updateStatements(Collection<String> statements) throws NoSuchAlgorithmException {
         // Keep a list of MD5 hash of all added statements
         Set<String> hashes = new HashSet<>();
+        for (String eplStatement : statements) {
+            hashes.add(MD5(eplStatement));
+        }
+
+        // Removed unused statements first
+        for (String hash : epServiceProvider.getEPAdministrator().getStatementNames()) {
+            if (!hashes.contains(hash)) {
+                removeStatement(hash);
+            }
+        }
 
         // Update EPL statements
         for (String eplStatement : statements) {
             String hash = MD5(eplStatement);
-            hashes.add(hash);
 
             // Create statement if does not already exist
             EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(hash);
             if (statement == null) {
                 logger.info("Add new statement: {}", eplStatement);
-                statement = epServiceProvider.getEPAdministrator().createEPL(eplStatement, hash);
-                statement.addListener(eventSinkListener);
-            }
+                EPStatementObjectModel model = epServiceProvider.getEPAdministrator().compileEPL(eplStatement);
 
-        }
-
-        // Removed unused statements
-        for (String hash : epServiceProvider.getEPAdministrator().getStatementNames()) {
-            if (!hashes.contains(hash)) {
-                EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(hash);
-                if (statement != null) {
-                    logger.info("Remove unused statement: {}", statement.getText());
-                    statement.destroy();
+                // When the statement defines a new variable, keep track of this association
+                if (model.getCreateVariable() != null) {
+                    variablesByStatementName.put(hash, model.getCreateVariable().getVariableName());
                 }
+
+                statement = epServiceProvider.getEPAdministrator().create(model);
+                statement.addListener(eventSinkListener);
             }
         }
     }
@@ -268,5 +282,30 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
         }
         return sb.toString();*/
+    }
+
+    /**
+     * Remove a statement, recursively removing statements depending on it
+     * when it is a statement declaring a variable
+     * @param statementName the hash of the statement to delete
+     */
+    private void removeStatement(String statementName) {
+        EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(statementName);
+        if (statement != null) {
+            logger.info("Remove statement: {}", statement.getText());
+
+            // Destroy all statements associated to a given statement declaring a variable
+            String variableName = variablesByStatementName.get(statementName);
+            if (variableName != null) {
+                Set<String> epStatements = epServiceProvider.getEPAdministrator().getConfiguration().getVariableNameUsedBy(variableName);
+                for (String epStatement : epStatements) {
+                    removeStatement(epStatement);
+                }
+            }
+
+            //TODO support other type of statement dependency ?
+
+            statement.destroy();
+        }
     }
 }
