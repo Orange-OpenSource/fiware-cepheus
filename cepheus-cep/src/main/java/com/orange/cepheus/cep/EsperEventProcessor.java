@@ -17,6 +17,7 @@ import com.orange.cepheus.cep.model.Attribute;
 import com.orange.cepheus.cep.model.EventType;
 import com.orange.cepheus.cep.model.Configuration;
 import com.orange.cepheus.cep.model.Event;
+import com.orange.cepheus.geo.Geospatial;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,9 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     public EventSinkListener eventSinkListener;
 
     public EsperEventProcessor() {
-        epServiceProvider = EPServiceProviderManager.getDefaultProvider(new com.espertech.esper.client.Configuration());
+        com.espertech.esper.client.Configuration configuration = new com.espertech.esper.client.Configuration();
+        Geospatial.registerConfiguration(configuration);
+        epServiceProvider = EPServiceProviderManager.getDefaultProvider(configuration);
     }
 
     /**
