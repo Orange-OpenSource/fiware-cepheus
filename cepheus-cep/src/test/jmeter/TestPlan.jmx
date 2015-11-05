@@ -41,8 +41,8 @@
         </elementProp>
         <stringProp name="HTTPSampler.domain">${HOST}</stringProp>
         <stringProp name="HTTPSampler.port"></stringProp>
-        <stringProp name="HTTPSampler.connect_timeout">2000</stringProp>
-        <stringProp name="HTTPSampler.response_timeout">2000</stringProp>
+        <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+        <stringProp name="HTTPSampler.response_timeout"></stringProp>
         <stringProp name="HTTPSampler.protocol"></stringProp>
         <stringProp name="HTTPSampler.contentEncoding"></stringProp>
         <stringProp name="HTTPSampler.path"></stringProp>
@@ -388,11 +388,6 @@
           </doubleProp>
           <intProp name="calcMode">4</intProp>
         </ConstantThroughputTimer>
-        <hashTree/>
-        <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Uniform Random Timer" enabled="false">
-          <stringProp name="ConstantTimer.delay">${WAIT}</stringProp>
-          <stringProp name="RandomTimer.range">0</stringProp>
-        </UniformRandomTimer>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
