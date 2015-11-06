@@ -11,6 +11,15 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="temperature" enabled="true">
+        <stringProp name="maximumValue">42</stringProp>
+        <stringProp name="minimumValue">10</stringProp>
+        <stringProp name="outputFormat"></stringProp>
+        <boolProp name="perThread">false</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">TEMPVALUE</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Config Vars" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="HOST" elementType="Argument">
@@ -396,27 +405,7 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-    &quot;contextElements&quot;: [&#xd;
-        {&#xd;
-            &quot;type&quot;: &quot;Room&quot;,&#xd;
-            &quot;isPattern&quot;: &quot;false&quot;,&#xd;
-            &quot;id&quot;: &quot;Room1&quot;,&#xd;
-            &quot;attributes&quot;: [&#xd;
-            {&#xd;
-                &quot;name&quot;: &quot;temperature&quot;,&#xd;
-                &quot;type&quot;: &quot;float&quot;,&#xd;
-                &quot;value&quot;: &quot;26.5&quot;&#xd;
-            },&#xd;
-            {&#xd;
-                &quot;name&quot;: &quot;pressure&quot;,&#xd;
-                &quot;type&quot;: &quot;integer&quot;,&#xd;
-                &quot;value&quot;: &quot;763&quot;&#xd;
-            }&#xd;
-            ]&#xd;
-        }&#xd;
-    ],&#xd;
-    &quot;updateAction&quot;: &quot;UPDATE&quot;&#xd;
-         &quot;contextElements&quot;:&#xd;
+    &quot;contextElements&quot;:&#xd;
          [&#xd;
              {&#xd;
                  &quot;type&quot;: &quot;Room&quot;,&#xd;
@@ -426,7 +415,7 @@
                      {&#xd;
                          &quot;name&quot;: &quot;temperature&quot;,&#xd;
                          &quot;type&quot;: &quot;double&quot;,&#xd;
-                         &quot;value&quot;: 26.5,&#xd;
+                         &quot;value&quot;: &quot;${TEMPVALUE}&quot;,&#xd;
                          &quot;metadatas&quot;: [&#xd;
                              { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; , &quot;value&quot;:&quot;celsius&quot;}&#xd;
                            ]&#xd;
