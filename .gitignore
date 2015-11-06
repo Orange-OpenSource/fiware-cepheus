@@ -1,1 +1,14 @@
 node_modules/
+.class
+.settings
+.project
+.classpath
+target
+bin
+#intellij
+.idea/
+*.iml
+*.iws
+spy.log
+*.log
+BA2F4249.asc
