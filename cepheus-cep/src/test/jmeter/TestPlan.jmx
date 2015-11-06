@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="2.8" jmeter="2.13 r1665067">
+<jmeterTestPlan version="1.2" properties="2.6" jmeter="2.11 r1554548">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="TestPlan" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
@@ -11,15 +11,6 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="temperature" enabled="true">
-        <stringProp name="maximumValue">42</stringProp>
-        <stringProp name="minimumValue">10</stringProp>
-        <stringProp name="outputFormat"></stringProp>
-        <boolProp name="perThread">false</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">TEMPVALUE</stringProp>
-      </RandomVariableConfig>
-      <hashTree/>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Config Vars" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="HOST" elementType="Argument">
@@ -261,11 +252,11 @@
         <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
       </ThreadGroup>
       <hashTree>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Set timer: fast" enabled="true">
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Set timer: slow" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="WAIT" elementType="Argument">
               <stringProp name="Argument.name">WAIT</stringProp>
-              <stringProp name="Argument.value">1000</stringProp>
+              <stringProp name="Argument.value">10000</stringProp>
               <stringProp name="Argument.desc">time between requests in ms</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
@@ -305,11 +296,11 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Set timer: slow" enabled="true">
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Set timer: fast" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="WAIT" elementType="Argument">
               <stringProp name="Argument.name">WAIT</stringProp>
-              <stringProp name="Argument.value">10000</stringProp>
+              <stringProp name="Argument.value">1000</stringProp>
               <stringProp name="Argument.desc">time between requests in ms</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
@@ -389,7 +380,7 @@
       </hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model1: Normal" enabled="true"/>
       <hashTree>
-        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="false">
           <doubleProp>
             <name>throughput</name>
             <value>3000.0</value>
@@ -397,6 +388,20 @@
           </doubleProp>
           <intProp name="calcMode">4</intProp>
         </ConstantThroughputTimer>
+        <hashTree/>
+        <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Compteur de temps aléatoire uniforme" enabled="true">
+          <stringProp name="ConstantTimer.delay">${WAIT}</stringProp>
+          <stringProp name="RandomTimer.range">0</stringProp>
+        </UniformRandomTimer>
+        <hashTree/>
+        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="temperature" enabled="true">
+          <stringProp name="maximumValue">42</stringProp>
+          <stringProp name="minimumValue">10</stringProp>
+          <stringProp name="outputFormat"></stringProp>
+          <boolProp name="perThread">true</boolProp>
+          <stringProp name="randomSeed"></stringProp>
+          <stringProp name="variableName">TEMPVALUE</stringProp>
+        </RandomVariableConfig>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
