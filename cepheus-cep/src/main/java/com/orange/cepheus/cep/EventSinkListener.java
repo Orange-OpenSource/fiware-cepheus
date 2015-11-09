@@ -115,7 +115,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
         if (contextElement == null) {
             return null;
         }
-        UpdateContext updateContext = new UpdateContext(UpdateAction.UPDATE);
+        UpdateContext updateContext = new UpdateContext(UpdateAction.APPEND);
         updateContext.setContextElements(Collections.singletonList(contextElement));
         return updateContext;
     }

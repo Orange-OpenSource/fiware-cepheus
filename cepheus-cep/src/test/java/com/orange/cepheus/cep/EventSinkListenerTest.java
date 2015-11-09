@@ -106,7 +106,7 @@ public class EventSinkListenerTest {
 
         // Check updateContext is valid
         UpdateContext updateContext = updateContextArg.getValue();
-        assertEquals(UpdateAction.UPDATE, updateContext.getUpdateAction());
+        assertEquals(UpdateAction.APPEND, updateContext.getUpdateAction());
         assertEquals(1, updateContext.getContextElements().size());
 
         // Check headers are valid
