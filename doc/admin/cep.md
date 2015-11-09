@@ -67,7 +67,7 @@ The package will automatically:
 - add a `cepheus-cep` init.d startup script under `/etc/init.d/cepheus-cep`
 - start the `cepheus-cep` on startup of the machine on port `8080`
 - put logs under `/var/log/cepheus/cep.log`
-- put data under `/var/run/cepheus/cep.json`
+- put data under `/var/cepheus/cep.json`
 
 ### Running
 
@@ -105,7 +105,7 @@ You can modify all the application properties from the command line:
 
 Example:
 
-    java -jar cepheus-cep.jar --server.port=8080 --data.file=/var/run/cepheus/cep.json
+    java -jar cepheus-cep.jar --server.port=8080 --data.file=/var/cepheus/cep.json
 
 ### External configuration file
 

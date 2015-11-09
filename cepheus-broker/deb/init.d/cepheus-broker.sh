@@ -16,7 +16,7 @@ PID_PATH_NAME=/tmp/cepheus-broker-pid
 
 CONFIG=/etc/cepheus/broker.properties
 LOG=/var/log/cepheus/broker.log
-DATA=/var/run/cepheus/cepheus-broker.db
+DATA=/var/cepheus/cepheus-broker.db
 PORT=8081
 
 ARGS="--spring.config.location=$CONFIG --spring.datasource.url=jdbc:sqlite:$DATA --logging.mode=file --logging.file=$LOG --port=$PORT"

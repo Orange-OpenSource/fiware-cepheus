@@ -130,7 +130,7 @@
                                     <paths>
                                         <path>/etc/cepheus</path>
                                         <path>/var/log/cepheus</path>
-                                        <path>/var/run/cepheus</path>
+                                        <path>/var/cepheus</path>
                                     </paths>
                                 </data>
                                 <!-- JAR file -->
