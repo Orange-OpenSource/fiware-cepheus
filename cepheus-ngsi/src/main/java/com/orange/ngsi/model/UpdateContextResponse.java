@@ -23,7 +23,7 @@ public class UpdateContextResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     StatusCode errorCode;
 
-    @JacksonXmlElementWrapper(localName = "contextElementResponses")
+    @JacksonXmlElementWrapper(localName = "contextResponseList")
     @JacksonXmlProperty(localName = "contextElementResponse")
     List<ContextElementResponse> contextElementResponses;
 
