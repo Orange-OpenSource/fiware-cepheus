@@ -11,3 +11,4 @@ bin
 spy.log
 *.log
 BA2F4249.asc
+node_modules/
