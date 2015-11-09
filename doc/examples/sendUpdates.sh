@@ -26,7 +26,7 @@ function sendUpdateContext() #(url, entity_type, entity_id, attr_name, type, val
                      ]
                  }
              ],
-             "updateAction": "UPDATE"
+             "updateAction": "APPEND"
          }'
 
 	send $1 "updateContext" "$payload"

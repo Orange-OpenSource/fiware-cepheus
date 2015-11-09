@@ -31,7 +31,7 @@ function sendRoomTemp() #(url, floor, room, value)
 				]
 			}
 		],
-		"updateAction": "UPDATE"
+		"updateAction": "APPEND"
 	}'
 
 	send $1 "v1/updateContext" "$payload"
