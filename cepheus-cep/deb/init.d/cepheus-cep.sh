@@ -16,7 +16,7 @@ PID_PATH_NAME=/tmp/cepheus-cep-pid
 
 CONFIG=/etc/cepheus/cep.properties
 LOG=/var/log/cepheus/cep.log
-DATA=/var/run/cepheus/cep.json
+DATA=/var/cepheus/cep.json
 PORT=8080
 
 ARGS="--spring.config.location=$CONFIG --logging.config=file --logging.file=$LOG --data.file=$DATA --port=$PORT"
