@@ -15,7 +15,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="HOST" elementType="Argument">
             <stringProp name="Argument.name">HOST</stringProp>
-            <stringProp name="Argument.value">raspberrypi</stringProp>
+            <stringProp name="Argument.value">10.185.102.159</stringProp>
             <stringProp name="Argument.desc">IP or DNS name of the target</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -59,7 +59,7 @@
       </HeaderManager>
       <hashTree/>
       <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="Setup" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">stoptestnow</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
@@ -240,27 +240,28 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">10</stringProp>
+          <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1000</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">250</stringProp>
         <longProp name="ThreadGroup.start_time">1446203175000</longProp>
         <longProp name="ThreadGroup.end_time">1446203175000</longProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">600</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
       </ThreadGroup>
       <hashTree>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Set timer: slow" enabled="true">
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
           <collectionProp name="Arguments.arguments">
-            <elementProp name="WAIT" elementType="Argument">
-              <stringProp name="Argument.name">WAIT</stringProp>
-              <stringProp name="Argument.value">10000</stringProp>
-              <stringProp name="Argument.desc">time between requests in ms</stringProp>
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
+          <stringProp name="TestPlan.comments">0.1 req/s</stringProp>
         </Arguments>
         <hashTree/>
         <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include CEP only" enabled="true">
@@ -285,26 +286,27 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">100</stringProp>
+          <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">100</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">250</stringProp>
         <longProp name="ThreadGroup.start_time">1446652410000</longProp>
         <longProp name="ThreadGroup.end_time">1446652410000</longProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">600</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Set timer: fast" enabled="true">
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
           <collectionProp name="Arguments.arguments">
-            <elementProp name="WAIT" elementType="Argument">
-              <stringProp name="Argument.name">WAIT</stringProp>
-              <stringProp name="Argument.value">1000</stringProp>
-              <stringProp name="Argument.desc">time between requests in ms</stringProp>
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
+          <stringProp name="TestPlan.comments">100 req/s</stringProp>
         </Arguments>
         <hashTree/>
         <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include CEP only" enabled="true">
@@ -351,7 +353,7 @@
         </ModuleController>
         <hashTree/>
       </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="CEP with Broker" enabled="true">
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="CEP with Broker" enabled="false">
         <stringProp name="TestPlan.comments">Use broker</stringProp>
       </TestFragmentController>
       <hashTree>
@@ -378,30 +380,58 @@
         </ModuleController>
         <hashTree/>
       </hashTree>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Floor" enabled="true">
+        <stringProp name="maximumValue">49</stringProp>
+        <stringProp name="minimumValue">0</stringProp>
+        <stringProp name="outputFormat"></stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">FLOOR</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Room" enabled="true">
+        <stringProp name="maximumValue">20</stringProp>
+        <stringProp name="minimumValue">1</stringProp>
+        <stringProp name="outputFormat"></stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">ROOM</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Temperature" enabled="true">
+        <stringProp name="maximumValue">42</stringProp>
+        <stringProp name="minimumValue">10</stringProp>
+        <stringProp name="outputFormat"></stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">TEMPVALUE</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="varPressureValue" enabled="true">
+        <stringProp name="maximumValue">1030</stringProp>
+        <stringProp name="minimumValue">990</stringProp>
+        <stringProp name="outputFormat">000</stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">varPressureValue</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="varHumidityValue" enabled="true">
+        <stringProp name="maximumValue">100</stringProp>
+        <stringProp name="minimumValue">10</stringProp>
+        <stringProp name="outputFormat">00</stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">varHumidityValue</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model1: Normal" enabled="true"/>
       <hashTree>
-        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="false">
-          <doubleProp>
-            <name>throughput</name>
-            <value>3000.0</value>
-            <savedValue>0.0</savedValue>
-          </doubleProp>
-          <intProp name="calcMode">4</intProp>
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
+          <stringProp name="throughput">${Throughput}</stringProp>
+          <intProp name="calcMode">0</intProp>
+          <stringProp name="TestPlan.comments">For expected behavior, place this Timer in the first http request of the first Controler of the Thread Group.</stringProp>
         </ConstantThroughputTimer>
-        <hashTree/>
-        <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Compteur de temps aléatoire uniforme" enabled="true">
-          <stringProp name="ConstantTimer.delay">${WAIT}</stringProp>
-          <stringProp name="RandomTimer.range">0</stringProp>
-        </UniformRandomTimer>
-        <hashTree/>
-        <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="temperature" enabled="true">
-          <stringProp name="maximumValue">42</stringProp>
-          <stringProp name="minimumValue">10</stringProp>
-          <stringProp name="outputFormat"></stringProp>
-          <boolProp name="perThread">true</boolProp>
-          <stringProp name="randomSeed"></stringProp>
-          <stringProp name="variableName">TEMPVALUE</stringProp>
-        </RandomVariableConfig>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -415,7 +445,7 @@
              {&#xd;
                  &quot;type&quot;: &quot;Room&quot;,&#xd;
                  &quot;isPattern&quot;: &quot;false&quot;,&#xd;
-                 &quot;id&quot;: &quot;room1&quot;,&#xd;
+                 &quot;id&quot;: &quot;room${FLOOR}${ROOM}&quot;,&#xd;
                  &quot;attributes&quot;: [&#xd;
                      {&#xd;
                          &quot;name&quot;: &quot;temperature&quot;,&#xd;
@@ -428,12 +458,12 @@
                       {&#xd;
                           &quot;name&quot;: &quot;floor&quot;,&#xd;
                           &quot;type&quot;: &quot;string&quot;,&#xd;
-                          &quot;value&quot;: &quot;floor1&quot;&#xd;
+                          &quot;value&quot;: &quot;floor${FLOOR}&quot;&#xd;
                       },&#xd;
                     {&#xd;
                          &quot;name&quot;: &quot;pressure&quot;,&#xd;
                          &quot;type&quot;: &quot;double&quot;,&#xd;
-                          &quot;value&quot;:  995.0,&#xd;
+                          &quot;value&quot;:  ${varPressureValue}.0,&#xd;
                          &quot;metadatas&quot;: [&#xd;
                               { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,  &quot;value&quot;:&quot;bar&quot;}&#xd;
                            ]&#xd;
@@ -441,7 +471,7 @@
                        {&#xd;
                          &quot;name&quot;: &quot;humidity&quot;,&#xd;
                          &quot;type&quot;: &quot;double&quot;,&#xd;
-                           &quot;value&quot;:   75.0,&#xd;
+                           &quot;value&quot;:   ${varHumidityValue}.0,&#xd;
                          &quot;metadatas&quot;: [&#xd;
                                { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,   &quot;value&quot;:&quot;percent&quot;}&#xd;
                            ]&#xd;
@@ -449,7 +479,7 @@
                       {&#xd;
                            &quot;name&quot;:&quot;time&quot;,&#xd;
                            &quot;type&quot;:&quot;date&quot;,&#xd;
-                           &quot;value&quot;:&quot;2015-11-05T10:11:34Z&quot;&#xd;
+                           &quot;value&quot;:&quot;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&quot;&#xd;
                       },&#xd;
                       {&#xd;
                       		&quot;name&quot;:&quot;location&quot;,&#xd;
@@ -492,10 +522,18 @@
             <intProp name="Assertion.test_type">8</intProp>
           </ResponseAssertion>
           <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+            <stringProp name="JSON_PATH">$.contextElementResponses[0].statusCode.detail</stringProp>
+            <stringProp name="EXPECTED_VALUE">All is OK</stringProp>
+            <boolProp name="JSONVALIDATION">true</boolProp>
+          </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
         </hashTree>
-        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Error requests percent" enabled="true">
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Error requests 1 percent" enabled="true">
           <intProp name="ThroughputController.style">1</intProp>
-          <boolProp name="ThroughputController.perThread">true</boolProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
           <intProp name="ThroughputController.maxThroughput">1</intProp>
           <FloatProperty>
             <name>ThroughputController.percentThroughput</name>
@@ -690,74 +728,13 @@
             </hashTree>
           </hashTree>
         </hashTree>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Echantillon Débogage" enabled="false">
+          <boolProp name="displayJMeterProperties">false</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
       </hashTree>
-      <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <threadCounts>true</threadCounts>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-      </ResultCollector>
-      <hashTree/>
-      <ResultCollector guiclass="RespTimeGraphVisualizer" testclass="ResultCollector" testname="Response Time Graph" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <threadCounts>true</threadCounts>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-        <stringProp name="RespTimeGraph.yaxisscalemaxvalue">500</stringProp>
-      </ResultCollector>
-      <hashTree/>
       <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
