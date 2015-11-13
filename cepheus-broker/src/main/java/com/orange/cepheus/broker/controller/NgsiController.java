@@ -97,7 +97,7 @@ public class NgsiController extends NgsiBaseController {
                 HttpHeaders httpHeaders = getRemoteBrokerHeaders(brokerUrl);
                 logger.debug("=> updateContext forwarded to remote broker {} with Content-Type {}", brokerUrl, httpHeaders.getContentType());
                 ngsiClient.updateContext(brokerUrl, httpHeaders, update)
-                        .addCallback(updateContextResponse -> logger.debug("UpdateContext completed for {} ", brokerUrl),
+                        .addCallback(updateContextResponse -> logUpdateContextResponse(updateContextResponse, brokerUrl),
                                 throwable -> logger.warn("UpdateContext failed for {}: {}", brokerUrl, throwable.toString()));
             }
         }
@@ -124,8 +124,8 @@ public class NgsiController extends NgsiBaseController {
                 logger.debug("=> notifyContext to {} with Content-Type {}", providerUrl, httpHeaders.getContentType());
 
                 ngsiClient.notifyContext(providerUrl, httpHeaders, notifyContext).addCallback(
-                                notifyContextResponse -> logger.debug("NotifyContext completed for {}", providerUrl),
-                                throwable -> logger.warn("NotifyContext failed for {}: {}", providerUrl, throwable.toString()));
+                                notifyContextResponse -> logNotifyContextResponse(notifyContextResponse, providerUrl),
+                        throwable -> logger.warn("NotifyContext failed for {}: {}", providerUrl, throwable.toString()));
             }
         }
 
@@ -253,5 +253,28 @@ public class NgsiController extends NgsiBaseController {
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
         configuration.addRemoteHeaders(httpHeaders);
         return httpHeaders;
+    }
+
+    private void logUpdateContextResponse(UpdateContextResponse updateContextResponse, String brokerUrl) {
+        if (updateContextResponse.getErrorCode() != null) {
+            logger.warn("UpdateContext failed for {}: {}", brokerUrl, updateContextResponse.getErrorCode().toString());
+        } else {
+            updateContextResponse.getContextElementResponses().forEach(contextElementResponse -> {
+                if (contextElementResponse.getStatusCode().getCode().equals(CodeEnum.CODE_200)) {
+                    logger.debug("UpdateContext completed for {} ", brokerUrl);
+                } else {
+                    logger.warn("UpdateContext failed for {}: entityId {} {}", brokerUrl,
+                            contextElementResponse.getContextElement().getEntityId().getId(), contextElementResponse.getStatusCode().toString());
+                }
+            });
+        }
+    }
+
+    private void logNotifyContextResponse(NotifyContextResponse notifyContextResponse, String providerUrl) {
+        if (notifyContextResponse.getResponseCode().getCode().equals(CodeEnum.CODE_200)) {
+            logger.debug("NotifyContext completed for {} ", providerUrl);
+        } else {
+            logger.warn("NotifyContext failed for {}: {}", providerUrl, notifyContextResponse.getResponseCode().toString());
+        }
     }
 }
