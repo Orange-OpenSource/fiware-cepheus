@@ -81,13 +81,13 @@ public class LocalRegistrationsTest {
     public void testRegistration() throws Exception {
 
         RegisterContext registerContext = createRegistrationContext();
-        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext, null);
         Assert.hasLength(registrationId);
         Registration registration = localRegistrations.getRegistration(registrationId);
         assertNotNull(registration);
         assertNotNull(registration.getExpirationDate());
 
-        verify(remoteRegistrations).registerContext(eq(registerContext), eq(registrationId));
+        verify(remoteRegistrations).registerContext(eq(registerContext), eq(registrationId), eq(null));
         verify(registrationsRepository).getRegistration(eq(registrationId));
         verify(registrationsRepository).saveRegistration(eq(registration));
     }
@@ -99,13 +99,13 @@ public class LocalRegistrationsTest {
         doThrow(RegistrationPersistenceException.class).when(registrationsRepository).saveRegistration(any());
 
         RegisterContext registerContext = createRegistrationContext();
-        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext, null);
         Assert.hasLength(registrationId);
         Registration registration = localRegistrations.getRegistration(registrationId);
         assertNotNull(registration);
         assertNotNull(registration.getExpirationDate());
 
-        verify(remoteRegistrations, never()).registerContext(eq(registerContext), eq(registrationId));
+        verify(remoteRegistrations, never()).registerContext(eq(registerContext), eq(registrationId), null);
         verify(registrationsRepository).getRegistration(eq(registrationId));
         verify(registrationsRepository).saveRegistration(eq(registration));
     }
@@ -121,14 +121,14 @@ public class LocalRegistrationsTest {
         reset(registrationsRepository);
         when(registrationsRepository.getRegistration(any())).thenReturn(registration);
 
-        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext, null);
         Assert.hasLength(registrationId);
         assertNotEquals("12345", registrationId);
         Registration registration2 = localRegistrations.getRegistration(registrationId);
         assertNotNull(registration2);
         assertNotNull(registration2.getExpirationDate());
 
-        verify(remoteRegistrations).registerContext(eq(registerContext), eq(registrationId));
+        verify(remoteRegistrations).registerContext(eq(registerContext), eq(registrationId), eq(null));
         verify(registrationsRepository).getRegistration(eq(registrationId));
         verify(registrationsRepository).updateRegistration(eq(registration));
     }
@@ -136,13 +136,13 @@ public class LocalRegistrationsTest {
     @Test
     public void testUnregisterWithZeroDuration() throws Exception {
         RegisterContext registerContext = createRegistrationContext();
-        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext, null);
 
         // Remove registration using a zero duration
         RegisterContext zeroDuration = createRegistrationContext();
         zeroDuration.setRegistrationId(registrationId);
         zeroDuration.setDuration("PT0S");
-        localRegistrations.updateRegistrationContext(zeroDuration);
+        localRegistrations.updateRegistrationContext(zeroDuration, null);
 
         Assert.isNull(localRegistrations.getRegistration(registrationId));
 
@@ -156,13 +156,13 @@ public class LocalRegistrationsTest {
         doThrow(RegistrationPersistenceException.class).when(registrationsRepository).removeRegistration(any());
 
         RegisterContext registerContext = createRegistrationContext();
-        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext, null);
 
         // Remove registration using a zero duration
         RegisterContext zeroDuration = createRegistrationContext();
         zeroDuration.setRegistrationId(registrationId);
         zeroDuration.setDuration("PT0S");
-        localRegistrations.updateRegistrationContext(zeroDuration);
+        localRegistrations.updateRegistrationContext(zeroDuration, null);
 
         Assert.isNull(localRegistrations.getRegistration(registrationId));
 
@@ -174,7 +174,7 @@ public class LocalRegistrationsTest {
     public void test1MonthDuration() throws Exception {
         RegisterContext registerContext = createRegistrationContext();
         registerContext.setDuration("P1M");
-        localRegistrations.updateRegistrationContext(registerContext);
+        localRegistrations.updateRegistrationContext(registerContext, null);
 
         Calendar c = (Calendar) Calendar.getInstance().clone();
         c.add(Calendar.MONTH, 1);
@@ -192,12 +192,12 @@ public class LocalRegistrationsTest {
 
         //TODO expect does not work on inner Exception
         try {
-            localRegistrations.updateRegistrationContext(registerContext);
+            localRegistrations.updateRegistrationContext(registerContext, null);
             fail("registration should fail on bad duration with RegistrationException");
         } catch (RegistrationException ex) {
         }
 
-        verify(remoteRegistrations, never()).registerContext(any(), any());
+        verify(remoteRegistrations, never()).registerContext(any(), any(), eq(null));
     }
 
     @Test
@@ -209,19 +209,19 @@ public class LocalRegistrationsTest {
 
         //TODO expect does not work on inner Exception
         try {
-            localRegistrations.updateRegistrationContext(registerContext);
+            localRegistrations.updateRegistrationContext(registerContext, null);
             fail("registration should fail on bad pattern with RegistrationException");
         } catch (RegistrationException ex) {
         }
 
-        verify(remoteRegistrations, never()).registerContext(any(), any());
+        verify(remoteRegistrations, never()).registerContext(any(), any(), eq(null));
     }
 
     @Test
     public void testRegistrationPurge() throws Exception {
         RegisterContext registerContext = createRegistrationContext();
         registerContext.setDuration("PT1S"); // 1 s only
-        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext, null);
 
         // Wait for expiration
         Thread.sleep(1500);
@@ -241,7 +241,7 @@ public class LocalRegistrationsTest {
 
         RegisterContext registerContext = createRegistrationContext();
         registerContext.setDuration("PT1S"); // 1 s only
-        String registrationId = localRegistrations.updateRegistrationContext(registerContext);
+        String registrationId = localRegistrations.updateRegistrationContext(registerContext, null);
 
         // Wait for expiration
         Thread.sleep(1500);
@@ -259,7 +259,7 @@ public class LocalRegistrationsTest {
     public void testFindEntityId() throws Exception {
         // Insert 3 localRegistrations
         for (String n : new String[]{"A", "B", "C"}) {
-            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"), null);
         }
 
         // Find B
@@ -274,11 +274,11 @@ public class LocalRegistrationsTest {
     public void testFindEntityIds() throws Exception {
         // Insert 3 localRegistrations
         for (String n : new String[]{"A", "B", "C"}) {
-            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"), null);
         }
         // Insert 3 more
         for (String n : new String[]{"A", "B", "C"}) {
-            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n + "2", "temp"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n + "2", "temp"), null);
         }
 
         // Find the two B
@@ -295,7 +295,7 @@ public class LocalRegistrationsTest {
     public void testFindEntityIdPattern() throws Exception {
         // Insert 3 localRegistrations
         for (String n : new String[]{"A", "B", "C"}) {
-            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"), null);
         }
 
         // Find A and B
@@ -312,11 +312,11 @@ public class LocalRegistrationsTest {
     public void testFindEntyIdAndAttribute() throws Exception {
         // Insert 3 localRegistrations
         for (String n : new String[]{"A", "B", "C"}) {
-            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp" + n));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp" + n), null);
         }
         // Add other A entities but with other attributes
-        localRegistrations.updateRegistrationContext(createRegistrationContext("A", "string", false, "http://AB", "tempB"));
-        localRegistrations.updateRegistrationContext(createRegistrationContext("A", "string", false, "http://AC", "tempC"));
+        localRegistrations.updateRegistrationContext(createRegistrationContext("A", "string", false, "http://AB", "tempB"), null);
+        localRegistrations.updateRegistrationContext(createRegistrationContext("A", "string", false, "http://AC", "tempC"), null);
 
         // Find only entity A with attr tempA
         EntityId searchedEntityId = new EntityId("A", "string", false);
@@ -332,7 +332,7 @@ public class LocalRegistrationsTest {
     public void testFindEntyIdAndAttributes() throws Exception {
         // Insert 2 localRegistrations only temp2 attr
         for (String n : new String[]{"A", "B"}) {
-            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp2"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp2"), null);
         }
         // Insert 1 registration with both temp2 & temp3 attrs
         for (String n : new String[]{"C"}) {
@@ -341,11 +341,11 @@ public class LocalRegistrationsTest {
             attrs.add(new ContextRegistrationAttribute("temp2", false));
             attrs.add(new ContextRegistrationAttribute("temp3", false));
             registerContext.getContextRegistrationList().get(0).setContextRegistrationAttributeList(attrs);
-            localRegistrations.updateRegistrationContext(registerContext);
+            localRegistrations.updateRegistrationContext(registerContext, null);
         }
         // Insert 2 localRegistrations only temp3
         for (String n : new String[]{"D", "E"}) {
-            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp3"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp3"), null);
         }
 
         // Find only entity with temp2 and temp3
@@ -362,7 +362,7 @@ public class LocalRegistrationsTest {
     public void testFindEntityIdNoMatch() throws Exception {
         // Insert 3 localRegistrations
         for (String n : new String[]{"A", "B", "C"}) {
-            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"));
+            localRegistrations.updateRegistrationContext(createRegistrationContext(n, "string", false, "http://" + n, "temp"), null);
         }
 
         EntityId searchedEntityId = new EntityId("D", "string", false);
@@ -380,7 +380,7 @@ public class LocalRegistrationsTest {
         for (String n : new String[]{"A", "B", "C"}) {
             RegisterContext registerContext = createRegistrationContext(n, "string", false, "http://"+n, "temp");
             registerContext.setDuration("PT1S");
-            localRegistrations.updateRegistrationContext(registerContext);
+            localRegistrations.updateRegistrationContext(registerContext, null);
         }
 
         // Wait for expiration

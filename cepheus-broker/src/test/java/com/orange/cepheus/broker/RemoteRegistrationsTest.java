@@ -9,6 +9,7 @@
 package com.orange.cepheus.broker;
 
 import com.orange.ngsi.client.NgsiClient;
+import com.orange.ngsi.model.FiwareHeaders;
 import com.orange.ngsi.model.RegisterContext;
 import com.orange.ngsi.model.RegisterContextResponse;
 import org.junit.After;
@@ -58,6 +59,11 @@ public class RemoteRegistrationsTest {
 
     private HttpHeaders httpHeaders = new HttpHeaders();
 
+    private FiwareHeaders fiwareHeaders;
+
+    @Captor
+    private ArgumentCaptor<HttpHeaders> httpHeaderArgumentCaptor;
+
     @Mock
     NgsiClient ngsiClient;
 
@@ -70,6 +76,7 @@ public class RemoteRegistrationsTest {
         MockitoAnnotations.initMocks(this);
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        fiwareHeaders = new FiwareHeaders("service","path","token");
     }
 
     @After
@@ -94,7 +101,7 @@ public class RemoteRegistrationsTest {
         when(configuration.getRemoteUrl()).thenReturn(remoteBrokerUrl);
 
         // make *the* call
-        remoteRegistrations.registerContext(registerContext, localRegistrationId);
+        remoteRegistrations.registerContext(registerContext, localRegistrationId, null);
 
         // check that the registerId was reset on register (not sending a local registrationId to remote broker)
         assertNull(registerContext.getRegistrationId());
@@ -121,6 +128,53 @@ public class RemoteRegistrationsTest {
     }
 
     @Test
+    public void testRemoteRegistrationWithFiwareHeaders() throws Exception {
+        String localRegistrationId = "localRegistrationId1";
+        String remoteRegistrationId = "remoteRegistrationId1";
+
+        RegisterContext registerContext = createRegistrationContext();
+        registerContext.setRegistrationId(localRegistrationId);
+
+        // prepare mocks
+        doNothing().when(registerFuture).addCallback(successCaptor.capture(), any());
+        when(ngsiClient.registerContext(any(), any(), any())).thenReturn(registerFuture);
+        when(ngsiClient.getRequestHeaders(any())).thenReturn(httpHeaders);
+        when(configuration.getRemoteUrl()).thenReturn(remoteBrokerUrl);
+
+        // make *the* call
+        remoteRegistrations.registerContext(registerContext, localRegistrationId, fiwareHeaders);
+
+        // check that the registerId was reset on register (not sending a local registrationId to remote broker)
+        assertNull(registerContext.getRegistrationId());
+
+        // fake response from ngsi client to registerContext
+        RegisterContextResponse response = new RegisterContextResponse();
+        response.setRegistrationId(remoteRegistrationId);
+        response.setDuration(registerContext.getDuration());
+        successCaptor.getValue().onSuccess(response);
+
+        // check NGSI client is called
+        verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), httpHeaderArgumentCaptor.capture(), eq(registerContext));
+
+        // check pending will not retrigger a successful register
+        remoteRegistrations.registerPendingRemoteRegistrations();
+        verify(ngsiClient, times(1)).registerContext(any(), any(), any());
+
+        // check that the remote registrationId is well set
+        assertEquals(remoteRegistrationId, remoteRegistrations.getRemoteRegistrationId(localRegistrationId));
+
+        // check that remove works
+        remoteRegistrations.removeRegistration(localRegistrationId);
+        assertNull(remoteRegistrations.getRemoteRegistrationId(localRegistrationId));
+
+        //check HttpHeader+fiwareHeaders
+        assertEquals(5, httpHeaderArgumentCaptor.getValue().size());
+        assertEquals("service", httpHeaderArgumentCaptor.getValue().get("Fiware-Service").get(0));
+        assertEquals("path", httpHeaderArgumentCaptor.getValue().get("Fiware-ServicePath").get(0));
+        assertEquals("token", httpHeaderArgumentCaptor.getValue().get("X-Auth-Token").get(0));
+    }
+
+    @Test
     public void testRemoteRegistrationFailThenRetry() throws Exception {
         String localRegistrationId = "localRegistrationId1";
         String remoteRegistrationId = "remoteRegistrationId1";
@@ -134,7 +188,7 @@ public class RemoteRegistrationsTest {
         when(configuration.getRemoteUrl()).thenReturn(remoteBrokerUrl);
 
         // make *the* call
-        remoteRegistrations.registerContext(registerContext, localRegistrationId);
+        remoteRegistrations.registerContext(registerContext, localRegistrationId, null);
 
         // check NGSI client is called
         verify(ngsiClient, times(1)).registerContext(eq(remoteBrokerUrl), eq(httpHeaders), eq(registerContext));
@@ -174,7 +228,7 @@ public class RemoteRegistrationsTest {
 
 
         // make the call first call
-        remoteRegistrations.registerContext(registerContext, localRegistrationId);
+        remoteRegistrations.registerContext(registerContext, localRegistrationId, null);
 
         // fake response from ngsi client to registerContext
         RegisterContextResponse response = new RegisterContextResponse();
@@ -191,7 +245,7 @@ public class RemoteRegistrationsTest {
         registerContext.setRegistrationId(localRegistrationId);
 
         // trigger an update of the register
-        remoteRegistrations.registerContext(registerContextUpdate, localRegistrationId);
+        remoteRegistrations.registerContext(registerContextUpdate, localRegistrationId, null);
 
         // check that the registerId was reset to previous remote registrationId
         assertEquals(remoteRegistrationId, registerContextUpdate.getRegistrationId());
@@ -217,7 +271,7 @@ public class RemoteRegistrationsTest {
         when(configuration.getRemoteUrl()).thenReturn(null);
 
         // make *the* call
-        remoteRegistrations.registerContext(registerContext, localRegistrationId);
+        remoteRegistrations.registerContext(registerContext, localRegistrationId, null);
 
         // check no remote was called
         verify(ngsiClient, never()).registerContext(any(), any(), any());
@@ -234,7 +288,7 @@ public class RemoteRegistrationsTest {
         when(configuration.getRemoteUrl()).thenReturn(null);
 
         // make *the* call
-        remoteRegistrations.registerContext(registerContext, localRegistrationId);
+        remoteRegistrations.registerContext(registerContext, localRegistrationId, null);
 
         // check no remote was called
         verify(ngsiClient, never()).registerContext(any(), any(), any());
@@ -251,7 +305,7 @@ public class RemoteRegistrationsTest {
         when(configuration.getRemoteUrl()).thenReturn("");
 
         // make *the* call
-        remoteRegistrations.registerContext(registerContext, localRegistrationId);
+        remoteRegistrations.registerContext(registerContext, localRegistrationId, null);
 
         // check no remote was called
         verify(ngsiClient, never()).registerContext(any(), any(), any());

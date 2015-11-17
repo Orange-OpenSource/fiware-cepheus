@@ -54,18 +54,18 @@ public class NgsiController extends NgsiBaseController {
     Configuration configuration;
 
     @Override
-    public RegisterContextResponse registerContext(final RegisterContext register) throws RegistrationException, RegistrationPersistenceException {
+    public RegisterContextResponse registerContext(final RegisterContext register, FiwareHeaders fiwareHeaders) throws RegistrationException, RegistrationPersistenceException {
         logger.debug("<= registerContext with id:{} duration:{}", register.getRegistrationId(), register.getDuration());
 
         RegisterContextResponse registerContextLocalResponse = new RegisterContextResponse();
         //register new registration or update previous registration (if registrationId != null) or remove registration (if duration = 0)
-        registerContextLocalResponse.setRegistrationId(localRegistrations.updateRegistrationContext(register));
+        registerContextLocalResponse.setRegistrationId(localRegistrations.updateRegistrationContext(register, fiwareHeaders));
 
         return registerContextLocalResponse;
     }
 
     @Override
-    public UpdateContextResponse updateContext(final UpdateContext update) throws ExecutionException, InterruptedException, URISyntaxException {
+    public UpdateContextResponse updateContext(final UpdateContext update, FiwareHeaders fiwareHeaders) throws ExecutionException, InterruptedException, URISyntaxException {
 
         //TODO : search providingApplication for all contextElement of updateContext
         ContextElement contextElement = update.getContextElements().get(0);
@@ -94,7 +94,7 @@ public class NgsiController extends NgsiBaseController {
             if (brokerUrl == null || brokerUrl.isEmpty()) {
                 logger.warn("No remote.url parameter defined to forward updateContext");
             } else {
-                HttpHeaders httpHeaders = getRemoteBrokerHeaders(brokerUrl);
+                HttpHeaders httpHeaders = getRemoteBrokerHeaders(brokerUrl, fiwareHeaders);
                 logger.debug("=> updateContext forwarded to remote broker {} with Content-Type {}", brokerUrl, httpHeaders.getContentType());
                 ngsiClient.updateContext(brokerUrl, httpHeaders, update)
                         .addCallback(updateContextResponse -> logUpdateContextResponse(updateContextResponse, brokerUrl),
@@ -135,7 +135,7 @@ public class NgsiController extends NgsiBaseController {
     }
 
     @Override
-    public QueryContextResponse queryContext(final QueryContext query) throws ExecutionException, InterruptedException, MissingRemoteBrokerException {
+    public QueryContextResponse queryContext(final QueryContext query, FiwareHeaders fiwareHeaders) throws ExecutionException, InterruptedException, MissingRemoteBrokerException {
         logger.debug("<= queryContext on entities: {}", query.getEntityIdList().toString());
 
         Set<String> attributes = new HashSet<>();
@@ -158,7 +158,7 @@ public class NgsiController extends NgsiBaseController {
             throw new MissingRemoteBrokerException("No remote.url parameter defined to forward queryContext");
         }
         // forward query to remote broker
-        HttpHeaders httpHeaders = getRemoteBrokerHeaders(brokerUrl);
+        HttpHeaders httpHeaders = getRemoteBrokerHeaders(brokerUrl, fiwareHeaders);
         logger.debug("=> queryContext forwarded to remote broker : {} with Content-Type : {}", brokerUrl, httpHeaders.getContentType());
         return ngsiClient.queryContext(brokerUrl, httpHeaders, query).get();
     }
@@ -249,9 +249,18 @@ public class NgsiController extends NgsiBaseController {
         return errorResponse(req.getRequestURI(), statusCode);
     }
 
-    private HttpHeaders getRemoteBrokerHeaders(String brokerUrl) {
+    /*
+     * Inject Orion-specific headers with the given fiwareHeaders from the request or with the remote configuration if the fiwareHeaders is null
+     * @param brokerUrl
+     * @param fiwareHeaders
+     */
+    private HttpHeaders getRemoteBrokerHeaders(String brokerUrl, FiwareHeaders fiwareHeaders) {
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(brokerUrl);
-        configuration.addRemoteHeaders(httpHeaders);
+        if (fiwareHeaders == null) {
+            configuration.addRemoteHeaders(httpHeaders);
+        } else {
+            fiwareHeaders.addToHttpHeaders(httpHeaders);
+        }
         return httpHeaders;
     }
 
@@ -277,4 +286,5 @@ public class NgsiController extends NgsiBaseController {
             logger.warn("NotifyContext failed for {}: {}", providerUrl, notifyContextResponse.getResponseCode().toString());
         }
     }
+
 }
