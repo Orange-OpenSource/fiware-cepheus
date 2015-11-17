@@ -14,12 +14,12 @@ public class FakeControllerHelper extends NgsiBaseController {
     }
 
     @Override
-    protected UpdateContextResponse updateContext(UpdateContext update) throws Exception {
+    protected UpdateContextResponse updateContext(UpdateContext update, FiwareHeaders fiwareHeaders) throws Exception {
         return new UpdateContextResponse();
     }
 
     @Override
-    protected RegisterContextResponse registerContext(RegisterContext register) throws Exception {
+    protected RegisterContextResponse registerContext(RegisterContext register, FiwareHeaders fiwareHeaders) throws Exception {
         return new RegisterContextResponse();
     }
 
@@ -39,7 +39,7 @@ public class FakeControllerHelper extends NgsiBaseController {
     }
 
     @Override
-    protected QueryContextResponse queryContext(final QueryContext query) throws Exception {
+    protected QueryContextResponse queryContext(final QueryContext query, FiwareHeaders fiwareHeaders) throws Exception {
         return new QueryContextResponse();
     }
 
