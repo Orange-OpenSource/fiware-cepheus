@@ -67,7 +67,7 @@ public class NgsiController extends NgsiBaseController {
     }
 
     @Override
-    public UpdateContextResponse updateContext(final UpdateContext update) throws TypeNotFoundException {
+    public UpdateContextResponse updateContext(final UpdateContext update, FiwareHeaders fiwareHeaders) throws TypeNotFoundException {
 
         logger.debug("updateContext incoming request: {}", update.toString());
 
