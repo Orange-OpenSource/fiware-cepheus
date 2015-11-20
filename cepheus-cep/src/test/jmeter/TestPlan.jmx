@@ -11,45 +11,91 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Config Vars" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Host" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="HOST" elementType="Argument">
             <stringProp name="Argument.name">HOST</stringProp>
-            <stringProp name="Argument.value">raspberrypi</stringProp>
+            <stringProp name="Argument.value">${__P(HOST,raspberrypi)}</stringProp>
             <stringProp name="Argument.desc">IP or DNS name of the target</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="CEP_PORT" elementType="Argument">
-            <stringProp name="Argument.name">CEP_PORT</stringProp>
-            <stringProp name="Argument.value">8080</stringProp>
-            <stringProp name="Argument.desc">Port used by CEP</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="BROKER_PORT" elementType="Argument">
-            <stringProp name="Argument.name">BROKER_PORT</stringProp>
-            <stringProp name="Argument.value">8081</stringProp>
-            <stringProp name="Argument.desc">Port used by Broker</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
         <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
       </Arguments>
       <hashTree/>
-      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target host" enabled="true">
-        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-          <collectionProp name="Arguments.arguments"/>
-        </elementProp>
-        <stringProp name="HTTPSampler.domain">${HOST}</stringProp>
-        <stringProp name="HTTPSampler.port"></stringProp>
-        <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-        <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        <stringProp name="HTTPSampler.protocol"></stringProp>
-        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-        <stringProp name="HTTPSampler.path"></stringProp>
-        <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
-      </ConfigTestElement>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Port" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="PORT" elementType="Argument">
+            <stringProp name="Argument.name">PORT</stringProp>
+            <stringProp name="Argument.value">${__P(PORT,8080)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">CEP=8080, Broker=8081</stringProp>
+          </elementProp>
+        </collectionProp>
+        <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
+      </Arguments>
       <hashTree/>
-      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Content-Type: application/json" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="THROUGHPUT" elementType="Argument">
+            <stringProp name="Argument.name">THROUGHPUT</stringProp>
+            <stringProp name="Argument.value">${__P(THROUGHPUT,6)}</stringProp>
+            <stringProp name="Argument.desc">6-&gt;0.1 req/s, 6000-&gt;100req/s</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+        <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Model" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="MODEL" elementType="Argument">
+            <stringProp name="Argument.name">MODEL</stringProp>
+            <stringProp name="Argument.value">${__P(MODEL,MODEL1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">MODEL1, MODEL2 or MODEL 3</stringProp>
+          </elementProp>
+        </collectionProp>
+        <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Duration" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="DURATION" elementType="Argument">
+            <stringProp name="Argument.name">DURATION</stringProp>
+            <stringProp name="Argument.value">${__P(DURATION,600)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Scenario1=600s, Scenario2=300s</stringProp>
+          </elementProp>
+        </collectionProp>
+        <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="RAMPUP" elementType="Argument">
+            <stringProp name="Argument.name">RAMPUP</stringProp>
+            <stringProp name="Argument.value">${__P(RAMPUP,250)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">default 250s </stringProp>
+          </elementProp>
+        </collectionProp>
+        <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
+      </Arguments>
+      <hashTree/>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Devices" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="DEVICES" elementType="Argument">
+            <stringProp name="Argument.name">DEVICES</stringProp>
+            <stringProp name="Argument.value">${__P(DEVICES,1000)}</stringProp>
+            <stringProp name="Argument.desc">Scenario1=1000, Scenario2=100</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+        <stringProp name="TestPlan.comments">1 thread per device to simulate; can be overriden by -Jname arguments on command line</stringProp>
+      </Arguments>
+      <hashTree/>
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Content-Type" enabled="true">
         <collectionProp name="HeaderManager.headers">
           <elementProp name="" elementType="Header">
             <stringProp name="Header.name">Content-Type</stringProp>
@@ -57,6 +103,66 @@
           </elementProp>
         </collectionProp>
       </HeaderManager>
+      <hashTree/>
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP parameters" enabled="true">
+        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+        <stringProp name="HTTPSampler.domain">${HOST}</stringProp>
+        <stringProp name="HTTPSampler.port">${PORT}</stringProp>
+        <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+        <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        <stringProp name="HTTPSampler.protocol"></stringProp>
+        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+        <stringProp name="HTTPSampler.path"></stringProp>
+        <stringProp name="TestPlan.comments">CEP Port=8080, BROKER Port=8081</stringProp>
+        <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+      </ConfigTestElement>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Floor" enabled="true">
+        <stringProp name="maximumValue">49</stringProp>
+        <stringProp name="minimumValue">0</stringProp>
+        <stringProp name="outputFormat"></stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">FLOOR</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Room" enabled="true">
+        <stringProp name="maximumValue">20</stringProp>
+        <stringProp name="minimumValue">1</stringProp>
+        <stringProp name="outputFormat"></stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">ROOM</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Temperature" enabled="true">
+        <stringProp name="maximumValue">42</stringProp>
+        <stringProp name="minimumValue">10</stringProp>
+        <stringProp name="outputFormat"></stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">TEMPVALUE</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="varPressureValue" enabled="true">
+        <stringProp name="maximumValue">1030</stringProp>
+        <stringProp name="minimumValue">990</stringProp>
+        <stringProp name="outputFormat">000</stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">varPressureValue</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="varHumidityValue" enabled="true">
+        <stringProp name="maximumValue">100</stringProp>
+        <stringProp name="minimumValue">10</stringProp>
+        <stringProp name="outputFormat">00</stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">varHumidityValue</stringProp>
+      </RandomVariableConfig>
       <hashTree/>
       <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="Setup" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
@@ -210,7 +316,7 @@
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain"></stringProp>
-          <stringProp name="HTTPSampler.port">${CEP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
@@ -235,200 +341,65 @@
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Echantillon Débogage" enabled="false">
+          <boolProp name="displayJMeterProperties">false</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">250</stringProp>
-        <longProp name="ThreadGroup.start_time">1446203175000</longProp>
-        <longProp name="ThreadGroup.end_time">1446203175000</longProp>
+        <stringProp name="ThreadGroup.num_threads">${DEVICES}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1447931100000</longProp>
+        <longProp name="ThreadGroup.end_time">1447931100000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">600</stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
-        <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
-      </ThreadGroup>
-      <hashTree>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="Throughput" elementType="Argument">
-              <stringProp name="Argument.name">Throughput</stringProp>
-              <stringProp name="Argument.value">6</stringProp>
-              <stringProp name="Argument.desc">Req/mn</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-          </collectionProp>
-          <stringProp name="TestPlan.comments">0.1 req/s</stringProp>
-        </Arguments>
-        <hashTree/>
-        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include CEP only" enabled="true">
-          <collectionProp name="ModuleController.node_path">
-            <stringProp name="1358040521">Plan de travail</stringProp>
-            <stringProp name="-1082257669">TestPlan</stringProp>
-            <stringProp name="-59279266">CEP only</stringProp>
-          </collectionProp>
-        </ModuleController>
-        <hashTree/>
-        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include CEP with Broker" enabled="false">
-          <collectionProp name="ModuleController.node_path">
-            <stringProp name="1358040521">Plan de travail</stringProp>
-            <stringProp name="-1082257669">TestPlan</stringProp>
-            <stringProp name="-1020810335">CEP with Broker</stringProp>
-          </collectionProp>
-        </ModuleController>
-        <hashTree/>
-      </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2" enabled="false">
-        <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
-        </elementProp>
-        <stringProp name="ThreadGroup.num_threads">100</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">250</stringProp>
-        <longProp name="ThreadGroup.start_time">1446652410000</longProp>
-        <longProp name="ThreadGroup.end_time">1446652410000</longProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">600</stringProp>
+        <stringProp name="ThreadGroup.duration">${DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="Throughput" elementType="Argument">
-              <stringProp name="Argument.name">Throughput</stringProp>
-              <stringProp name="Argument.value">6000</stringProp>
-              <stringProp name="Argument.desc">Req/mn</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-          </collectionProp>
-          <stringProp name="TestPlan.comments">100 req/s</stringProp>
-        </Arguments>
-        <hashTree/>
-        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include CEP only" enabled="true">
-          <collectionProp name="ModuleController.node_path">
-            <stringProp name="1358040521">Plan de travail</stringProp>
-            <stringProp name="-1082257669">TestPlan</stringProp>
-            <stringProp name="-59279266">CEP only</stringProp>
-          </collectionProp>
-        </ModuleController>
-        <hashTree/>
-        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include CEP with Broker" enabled="false">
-          <collectionProp name="ModuleController.node_path">
-            <stringProp name="1358040521">Plan de travail</stringProp>
-            <stringProp name="-1082257669">TestPlan</stringProp>
-            <stringProp name="-1020810335">CEP with Broker</stringProp>
-          </collectionProp>
-        </ModuleController>
-        <hashTree/>
+        <SwitchController guiclass="SwitchControllerGui" testclass="SwitchController" testname="Start Model to run" enabled="true">
+          <stringProp name="SwitchController.value">${MODEL}</stringProp>
+        </SwitchController>
+        <hashTree>
+          <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MODEL1" enabled="true">
+            <collectionProp name="ModuleController.node_path">
+              <stringProp name="1358040521">Plan de travail</stringProp>
+              <stringProp name="-1082257669">TestPlan</stringProp>
+              <stringProp name="-1984932280">Model1</stringProp>
+            </collectionProp>
+            <stringProp name="TestPlan.comments">Model1: Normal</stringProp>
+          </ModuleController>
+          <hashTree/>
+          <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MODEL2" enabled="true">
+            <collectionProp name="ModuleController.node_path">
+              <stringProp name="1358040521">Plan de travail</stringProp>
+              <stringProp name="-1082257669">TestPlan</stringProp>
+              <stringProp name="-1984932279">Model2</stringProp>
+            </collectionProp>
+            <stringProp name="TestPlan.comments">Model2: 50% of error requests</stringProp>
+          </ModuleController>
+          <hashTree/>
+          <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MODEL3" enabled="true">
+            <collectionProp name="ModuleController.node_path">
+              <stringProp name="1358040521">Plan de travail</stringProp>
+              <stringProp name="-1082257669">TestPlan</stringProp>
+              <stringProp name="-1984932278">Model3</stringProp>
+            </collectionProp>
+            <stringProp name="TestPlan.comments">Model3: 50% of big requests</stringProp>
+          </ModuleController>
+          <hashTree/>
+        </hashTree>
       </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="CEP only" enabled="true">
-        <stringProp name="TestPlan.comments">bypass the broker</stringProp>
-      </TestFragmentController>
-      <hashTree>
-        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain"></stringProp>
-          <stringProp name="HTTPSampler.port">${CEP_PORT}</stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path"></stringProp>
-          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
-        </ConfigTestElement>
-        <hashTree/>
-        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model1" enabled="true">
-          <collectionProp name="ModuleController.node_path">
-            <stringProp name="1358040521">Plan de travail</stringProp>
-            <stringProp name="-1082257669">TestPlan</stringProp>
-            <stringProp name="997247477">Model1: Normal</stringProp>
-          </collectionProp>
-        </ModuleController>
-        <hashTree/>
-      </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="CEP with Broker" enabled="false">
-        <stringProp name="TestPlan.comments">Use broker</stringProp>
-      </TestFragmentController>
-      <hashTree>
-        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain"></stringProp>
-          <stringProp name="HTTPSampler.port">${BROKER_PORT}</stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path"></stringProp>
-          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
-        </ConfigTestElement>
-        <hashTree/>
-        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model1" enabled="true">
-          <collectionProp name="ModuleController.node_path">
-            <stringProp name="1358040521">Plan de travail</stringProp>
-            <stringProp name="-1082257669">TestPlan</stringProp>
-            <stringProp name="997247477">Model1: Normal</stringProp>
-          </collectionProp>
-        </ModuleController>
-        <hashTree/>
-      </hashTree>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Floor" enabled="true">
-        <stringProp name="maximumValue">49</stringProp>
-        <stringProp name="minimumValue">0</stringProp>
-        <stringProp name="outputFormat"></stringProp>
-        <boolProp name="perThread">true</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">FLOOR</stringProp>
-      </RandomVariableConfig>
-      <hashTree/>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Room" enabled="true">
-        <stringProp name="maximumValue">20</stringProp>
-        <stringProp name="minimumValue">1</stringProp>
-        <stringProp name="outputFormat"></stringProp>
-        <boolProp name="perThread">true</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">ROOM</stringProp>
-      </RandomVariableConfig>
-      <hashTree/>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Temperature" enabled="true">
-        <stringProp name="maximumValue">42</stringProp>
-        <stringProp name="minimumValue">10</stringProp>
-        <stringProp name="outputFormat"></stringProp>
-        <boolProp name="perThread">true</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">TEMPVALUE</stringProp>
-      </RandomVariableConfig>
-      <hashTree/>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="varPressureValue" enabled="true">
-        <stringProp name="maximumValue">1030</stringProp>
-        <stringProp name="minimumValue">990</stringProp>
-        <stringProp name="outputFormat">000</stringProp>
-        <boolProp name="perThread">true</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">varPressureValue</stringProp>
-      </RandomVariableConfig>
-      <hashTree/>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="varHumidityValue" enabled="true">
-        <stringProp name="maximumValue">100</stringProp>
-        <stringProp name="minimumValue">10</stringProp>
-        <stringProp name="outputFormat">00</stringProp>
-        <boolProp name="perThread">true</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">varHumidityValue</stringProp>
-      </RandomVariableConfig>
-      <hashTree/>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model1: Normal" enabled="true"/>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model1" enabled="true"/>
       <hashTree>
         <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
-          <stringProp name="throughput">${Throughput}</stringProp>
+          <stringProp name="throughput">${THROUGHPUT}</stringProp>
           <intProp name="calcMode">0</intProp>
           <stringProp name="TestPlan.comments">For expected behavior, place this Timer in the first http request of the first Controler of the Thread Group.</stringProp>
         </ConstantThroughputTimer>
@@ -526,12 +497,14 @@
             <stringProp name="JSON_PATH">$.contextElementResponses[0].statusCode.detail</stringProp>
             <stringProp name="EXPECTED_VALUE">All is OK</stringProp>
             <boolProp name="JSONVALIDATION">true</boolProp>
+            <boolProp name="EXPECT_NULL">false</boolProp>
+            <boolProp name="INVERT">false</boolProp>
           </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
           <hashTree/>
-          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="false"/>
           <hashTree/>
         </hashTree>
-        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Error requests 1 percent" enabled="true">
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Error requests 1%" enabled="true">
           <intProp name="ThroughputController.style">1</intProp>
           <boolProp name="ThroughputController.perThread">false</boolProp>
           <intProp name="ThroughputController.maxThroughput">1</intProp>
@@ -579,8 +552,16 @@
                 </collectionProp>
                 <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
                 <boolProp name="Assertion.assume_success">false</boolProp>
-                <intProp name="Assertion.test_type">12</intProp>
+                <intProp name="Assertion.test_type">8</intProp>
               </ResponseAssertion>
+              <hashTree/>
+              <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+                <stringProp name="JSON_PATH">$.errorCode.reasonPhrase</stringProp>
+                <stringProp name="EXPECTED_VALUE">Bad request</stringProp>
+                <boolProp name="JSONVALIDATION">true</boolProp>
+                <boolProp name="EXPECT_NULL">false</boolProp>
+                <boolProp name="INVERT">false</boolProp>
+              </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
               <hashTree/>
             </hashTree>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext BAD TYPE" enabled="true">
@@ -626,8 +607,16 @@
                 </collectionProp>
                 <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
                 <boolProp name="Assertion.assume_success">false</boolProp>
-                <intProp name="Assertion.test_type">12</intProp>
+                <intProp name="Assertion.test_type">8</intProp>
               </ResponseAssertion>
+              <hashTree/>
+              <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+                <stringProp name="JSON_PATH">$.errorCode.reasonPhrase</stringProp>
+                <stringProp name="EXPECTED_VALUE">Missing parameter</stringProp>
+                <boolProp name="JSONVALIDATION">true</boolProp>
+                <boolProp name="EXPECT_NULL">false</boolProp>
+                <boolProp name="INVERT">false</boolProp>
+              </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
               <hashTree/>
             </hashTree>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext EMPTY" enabled="true">
@@ -663,8 +652,16 @@
                 </collectionProp>
                 <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
                 <boolProp name="Assertion.assume_success">false</boolProp>
-                <intProp name="Assertion.test_type">12</intProp>
+                <intProp name="Assertion.test_type">8</intProp>
               </ResponseAssertion>
+              <hashTree/>
+              <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+                <stringProp name="JSON_PATH">$.errorCode.reasonPhrase</stringProp>
+                <stringProp name="EXPECTED_VALUE">Bad request</stringProp>
+                <boolProp name="JSONVALIDATION">true</boolProp>
+                <boolProp name="EXPECT_NULL">false</boolProp>
+                <boolProp name="INVERT">false</boolProp>
+              </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
               <hashTree/>
             </hashTree>
             <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext BAD PATH" enabled="true">
@@ -718,12 +715,20 @@
             <hashTree>
               <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
                 <collectionProp name="Asserion.test_strings">
-                  <stringProp name="49586">200</stringProp>
+                  <stringProp name="51513">405</stringProp>
                 </collectionProp>
                 <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-                <boolProp name="Assertion.assume_success">false</boolProp>
-                <intProp name="Assertion.test_type">12</intProp>
+                <boolProp name="Assertion.assume_success">true</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
               </ResponseAssertion>
+              <hashTree/>
+              <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+                <stringProp name="JSON_PATH">$.path</stringProp>
+                <stringProp name="EXPECTED_VALUE">/bad/path</stringProp>
+                <boolProp name="JSONVALIDATION">true</boolProp>
+                <boolProp name="EXPECT_NULL">false</boolProp>
+                <boolProp name="INVERT">false</boolProp>
+              </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
               <hashTree/>
             </hashTree>
           </hashTree>
@@ -735,7 +740,589 @@
         </DebugSampler>
         <hashTree/>
       </hashTree>
-      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model2" enabled="true"/>
+      <hashTree>
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
+          <stringProp name="throughput">${THROUGHPUT}</stringProp>
+          <intProp name="calcMode">0</intProp>
+          <stringProp name="TestPlan.comments">For expected behavior, place this Timer in the first http request of the first Controler of the Thread Group.</stringProp>
+        </ConstantThroughputTimer>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+    &quot;contextElements&quot;:&#xd;
+         [&#xd;
+             {&#xd;
+                 &quot;type&quot;: &quot;Room&quot;,&#xd;
+                 &quot;isPattern&quot;: &quot;false&quot;,&#xd;
+                 &quot;id&quot;: &quot;room${FLOOR}${ROOM}&quot;,&#xd;
+                 &quot;attributes&quot;: [&#xd;
+                     {&#xd;
+                         &quot;name&quot;: &quot;temperature&quot;,&#xd;
+                         &quot;type&quot;: &quot;double&quot;,&#xd;
+                         &quot;value&quot;: &quot;${TEMPVALUE}&quot;,&#xd;
+                         &quot;metadatas&quot;: [&#xd;
+                             { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; , &quot;value&quot;:&quot;celsius&quot;}&#xd;
+                           ]&#xd;
+                      },&#xd;
+                      {&#xd;
+                          &quot;name&quot;: &quot;floor&quot;,&#xd;
+                          &quot;type&quot;: &quot;string&quot;,&#xd;
+                          &quot;value&quot;: &quot;floor${FLOOR}&quot;&#xd;
+                      },&#xd;
+                    {&#xd;
+                         &quot;name&quot;: &quot;pressure&quot;,&#xd;
+                         &quot;type&quot;: &quot;double&quot;,&#xd;
+                          &quot;value&quot;:  ${varPressureValue}.0,&#xd;
+                         &quot;metadatas&quot;: [&#xd;
+                              { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,  &quot;value&quot;:&quot;bar&quot;}&#xd;
+                           ]&#xd;
+                      },&#xd;
+                       {&#xd;
+                         &quot;name&quot;: &quot;humidity&quot;,&#xd;
+                         &quot;type&quot;: &quot;double&quot;,&#xd;
+                           &quot;value&quot;:   ${varHumidityValue}.0,&#xd;
+                         &quot;metadatas&quot;: [&#xd;
+                               { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,   &quot;value&quot;:&quot;percent&quot;}&#xd;
+                           ]&#xd;
+                      },&#xd;
+                      {&#xd;
+                           &quot;name&quot;:&quot;time&quot;,&#xd;
+                           &quot;type&quot;:&quot;date&quot;,&#xd;
+                           &quot;value&quot;:&quot;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&quot;&#xd;
+                      },&#xd;
+                      {&#xd;
+                      		&quot;name&quot;:&quot;location&quot;,&#xd;
+                            &quot;type&quot;:&quot;geo:point&quot;,&#xd;
+                            &quot;value&quot;:&quot;46.2323,1.023&quot;&#xd;
+                      }&#xd;
+                 ]&#xd;
+              }&#xd;
+            ],&#xd;
+		&quot;updateAction&quot;: &quot;UPDATE&quot;&#xd;
+&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">ngsi10/updateContext</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+            <stringProp name="JSON_PATH">$.contextElementResponses[0].statusCode.detail</stringProp>
+            <stringProp name="EXPECTED_VALUE">All is OK</stringProp>
+            <boolProp name="JSONVALIDATION">true</boolProp>
+            <boolProp name="EXPECT_NULL">false</boolProp>
+            <boolProp name="INVERT">false</boolProp>
+          </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="false"/>
+          <hashTree/>
+        </hashTree>
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Error requests 50%" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty>
+            <name>ThroughputController.percentThroughput</name>
+            <value>50.0</value>
+            <savedValue>0.0</savedValue>
+          </FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <RandomController guiclass="RandomControlGui" testclass="RandomController" testname="Random" enabled="true">
+            <intProp name="InterleaveControl.style">1</intProp>
+          </RandomController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext BAD JSON" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">ngsi10/updateContext</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+              <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+                <stringProp name="JSON_PATH">$.errorCode.reasonPhrase</stringProp>
+                <stringProp name="EXPECTED_VALUE">Bad request</stringProp>
+                <boolProp name="JSONVALIDATION">true</boolProp>
+                <boolProp name="EXPECT_NULL">false</boolProp>
+                <boolProp name="INVERT">false</boolProp>
+              </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext BAD TYPE" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+    &quot;contextElements&quot;: [&#xd;
+        {&#xd;
+            &quot;type&quot;: &quot;RoomSMLKD&quot;,&#xd;
+            &quot;isPattern&quot;: &quot;false&quot;,&#xd;
+            &quot;id&quot;: &quot;Room1&quot;&#xd;
+        }&#xd;
+    ],&#xd;
+    &quot;updateAction&quot;: &quot;UPDATE&quot;&#xd;
+}&#xd;
+</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">ngsi10/updateContext</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+              <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+                <stringProp name="JSON_PATH">$.errorCode.reasonPhrase</stringProp>
+                <stringProp name="EXPECTED_VALUE">Missing parameter</stringProp>
+                <boolProp name="JSONVALIDATION">true</boolProp>
+                <boolProp name="EXPECT_NULL">false</boolProp>
+                <boolProp name="INVERT">false</boolProp>
+              </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext EMPTY" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value"></stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">ngsi10/updateContext</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+              <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+                <stringProp name="JSON_PATH">$.errorCode.reasonPhrase</stringProp>
+                <stringProp name="EXPECTED_VALUE">Bad request</stringProp>
+                <boolProp name="JSONVALIDATION">true</boolProp>
+                <boolProp name="EXPECT_NULL">false</boolProp>
+                <boolProp name="INVERT">false</boolProp>
+              </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext BAD PATH" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+    &quot;contextElements&quot;: [&#xd;
+        {&#xd;
+            &quot;type&quot;: &quot;Room&quot;,&#xd;
+            &quot;isPattern&quot;: &quot;false&quot;,&#xd;
+            &quot;id&quot;: &quot;Room1&quot;,&#xd;
+            &quot;attributes&quot;: [&#xd;
+            {&#xd;
+                &quot;name&quot;: &quot;temperature&quot;,&#xd;
+                &quot;type&quot;: &quot;float&quot;,&#xd;
+                &quot;value&quot;: &quot;26.5&quot;&#xd;
+            },&#xd;
+            {&#xd;
+                &quot;name&quot;: &quot;pressure&quot;,&#xd;
+                &quot;type&quot;: &quot;integer&quot;,&#xd;
+                &quot;value&quot;: &quot;763&quot;&#xd;
+            }&#xd;
+            ]&#xd;
+        }&#xd;
+    ],&#xd;
+    &quot;updateAction&quot;: &quot;UPDATE&quot;&#xd;
+}&#xd;
+</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">bad/path</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="51513">405</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">true</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+              <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+                <stringProp name="JSON_PATH">$.path</stringProp>
+                <stringProp name="EXPECTED_VALUE">/bad/path</stringProp>
+                <boolProp name="JSONVALIDATION">true</boolProp>
+                <boolProp name="EXPECT_NULL">false</boolProp>
+                <boolProp name="INVERT">false</boolProp>
+              </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+        </hashTree>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Echantillon Débogage" enabled="false">
+          <boolProp name="displayJMeterProperties">false</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
+      </hashTree>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model3" enabled="true"/>
+      <hashTree>
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
+          <stringProp name="throughput">${THROUGHPUT}</stringProp>
+          <intProp name="calcMode">0</intProp>
+          <stringProp name="TestPlan.comments">For expected behavior, place this Timer in the first http request of the first Controler of the Thread Group.</stringProp>
+        </ConstantThroughputTimer>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+    &quot;contextElements&quot;:&#xd;
+         [&#xd;
+             {&#xd;
+                 &quot;type&quot;: &quot;Room&quot;,&#xd;
+                 &quot;isPattern&quot;: &quot;false&quot;,&#xd;
+                 &quot;id&quot;: &quot;room${FLOOR}${ROOM}&quot;,&#xd;
+                 &quot;attributes&quot;: [&#xd;
+                     {&#xd;
+                         &quot;name&quot;: &quot;temperature&quot;,&#xd;
+                         &quot;type&quot;: &quot;double&quot;,&#xd;
+                         &quot;value&quot;: &quot;${TEMPVALUE}&quot;,&#xd;
+                         &quot;metadatas&quot;: [&#xd;
+                             { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; , &quot;value&quot;:&quot;celsius&quot;}&#xd;
+                           ]&#xd;
+                      },&#xd;
+                      {&#xd;
+                          &quot;name&quot;: &quot;floor&quot;,&#xd;
+                          &quot;type&quot;: &quot;string&quot;,&#xd;
+                          &quot;value&quot;: &quot;floor${FLOOR}&quot;&#xd;
+                      },&#xd;
+                    {&#xd;
+                         &quot;name&quot;: &quot;pressure&quot;,&#xd;
+                         &quot;type&quot;: &quot;double&quot;,&#xd;
+                          &quot;value&quot;:  ${varPressureValue}.0,&#xd;
+                         &quot;metadatas&quot;: [&#xd;
+                              { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,  &quot;value&quot;:&quot;bar&quot;}&#xd;
+                           ]&#xd;
+                      },&#xd;
+                       {&#xd;
+                         &quot;name&quot;: &quot;humidity&quot;,&#xd;
+                         &quot;type&quot;: &quot;double&quot;,&#xd;
+                           &quot;value&quot;:   ${varHumidityValue}.0,&#xd;
+                         &quot;metadatas&quot;: [&#xd;
+                               { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,   &quot;value&quot;:&quot;percent&quot;}&#xd;
+                           ]&#xd;
+                      },&#xd;
+                      {&#xd;
+                           &quot;name&quot;:&quot;time&quot;,&#xd;
+                           &quot;type&quot;:&quot;date&quot;,&#xd;
+                           &quot;value&quot;:&quot;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&quot;&#xd;
+                      },&#xd;
+                      {&#xd;
+                      		&quot;name&quot;:&quot;location&quot;,&#xd;
+                            &quot;type&quot;:&quot;geo:point&quot;,&#xd;
+                            &quot;value&quot;:&quot;46.2323,1.023&quot;&#xd;
+                      }&#xd;
+                 ]&#xd;
+              }&#xd;
+            ],&#xd;
+		&quot;updateAction&quot;: &quot;UPDATE&quot;&#xd;
+&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">ngsi10/updateContext</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">8</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+            <stringProp name="JSON_PATH">$.contextElementResponses[0].statusCode.detail</stringProp>
+            <stringProp name="EXPECTED_VALUE">All is OK</stringProp>
+            <boolProp name="JSONVALIDATION">true</boolProp>
+            <boolProp name="EXPECT_NULL">false</boolProp>
+            <boolProp name="INVERT">false</boolProp>
+          </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="false"/>
+          <hashTree/>
+        </hashTree>
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Big requests 50%" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty>
+            <name>ThroughputController.percentThroughput</name>
+            <value>50.0</value>
+            <savedValue>0.0</savedValue>
+          </FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext (big request)" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{                                               &#xd;
+     &quot;contextElements&quot;: &#xd;
+         [&#xd;
+             {                                                                &#xd;
+                 &quot;type&quot;: &quot;Room&quot;,                                                                &#xd;
+                 &quot;isPattern&quot;: &quot;false&quot;,                                                                &#xd;
+                 &quot;id&quot;: &quot;&apos;room${FLOOR}${ROOM}&apos;&quot;,                                                                &#xd;
+                 &quot;attributes&quot;: [                                                                           &#xd;
+                     {                                                                                &#xd;
+                         &quot;name&quot;: &quot;temperature&quot;,                                                                                &#xd;
+                         &quot;type&quot;: &quot;double&quot;,                                                                                &#xd;
+                          &quot;value&quot;:  &quot;${TEMPVALUE}&quot;,                                                                                &#xd;
+                         &quot;metadatas&quot;: [&#xd;
+                              { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,  &quot;value&quot;:&quot;celsius&quot;},                                                                                        &#xd;
+                              { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;&apos;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&apos;&quot;  },                                                                                        &#xd;
+                              { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;  }                                                                                &#xd;
+                           ]                                                                        &#xd;
+                      },                                                                           &#xd;
+                      {                                                                                &#xd;
+                          &quot;name&quot;: &quot;floor&quot;,                                                                                &#xd;
+                          &quot;type&quot;: &quot;string&quot;,                                                                                &#xd;
+                          &quot;value&quot;: &quot;&apos;floor${FLOOR}&apos;&quot;                                                                        &#xd;
+                      },&#xd;
+                    {                                                                                &#xd;
+                         &quot;name&quot;: &quot;pressure&quot;,                                                                                &#xd;
+                         &quot;type&quot;: &quot;double&quot;,                                                                                &#xd;
+                         &quot;value&quot;:  ${varPressureValue}.0,                                                                         &#xd;
+                         &quot;metadatas&quot;: [&#xd;
+                              { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,  &quot;value&quot;:&quot;bar&quot;},&#xd;
+                               { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;&apos;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&apos;&quot;   },                                                                                        &#xd;
+                               { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;  }                                                          &#xd;
+                           ]                                                                        &#xd;
+                      },  &#xd;
+                       {                                                                                &#xd;
+                         &quot;name&quot;: &quot;humidity&quot;,                                                                                &#xd;
+                         &quot;type&quot;: &quot;double&quot;,                                                                                &#xd;
+                         &quot;value&quot;:   ${varHumidityValue}.0,                                                                             &#xd;
+                         &quot;metadatas&quot;: [&#xd;
+                               { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,   &quot;value&quot;:&quot;percent&quot;},&#xd;
+                                { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;&apos;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&apos;&quot;   },                                                                                        &#xd;
+                                { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;  }                                                         &#xd;
+                           ]                                                                        &#xd;
+                      },&#xd;
+                    {&#xd;
+                        &quot;name&quot;:&quot;time&quot;, &#xd;
+                        &quot;type&quot;:&quot;date&quot;, &#xd;
+                        &quot;value&quot;:&quot;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&quot;&#xd;
+                    },  &#xd;
+                    { &#xd;
+                        &quot;name&quot;:&quot;location&quot;, &#xd;
+                        &quot;type&quot;:&quot;geo:point&quot;, &#xd;
+                        &quot;value&quot;:&quot;46.2323,1.023&quot; &#xd;
+                        },&#xd;
+                      {&#xd;
+                          &quot;name&quot;:&quot;photo&quot;,&#xd;
+                          &quot;type&quot;:&quot;string&quot;,&#xd;
+                          &quot;value&quot;: &quot;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&quot;&#xd;
+                       }                  &#xd;
+                ]                                                        &#xd;
+                }&#xd;
+            ],                          &#xd;
+        &quot;updateAction&quot;: &quot;UPDATE&quot;                                        &#xd;
+        }</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">ngsi10/updateContext</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+            <com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.gui.JSONPathAssertionGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion" testname="jp@gc - JSON Path Assertion" enabled="true">
+              <stringProp name="JSON_PATH">$.contextElementResponses[0].statusCode.detail</stringProp>
+              <stringProp name="EXPECTED_VALUE">All is OK</stringProp>
+              <boolProp name="JSONVALIDATION">true</boolProp>
+              <boolProp name="EXPECT_NULL">false</boolProp>
+              <boolProp name="INVERT">false</boolProp>
+            </com.atlantbh.jmeter.plugins.jsonutils.jsonpathassertion.JSONPathAssertion>
+            <hashTree/>
+            <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="false">
+              <stringProp name="TestPlan.comments">Switch on to format JSON responses in &quot;View Results Tree&quot;.</stringProp>
+            </com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Echantillon Débogage" enabled="false">
+          <boolProp name="displayJMeterProperties">false</boolProp>
+          <boolProp name="displayJMeterVariables">true</boolProp>
+          <boolProp name="displaySystemProperties">false</boolProp>
+        </DebugSampler>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -768,7 +1355,48 @@
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ResponseTimesOverTimeGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Response Times Over Time" enabled="false">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+        <longProp name="interval_grouping">500</longProp>
+        <boolProp name="graph_aggregated">false</boolProp>
+        <stringProp name="include_sample_labels"></stringProp>
+        <stringProp name="exclude_sample_labels"></stringProp>
+        <stringProp name="start_offset"></stringProp>
+        <stringProp name="end_offset"></stringProp>
+        <boolProp name="include_checkbox_state">false</boolProp>
+        <boolProp name="exclude_checkbox_state">false</boolProp>
+      </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
