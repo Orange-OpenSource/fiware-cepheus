@@ -154,7 +154,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail")
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details")
                         .value("The parameter contextRegistrations of type List<ContextRegistration> is missing in the request"));
     }
 
@@ -172,7 +172,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("400"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("registration error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("bad pattern"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("bad pattern"));
     }
 
     @Test
@@ -185,7 +185,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("error in registration persistence"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("Failed to save"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("Failed to save"));
     }
 
     @Test
@@ -212,7 +212,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter updateAction of type string is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("The parameter updateAction of type string is missing in the request"));
     }
 
     @Test
@@ -786,7 +786,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("Receiver internal error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("An unknown error at the receiver has occured"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("An unknown error at the receiver has occured"));
     }
 
     @Test
@@ -815,7 +815,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("Receiver internal error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("An unknown error at the receiver has occured"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("An unknown error at the receiver has occured"));
     }
 
     @Test
@@ -998,7 +998,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("missing remote broker error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("No remote.url parameter defined to forward queryContext"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("No remote.url parameter defined to forward queryContext"));
     }
 
     @Test
@@ -1020,7 +1020,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("missing remote broker error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("No remote.url parameter defined to forward queryContext"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("No remote.url parameter defined to forward queryContext"));
     }
 
     @Test
@@ -1042,7 +1042,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("missing remote broker error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("No remote.url parameter defined to forward queryContext"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("No remote.url parameter defined to forward queryContext"));
     }
 
     @Test
@@ -1064,7 +1064,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("Receiver internal error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("An unknown error at the receiver has occured"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("An unknown error at the receiver has occured"));
     }
 
     @Test
@@ -1086,7 +1086,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value("Receiver internal error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("An unknown error at the receiver has occured"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("An unknown error at the receiver has occured"));
     }
 
     @Test
@@ -1098,7 +1098,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.detail")
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.details")
                         .value("The parameter entities of type List<EntityId> is missing in the request"));
     }
 
@@ -1116,7 +1116,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value("400"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value("subscription error"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.detail").value("bad duration"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.details").value("bad duration"));
     }
 
     @Test
@@ -1173,7 +1173,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value("500"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value("error in subscription persistence"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.detail").value("table not exist"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.details").value("table not exist"));
     }
 
     @Test
@@ -1205,7 +1205,7 @@ public class NgsiControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscriptionId").value("12345678"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_470.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value(CodeEnum.CODE_470.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.detail").value("The subscription ID specified 12345678 does not correspond to an active subscription"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.details").value("The subscription ID specified 12345678 does not correspond to an active subscription"));
 
         verify(subscriptions, atLeastOnce()).deleteSubscription(any());
     }
@@ -1222,7 +1222,7 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_500.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value("error in subscription persistence"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.detail").value("table not exist"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.details").value("table not exist"));
 
         verify(subscriptions, atLeastOnce()).deleteSubscription(any());
     }

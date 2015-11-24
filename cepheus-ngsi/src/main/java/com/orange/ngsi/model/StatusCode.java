@@ -9,6 +9,8 @@
 package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 /**
  * Created by pborscia on 04/06/2015.
@@ -19,6 +21,8 @@ public class StatusCode {
 
     private String reasonPhrase;
 
+    @JsonProperty("details")
+    @JacksonXmlProperty(localName = "details")
     private String detail;
 
     public StatusCode() {

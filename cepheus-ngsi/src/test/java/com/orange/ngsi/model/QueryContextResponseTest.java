@@ -55,8 +55,9 @@ public class QueryContextResponseTest {
         assertEquals("Room2", queryContextResponse.getContextElementResponses().get(1).getContextElement().getEntityId().getId());
         assertEquals("Room", queryContextResponse.getContextElementResponses().get(1).getContextElement().getEntityId().getType());
         assertEquals(false, queryContextResponse.getContextElementResponses().get(1).getContextElement().getEntityId().getIsPattern());
-        assertEquals(CodeEnum.CODE_200.getLabel(), queryContextResponse.getContextElementResponses().get(1).getStatusCode().getCode());
-        assertEquals(CodeEnum.CODE_200.getShortPhrase(), queryContextResponse.getContextElementResponses().get(1).getStatusCode().getReasonPhrase());
+        assertEquals(CodeEnum.CODE_481.getLabel(), queryContextResponse.getContextElementResponses().get(1).getStatusCode().getCode());
+        assertEquals(CodeEnum.CODE_481.getShortPhrase(), queryContextResponse.getContextElementResponses().get(1).getStatusCode().getReasonPhrase());
+        assertEquals("test details", queryContextResponse.getContextElementResponses().get(1).getStatusCode().getDetail());
     }
 
     private String getJsonOrionQueryContextResponse(){
@@ -94,8 +95,9 @@ public class QueryContextResponseTest {
                 "                \"type\": \"Room\"\n" +
                 "            },\n" +
                 "            \"statusCode\": {\n" +
-                "                \"code\": \"200\",\n" +
-                "                \"reasonPhrase\": \"OK\"\n" +
+                "                \"code\": \"481\",\n" +
+                "                \"reasonPhrase\": \"Entity Type required\",\n" +
+                "                \"details\": \"test details\"\n" +
                 "            }\n" +
                 "        }\n" +
                 "    ]\n" +
@@ -103,4 +105,7 @@ public class QueryContextResponseTest {
 
         return json;
     }
+
+
 }
+

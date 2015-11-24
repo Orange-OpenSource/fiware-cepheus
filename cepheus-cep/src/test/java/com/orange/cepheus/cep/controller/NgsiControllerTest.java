@@ -85,7 +85,7 @@ public class NgsiControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value("The parameter subscriptionId of type string is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.details").value("The parameter subscriptionId of type string is missing in the request"));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class NgsiControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value("The parameter originator of type URI is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.details").value("The parameter originator of type URI is missing in the request"));
     }
 
     @Test
@@ -112,7 +112,7 @@ public class NgsiControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_400.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_400.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value(CodeEnum.CODE_400.getLongPhrase()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value(CodeEnum.CODE_400.getLongPhrase()));
     }
 
     @Test
@@ -124,7 +124,7 @@ public class NgsiControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter contextElements of type List<ContextElement> is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("The parameter contextElements of type List<ContextElement> is missing in the request"));
     }
 
     @Test
@@ -141,7 +141,7 @@ public class NgsiControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value(CodeEnum.CODE_472.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.reasonPhrase")
                         .value(CodeEnum.CODE_472.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.detail").value(
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.details").value(
                         "Event type named 'PressureSensor' has not been defined or is not a Map event type, the name 'PressureSensor' has not been defined as an event type"));
     }
 
