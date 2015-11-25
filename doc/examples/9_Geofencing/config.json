@@ -1,0 +1,33 @@
+{
+  "host":"http://localhost:8080",
+  "reset": true,
+  "in":[
+    {
+      "id":"Tracker1",
+      "type":"Tracker",
+      "attributes":[
+        { "name":"time", "type":"date" },
+        { "name":"location", "type":"geo:point" }
+      ]
+    }
+  ],
+  "out":[
+    {
+      "id":"Fence1",
+      "type":"Alert",
+      "attributes":[
+        { "name":"time", "type":"date" },
+        { "name":"location", "type":"geo:point" },
+        { "name":"inside", "type":"boolean" }
+      ]
+    }
+  ],
+  "statements":[
+    "CREATE VARIABLE Geometry fence = polygon({point(0, 0), point(0,50), point(50,50), point(50, 0), point(0, 0)})",
+    "CREATE WINDOW TrackerState.std:unique(id) as Alert",
+    "INSERT INTO TrackerInside SELECT *, fence.contains(location) as inside FROM Tracker",
+    "INSERT INTO FenceCross SELECT a.* FROM pattern [ every a=TrackerInside -> (timer:interval(4 sec) and not TrackerInside(id=a.id, inside!=a.inside)) ]",
+    "ON FenceCross fc MERGE TrackerState ts WHERE fc.id = ts.id WHEN NOT MATCHED THEN INSERT SELECT id, time, location, inside WHEN MATCHED AND fc.inside != ts.inside THEN UPDATE SET inside = fc.inside",
+    "INSERT INTO Alert SELECT * FROM TrackerState"
+  ]
+}

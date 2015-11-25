@@ -38,7 +38,6 @@ using the [WGS84 reference](https://en.wikipedia.org/wiki/World_Geodetic_System#
 
 Example:
 
-
 ```
   "location": {
     "value": "41.3763726, 2.1864475,14",
@@ -46,3 +45,4 @@ Example:
   }
 ```
 
+The `geo:point` type is converted internally to a Point which support Geospatial operations (see (Geospatial types)[geospatial.md]).

@@ -13,6 +13,7 @@ pages:
     - 'Configuration': 'cep/configuration.md'
     - 'NGSI mapping': 'cep/mapping.md'
     - 'Attributes types': 'cep/types.md'
+    - 'Geospatial types': 'cep/geospatial.md'
   - 'Cepheus-Broker': 'broker/index.md'
   - 'Examples':
     - '1 Rooms and Floors': 'examples/1_RoomsAndFloors/index.md'
@@ -23,6 +24,7 @@ pages:
     - '6 Query and Command on Room and Shutter': 'examples/6_QueryAndCommand/index.md'
     - '7 Metadata mapping': 'examples/7_Metadata/index.md'
     - '8 Date and GeoPoint': 'examples/8_DateAndGeoPoint/index.md'
+    - '9 Geofencing': 'examples/9_Geofencing/index.md'
 - "Administrator manual":
   - 'Cepheus-CEP': 'admin/cep.md'
   - 'Cepheus-Broker': 'admin/broker.md'
