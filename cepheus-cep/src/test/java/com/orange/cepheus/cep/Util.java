@@ -55,7 +55,7 @@ public class Util {
 
         //rules
         List<String> rules = new ArrayList<>();
-        rules.add("INSERT INTO TempSensorAvg SELECT 'OUT1' as id, avg(temp) as avgTemp, temp_unit as avgTemp_unit FROM TempSensor.win:time(2 seconds) WHERE TempSensor.id = 'S1' ");
+        rules.add("insert into TempSensorAvg select \"OUT1\" as id, avg(temp) as avgTemp, temp_unit as avgTemp_unit from TempSensor.win:time(2 seconds) where TempSensor.id=\"S1\"");
         configuration.setStatements(rules);
 
         return configuration;

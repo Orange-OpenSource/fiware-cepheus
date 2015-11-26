@@ -8,11 +8,9 @@ import com.orange.cepheus.cep.exception.EventProcessingException;
 import com.orange.cepheus.cep.exception.TypeNotFoundException;
 import com.orange.cepheus.cep.model.*;
 import com.orange.cepheus.cep.model.Configuration;
-import com.orange.ngsi.model.ContextAttribute;
-import com.orange.ngsi.model.ContextElement;
-import com.orange.ngsi.model.ContextMetadata;
-import com.orange.ngsi.model.EntityId;
-import com.orange.ngsi.model.GeoPoint;
+import com.orange.cepheus.geo.GeoUtil;
+import com.orange.ngsi.model.*;
+import com.vividsolutions.jts.geom.Geometry;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -205,8 +203,8 @@ public class EventMapper {
      * @return the ContextAttribute value
      */
     public Object attributeValueFromEventProperty(Object value, String type) {
-        if ("geo:point".equals(type) && value instanceof GeoPoint) {
-            return ((GeoPoint)value).toNGSIString();
+        if ("geo:point".equals(type) && value instanceof Geometry) {
+            return GeoUtil.toNGSIString((Geometry) value);
         } else if ("date".equals(type) && value instanceof Date) {
             return iso8691DateFormat.format((Date) value);
         }
@@ -233,7 +231,7 @@ public class EventMapper {
             case "date":
                 return Date.class;
             case "geo:point":
-                return GeoPoint.class;
+                return Geometry.class;
             default:
                 return Object.class;
         }
@@ -285,7 +283,7 @@ public class EventMapper {
                 case "date":
                     return iso8691DateFormat.parse(value);
                 case "geo:point":
-                    return GeoPoint.parse(value);
+                    return GeoUtil.parseNGSIString(value);
                 default:
                     return value;
             }
