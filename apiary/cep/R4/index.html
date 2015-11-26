@@ -1,0 +1,1445 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cepheus-CEP</title>
+    <link href="css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/idea.css">
+    <script src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <link rel="stylesheet" type="text/css" href="css/api-specification.css"> 
+
+    
+</head>
+<body id="respecDocument" class="h-entry">
+<div class="container">
+  <div id="TOC-container">
+    
+<section id="toc">
+
+        <div id="fiware-logo"></div>
+    <ul class="toc">
+
+
+    
+    
+
+
+
+
+
+<li><a href="#API_specification">API Specification</a>
+    <ul class="toc">
+    
+
+                        <li>
+                            
+                                <a href="#default_group" title = "Group default">Default</a>
+                            
+                            <ul class="toc">
+                              
+                                
+                                    <li>
+                                        <a href="#resource_configuration" title = "Resource Configuration">Resource Configuration</a>
+                                        <ul class="toc  ">
+                                        
+                                            
+                                                <li><a href="#action_retrieve-the-configuration" title ="GET - Retrieve the configuration">GET - Retrieve the configuration</a></li>
+                                            
+
+                                        
+                                            
+                                                <li><a href="#action_update-the-configuration" title ="POST - Update the configuration">POST - Update the configuration</a></li>
+                                            
+
+                                        
+                                        </ul>
+                                    </li>
+                                
+                              
+                                
+                                    <li>
+                                        <a href="#resource_ngsi-api-v1" title = "Resource NGSI API v1">Resource NGSI API v1</a>
+                                        <ul class="toc  ">
+                                        
+                                            
+                                                <li><a href="#action_updatecontext" title ="POST - updateContext">POST - updateContext</a></li>
+                                            
+
+                                        
+                                            
+                                                <li><a href="#action_notifycontext" title ="POST - notifyContext">POST - notifyContext</a></li>
+                                            
+
+                                        
+                                        </ul>
+                                    </li>
+                                
+                              
+                            </ul>
+                        </li>
+                      
+    <li><a href="#examples">Examples</a></li>
+    </ul>
+</li>
+    
+    
+    
+        <li><a href="#references">References</a></li>
+    
+   </ul>
+</section>
+
+  </div>
+  <div id="API-content">
+  
+	
+
+	
+
+
+
+	
+
+	
+
+
+
+
+	
+
+	
+		
+		<dl>
+		
+			
+		
+			
+		
+
+		
+			
+		
+			
+		
+
+		<dt class="versionLabel">Latest version:</dt> 
+		<dd class="versionValue"> <a href="http://orange-opensource.github.io/fiware-cepheus/apiary/cep/latest">http://orange-opensource.github.io/fiware-cepheus/apiary/cep/latest</a> </dd>
+
+
+		</dl>
+	
+
+
+
+
+
+
+<hr>
+
+
+	<h2 id="abstract">Abstract</h2>
+	<p>Cepheus-CEP provides a Complex Event Processor (CEP) at the gateway level with a NGSI 9/10 interface for the FIWARE Data Handling GE.</p>
+<p>Cepheus-CEP allows to locally process basic events (from data provided by sensors) and generate higher-level aggregated events.
+All input and output of events is done though HTTP requests conforming to the NGSI information model.</p>
+<p>For more information about the Cepheus-CEP project, please refer to the project's <a href="https://github.com/Orange-OpenSource/fiware-cepheus/blob/master/README.md">README</a> on Github
+or at the Cepheus-CEP <a href="http://fiware-cepheus.readthedocs.org/en/latest/">manual</a>.</p>
+
+
+
+
+<hr>
+
+    
+    
+
+
+
+
+		
+	
+	
+
+
+
+
+
+	
+
+
+
+    
+
+  
+  <section id="API_specification">
+      <h1>API Specification</h1>
+      
+
+
+
+
+        
+            <section id="default_group" class="resourceGroup">
+             <div class= "header" ><h2 id="h-default_group"> Default </h2></div>
+        
+	
+        
+            <section id="resource_configuration" class="resource">
+                 <div class= "header" ><h3 id="h-resource_configuration">Configuration [/v1/admin/config]</h3> </div>
+                <p>The configuration endpoint defines a single REST endpoint where the whole configuration is available. The endpoint path is <code>/v1/admin/config</code>.
+The endpoint accepts two HTTP verbs : <code>GET</code> and <code>POST</code>.</p>
+<p>For more information about the JSON format, please see <a href="">JSON Configuration</a></p>
+                
+                
+
+		        
+                
+                
+
+
+
+
+
+
+    
+
+
+                
+
+
+                    
+                        <div id="action_retrieve-the-configuration" class="action GET">
+
+                        
+    <h4 id="h-action_retrieve-the-configuration">
+        Retrieve the configuration -
+        GET
+        
+            /v1/admin/config
+        
+    </h4>
+
+        
+                            <div id="retrieve-the-configuration_body" class="">
+                                <p>This endpoint returns the actual configuration as a JSON object with a <code>200 Ok</code> status code.</p>
+<p>It can also return a <code>404 Not found</code> code, if no configuration is available.</p>
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_retrieve-the-configuration_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+                        <div id="action_update-the-configuration" class="action POST">
+
+                        
+    <h4 id="h-action_update-the-configuration">
+        Update the configuration -
+        POST
+        
+            /v1/admin/config
+        
+    </h4>
+
+        
+                            <div id="update-the-configuration_body" class="">
+                                <p>This endpoint applies a new configuration given in the body as JSON.</p>
+<p>The endpoint will return <code>200 Ok</code> on a successful operation, or <code>400 Bad Request</code> if the new configuration cannot be applied.</p>
+<p>Once the new configuration has been successfully applied to the CEP, the configuration is persisted on disk.
+If the Cepheus-cep is later restarted, it will automatically load the last configuration on startup.</p>
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+                                            
+                                            
+                                            
+                                            
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Request </span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+            
+            
+     
+</div>
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 400</span> 
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_update-the-configuration_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+            </section>
+        
+            <section id="resource_ngsi-api-v1" class="resource">
+                 <div class= "header" ><h3 id="h-resource_ngsi-api-v1">NGSI API v1 [/ngsi10, /ngsi9]</h3> </div>
+                <p>To access the NGSI v1 API, there is two endpoinds : <code>/ngsi10</code> and <code>/ngsi9</code>.</p>
+<p>For compatibility purposes with Fiware-Orion and IoT Agents, two alias are also supported : <code>/v1</code> and <code>/v1/registry</code>.</p>
+<p>The Cepheus-CEP exposes only two NGSI operations : <code>updateContext</code> and <code>notifyContext</code> operations.</p>
+<p>See the <a href="http://telefonicaid.github.io/fiware-orion/api/v1/">NGSI v1 API from the Fiware-Orion project</a> for more information on these two requests.</p>
+<p>Theses requests will always return a <code>200 OK</code> HTTP status return code (required by NGSI V1).</p>
+                
+                
+
+		        
+                
+                
+
+
+
+
+
+
+    
+
+
+                
+
+
+                    
+                        <div id="action_updatecontext" class="action POST">
+
+                        
+    <h4 id="h-action_updatecontext">
+        updateContext -
+        POST
+        
+            /ngsi10/updateContext
+        
+    </h4>
+
+        
+                            <div id="updatecontext_body" class="">
+                                <p>The <code>updateContext</code> request is used to send directly new events to the CEP.</p>
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+                                            
+                                            
+                                            
+                                            
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Request </span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_updatecontext_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+                        <div id="action_notifycontext" class="action POST">
+
+                        
+    <h4 id="h-action_notifycontext">
+        notifyContext -
+        POST
+        
+            /ngsi10/notifyContext
+        
+    </h4>
+
+        
+                            <div id="notifycontext_body" class="">
+                                <p>The <code>notifyRequest</code> will be sent by Context Providers that received a
+<code>subscribeContext</code> request from Cepheus-CEP.</p>
+                                
+                                
+                                
+			
+                                
+                                
+      
+                                    
+        	                            
+                                            
+                                            
+                                            
+                                            
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Request </span> 
+        
+            (application/json)
+        
+    
+            
+            
+     
+</div>
+        	                            
+    
+        	                            
+        		                            
+                                        
+                                        
+                                        
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+            
+            
+     
+</div>
+        	                            
+                                    
+                                    
+                                    <div class="goExample">
+                                        <a href="#action_notifycontext_examples">Go to example</a>
+                                    </div>
+                                    
+                                        
+    <div class="goApiary">
+    
+        
+    
+        
+    
+    </div>
+
+                                    
+                                
+                            </div>
+                        </div>
+                    
+            </section>
+        
+    </section>
+
+<section id="examples">
+    <div class= "header" ><h2>Examples</h2> </div>
+    
+        
+            <section id="resource_group__example" class="resourceGroupExample">
+                <div class= "header" ><h3 id="h-resource_group__example">Default</h3> </div>
+        
+
+                
+                    <section id="resource_configuration_example" class="resourceExample">
+                         <div class= "header" ><h4 id="h-resource_configuration_example">Configuration [/v1/admin/config]</h4></div>
+                            
+                            
+                            
+
+                            
+                            
+                            
+
+                            
+
+
+                            
+                                <div id="action_retrieve-the-configuration_examples" class="actionExample GET">
+
+                                    
+    <h4 id="h-action_retrieve-the-configuration_examples">
+        Retrieve the configuration -
+        GET
+        
+            /v1/admin/config
+        
+    </h4>
+
+                
+                                    <div id="action_retrieve-the-configuration_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_retrieve-the-configuration_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>        {
+          "host":"http://localhost:8080",
+          "in":[
+              {
+                  "id":"RoomX",
+                  "type":"Room",
+                  "isPattern": false,
+                  "attributes":[
+                      { "name":"temperature", "type":"double" },
+                      { "name":"floor", "type":"string" }
+                  ],
+                  "providers":[
+                      "http://localhost:8081"
+                  ]
+              }
+          ],
+          "out":[
+              {
+                  "id":"FloorX",
+                  "type":"Floor",
+                  "attributes":[
+                      { "name":"temperature", "type":"double" }
+                  ],
+                  "brokers":[
+                      { "url":"http://localhost:8081" }
+                  ]
+              }
+          ],
+          "statements":[
+              "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
+          ]
+      }
+</code></pre>
+                
+
+                
+                    <div class= "header"><p>Schema</p></div>
+                    <pre><code>{
+    "title": "Configuration",
+    "description": "The Cepheus-CEP configuration",
+    "type": "object",
+    "properties": {
+        "host": { "type": "string" },
+        "in": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id" : { "type": "string" },
+                    "type" : { "type": "string" },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": { "type": "string" },
+                                "type": { "type": "string" },
+                                "metadata": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": { "type": "string" },
+                                            "type": { "type": "string" }
+                                        },
+                                        "required": ["name", "type"]
+                                    }
+                                }
+                            },
+                            "required": ["name", "type"]
+                        }
+                    },
+                    "providers": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                    }
+                },
+                "required": ["id", "type", "attributes"]
+            }
+        },
+        "out": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id" : { "type": "string" },
+                    "type" : { "type": "string" },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": { "type": "string" },
+                                "type": { "type": "string" },
+                                "metadata": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": { "type": "string" },
+                                            "type": { "type": "string" }
+                                        },
+                                        "required": ["name", "type"]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "brokers": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "url": { "type": "string" },
+                                "serviceName": { "type": "string" },
+                                "servicePath": { "type": "string" },
+                                "authToken": { "type": "string" }
+                            },
+                            "required": [ "url" ]
+                        }
+                    }
+                },
+                "required": ["id", "type", "attributes"]
+            }
+        },
+        "statements": {
+            "type": "array",
+            "items": { "type": "string" }
+        }
+    },
+    "required" : ["host", "in", "out", "statements"]
+}
+</code></pre>
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 404</span> 
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_retrieve-the-configuration_Response_2_body" class=" action-div-body">
+                <p></p>
+
+                
+
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_retrieve-the-configuration">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                                <div id="action_update-the-configuration_examples" class="actionExample POST">
+
+                                    
+    <h4 id="h-action_update-the-configuration_examples">
+        Update the configuration -
+        POST
+        
+            /v1/admin/config
+        
+    </h4>
+
+                
+                                    <div id="action_update-the-configuration_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+                                                    
+                                                    
+                                                    
+                                                    
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Request </span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_update-the-configuration_Request_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>        {
+          "host":"http://localhost:8080",
+          "in":[
+              {
+                  "id":"RoomX",
+                  "type":"Room",
+                  "isPattern": false,
+                  "attributes":[
+                      { "name":"temperature", "type":"double" },
+                      { "name":"floor", "type":"string" }
+                  ],
+                  "providers":[
+                      "http://localhost:8081"
+                  ]
+              }
+          ],
+          "out":[
+              {
+                  "id":"FloorX",
+                  "type":"Floor",
+                  "attributes":[
+                      { "name":"temperature", "type":"double" }
+                  ],
+                  "brokers":[
+                      { "url":"http://localhost:8081" }
+                  ]
+              }
+          ],
+          "statements":[
+              "INSERT INTO Floor SELECT floor as id, avg(temperature) as temperature FROM Room.win:time(10 min) GROUP BY floor OUTPUT LAST EVERY 10 sec"
+          ]
+      }
+</code></pre>
+                
+
+                
+                    <div class= "header"><p>Schema</p></div>
+                    <pre><code>{
+    "title": "Configuration",
+    "description": "The Cepheus-CEP configuration",
+    "type": "object",
+    "properties": {
+        "host": { "type": "string" },
+        "in": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id" : { "type": "string" },
+                    "type" : { "type": "string" },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": { "type": "string" },
+                                "type": { "type": "string" },
+                                "metadata": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": { "type": "string" },
+                                            "type": { "type": "string" }
+                                        },
+                                        "required": ["name", "type"]
+                                    }
+                                }
+                            },
+                            "required": ["name", "type"]
+                        }
+                    },
+                    "providers": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                    }
+                },
+                "required": ["id", "type", "attributes"]
+            }
+        },
+        "out": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id" : { "type": "string" },
+                    "type" : { "type": "string" },
+                    "attributes": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": { "type": "string" },
+                                "type": { "type": "string" },
+                                "metadata": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": { "type": "string" },
+                                            "type": { "type": "string" }
+                                        },
+                                        "required": ["name", "type"]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "brokers": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "url": { "type": "string" },
+                                "serviceName": { "type": "string" },
+                                "servicePath": { "type": "string" },
+                                "authToken": { "type": "string" }
+                            },
+                            "required": [ "url" ]
+                        }
+                    }
+                },
+                "required": ["id", "type", "attributes"]
+            }
+        },
+        "statements": {
+            "type": "array",
+            "items": { "type": "string" }
+        }
+    },
+    "required" : ["host", "in", "out", "statements"]
+}
+</code></pre>
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_update-the-configuration_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 400</span> 
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_update-the-configuration_Response_2_body" class=" action-div-body">
+                <p></p>
+
+                
+
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_update-the-configuration">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                    </section>
+            
+                    <section id="resource_ngsi-api-v1_example" class="resourceExample">
+                         <div class= "header" ><h4 id="h-resource_ngsi-api-v1_example">NGSI API v1 [/ngsi10, /ngsi9]</h4></div>
+                            
+                            
+                            
+
+                            
+                            
+                            
+
+                            
+
+
+                            
+                                <div id="action_updatecontext_examples" class="actionExample POST">
+
+                                    
+    <h4 id="h-action_updatecontext_examples">
+        updateContext -
+        POST
+        
+            /ngsi10/updateContext
+        
+    </h4>
+
+                
+                                    <div id="action_updatecontext_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+                                                    
+                                                    
+                                                    
+                                                    
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Request </span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_updatecontext_Request_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "contextElements": [
+        {
+            "type": "Room",
+            "isPattern": "false",
+            "id": "room11",
+            "attributes": [
+                {
+                    "name": "temperature",
+                    "type": "double",
+                    "value": "24",
+                },
+                {
+                    "name": "floor",
+                    "type": "string",
+                    "value": "3",
+                }
+            ]
+        }
+    ],
+    "updateAction": "UPDATE"
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_updatecontext_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "contextElementResponses": [
+        {
+            "contextElement": {
+                "id":"Room11",
+                "type":"Room",
+                "isPattern":false,
+                "attributes": [
+                    {
+                        "name": "temperature",
+                        "type": "double",
+                        "value": "15",
+                        "metadatas": []
+                    },
+                    {
+                        "name": "floor",
+                        "type": "string",
+                        "value": "Floor1",
+                        "metadatas": []
+                    }
+                ]
+            },
+            "statusCode": {
+                "code": "200",
+                "reasonPhrase": "OK",
+                "detail": "All is OK"
+            }
+        }
+    ]
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_updatecontext">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                                <div id="action_notifycontext_examples" class="actionExample POST">
+
+                                    
+    <h4 id="h-action_notifycontext_examples">
+        notifyContext -
+        POST
+        
+            /ngsi10/notifyContext
+        
+    </h4>
+
+                
+                                    <div id="action_notifycontext_body" class=""> 
+                                        
+                                        
+                                        
+                                        
+         
+                                        
+                                            
+                                            
+                                                
+                                                    
+                                                    
+                                                    
+                                                    
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Request </span> 
+        
+            (application/json)
+        
+    
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_notifycontext_Request_1_body" class=" action-div-body">
+                <p></p>
+
+                
+        	         <div class= "header"><p>Headers</p></div>
+                    
+                    
+                        
+                    
+
+        	        <pre><code>Content-Type: application/json</code></pre>
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "subscriptionId": "DEADBEEF",
+    "originator": "http://localhost:8080",
+    "contextElements": [
+        {
+            "type": "Room",
+            "isPattern": "false",
+            "id": "room11",
+            "attributes": [
+                {
+                    "name": "temperature",
+                    "type": "double",
+                    "value": "24",
+                },
+                {
+                    "name": "floor",
+                    "type": "string",
+                    "value": "3",
+                }
+            ]
+        }
+    ]
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+            
+                                                
+                                                    
+                                                
+                                                
+                                                
+
+<div class="rest-packet-div">
+
+            <span class="packetType">Response 200</span> 
+            
+            
+            
+            
+
+
+
+ 
+            <div id="action_notifycontext_Response_1_body" class=" action-div-body">
+                <p></p>
+
+                
+
+                
+                    <div class= "header"><p>Body</p></div>
+                    <pre><code>{
+    "responseCode": {
+        "code": "200",
+        "reasonPhrase": "OK",
+        "detail": "All is OK"
+    }
+}
+</code></pre>
+                
+
+                
+            </div>
+            
+            
+     
+</div>
+                                                
+                                            
+                                            <div class="goActions">
+                                                <a href="#action_notifycontext">Go to specification</a>
+                                            </div>
+                                    </div>
+                                </div>
+                            
+                    </section>
+            
+        </section>
+    
+
+
+
+</section>
+  </section>
+  
+   
+
+
+
+    
+    
+    
+      <section id="references">
+      <h1>References</h1>
+          <ul>
+              
+                  <li><a href="https://github.com/Orange-OpenSource/fiware-cepheus/blob/master/README.md">README</a></li>
+              
+                  <li><a href="http://fiware-cepheus.readthedocs.org/en/latest/">manual</a></li>
+              
+                  <li><a href="http://telefonicaid.github.io/fiware-orion/api/v1/">NGSI v1 API from the Fiware-Orion project</a></li>
+              
+          </ul>
+      </section>
+    
+  </div>
+</div>
+</body>
+</html>
