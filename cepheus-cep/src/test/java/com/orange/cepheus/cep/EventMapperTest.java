@@ -50,6 +50,7 @@ public class EventMapperTest {
         e.addAttribute(new Attribute("4", "float"));
         e.addAttribute(new Attribute("5", "boolean"));
         e.addAttribute(new Attribute("6", "XXXX"));
+        e.addAttribute(new Attribute("7", "long"));
 
         Map<String, Object> map = eventMapper.esperTypeFromEventType(e);
 
@@ -59,6 +60,7 @@ public class EventMapperTest {
         assertEquals(int.class, map.get("3"));
         assertEquals(float.class, map.get("4"));
         assertEquals(boolean.class, map.get("5"));
+        assertEquals(long.class, map.get("7"));
     }
 
     /**
@@ -92,6 +94,7 @@ public class EventMapperTest {
         attributes.add(new ContextAttribute("2", "float", 1.4f));
         attributes.add(new ContextAttribute("3", "double", 3.1d));
         attributes.add(new ContextAttribute("4", "int", 3));
+        attributes.add(new ContextAttribute("5", "long", 3l));
         ce.setContextAttributeList(attributes);
 
         Map<String, Object> values = eventMapper.eventFromContextElement(ce).getValues();
@@ -101,6 +104,8 @@ public class EventMapperTest {
         assertEquals(1.4f, values.get("2"));
         assertEquals(3.1d, values.get("3"));
         assertEquals(3, values.get("4"));
+        assertEquals(3l, values.get("5"));
+
     }
 
     /**
@@ -117,6 +122,7 @@ public class EventMapperTest {
         attributes.add(new ContextAttribute("2", "float", "1.4"));
         attributes.add(new ContextAttribute("3", "double", "3.1"));
         attributes.add(new ContextAttribute("4", "int", "3"));
+        attributes.add(new ContextAttribute("5", "long", "3"));
         ce.setContextAttributeList(attributes);
 
         Map<String, Object> values = eventMapper.eventFromContextElement(ce).getValues();
@@ -125,6 +131,7 @@ public class EventMapperTest {
         assertEquals(1.4f, values.get("2"));
         assertEquals(3.1d, values.get("3"));
         assertEquals(3, values.get("4"));
+        assertEquals(3l, values.get("5"));
     }
 
     /**
@@ -143,6 +150,7 @@ public class EventMapperTest {
         metadatas.add(new ContextMetadata("2", "float", 1.4f));
         metadatas.add(new ContextMetadata("3", "double", 3.1d));
         metadatas.add(new ContextMetadata("4", "int", 3));
+        metadatas.add(new ContextMetadata("5", "long", 3l));
         ca.setMetadata(metadatas);
 
         Map<String, Object> values = eventMapper.eventFromContextElement(ce).getValues();
@@ -150,6 +158,8 @@ public class EventMapperTest {
         assertEquals(1.4f, values.get("ATTR1_2"));
         assertEquals(3.1d, values.get("ATTR1_3"));
         assertEquals(3, values.get("ATTR1_4"));
+        assertEquals(3l, values.get("ATTR1_5"));
+
     }
 
     /**
@@ -168,6 +178,8 @@ public class EventMapperTest {
         metadatas.add(new ContextMetadata("2", "float", "1.4"));
         metadatas.add(new ContextMetadata("3", "double", "3.1"));
         metadatas.add(new ContextMetadata("4", "int", "3"));
+        metadatas.add(new ContextMetadata("5", "long", "3"));
+
         ca.setMetadata(metadatas);
 
         Map<String, Object> values = eventMapper.eventFromContextElement(ce).getValues();
@@ -175,6 +187,7 @@ public class EventMapperTest {
         assertEquals(1.4f, values.get("ATTR1_2"));
         assertEquals(3.1d, values.get("ATTR1_3"));
         assertEquals(3, values.get("ATTR1_4"));
+        assertEquals(3l, values.get("ATTR1_5"));
     }
 
     /**
