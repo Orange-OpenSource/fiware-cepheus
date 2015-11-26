@@ -29,7 +29,7 @@ Therefore no Context Attribute is allowed to be named `id`.
 
 ### Simple attribute types
 
-The current version of the CEP engine only handle simple attribute types (like string, int, float, ...)
+The current version of the CEP engine only handle simple attribute types (like string, int, long, float, double and boolean)
 and cannot execute statements for complex types like objects or arrays because of the strongly typed nature of the CEP engine.
 
 ### Accessing attributes metadata

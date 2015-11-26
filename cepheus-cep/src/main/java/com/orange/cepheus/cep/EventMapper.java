@@ -222,6 +222,8 @@ public class EventMapper {
                 return String.class;
             case "int":
                 return int.class;
+            case "long":
+                return long.class;
             case "float":
                 return float.class;
             case "double":
@@ -273,9 +275,11 @@ public class EventMapper {
                 case "string":
                     return value;
                 case "boolean":
-                    return value;
+                    return Boolean.valueOf(value);
                 case "int":
                     return Integer.valueOf(value);
+                case "long":
+                    return Long.valueOf(value);
                 case "float":
                     return Float.valueOf(value);
                 case "double":
