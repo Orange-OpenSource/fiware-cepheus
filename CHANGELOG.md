@@ -1,3 +1,20 @@
+# 0.1.2
+
+## Major features
+
+* Support geospatial features #18
+
+## Minor features
+
+* jmeter integration #16, #19
+
+## Bug fixes
+
+* CEP: support long type #28
+* NGSI: fix error response format #27
+* fix data persistence location for debian #22
+
+
 # 0.1.1
 
 ## Major features
