@@ -241,7 +241,7 @@ public class NgsiBaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_400.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_400.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value(CodeEnum.CODE_400.getLongPhrase()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.details").value(CodeEnum.CODE_400.getLongPhrase()));
     }
 
     @Test
@@ -251,7 +251,7 @@ public class NgsiBaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.xpath("notifyContextResponse/responseCode/code").string(CodeEnum.CODE_400.getLabel()))
                 .andExpect(MockMvcResultMatchers.xpath("notifyContextResponse/responseCode/reasonPhrase").string(CodeEnum.CODE_400.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.xpath("notifyContextResponse/responseCode/detail").string(CodeEnum.CODE_400.getLongPhrase()));
+                .andExpect(MockMvcResultMatchers.xpath("notifyContextResponse/responseCode/details").string(CodeEnum.CODE_400.getLongPhrase()));
     }
 
     @Test
@@ -264,7 +264,7 @@ public class NgsiBaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.detail").value(
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.details").value(
                         "The parameter subscriptionId of type string is missing in the request"));
     }
 
@@ -278,7 +278,7 @@ public class NgsiBaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter updateAction of type string is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("The parameter updateAction of type string is missing in the request"));
     }
 
     @Test
@@ -290,7 +290,7 @@ public class NgsiBaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter contextRegistrations of type List<ContextRegistration> is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("The parameter contextRegistrations of type List<ContextRegistration> is missing in the request"));
     }
 
     @Test
@@ -302,7 +302,7 @@ public class NgsiBaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.detail").value("The parameter entities of type List<EntityId> is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.subscribeError.errorCode.details").value("The parameter entities of type List<EntityId> is missing in the request"));
     }
 
     @Test
@@ -314,7 +314,7 @@ public class NgsiBaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.detail").value("The parameter subscriptionId of type String is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.details").value("The parameter subscriptionId of type String is missing in the request"));
     }
 
     @Test
@@ -328,7 +328,7 @@ public class NgsiBaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.code").value(CodeEnum.CODE_471.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.reasonPhrase").value(CodeEnum.CODE_471.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.detail").value("The parameter entities of type List<EntityId> is missing in the request"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode.details").value("The parameter entities of type List<EntityId> is missing in the request"));
     }
 }
 

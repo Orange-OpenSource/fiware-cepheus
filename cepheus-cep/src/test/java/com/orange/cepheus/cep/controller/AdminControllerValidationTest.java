@@ -174,6 +174,6 @@ public class AdminControllerValidationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.reasonPhrase").value("Configuration validation error"))
-                .andExpect(jsonPath("$.detail").exists());
+                .andExpect(jsonPath("$.details").exists());
     }
 }

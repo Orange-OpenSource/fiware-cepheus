@@ -131,7 +131,7 @@ public class AdminControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.reasonPhrase").value("ERROR"))
-                .andExpect(jsonPath("$.detail").value("DETAIL ERROR"));
+                .andExpect(jsonPath("$.details").value("DETAIL ERROR"));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class AdminControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.reasonPhrase").value("ERROR"))
-                .andExpect(jsonPath("$.detail").value("DETAIL ERROR"));
+                .andExpect(jsonPath("$.details").value("DETAIL ERROR"));
     }
 
     @Test
