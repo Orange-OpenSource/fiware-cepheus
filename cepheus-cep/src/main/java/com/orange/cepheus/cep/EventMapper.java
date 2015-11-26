@@ -277,7 +277,7 @@ public class EventMapper {
                 case "string":
                     return value;
                 case "boolean":
-                    return value;
+                    return Boolean.valueOf(value);
                 case "int":
                     return Integer.valueOf(value);
                 case "long":
