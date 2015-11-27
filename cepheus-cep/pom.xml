@@ -193,6 +193,12 @@
                         <configuration>
                             <ignoreResultFailures>true</ignoreResultFailures>
                             <!--<overrideRootLogLevel>DEBUG</overrideRootLogLevel>-->
+                            <jmeterPlugins>
+                                <plugin>
+                                    <groupId>kg.apc</groupId>
+                                    <artifactId>jmeter-plugins-extras-libs</artifactId>
+                                </plugin>
+                            </jmeterPlugins>
                         </configuration>
                         <executions>
                             <execution>
