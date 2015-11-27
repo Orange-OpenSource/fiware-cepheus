@@ -17,4 +17,4 @@ NEWVERSION="$1"
 # Replace {version}-SNAPSHOT by {NEWVERSION} except ci-release.sh
 mvn versions:set -DnewVersion=$NEWVERSION-SNAPSHOT -DgenerateBackupPoms=false
 
-find . -name "Dockerfile" -name "*.md"  -name "*.sh" ! -name 'ci-release.sh'  -type f -exec sed -i '' "s/$OLDVERSION-SNAPSHOT/$NEWVERSION-SNAPSHOT/g" {} \;
+find . \( -name "Dockerfile" -o -name "*.md" -o -name "*.sh" \) ! -name 'ci-release.sh' -type f -exec sed -i "s/$OLDVERSION-SNAPSHOT/$NEWVERSION-SNAPSHOT/g" {} \;

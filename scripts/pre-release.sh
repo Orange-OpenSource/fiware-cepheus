@@ -4,7 +4,7 @@ set -e
 set -x
 
 # Replace {version}-SNAPSHOT by {version} except ci-release.sh
-find . -name "*.xml" -name "Dockerfile" -name "*.md" -name "*.sh" ! -name 'ci-release.sh'  -type f -exec sed -i '' "s/-SNAPSHOT//g" {} \;
+find . \( -name "*.xml" -o -name "Dockerfile" -o -name "*.md" -o -name "*.sh" \) ! -name '*-release.sh'  -type f -exec sed -i "s/-SNAPSHOT//g" {} \;
 
-# Replace snapshots by releases except in .xml files
-find . -name "Dockerfile" -name "*.md" -name "*.sh" ! -name 'ci-release.sh'  -type f -exec sed -i '' "s/snapshots/releases/g" {} \;
+# Replace releases by releases except in .xml files
+find . \( -name "Dockerfile" -o -name "*.md" -o -name "*.sh" \) ! -name '*-release.sh'  -type f -exec sed -i "s/snapshots/releases/g" {} \;
