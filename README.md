@@ -12,7 +12,7 @@ This is the code repository for the Fiware-Cepheus project.
 This project is part of [FIWARE](http://www.fiware.org) under the IoT Data Edge Consolidation GE project.
 Check also the [FIWARE Catalogue entry for Cepheus](http://catalogue.fiware.org/enablers/iot-data-edge-consolidation-ge-cepheus)
 
-## Renaming
+### Renaming
 
 The previous name of the project was "EspR4FastData".
 It was renamed to a more generic name (using the convention of other FIWARE Generic Enablers).
@@ -58,19 +58,17 @@ Then you can install these packages lauching :
     dpkg -i cepheus-cep-{version}.deb
     dpkg -i cepheus-broker-{version}.deb
 
-## Running
+### Running
 
 The project provides two SpringBoot applications. You can run them simply with:
 
     java -jar cepheus-cep.jar
     java -jar cepheus-broker.jar
 
-## User & programming guide
+## Documentation
 
 The user & programming guide can be found under the [/doc](doc) folder.
 It is also available though readthedocs.org: [User guide](http://fiware-cepheus.readthedocs.org/en/latest/)
-
-## Administrator manual
 
 The administrator manual can be found under the [/doc/admin](doc/admin) folder.
 It is also available though readthedocs.org: [Administrator manual](http://fiware-cepheus.readthedocs.org/en/latest/)
@@ -79,9 +77,9 @@ It is also available though readthedocs.org: [Administrator manual](http://fiwar
 
 Some simple examples to learn how to use Cepheus-CEP and Cepheus-Broker can be found under the [doc/examples](doc/examples) folder.
 
-## LinkSprite-NGSI Sample
+### LinkSprite-NGSI Sample
 
-An example to transform a RaspberryPi with LinkSprite components to a NGSI sensors communicating with cepheus can be found [here](https://github.com/Orange-OpenSource/fiware-cepheus/tree/linksprite-ngsi)
+An example to use a Raspberry Pi with LinkSprite sensors and actuators communicating with Cepheus can be found [here](https://github.com/Orange-OpenSource/fiware-cepheus/tree/linksprite-ngsi)
 
 ## License
 
@@ -89,5 +87,5 @@ FIWARE Cepheus is licensed under the [GNU General Public License Version 2](LICE
 
 ## Support
 
-Ask your programming questions using [stackoverflow](http://stackoverflow.com/questions/tagged/fiware-cepheus) and your general questions on [FIWARE Q&A](https://ask.fiware.org/questions/).
-In both cases please use the tag `fiware-cepheus`.
+Ask your programming questions using [Stackoverflow](http://stackoverflow.com/questions/tagged/fiware) and your general questions on [FIWARE Q&A](https://ask.fiware.org/questions/).
+In both cases please use the tags `fiware` and `fiware-cepheus`.
