@@ -292,7 +292,7 @@ public class EventMapper {
                     return value;
             }
         } catch (IllegalArgumentException|ParseException e) {
-            throw new EventProcessingException("Failed to parse value "+value+" for attribute "+name);
+            throw new EventProcessingException("Failed to parse value "+value+" for attribute "+name, e);
         }
     }
 }
