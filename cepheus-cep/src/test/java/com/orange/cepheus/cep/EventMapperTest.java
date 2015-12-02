@@ -11,22 +11,24 @@ package com.orange.cepheus.cep;
 import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.EventProcessingException;
 import com.orange.cepheus.cep.model.*;
+import com.orange.cepheus.geo.GeoUtil;
+import com.orange.cepheus.geo.Geospatial;
 import com.orange.ngsi.model.ContextAttribute;
 import com.orange.ngsi.model.ContextElement;
 import com.orange.ngsi.model.ContextMetadata;
 import com.orange.ngsi.model.EntityId;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test the EventMapper class
@@ -51,6 +53,8 @@ public class EventMapperTest {
         e.addAttribute(new Attribute("5", "boolean"));
         e.addAttribute(new Attribute("6", "XXXX"));
         e.addAttribute(new Attribute("7", "long"));
+        e.addAttribute(new Attribute("8", "date"));
+        e.addAttribute(new Attribute("9", "geo:point"));
 
         Map<String, Object> map = eventMapper.esperTypeFromEventType(e);
 
@@ -61,6 +65,8 @@ public class EventMapperTest {
         assertEquals(float.class, map.get("4"));
         assertEquals(boolean.class, map.get("5"));
         assertEquals(long.class, map.get("7"));
+        assertEquals(Date.class, map.get("8"));
+        assertEquals(Geometry.class, map.get("9"));
     }
 
     /**
@@ -97,6 +103,8 @@ public class EventMapperTest {
         attributes.add(new ContextAttribute("5", "long", 3l));
         attributes.add(new ContextAttribute("6", "boolean", true));
         attributes.add(new ContextAttribute("7", "boolean", false));
+        attributes.add(new ContextAttribute("8", "date", "2015-12-01T17:12:28Z"));
+        attributes.add(new ContextAttribute("9", "geo:point", "39.23, -10.3"));
         ce.setContextAttributeList(attributes);
 
         Map<String, Object> values = eventMapper.eventFromContextElement(ce).getValues();
@@ -109,6 +117,8 @@ public class EventMapperTest {
         assertEquals(3l, values.get("5"));
         assertEquals(true, values.get("6"));
         assertEquals(false, values.get("7"));
+        assertEquals(new Date(1448989948000l), values.get("8"));
+        assertEquals(Geospatial.readGeometry("POINT(39.23 -10.3)"), values.get("9"));
     }
 
     /**
