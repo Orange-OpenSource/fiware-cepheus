@@ -5,6 +5,7 @@ jdk:
 branches:
   except:
     - linksprite-ngsi
+    - jmeter-integration
 script: mvn test jacoco:report coveralls:report -q
 deploy:
   - provider: script
