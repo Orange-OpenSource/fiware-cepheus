@@ -12,6 +12,7 @@ import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.PersistenceException;
 import com.orange.cepheus.cep.model.Configuration;
 import com.orange.cepheus.cep.persistence.Persistence;
+import com.orange.cepheus.cep.tenant.TenantFilter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,8 +59,8 @@ public class InitTest {
      */
     @Test
     public void checkConfOk() throws ConfigurationException, PersistenceException {
-        when(persistence.checkConfigurationDirectory()).thenReturn(true);
-        when(persistence.loadConfiguration()).thenReturn(configuration);
+        when(persistence.configurationExists(TenantFilter.DEFAULT_TENANTID)).thenReturn(true);
+        when(persistence.loadConfiguration(TenantFilter.DEFAULT_TENANTID)).thenReturn(configuration);
 
         init.loadConfigurationOnStartup();
 
@@ -72,8 +73,8 @@ public class InitTest {
      * Check that the CEP engine is not called when no configuration exist on initialization
      */
     public void checkNoConf() throws ConfigurationException, PersistenceException {
-        when(persistence.checkConfigurationDirectory()).thenReturn(false);
-        when(persistence.loadConfiguration()).thenReturn(null);
+        when(persistence.configurationExists(TenantFilter.DEFAULT_TENANTID)).thenReturn(false);
+        when(persistence.loadConfiguration(TenantFilter.DEFAULT_TENANTID)).thenReturn(null);
 
         init.loadConfigurationOnStartup();
 

@@ -11,6 +11,8 @@ import com.orange.cepheus.cep.model.Configuration;
 import com.orange.cepheus.geo.GeoUtil;
 import com.orange.ngsi.model.*;
 import com.vividsolutions.jts.geom.Geometry;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -161,7 +163,7 @@ public class EventMapper {
             id = eventType.getId();
         }
 
-        // Add each attribute as a context attribute
+        // Add each attribute as a tenant attribute
         List<ContextAttribute> contextAttributes = new LinkedList<>();
         for (Attribute attribute : eventType.getAttributes()) {
             String type = attribute.getType();

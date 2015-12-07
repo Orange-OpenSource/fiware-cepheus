@@ -101,7 +101,7 @@ public class NgsiController extends NgsiBaseController {
 
     @ExceptionHandler({EventProcessingException.class})
     public ResponseEntity<Object> eventProcessinExceptionHandler(HttpServletRequest req, EventProcessingException eventProcessingException) {
-        logger.error("Event processing error: {}", eventProcessingException.toString());
+        logger.error("Event processing error: {}", eventProcessingException);
 
         StatusCode statusCode = new StatusCode();
         statusCode.setCode("500");

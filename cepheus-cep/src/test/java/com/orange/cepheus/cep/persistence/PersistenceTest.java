@@ -13,6 +13,7 @@ import com.orange.cepheus.cep.exception.PersistenceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -31,28 +32,27 @@ import static com.orange.cepheus.cep.Util.*;
 @SpringApplicationConfiguration(classes = Application.class)
 public class PersistenceTest {
 
-    private String path = "/tmp/cepheus-cep.json";
+    private static String configurationId = "smartcity/team1";
+
+    @Value("${data.path}cep-smartcity-team1.json")
+    private String path;
 
     @Autowired
     private Persistence persistence;
 
     @Test
-    public void checkFileReturnFalse(){
-
+    public void checkFileReturnFalse() {
         clearPersistedConfiguration();
-
-        assertFalse(persistence.checkConfigurationDirectory());
+        assertFalse(persistence.configurationExists(configurationId));
     }
 
     @Test
     public void checkFileReturnTrue() throws PersistenceException {
-
         File confFile = new File(path);
         if (!confFile.exists()) {
-            persistence.saveConfiguration(getBasicConf());
+            persistence.saveConfiguration(configurationId, getBasicConf());
         }
-
-        assertTrue(persistence.checkConfigurationDirectory());
+        assertTrue(persistence.configurationExists(configurationId));
     }
 
 
@@ -60,20 +60,15 @@ public class PersistenceTest {
     public void saveloadConfiguration() throws PersistenceException {
 
         clearPersistedConfiguration();
-
-        persistence.saveConfiguration(getBasicConf());
-
+        persistence.saveConfiguration(configurationId, getBasicConf());
         assertEquals(true, new File(path).exists());
-
-        persistence.loadConfiguration();
+        persistence.loadConfiguration(configurationId);
     }
 
     @Test(expected=PersistenceException.class)
     public void loadConfigurationThrowException() throws PersistenceException {
-
         clearPersistedConfiguration();
-
-        persistence.loadConfiguration();
+        persistence.loadConfiguration(configurationId);
     }
 
     private void clearPersistedConfiguration() {

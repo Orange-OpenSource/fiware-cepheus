@@ -17,10 +17,13 @@ import com.orange.cepheus.cep.model.Attribute;
 import com.orange.cepheus.cep.model.EventType;
 import com.orange.cepheus.cep.model.Configuration;
 import com.orange.cepheus.cep.model.Event;
+import com.orange.cepheus.cep.tenant.TenantScope;
 import com.orange.cepheus.geo.Geospatial;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
@@ -45,16 +48,28 @@ public class EsperEventProcessor implements ComplexEventProcessor {
      */
     private HashMap<String, String> variablesByStatementName = new HashMap<>();
 
-    @Autowired
-    public EventMapper eventMapper;
+    /**
+     * This bean is only injected in multi tenant mode.
+     */
+    @Autowired(required = false)
+    private TenantScope tenantScope;
 
     @Autowired
-    public EventSinkListener eventSinkListener;
+    private EventMapper eventMapper;
+
+    @Autowired
+    private EventSinkListener eventSinkListener;
 
     public EsperEventProcessor() {
         com.espertech.esper.client.Configuration configuration = new com.espertech.esper.client.Configuration();
         Geospatial.registerConfiguration(configuration);
-        epServiceProvider = EPServiceProviderManager.getDefaultProvider(configuration);
+
+        if (tenantScope != null) {
+            String provider = tenantScope.getConversationId();
+            epServiceProvider = EPServiceProviderManager.getProvider(provider, configuration);
+        } else {
+            epServiceProvider = EPServiceProviderManager.getDefaultProvider(configuration);
+        }
     }
 
     /**

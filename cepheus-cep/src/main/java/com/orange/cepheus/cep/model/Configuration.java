@@ -8,6 +8,7 @@
 
 package com.orange.cepheus.cep.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.Valid;
@@ -19,6 +20,16 @@ import java.util.List;
  * Configuration is exposed though a REST enpoint and defines the complete behavior of the CEP engine
  */
 public class Configuration {
+
+    /**
+     * Fiware service tenant information
+     */
+    private String service;
+
+    /**
+     * Fiware servicePath tenant information
+     */
+    private String servicePath;
 
     @NotNull(message = "Configuration.host must not be empty")
     private URI host;
@@ -37,6 +48,22 @@ public class Configuration {
     private List<String> statements;
 
     public Configuration() {
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
+
+    public String getServicePath() {
+        return servicePath;
+    }
+
+    public void setServicePath(String servicePath) {
+        this.servicePath = servicePath;
     }
 
     public URI getHost() {

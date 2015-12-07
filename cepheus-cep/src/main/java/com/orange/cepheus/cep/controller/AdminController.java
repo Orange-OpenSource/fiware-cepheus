@@ -11,7 +11,8 @@ package com.orange.cepheus.cep.controller;
 import com.orange.cepheus.cep.EventMapper;
 import com.orange.cepheus.cep.SubscriptionManager;
 import com.orange.cepheus.cep.exception.PersistenceException;
-import com.orange.ngsi.model.CodeEnum;
+import com.orange.cepheus.cep.tenant.TenantFilter;
+import com.orange.cepheus.cep.tenant.TenantScope;
 import com.orange.ngsi.model.StatusCode;
 import com.orange.cepheus.cep.persistence.Persistence;
 import com.orange.cepheus.cep.ComplexEventProcessor;
@@ -52,12 +53,23 @@ public class AdminController {
     @Autowired
     public SubscriptionManager subscriptionManager;
 
+    @Autowired(required=false)
+    TenantScope tenantScope;
+
     // Synchronization note:
     // All calls that modify configuration (which is a rare event compared to event processing) are simply synchronized.
 
     @RequestMapping(value = "/config", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public synchronized ResponseEntity<?> configuration(@Valid @RequestBody final Configuration configuration) throws ConfigurationException, PersistenceException {
         logger.info("Update configuration");
+
+        String configurationId = TenantFilter.DEFAULT_TENANTID;
+        if (tenantScope != null) {
+            configurationId = tenantScope.getConversationId();
+
+            // Force tenant information to configuration
+            injectTenant(configuration);
+        }
 
         /*
          * Try to apply a new configuration, in case of configuration error
@@ -68,7 +80,7 @@ public class AdminController {
             complexEventProcessor.setConfiguration(configuration);
             eventMapper.setConfiguration(configuration);
             subscriptionManager.setConfiguration(configuration);
-            persistence.saveConfiguration(configuration);
+            persistence.saveConfiguration(configurationId, configuration);
         } catch (ConfigurationException e) {
             // try to restore previous configuration
             if (previousConfiguration != null) {
@@ -80,6 +92,21 @@ public class AdminController {
         }
 
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    /**
+     * Inject Fiware-Service & Fiware-ServicePath in configuration
+     * @param configuration
+     */
+    private void injectTenant(Configuration configuration) {
+        String service = tenantScope.getService();
+        if (service != null) {
+            configuration.setService(service);
+        }
+        String servicePath = tenantScope.getServicePath();
+        if (servicePath != null) {
+            configuration.setServicePath(servicePath);
+        }
     }
 
     @RequestMapping(value = "/config", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

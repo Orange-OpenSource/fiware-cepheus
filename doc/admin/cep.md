@@ -89,7 +89,7 @@ This is a short list of the application properties:
 <table>
     <tr><th>Name</th><th>Description</th><th>Default value</th></tr>
     <tr><td>server.port</td><td>port used</td><td>8080</td></tr>
-    <tr><td>data.file</td><td>data file location</td><td>/tmp/cepheus.json</td></tr>
+    <tr><td>data.path</td><td>path to store data</td><td>/tmp/</td></tr>
     <tr><td>subscriptionManager.periodicity</td><td>Periodicity of the subscription manager task</td><td>300000</td></tr>
     <tr><td>subscriptionManager.duration</td><td>Duration of a NGSI subscription</td><td>PT1H</td></tr>
     <tr><td>logging.level.com.orange.cepheus.cep</td><td>log level</td><td>INFO</td></tr>
@@ -105,7 +105,7 @@ You can modify all the application properties from the command line:
 
 Example:
 
-    java -jar cepheus-cep.jar --server.port=8080 --data.file=/var/cepheus/cep.json
+    java -jar cepheus-cep.jar --server.port=8080 --data.path=/var/cepheus/
 
 ### External configuration file
 

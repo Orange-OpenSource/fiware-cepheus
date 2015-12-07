@@ -20,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
  * When a configuration is loaded, SubscriptionManager send subscription to every provider
  * Every five minutes SubscriptionManager verify if subscription is valid
  */
-@Component
+@Component()
 public class SubscriptionManager {
 
     private static Logger logger = LoggerFactory.getLogger(SubscriptionManager.class);

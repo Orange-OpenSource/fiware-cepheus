@@ -15,6 +15,7 @@ import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.PersistenceException;
 import com.orange.cepheus.cep.model.Configuration;
 import com.orange.cepheus.cep.persistence.Persistence;
+import com.orange.cepheus.cep.tenant.TenantFilter;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -103,9 +104,7 @@ public class AdminControllerTest {
         assertEquals(1, capturedConfiguration.getEventTypeOuts().size());
         assertEquals("OUT1", capturedConfiguration.getEventTypeOuts().get(0).getId());
 
-        ArgumentCaptor<Configuration> configurationArg2 = ArgumentCaptor.forClass(Configuration.class);
-        verify(persistence).saveConfiguration(configurationArg2.capture());
-        assertEquals(capturedConfiguration, configurationArg2.getValue());
+        verify(persistence).saveConfiguration(eq(TenantFilter.DEFAULT_TENANTID), eq(capturedConfiguration));
     }
 
     @Test
@@ -150,7 +149,7 @@ public class AdminControllerTest {
     @Test
     public void persistenceErrorHandling() throws Exception {
 
-        doThrow(new PersistenceException("ERROR")).when(persistence).saveConfiguration(any(Configuration.class));
+        doThrow(new PersistenceException("ERROR")).when(persistence).saveConfiguration(any(), any(Configuration.class));
 
         Configuration configuration = getBasicConf();
 

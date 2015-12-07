@@ -18,6 +18,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+
 @SpringBootApplication
 @ComponentScan("com.orange")
 @EnableScheduling
@@ -31,27 +32,12 @@ public class Application {
     }
 
     @Bean
-    public ComplexEventProcessor complexEventProcessor() {
-        return new EsperEventProcessor();
-    }
-
-    @Bean
-    public Persistence persistence() {
-        return new JsonPersistence();
-    }
-
-    @Bean
-    public SubscriptionManager subscriptionManager() {
-        return new SubscriptionManager();
-    }
-
-    @Bean
     public TaskScheduler taskScheduler() {
         return new ThreadPoolTaskScheduler();
     }
 
     @Bean
-    public Init init() {
-        return new Init();
+    public Persistence persistence() {
+        return new JsonPersistence();
     }
 }

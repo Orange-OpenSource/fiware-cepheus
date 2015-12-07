@@ -16,6 +16,8 @@ import com.orange.ngsi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +36,8 @@ public class EventSinkListener implements StatementAwareUpdateListener {
 
     @Autowired
     private EventMapper eventMapper;
+
+    private Configuration configuration;
 
     /**
      * All outgoing outgoingEvents accessible by type
@@ -95,6 +99,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
             events.put(event.getType(), event);
         }
         this.outgoingEvents = events;
+        this.configuration = configuration;
     }
 
     /**
@@ -121,15 +126,19 @@ public class EventSinkListener implements StatementAwareUpdateListener {
     }
 
     /**
-     * Set custom headers for Brokers
+     * Set custom headers for Brokers either from the Broker section or from the actual tenant configuration
      */
     private HttpHeaders getHeadersForBroker(Broker broker) {
         HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(broker.getUrl());
         if (broker.getServiceName() != null) {
             httpHeaders.add("Fiware-Service", broker.getServiceName());
+        } else if (configuration.getService() != null) {
+            httpHeaders.add("Fiware-Service", configuration.getService());
         }
         if (broker.getServicePath() != null) {
             httpHeaders.add("Fiware-ServicePath", broker.getServicePath());
+        } else if (configuration.getServicePath() != null) {
+            httpHeaders.add("Fiware-ServicePath", configuration.getServicePath());
         }
         if (broker.getAuthToken() != null) {
             httpHeaders.add("X-Auth-Token", broker.getAuthToken());
