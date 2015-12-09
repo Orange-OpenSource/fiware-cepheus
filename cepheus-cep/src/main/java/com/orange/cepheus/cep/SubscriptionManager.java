@@ -94,6 +94,9 @@ public class SubscriptionManager {
     @Value("${subscriptionManager.duration:PT1H}")
     private String subscriptionDuration;
 
+    @Value("${subscriptionManager.validateSubscriptionsId:true}")
+    private boolean validateSubscriptionsId;
+
     @Autowired
     private NgsiClient ngsiClient;
 
@@ -137,7 +140,10 @@ public class SubscriptionManager {
      * @return true if subscription is valid
      */
     public boolean isSubscriptionValid(String subscriptionId) {
-        return subscriptions.isSubscriptionValid(subscriptionId);
+        if (validateSubscriptionsId) {
+            return subscriptions.isSubscriptionValid(subscriptionId);
+        }
+        return true;
     }
 
     @PreDestroy
