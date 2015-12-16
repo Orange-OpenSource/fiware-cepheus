@@ -43,7 +43,7 @@ import static com.orange.cepheus.cep.Util.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {Application.class})
 @WebAppConfiguration
-public class AdminControllerTest {
+public class AdminControllerMutiTenantTest {
 
     private MockMvc mockMvc;
 
@@ -118,15 +118,6 @@ public class AdminControllerTest {
                 .andExpect(jsonPath("$.in[0].id").value(configuration.getEventTypeIns().get(0).getId()))
                 .andExpect(jsonPath("$.out[0].id").value(configuration.getEventTypeOuts().get(0).getId()))
                 .andExpect(jsonPath("$.statements[0]").value(configuration.getStatements().get(0)));
-    }
-
-    @Test
-    public void deleteConfiguration() throws Exception {
-
-        mockMvc.perform(delete("/v1/admin/config")).andExpect(status().isOk());
-
-        verify(complexEventProcessor).reset();
-        verify(persistence).deleteConfiguration(eq(TenantFilter.DEFAULT_TENANTID));
     }
 
     @Test

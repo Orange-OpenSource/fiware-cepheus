@@ -151,6 +151,15 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     }
 
     /**
+     * Reset the CEP and remove the configuration
+     */
+    public void reset() {
+        epServiceProvider.destroy();
+        configuration = null;
+        variablesByStatementName.clear();
+    }
+
+    /**
      * Make Esper process an event
      * @param event
      * @throws EventProcessingException

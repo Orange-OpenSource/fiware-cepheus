@@ -32,9 +32,14 @@ public interface ComplexEventProcessor {
      */
     boolean restoreConfiguration(Configuration previousConfiguration);
 
-        /**
-         * @return the active configuration or null
-         */
+    /**
+     * Reset the CEP engine (removing configuration)
+     */
+    void reset();
+
+    /**
+     * @return the active configuration or null
+     */
     Configuration getConfiguration();
 
     /**

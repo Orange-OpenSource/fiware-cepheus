@@ -83,6 +83,14 @@ public class TenantFilter implements Filter {
     }
 
     /**
+     * Remove the tenant context associated to a tenantId
+     * @param tenantId the ID of the tenant to remove
+     */
+    public void removeTenant(String tenantId) {
+        tenantContexts.remove(tenantId);
+    }
+
+    /**
      * This method used to force a given Tenant-scoped context for the current thread
      * to allow IoC to retrieve Tenant scoped beans.
      * This must never be called in a HttpServletRequest context !

@@ -49,9 +49,17 @@ If the Cepheus-cep is later restarted, it will automatically load the last confi
 
 Example:
 
-    cat config.json | curl -H 'Accept: application/json' -H 'Content-Type: application/json' -d @-
+    cat config.json | curl -H 'Accept: application/json' -H 'Content-Type: application/json' -d @- http://localhost:8080/v1/admin/config
 
 See the [JSON Configuration](configuration.md) section about the content of the JSON configuration
+
+**DELETE v1/admin/config**
+
+This endpoint removes the current configuration. It will return a `200 Ok` on a successful operation.
+
+Example:
+
+    curl -X DELETE http://localhost:8080/v1/admin/config
 
 ### NGSI endpoints
 

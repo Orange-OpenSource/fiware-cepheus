@@ -56,6 +56,9 @@ public class AdminController {
     @Autowired(required=false)
     TenantScope tenantScope;
 
+    @Autowired(required=false)
+    TenantFilter tenantFilter;
+
     // Synchronization note:
     // All calls that modify configuration (which is a rare event compared to event processing) are simply synchronized.
 
@@ -118,6 +121,26 @@ public class AdminController {
         }
 
         return new ResponseEntity<>(configuration, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/config", method = RequestMethod.DELETE)
+    public synchronized ResponseEntity<Configuration> removeConfiguration() throws PersistenceException {
+
+        // Retrieve the configuration (depending on the tenant in multi-tenant setup)
+        String configurationId = TenantFilter.DEFAULT_TENANTID;
+        if (tenantScope != null) {
+            configurationId = tenantScope.getConversationId();
+        }
+        // Remove the tenant context associated to the configuration
+        if (tenantFilter != null) {
+            tenantFilter.removeTenant(configurationId);
+        }
+        // Reset the CEP
+        complexEventProcessor.reset();
+        // Delete the persisted configuration
+        persistence.deleteConfiguration(configurationId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
