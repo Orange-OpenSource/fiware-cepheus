@@ -43,6 +43,13 @@ public interface Persistence {
     void saveConfiguration(String id, Configuration configuration) throws PersistenceException;
 
     /**
+     * Delete the persisted configuration
+     * @param id the configuration ID
+     * @throws PersistenceException when the configuration could not be deleted successfully
+     */
+    void deleteConfiguration(String id) throws PersistenceException;
+
+    /**
      * Retreive the list of all the configuration IDs.
      * @return the configurations IDs
      */

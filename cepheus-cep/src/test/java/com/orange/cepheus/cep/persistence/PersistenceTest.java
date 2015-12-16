@@ -65,6 +65,18 @@ public class PersistenceTest {
         persistence.loadConfiguration(configurationId);
     }
 
+    @Test
+    public void deleteConfiguration() throws PersistenceException {
+        // Save the configuration
+        persistence.saveConfiguration(configurationId, getBasicConf());
+        assertEquals(true, new File(path).exists());
+        // Check that deleting configuration realy removes the file
+        persistence.deleteConfiguration(configurationId);
+        assertEquals(false, new File(path).exists());
+        // Check that deleting an already removed configuration does not trigger any failure
+        persistence.deleteConfiguration(configurationId);
+    }
+
     @Test(expected=PersistenceException.class)
     public void loadConfigurationThrowException() throws PersistenceException {
         clearPersistedConfiguration();

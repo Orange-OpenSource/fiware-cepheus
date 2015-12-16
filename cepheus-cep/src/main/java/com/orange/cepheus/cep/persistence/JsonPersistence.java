@@ -66,6 +66,16 @@ public class JsonPersistence implements Persistence {
         }
     }
 
+    public void deleteConfiguration(String id) throws PersistenceException {
+        String filename = idToFilename(id);
+        logger.info("Delete configuration from {}", this.dataPath+filename);
+        try {
+            new File(this.dataPath+filename).delete();
+        } catch (Exception e) {
+            throw new PersistenceException("Failed to delete configuration", e);
+        }
+    }
+
     public void saveConfiguration(String id, Configuration configuration) throws PersistenceException {
         String filename = idToFilename(id);
         logger.info("Save configuration in {}", this.dataPath+filename);
