@@ -9,7 +9,13 @@
 package com.orange.cepheus.cep.controller;
 
 import com.orange.cepheus.cep.Application;
+import com.orange.cepheus.cep.ComplexEventProcessor;
+import com.orange.cepheus.cep.EventMapper;
+import com.orange.cepheus.cep.SubscriptionManager;
+import com.orange.cepheus.cep.exception.EventProcessingException;
+import com.orange.cepheus.cep.exception.TypeNotFoundException;
 import com.orange.cepheus.cep.model.Configuration;
+import com.orange.cepheus.cep.model.Event;
 import com.orange.cepheus.cep.tenant.TenantFilter;
 import com.orange.ngsi.model.CodeEnum;
 import com.orange.ngsi.model.NotifyContext;
@@ -18,6 +24,9 @@ import com.orange.ngsi.model.UpdateContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +42,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -52,6 +65,22 @@ public class NgsiControllerMultiTenantTest {
     @Autowired
     TenantFilter tenantFilter;
 
+    @Mock
+    SubscriptionManager subscriptionManager;
+
+    @Mock
+    EventMapper eventMapper;
+
+    @Mock
+    Event event;
+
+    @Mock
+    ComplexEventProcessor complexEventProcessor;
+
+    @InjectMocks
+    @Autowired
+    private NgsiController ngsiController;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -60,6 +89,7 @@ public class NgsiControllerMultiTenantTest {
 
     @Before
     public void setup() throws Exception {
+        MockitoAnnotations.initMocks(this);
         this.mockMvc = webAppContextSetup(webApplicationContext).addFilter(tenantFilter).build();
 
         Configuration configuration = getBasicConf();
@@ -72,6 +102,9 @@ public class NgsiControllerMultiTenantTest {
     @Test
     public void postNotifyContext() throws Exception {
 
+        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        when(eventMapper.eventFromContextElement(any())).thenReturn(event);
+        doNothing().when(complexEventProcessor).processEvent(any());
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
 
         mockMvc.perform(post("/v1/notifyContext")
@@ -81,8 +114,62 @@ public class NgsiControllerMultiTenantTest {
     }
 
     @Test
+    public void postNotifyContextWithTypeNotFoundException() throws Exception {
+
+        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        doThrow(TypeNotFoundException.class).when(eventMapper).eventFromContextElement(any());
+
+        NotifyContext notifyContext = createNotifyContextTempSensor(0);
+
+        mockMvc.perform(post("/v1/notifyContext")
+                .content(json(mapper, notifyContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_472.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_472.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.details").value("A parameter null is not valid/allowed in the request"));
+    }
+
+    @Test
+    public void postNotifyContextWithEventProcessingException() throws Exception {
+
+        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        doThrow(EventProcessingException.class).when(eventMapper).eventFromContextElement(any());
+
+        NotifyContext notifyContext = createNotifyContextTempSensor(0);
+
+        mockMvc.perform(post("/v1/notifyContext")
+                .content(json(mapper, notifyContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_500.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value("event processing error"));
+    }
+
+    @Test
+    public void postNotifyContextWithInvalidateSubscriptionId() throws Exception {
+
+        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(false);
+
+        NotifyContext notifyContext = createNotifyContextTempSensor(0);
+
+        mockMvc.perform(post("/v1/notifyContext")
+                .content(json(mapper, notifyContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_470.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_470.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.details").value("The subscription ID specified 1 does not correspond to an active subscription"));
+
+    }
+
+    @Test
     public void postNotifyContextWithBadServicePath() throws Exception {
 
+        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
 
         mockMvc.perform(post("/v1/notifyContext")
@@ -98,6 +185,7 @@ public class NgsiControllerMultiTenantTest {
     @Test
     public void postNotifyContextBadService() throws Exception {
 
+        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
 
         mockMvc.perform(post("/v1/notifyContext")
@@ -113,6 +201,7 @@ public class NgsiControllerMultiTenantTest {
     @Test
     public void postNotifyContextWithTenant() throws Exception {
 
+        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
         Configuration configuration = getBasicConf();
         mockMvc.perform(post("/v1/admin/config")
                 .header("Fiware-Service", "smartcity")
@@ -189,6 +278,8 @@ public class NgsiControllerMultiTenantTest {
     public void postUpdateContextWithTypeNotExistsInConfiguration()  throws Exception {
 
         UpdateContext updateContext = createUpdateContextPressureSensor();
+        when(eventMapper.eventFromContextElement(any())).thenReturn(event);
+        doThrow(EventProcessingException.class).when(complexEventProcessor).processEvent(any());
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, updateContext))
@@ -198,11 +289,8 @@ public class NgsiControllerMultiTenantTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value(CodeEnum.CODE_472.getLabel()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.reasonPhrase")
-                        .value(CodeEnum.CODE_472.getShortPhrase()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.details").value(
-                        "Event type named 'PressureSensor' has not been defined or is not a Map event type, the name 'PressureSensor' has not been defined as an event type"));
+                        .value(CodeEnum.CODE_472.getShortPhrase()));
     }
-
 
     @Test
     public void postUpdateContextBeforeConf() throws Exception {
