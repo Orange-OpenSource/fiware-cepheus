@@ -25,10 +25,20 @@ public class TenantFilter implements Filter {
     public static final String FIWARE_SERVICE_PATH = "Fiware-ServicePath";
     public static final String TENANT_ID = "tenantID";
 
-    private static final String DEFAULT_SERVICE = "default";
-    private static final String DEFAULT_SERVICE_PATH = "/";
+    public static final String DEFAULT_SERVICE = "default";
+    public static final String DEFAULT_SERVICE_PATH = "/";
 
-    public static final String DEFAULT_TENANTID = DEFAULT_SERVICE + DEFAULT_SERVICE_PATH;
+    public static final String DEFAULT_TENANTID = tenantIdFromService(DEFAULT_SERVICE, DEFAULT_SERVICE_PATH);
+
+    /**
+     * Generate the tenantId from the Service/ServicePath
+     * @param service
+     * @param servicePath
+     * @return the tenantId
+     */
+    public static String tenantIdFromService(String service, String servicePath) {
+        return service + servicePath;
+    }
 
     private static Logger logger = LoggerFactory.getLogger(TenantFilter.class);
 
@@ -118,7 +128,7 @@ public class TenantFilter implements Filter {
      * @return a tenant context
      */
     private TenantScope.Context getTenantContext(String service, String servicePath) {
-        String tenantId = service + servicePath;
+        String tenantId = tenantIdFromService(service, servicePath);
 
         TenantScope.Context tenantMap = tenantContexts.get(tenantId);
         if (tenantMap == null) {
