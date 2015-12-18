@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>5</daysToKeep>
+    <numToKeep>5</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>HOST</name>
+          <description>IP or DNS name of the target</description>
+          <defaultValue>raspberrypi</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>CEP_PORT</name>
+          <description>Port used by CEP</description>
+          <defaultValue>8080</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>BROKER_PORT</name>
+          <description>Port used by BROKER</description>
+          <defaultValue>8081</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>MODEL1_RAMPUP</name>
+          <description>Duration for connecting all devices for MODEL1</description>
+          <defaultValue>250</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>MODEL1_DURATION</name>
+          <description>Overall duration of performance test for MODEL1</description>
+          <defaultValue>600</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>MODEL2_RAMPUP</name>
+          <description>Duration for connecting all devices for MODEL2</description>
+          <defaultValue>25</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>MODEL2_DURATION</name>
+          <description>Overall duration of performance test for MODEL2</description>
+          <defaultValue>300</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>MODEL3_RAMPUP</name>
+          <description>Duration for connecting all devices for MODEL3</description>
+          <defaultValue>25</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>MODEL3_DURATION</name>
+          <description>Overall duration of performance test for MODEL3</description>
+          <defaultValue>300</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>7</daysToKeep>
+        <numToKeep>7</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.BatchFile>
+      <command>F:\Applis\apache-jmeter-2.13\bin\jmeter.bat -n -t &quot;F:\Mes documents\git\cepheus\cepheus-cep\src\test\jmeter\TestPlan.jmx&quot; -JHOST=%HOST% -JCEP_PORT=%CEP_PORT% -JBROKER_PORT=%BROKER_PORT% -JMODEL1_RAMPUP=%MODEL1_RAMPUP% -JMODEL1_DURATION=%MODEL1_DURATION% -JMODEL2_RAMPUP=%MODEL2_RAMPUP% -JMODEL2_DURATION=%MODEL2_DURATION% -JMODEL3_RAMPUP=%MODEL3_RAMPUP% -JMODEL3_DURATION=%MODEL3_DURATION%</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.BatchFile>
+      <command>dir</command>
+    </hudson.tasks.BatchFile>
+  </builders>
+  <publishers>
+    <hudson.plugins.performance.PerformancePublisher plugin="performance@1.13">
+      <errorFailedThreshold>50</errorFailedThreshold>
+      <errorUnstableThreshold>10</errorUnstableThreshold>
+      <errorUnstableResponseTimeThreshold></errorUnstableResponseTimeThreshold>
+      <relativeFailedThresholdPositive>50.0</relativeFailedThresholdPositive>
+      <relativeFailedThresholdNegative>50.0</relativeFailedThresholdNegative>
+      <relativeUnstableThresholdPositive>10.0</relativeUnstableThresholdPositive>
+      <relativeUnstableThresholdNegative>10.0</relativeUnstableThresholdNegative>
+      <nthBuildNumber>0</nthBuildNumber>
+      <modeRelativeThresholds>false</modeRelativeThresholds>
+      <configType>ART</configType>
+      <modeOfThreshold>true</modeOfThreshold>
+      <compareBuildPrevious>true</compareBuildPrevious>
+      <xml></xml>
+      <modePerformancePerTestCase>true</modePerformancePerTestCase>
+      <parsers>
+        <hudson.plugins.performance.JMeterParser>
+          <glob>**/*.jtl</glob>
+        </hudson.plugins.performance.JMeterParser>
+      </parsers>
+      <modeThroughput>false</modeThroughput>
+    </hudson.plugins.performance.PerformancePublisher>
+    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.40.5">
+      <recipientList>laurent.bury@orange.com</recipientList>
+      <configuredTriggers>
+        <hudson.plugins.emailext.plugins.trigger.AlwaysTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <recipientProviders>
+              <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
+            </recipientProviders>
+            <attachmentsPattern></attachmentsPattern>
+            <attachBuildLog>false</attachBuildLog>
+            <compressBuildLog>false</compressBuildLog>
+            <replyTo>$PROJECT_DEFAULT_REPLYTO</replyTo>
+            <contentType>project</contentType>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.AlwaysTrigger>
+      </configuredTriggers>
+      <contentType>both</contentType>
+      <defaultSubject>Cepheus/Fiware performance tests</defaultSubject>
+      <defaultContent>This is Jenkins ${PROJECT_NAME} load performance test report.&lt;br/&gt;
+Jenkins Project URL: ${PROJECT_URL}&lt;br/&gt;
+build_number: ${BUILD_NUMBER}&lt;br/&gt;
+Build_status: &lt;strong&gt;${BUILD_STATUS}&lt;/strong&gt;&lt;br/&gt;
+Workspace: ${WORKSPACE}&lt;br/&gt;
+
+
+&lt;h1&gt;Performance Trend&lt;/h1&gt;
+
+&lt;h2&gt;CEP Configuration&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=CEP%20Configuration.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=CEP%20Configuration.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario1-CEP_Only-Model1&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_Only-Model1.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_Only-Model1.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario1-CEP_Only-Model2&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_Only-Model2.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_Only-Model2.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario1-CEP_Only-Model3&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_Only-Model3.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_Only-Model3.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario1-CEP_with_Broker-Model1&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_with_Broker-Model1.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_with_Broker-Model1.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario1-CEP_with_Broker-Model2&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_with_Broker-Model2.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_with_Broker-Model2.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario1-CEP_with_Broker-Model3&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_with_Broker-Model3.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario1-CEP_with_Broker-Model3.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario2-CEP_Only-Model1&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_Only-Model1.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_Only-Model1.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario2-CEP_Only-Model2&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_Only-Model2.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_Only-Model2.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario2-CEP_Only-Model3&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_Only-Model3.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_Only-Model3.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario2-CEP_with_Broker-Model1&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_with_Broker-Model1.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_with_Broker-Model1.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario2-CEP_with_Broker-Model2&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_with_Broker-Model2.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_with_Broker-Model2.jtl&quot; /&gt;
+&lt;/a&gt;&lt;br/&gt;
+
+&lt;h2&gt;Scenario2-CEP_with_Broker-Model3&lt;/h2&gt;
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/respondingTimeGraphPerTestCaseMode?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_with_Broker-Model3.jtl&quot; /&gt;
+&lt;/a&gt;
+
+&lt;a href=&quot;#Test&quot; data-rel=&quot;popup&quot; data-inline=&quot;true&quot;&gt;
+&lt;img src=&quot;${PROJECT_URL}performance/errorsGraph?width=900&amp;height=550&amp;performanceReportPosition=Scenario2-CEP_with_Broker-Model3.jtl&quot; /&gt;
+&lt;/a&gt;</defaultContent>
+      <attachmentsPattern></attachmentsPattern>
+      <presendScript>$DEFAULT_PRESEND_SCRIPT</presendScript>
+      <attachBuildLog>true</attachBuildLog>
+      <compressBuildLog>false</compressBuildLog>
+      <replyTo>$DEFAULT_REPLYTO</replyTo>
+      <saveOutput>false</saveOutput>
+      <disabled>false</disabled>
+    </hudson.plugins.emailext.ExtendedEmailPublisher>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.ws__cleanup.PreBuildCleanup plugin="ws-cleanup@0.28">
+      <deleteDirs>false</deleteDirs>
+      <cleanupParameter></cleanupParameter>
+      <externalDelete></externalDelete>
+    </hudson.plugins.ws__cleanup.PreBuildCleanup>
+  </buildWrappers>
+</project>
