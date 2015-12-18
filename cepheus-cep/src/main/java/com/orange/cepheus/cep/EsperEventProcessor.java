@@ -155,6 +155,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
      */
     public void reset() {
         epServiceProvider.destroy();
+        epServiceProvider.initialize();
         configuration = null;
         variablesByStatementName.clear();
     }
@@ -169,7 +170,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
 
         try {
             this.epServiceProvider.getEPRuntime().sendEvent(event.getValues(), event.getType());
-        } catch (com.espertech.esper.client.EPException e) {
+        } catch (EPException|EPServiceDestroyedException e) {
             throw new EventProcessingException(e.getMessage());
         }
     }

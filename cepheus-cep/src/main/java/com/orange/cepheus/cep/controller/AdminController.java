@@ -53,9 +53,15 @@ public class AdminController {
     @Autowired
     public SubscriptionManager subscriptionManager;
 
+    /**
+     * This bean is only injected in multi tenant mode.
+     */
     @Autowired(required=false)
     TenantScope tenantScope;
 
+    /**
+     * This bean is only injected in multi tenant mode.
+     */
     @Autowired(required=false)
     TenantFilter tenantFilter;
 

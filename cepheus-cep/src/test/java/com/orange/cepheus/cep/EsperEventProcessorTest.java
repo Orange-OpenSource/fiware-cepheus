@@ -16,10 +16,7 @@ import com.orange.cepheus.cep.exception.EventProcessingException;
 import com.orange.cepheus.cep.exception.EventTypeNotFoundException;
 import com.orange.cepheus.cep.model.Attribute;
 import com.orange.cepheus.cep.model.Configuration;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +24,9 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.*;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import static org.junit.Assert.assertEquals;
 import static com.orange.cepheus.cep.Util.*;
 
 
@@ -243,5 +238,30 @@ public class EsperEventProcessorTest {
                 Assert.fail("Not expected EventProcessingException");
             }
         }
+    }
+
+    @Test
+    public void checkResetAndRestoreConfiguration() throws ConfigurationException, EventProcessingException {
+        Configuration configuration = getBasicConf();
+        esperEventProcessor.setConfiguration(configuration);
+        esperEventProcessor.reset();
+        assertNull(esperEventProcessor.getConfiguration());
+
+        esperEventProcessor.setConfiguration(configuration);
+        esperEventProcessor.processEvent(buildBasicEvent(5.0d));
+
+        verify(eventSinkListener).update(any(), eq(null), any(EPStatement.class), any(EPServiceProvider.class));
+    }
+
+    @Test(expected = EventProcessingException.class)
+    public void checkResetConfiguration() throws ConfigurationException, EventProcessingException {
+        esperEventProcessor.setConfiguration(getBasicConf());
+
+        esperEventProcessor.reset();
+
+        assertNull(esperEventProcessor.getConfiguration());
+
+        // Handling an event after reset must throw an EventProcessingException
+        esperEventProcessor.processEvent(buildBasicEvent(5.0d));
     }
 }
