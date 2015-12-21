@@ -2213,7 +2213,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
              {                                                                &#xd;
                  &quot;type&quot;: &quot;Room&quot;,                                                                &#xd;
                  &quot;isPattern&quot;: &quot;false&quot;,                                                                &#xd;
-                 &quot;id&quot;: &quot;&apos;room${FLOOR}${ROOM}&apos;&quot;,                                                                &#xd;
+                 &quot;id&quot;: &quot;room${FLOOR}${ROOM}&quot;,                                                                &#xd;
                  &quot;attributes&quot;: [                                                                           &#xd;
                      {                                                                                &#xd;
                          &quot;name&quot;: &quot;temperature&quot;,                                                                                &#xd;
@@ -2221,14 +2221,14 @@ return &quot;BeanShell executed&quot;;</stringProp>
                           &quot;value&quot;:  &quot;${TEMPVALUE}&quot;,                                                                                &#xd;
                          &quot;metadatas&quot;: [&#xd;
                               { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,  &quot;value&quot;:&quot;celsius&quot;},                                                                                        &#xd;
-                              { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;&apos;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&apos;&quot;  },                                                                                        &#xd;
-                              { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;  }                                                                                &#xd;
+                              { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&quot;},                                                                                        &#xd;
+                              { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;}                                                                                &#xd;
                            ]                                                                        &#xd;
                       },                                                                           &#xd;
                       {                                                                                &#xd;
                           &quot;name&quot;: &quot;floor&quot;,                                                                                &#xd;
                           &quot;type&quot;: &quot;string&quot;,                                                                                &#xd;
-                          &quot;value&quot;: &quot;&apos;floor${FLOOR}&apos;&quot;                                                                        &#xd;
+                          &quot;value&quot;: &quot;floor${FLOOR}&quot;                                                                        &#xd;
                       },&#xd;
                     {                                                                                &#xd;
                          &quot;name&quot;: &quot;pressure&quot;,                                                                                &#xd;
@@ -2236,8 +2236,8 @@ return &quot;BeanShell executed&quot;;</stringProp>
                          &quot;value&quot;:  ${varPressureValue}.0,                                                                         &#xd;
                          &quot;metadatas&quot;: [&#xd;
                               { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,  &quot;value&quot;:&quot;bar&quot;},&#xd;
-                               { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;&apos;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&apos;&quot;   },                                                                                        &#xd;
-                               { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;  }                                                          &#xd;
+                               { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&quot;},                                                                                        &#xd;
+                               { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;}                                                          &#xd;
                            ]                                                                        &#xd;
                       },  &#xd;
                        {                                                                                &#xd;
@@ -2246,7 +2246,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
                          &quot;value&quot;:   ${varHumidityValue}.0,                                                                             &#xd;
                          &quot;metadatas&quot;: [&#xd;
                                { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,   &quot;value&quot;:&quot;percent&quot;},&#xd;
-                                { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;&apos;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&apos;&quot;   },                                                                                        &#xd;
+                                { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&quot;},                                                                                        &#xd;
                                 { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;  }                                                         &#xd;
                            ]                                                                        &#xd;
                       },&#xd;
