@@ -1,3 +1,17 @@
+# 0.1.3
+
+## Major features
+
+* Support multi tenancy features #33
+
+## Minor features
+
+* fiware images #34
+* jmeter integration #16, #19
+
+## Bug fixes
+
+
 # 0.1.2
 
 ## Major features
