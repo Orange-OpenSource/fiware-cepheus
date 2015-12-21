@@ -11,7 +11,7 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Host" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Config Vars" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="HOST" elementType="Argument">
             <stringProp name="Argument.name">HOST</stringProp>
@@ -19,83 +19,73 @@
             <stringProp name="Argument.desc">IP or DNS name of the target</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-        </collectionProp>
-        <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
-      </Arguments>
-      <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Port" enabled="true">
-        <collectionProp name="Arguments.arguments">
-          <elementProp name="PORT" elementType="Argument">
-            <stringProp name="Argument.name">PORT</stringProp>
-            <stringProp name="Argument.value">${__P(PORT,8080)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">CEP=8080, Broker=8081</stringProp>
-          </elementProp>
-        </collectionProp>
-        <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
-      </Arguments>
-      <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput" enabled="true">
-        <collectionProp name="Arguments.arguments">
-          <elementProp name="THROUGHPUT" elementType="Argument">
-            <stringProp name="Argument.name">THROUGHPUT</stringProp>
-            <stringProp name="Argument.value">${__P(THROUGHPUT,6)}</stringProp>
-            <stringProp name="Argument.desc">6-&gt;0.1 req/s, 6000-&gt;100req/s</stringProp>
+          <elementProp name="CEP_PORT" elementType="Argument">
+            <stringProp name="Argument.name">CEP_PORT</stringProp>
+            <stringProp name="Argument.value">${__P(CEP_PORT,8080)}</stringProp>
+            <stringProp name="Argument.desc">Port used by CEP</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-        </collectionProp>
-        <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
-      </Arguments>
-      <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Model" enabled="true">
-        <collectionProp name="Arguments.arguments">
-          <elementProp name="MODEL" elementType="Argument">
-            <stringProp name="Argument.name">MODEL</stringProp>
-            <stringProp name="Argument.value">${__P(MODEL,MODEL1)}</stringProp>
+          <elementProp name="BROKER_PORT" elementType="Argument">
+            <stringProp name="Argument.name">BROKER_PORT</stringProp>
+            <stringProp name="Argument.value">${__P(BROKER_PORT,8081)}</stringProp>
+            <stringProp name="Argument.desc">Port used by Broker</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">MODEL1, MODEL2 or MODEL 3</stringProp>
           </elementProp>
-        </collectionProp>
-        <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
-      </Arguments>
-      <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Duration" enabled="true">
-        <collectionProp name="Arguments.arguments">
-          <elementProp name="DURATION" elementType="Argument">
-            <stringProp name="Argument.name">DURATION</stringProp>
-            <stringProp name="Argument.value">${__P(DURATION,600)}</stringProp>
+          <elementProp name="MODEL1_RAMPUP" elementType="Argument">
+            <stringProp name="Argument.name">MODEL1_RAMPUP</stringProp>
+            <stringProp name="Argument.value">${__P(MODEL1_RAMPUP,250)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">Scenario1=600s, Scenario2=300s</stringProp>
+            <stringProp name="Argument.desc">Duration for connecting all devices for MODEL1</stringProp>
           </elementProp>
-        </collectionProp>
-        <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
-      </Arguments>
-      <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup" enabled="true">
-        <collectionProp name="Arguments.arguments">
-          <elementProp name="RAMPUP" elementType="Argument">
-            <stringProp name="Argument.name">RAMPUP</stringProp>
-            <stringProp name="Argument.value">${__P(RAMPUP,250)}</stringProp>
+          <elementProp name="MODEL1_DURATION" elementType="Argument">
+            <stringProp name="Argument.name">MODEL1_DURATION</stringProp>
+            <stringProp name="Argument.value">${__P(MODEL1_DURATION,600)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">default 250s </stringProp>
+            <stringProp name="Argument.desc">Overall duration of performance test for MODEL1</stringProp>
+          </elementProp>
+          <elementProp name="MODEL2_RAMPUP" elementType="Argument">
+            <stringProp name="Argument.name">MODEL2_RAMPUP</stringProp>
+            <stringProp name="Argument.value">${__P(MODEL2_RAMPUP,25)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Duration for connecting all devices for MODEL2</stringProp>
+          </elementProp>
+          <elementProp name="MODEL2_DURATION" elementType="Argument">
+            <stringProp name="Argument.name">MODEL2_DURATION</stringProp>
+            <stringProp name="Argument.value">${__P(MODEL2_DURATION,300)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Overall duration of performance test for MODEL2</stringProp>
+          </elementProp>
+          <elementProp name="MODEL3_RAMPUP" elementType="Argument">
+            <stringProp name="Argument.name">MODEL3_RAMPUP</stringProp>
+            <stringProp name="Argument.value">${__P(MODEL3_RAMPUP,25)}</stringProp>
+            <stringProp name="Argument.desc">Duration for connecting all devices for MODEL3</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="MODEL3_DURATION" elementType="Argument">
+            <stringProp name="Argument.name">MODEL3_DURATION</stringProp>
+            <stringProp name="Argument.value">${__P(MODEL3_DURATION,300)}</stringProp>
+            <stringProp name="Argument.desc">Overall duration of performance test for MODEL3</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
         <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
       </Arguments>
       <hashTree/>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Devices" enabled="true">
-        <collectionProp name="Arguments.arguments">
-          <elementProp name="DEVICES" elementType="Argument">
-            <stringProp name="Argument.name">DEVICES</stringProp>
-            <stringProp name="Argument.value">${__P(DEVICES,1000)}</stringProp>
-            <stringProp name="Argument.desc">Scenario1=1000, Scenario2=100</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-        </collectionProp>
-        <stringProp name="TestPlan.comments">1 thread per device to simulate; can be overriden by -Jname arguments on command line</stringProp>
-      </Arguments>
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target host" enabled="true">
+        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+        <stringProp name="HTTPSampler.domain">${HOST}</stringProp>
+        <stringProp name="HTTPSampler.port"></stringProp>
+        <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+        <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        <stringProp name="HTTPSampler.protocol"></stringProp>
+        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+        <stringProp name="HTTPSampler.path"></stringProp>
+        <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+      </ConfigTestElement>
       <hashTree/>
-      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Content-Type" enabled="true">
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Content-Type: application/json" enabled="true">
         <collectionProp name="HeaderManager.headers">
           <elementProp name="" elementType="Header">
             <stringProp name="Header.name">Content-Type</stringProp>
@@ -103,66 +93,6 @@
           </elementProp>
         </collectionProp>
       </HeaderManager>
-      <hashTree/>
-      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP parameters" enabled="true">
-        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-          <collectionProp name="Arguments.arguments"/>
-        </elementProp>
-        <stringProp name="HTTPSampler.domain">${HOST}</stringProp>
-        <stringProp name="HTTPSampler.port">${PORT}</stringProp>
-        <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-        <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        <stringProp name="HTTPSampler.protocol"></stringProp>
-        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-        <stringProp name="HTTPSampler.path"></stringProp>
-        <stringProp name="TestPlan.comments">CEP Port=8080, BROKER Port=8081</stringProp>
-        <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
-      </ConfigTestElement>
-      <hashTree/>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Floor" enabled="true">
-        <stringProp name="maximumValue">49</stringProp>
-        <stringProp name="minimumValue">0</stringProp>
-        <stringProp name="outputFormat"></stringProp>
-        <boolProp name="perThread">true</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">FLOOR</stringProp>
-      </RandomVariableConfig>
-      <hashTree/>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Room" enabled="true">
-        <stringProp name="maximumValue">20</stringProp>
-        <stringProp name="minimumValue">1</stringProp>
-        <stringProp name="outputFormat"></stringProp>
-        <boolProp name="perThread">true</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">ROOM</stringProp>
-      </RandomVariableConfig>
-      <hashTree/>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Temperature" enabled="true">
-        <stringProp name="maximumValue">42</stringProp>
-        <stringProp name="minimumValue">10</stringProp>
-        <stringProp name="outputFormat"></stringProp>
-        <boolProp name="perThread">true</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">TEMPVALUE</stringProp>
-      </RandomVariableConfig>
-      <hashTree/>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="varPressureValue" enabled="true">
-        <stringProp name="maximumValue">1030</stringProp>
-        <stringProp name="minimumValue">990</stringProp>
-        <stringProp name="outputFormat">000</stringProp>
-        <boolProp name="perThread">true</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">varPressureValue</stringProp>
-      </RandomVariableConfig>
-      <hashTree/>
-      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="varHumidityValue" enabled="true">
-        <stringProp name="maximumValue">100</stringProp>
-        <stringProp name="minimumValue">10</stringProp>
-        <stringProp name="outputFormat">00</stringProp>
-        <boolProp name="perThread">true</boolProp>
-        <stringProp name="randomSeed"></stringProp>
-        <stringProp name="variableName">varHumidityValue</stringProp>
-      </RandomVariableConfig>
       <hashTree/>
       <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="Setup" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
@@ -316,7 +246,7 @@
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain"></stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.port">${CEP_PORT}</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
@@ -340,7 +270,70 @@
             <intProp name="Assertion.test_type">8</intProp>
           </ResponseAssertion>
           <hashTree/>
+          <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="CEP Configuration" enabled="true">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>false</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>false</message>
+                <threadName>false</threadName>
+                <dataType>false</dataType>
+                <encoding>false</encoding>
+                <assertions>false</assertions>
+                <subresults>false</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>true</xml>
+                <fieldNames>false</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <threadCounts>true</threadCounts>
+              </value>
+            </objProp>
+            <stringProp name="filename">CEP Configuration.jtl</stringProp>
+          </ResultCollector>
+          <hashTree/>
         </hashTree>
+        <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="Post-Processeur BeanShell" enabled="false">
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <boolProp name="resetInterpreter">false</boolProp>
+          <stringProp name="script">import org.apache.jmeter.services.FileServer;
+
+// Static elements or calculations
+//part = &quot;&lt;/testResults&gt;&quot;;
+
+//target=${__property(user.dir)}  + &quot;\\CEP Configuration.jtl&quot;;
+//target=props.get(&quot;user.dir&quot;);
+target=ctx.getSamplerContext();
+vars.put(&quot;target&quot;,target); 
+
+log.info(target);
+log.info(ctx.getSamplerContext());
+
+// Open File(s)
+//f = new FileOutputStream(target, true); 
+//p = new PrintStream(f); 
+
+// Write data to file 
+//p.println(part);
+
+// Close File(s)
+//p.close();f.close();
+
+return &quot;BeanShell executed&quot;;</stringProp>
+        </BeanShellPostProcessor>
+        <hashTree/>
         <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Echantillon Débogage" enabled="false">
           <boolProp name="displayJMeterProperties">false</boolProp>
           <boolProp name="displayJMeterVariables">true</boolProp>
@@ -348,60 +341,1065 @@
         </DebugSampler>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP Only - Model1" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${DEVICES}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${RAMPUP}</stringProp>
-        <longProp name="ThreadGroup.start_time">1447931100000</longProp>
-        <longProp name="ThreadGroup.end_time">1447931100000</longProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL1_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446203175000</longProp>
+        <longProp name="ThreadGroup.end_time">1446203175000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
-        <stringProp name="ThreadGroup.duration">${DURATION}</stringProp>
+        <stringProp name="ThreadGroup.duration">${MODEL1_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">0.1 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${CEP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model1" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="997247477">Model1: Normal</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario1-CEP_Only-Model1" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario1-CEP_Only-Model1.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP Only - Model2" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL2_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446203175000</longProp>
+        <longProp name="ThreadGroup.end_time">1446203175000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL2_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">0.1 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${CEP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model2" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="-2034809152">Model2: 50% of error requests</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario1-CEP_Only-Model2" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario1-CEP_Only-Model2.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP Only - Model3" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL3_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446203175000</longProp>
+        <longProp name="ThreadGroup.end_time">1446203175000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL3_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">0.1 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${CEP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model3" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="-800074137">Model3: 50% of big requests</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario1-CEP_Only-Model3" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario1-CEP_Only-Model3.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 -  CEP with Broker - Model1" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL1_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446203175000</longProp>
+        <longProp name="ThreadGroup.end_time">1446203175000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL1_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">0.1 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${BROKER_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model1" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="997247477">Model1: Normal</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario1-CEP_with_Broker-Model1" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario1-CEP_with_Broker-Model1.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 -  CEP with Broker - Model2" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL2_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446203175000</longProp>
+        <longProp name="ThreadGroup.end_time">1446203175000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL2_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">0.1 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${BROKER_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model2" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="-2034809152">Model2: 50% of error requests</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario1-CEP_with_Broker-Model2" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario1-CEP_with_Broker-Model2.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 -  CEP with Broker - Model3" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL3_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446203175000</longProp>
+        <longProp name="ThreadGroup.end_time">1446203175000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL3_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">0.1 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${BROKER_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model3" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="-800074137">Model3: 50% of big requests</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario1-CEP_with_Broker-Model3" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario1-CEP_with_Broker-Model3.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP Only - Model1" enabled="true">
+        <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL1_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446652410000</longProp>
+        <longProp name="ThreadGroup.end_time">1446652410000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL1_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <SwitchController guiclass="SwitchControllerGui" testclass="SwitchController" testname="Start Model to run" enabled="true">
-          <stringProp name="SwitchController.value">${MODEL}</stringProp>
-        </SwitchController>
-        <hashTree>
-          <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MODEL1" enabled="true">
-            <collectionProp name="ModuleController.node_path">
-              <stringProp name="1358040521">Plan de travail</stringProp>
-              <stringProp name="-1082257669">TestPlan</stringProp>
-              <stringProp name="-1984932280">Model1</stringProp>
-            </collectionProp>
-            <stringProp name="TestPlan.comments">Model1: Normal</stringProp>
-          </ModuleController>
-          <hashTree/>
-          <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MODEL2" enabled="true">
-            <collectionProp name="ModuleController.node_path">
-              <stringProp name="1358040521">Plan de travail</stringProp>
-              <stringProp name="-1082257669">TestPlan</stringProp>
-              <stringProp name="-1984932279">Model2</stringProp>
-            </collectionProp>
-            <stringProp name="TestPlan.comments">Model2: 50% of error requests</stringProp>
-          </ModuleController>
-          <hashTree/>
-          <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="MODEL3" enabled="true">
-            <collectionProp name="ModuleController.node_path">
-              <stringProp name="1358040521">Plan de travail</stringProp>
-              <stringProp name="-1082257669">TestPlan</stringProp>
-              <stringProp name="-1984932278">Model3</stringProp>
-            </collectionProp>
-            <stringProp name="TestPlan.comments">Model3: 50% of big requests</stringProp>
-          </ModuleController>
-          <hashTree/>
-        </hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">100 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${CEP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model1" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="997247477">Model1: Normal</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario2-CEP_Only-Model1" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario2-CEP_Only-Model1.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
       </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model1" enabled="true"/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP Only - Model2" enabled="true">
+        <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL2_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446652410000</longProp>
+        <longProp name="ThreadGroup.end_time">1446652410000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL2_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">100 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${CEP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model2" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="-2034809152">Model2: 50% of error requests</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario2-CEP_Only-Model2" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario2-CEP_Only-Model2.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP Only - Model3" enabled="true">
+        <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL3_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446652410000</longProp>
+        <longProp name="ThreadGroup.end_time">1446652410000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL3_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">100 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${CEP_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model3" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="-800074137">Model3: 50% of big requests</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario2-CEP_Only-Model3" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario2-CEP_Only-Model3.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP with Broker - Model1" enabled="true">
+        <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL1_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446652410000</longProp>
+        <longProp name="ThreadGroup.end_time">1446652410000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL1_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">100 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${BROKER_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model1" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="997247477">Model1: Normal</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario2-CEP_with_Broker-Model1" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario2-CEP_with_Broker-Model1.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP with Broker - Model2" enabled="true">
+        <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL2_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446652410000</longProp>
+        <longProp name="ThreadGroup.end_time">1446652410000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL2_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">100 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${BROKER_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model2" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="-2034809152">Model2: 50% of error requests</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario2-CEP_with_Broker-Model2" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario2-CEP_with_Broker-Model2.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP with Broker - Model3" enabled="true">
+        <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL3_RAMPUP}</stringProp>
+        <longProp name="ThreadGroup.start_time">1446652410000</longProp>
+        <longProp name="ThreadGroup.end_time">1446652410000</longProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${MODEL3_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Throughput" elementType="Argument">
+              <stringProp name="Argument.name">Throughput</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
+              <stringProp name="Argument.desc">Req/mn</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">100 req/s</stringProp>
+        </Arguments>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port">${BROKER_PORT}</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <ModuleController guiclass="ModuleControllerGui" testclass="ModuleController" testname="Include Model3" enabled="true">
+          <collectionProp name="ModuleController.node_path">
+            <stringProp name="1358040521">Plan de travail</stringProp>
+            <stringProp name="-1082257669">TestPlan</stringProp>
+            <stringProp name="-800074137">Model3: 50% of big requests</stringProp>
+          </collectionProp>
+        </ModuleController>
+        <hashTree/>
+        <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Scenario2-CEP_with_Broker-Model3" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>false</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>false</message>
+              <threadName>false</threadName>
+              <dataType>false</dataType>
+              <encoding>false</encoding>
+              <assertions>false</assertions>
+              <subresults>false</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">Scenario2-CEP_with_Broker-Model3.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Floor" enabled="true">
+        <stringProp name="maximumValue">49</stringProp>
+        <stringProp name="minimumValue">0</stringProp>
+        <stringProp name="outputFormat"></stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">FLOOR</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Room" enabled="true">
+        <stringProp name="maximumValue">20</stringProp>
+        <stringProp name="minimumValue">1</stringProp>
+        <stringProp name="outputFormat"></stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">ROOM</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="Temperature" enabled="true">
+        <stringProp name="maximumValue">42</stringProp>
+        <stringProp name="minimumValue">10</stringProp>
+        <stringProp name="outputFormat"></stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">TEMPVALUE</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="varPressureValue" enabled="true">
+        <stringProp name="maximumValue">1030</stringProp>
+        <stringProp name="minimumValue">990</stringProp>
+        <stringProp name="outputFormat">000</stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">varPressureValue</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <RandomVariableConfig guiclass="TestBeanGUI" testclass="RandomVariableConfig" testname="varHumidityValue" enabled="true">
+        <stringProp name="maximumValue">100</stringProp>
+        <stringProp name="minimumValue">10</stringProp>
+        <stringProp name="outputFormat">00</stringProp>
+        <boolProp name="perThread">true</boolProp>
+        <stringProp name="randomSeed"></stringProp>
+        <stringProp name="variableName">varHumidityValue</stringProp>
+      </RandomVariableConfig>
+      <hashTree/>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model1: Normal" enabled="true"/>
       <hashTree>
         <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
-          <stringProp name="throughput">${THROUGHPUT}</stringProp>
+          <stringProp name="throughput">${Throughput}</stringProp>
           <intProp name="calcMode">0</intProp>
-          <stringProp name="TestPlan.comments">For expected behavior, place this Timer in the first http request of the first Controler of the Thread Group.</stringProp>
+          <stringProp name="TestPlan.comments">Throughput for each sensor (one sensor=one thread).</stringProp>
         </ConstantThroughputTimer>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
@@ -740,12 +1738,12 @@
         </DebugSampler>
         <hashTree/>
       </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model2" enabled="true"/>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model2: 50% of error requests" enabled="true"/>
       <hashTree>
         <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
-          <stringProp name="throughput">${THROUGHPUT}</stringProp>
+          <stringProp name="throughput">${Throughput}</stringProp>
           <intProp name="calcMode">0</intProp>
-          <stringProp name="TestPlan.comments">For expected behavior, place this Timer in the first http request of the first Controler of the Thread Group.</stringProp>
+          <stringProp name="TestPlan.comments">Throughput for each sensor (one sensor=one thread).</stringProp>
         </ConstantThroughputTimer>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
@@ -1084,12 +2082,12 @@
         </DebugSampler>
         <hashTree/>
       </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model3" enabled="true"/>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model3: 50% of big requests" enabled="true"/>
       <hashTree>
         <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
-          <stringProp name="throughput">${THROUGHPUT}</stringProp>
+          <stringProp name="throughput">${Throughput}</stringProp>
           <intProp name="calcMode">0</intProp>
-          <stringProp name="TestPlan.comments">For expected behavior, place this Timer in the first http request of the first Controler of the Thread Group.</stringProp>
+          <stringProp name="TestPlan.comments">Throughput for each sensor (one sensor=one thread).</stringProp>
         </ConstantThroughputTimer>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
@@ -1215,7 +2213,7 @@
              {                                                                &#xd;
                  &quot;type&quot;: &quot;Room&quot;,                                                                &#xd;
                  &quot;isPattern&quot;: &quot;false&quot;,                                                                &#xd;
-                 &quot;id&quot;: &quot;&apos;room${FLOOR}${ROOM}&apos;&quot;,                                                                &#xd;
+                 &quot;id&quot;: &quot;room${FLOOR}${ROOM}&quot;,                                                                &#xd;
                  &quot;attributes&quot;: [                                                                           &#xd;
                      {                                                                                &#xd;
                          &quot;name&quot;: &quot;temperature&quot;,                                                                                &#xd;
@@ -1223,14 +2221,14 @@
                           &quot;value&quot;:  &quot;${TEMPVALUE}&quot;,                                                                                &#xd;
                          &quot;metadatas&quot;: [&#xd;
                               { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,  &quot;value&quot;:&quot;celsius&quot;},                                                                                        &#xd;
-                              { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;&apos;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&apos;&quot;  },                                                                                        &#xd;
-                              { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;  }                                                                                &#xd;
+                              { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&quot;},                                                                                        &#xd;
+                              { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;}                                                                                &#xd;
                            ]                                                                        &#xd;
                       },                                                                           &#xd;
                       {                                                                                &#xd;
                           &quot;name&quot;: &quot;floor&quot;,                                                                                &#xd;
                           &quot;type&quot;: &quot;string&quot;,                                                                                &#xd;
-                          &quot;value&quot;: &quot;&apos;floor${FLOOR}&apos;&quot;                                                                        &#xd;
+                          &quot;value&quot;: &quot;floor${FLOOR}&quot;                                                                        &#xd;
                       },&#xd;
                     {                                                                                &#xd;
                          &quot;name&quot;: &quot;pressure&quot;,                                                                                &#xd;
@@ -1238,8 +2236,8 @@
                          &quot;value&quot;:  ${varPressureValue}.0,                                                                         &#xd;
                          &quot;metadatas&quot;: [&#xd;
                               { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,  &quot;value&quot;:&quot;bar&quot;},&#xd;
-                               { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;&apos;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&apos;&quot;   },                                                                                        &#xd;
-                               { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;  }                                                          &#xd;
+                               { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&quot;},                                                                                        &#xd;
+                               { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;}                                                          &#xd;
                            ]                                                                        &#xd;
                       },  &#xd;
                        {                                                                                &#xd;
@@ -1248,7 +2246,7 @@
                          &quot;value&quot;:   ${varHumidityValue}.0,                                                                             &#xd;
                          &quot;metadatas&quot;: [&#xd;
                                { &quot;name&quot;:&quot;unit&quot;, &quot;type&quot;:&quot;string&quot; ,   &quot;value&quot;:&quot;percent&quot;},&#xd;
-                                { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;&apos;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&apos;&quot;   },                                                                                        &#xd;
+                                { &quot;name&quot;:&quot;time&quot;, &quot;type&quot;:&quot;date&quot;, &quot;value&quot;:&quot;${__time(YYYY-MM-dd)}T${__time(HH:MM:ss)}Z&quot;},                                                                                        &#xd;
                                 { &quot;name&quot;:&quot;location&quot;, &quot;type&quot;:&quot;geo:point&quot;, &quot;value&quot;:&quot;46.2323,1.023&quot;  }                                                         &#xd;
                            ]                                                                        &#xd;
                       },&#xd;
@@ -1322,39 +2320,6 @@
         </DebugSampler>
         <hashTree/>
       </hashTree>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <threadCounts>true</threadCounts>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-      </ResultCollector>
-      <hashTree/>
       <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ResponseTimesOverTimeGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Response Times Over Time" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
@@ -1396,7 +2361,44 @@
         <boolProp name="exclude_checkbox_state">false</boolProp>
       </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
       <hashTree/>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="false">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+<<<<<<< HEAD
       <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+=======
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+>>>>>>> master
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>

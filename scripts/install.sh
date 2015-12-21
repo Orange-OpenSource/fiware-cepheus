@@ -2,6 +2,8 @@
 # Setup Cepheus-CEP and Cepheus-Broker on Ubuntu 14.04 (trusty)
 
 # Cepheus version
+REPO="releases"
+VERSION="LATEST"
 
 # Check and echo all commands
 set -e

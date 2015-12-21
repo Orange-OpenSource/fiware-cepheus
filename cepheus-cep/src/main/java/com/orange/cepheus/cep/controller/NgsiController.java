@@ -80,7 +80,7 @@ public class NgsiController extends NgsiBaseController {
                 complexEventProcessor.processEvent(event);
                 statusCode = new StatusCode(CodeEnum.CODE_200);
             } catch (EventProcessingException e) {
-                logger.error("updateContext incoming request: failed to process event {}", e.toString());
+                logger.error("updateContext incoming request: failed to process event {}", e);
                 statusCode = new StatusCode(CodeEnum.CODE_472, "");
                 statusCode.setDetail(e.getMessage());
             }
