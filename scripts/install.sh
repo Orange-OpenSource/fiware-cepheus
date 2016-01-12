@@ -21,19 +21,19 @@ sudo apt-get update -q
 sudo apt-get install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" openjdk-8-jre-headless
 
 # Download Cepheus-CEP and Cepheus-Broker
-curl -L -o cepheus-cep.jar "http://oss.sonatype.org/service/local/artifact/maven/redirect?r=$REPO&g=com.orange.cepheus&a=cepheus-cep&v=$VERSION&p=jar"
-curl -L -o cepheus-broker.jar "http://oss.sonatype.org/service/local/artifact/maven/redirect?r=$REPO&g=com.orange.cepheus&a=cepheus-broker&v=$VERSION&p=jar"
+curl -L -o cepheus-cep.deb "http://oss.sonatype.org/service/local/artifact/maven/redirect?r=$REPO&g=com.orange.cepheus&a=cepheus-cep&v=$VERSION&p=deb"
+curl -L -o cepheus-broker.deb "http://oss.sonatype.org/service/local/artifact/maven/redirect?r=$REPO&g=com.orange.cepheus&a=cepheus-broker&v=$VERSION&p=deb"
 
-# create launcher script
-echo '#!/bin/bash' > launcher-cepheus.sh
-echo 'nohup java -jar -Djava.security.egd=file:/dev/./urandom cepheus-cep.jar --logging.config=file --logging.file=cep.log --port=8080 2>> /dev/null &' >> launcher-cepheus.sh
-echo 'nohup java -jar -Djava.security.egd=file:/dev/./urandom cepheus-broker.jar --spring.datasource.url=jdbc:sqlite:cepheus-broker.db --logging.config=file --logging.file=broker.log --port=8081 2>> /dev/null >> /dev/null &' >> launcher-cepheus.sh
-echo 'exit 0' >> launcher-cepheus.sh
+# install debian package
+sudo dpkg -i cepheus-broker.deb
+sudo dpkg -i cepheus-cep.deb
 
-sudo chmod 777 launcher-cepheus.sh
+# for Fiware Lab we need to set java variable java.security.egd to file:/dev/./urandom
+sudo sed -i -e "s/java -jar/java -jar -Djava.security.egd=file:\/dev\/.\/urandom/g" /etc/init.d/cepheus-broker
+sudo sed -i -e "s/java -jar/java -jar -Djava.security.egd=file:\/dev\/.\/urandom/g" /etc/init.d/cepheus-cep
 
-# launch Cepheus-CEP and Cepheus-Broker on boot
-sudo sed -i -e '$i \/home/ubuntu/launcher-cepheus.sh\n' /etc/rc.local
+sudo service cepheus-broker restart
+sudo service cepheus-cep restart
 
 
 

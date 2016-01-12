@@ -11,6 +11,10 @@ fi
 set -e
 set -x
 
+# Check services are running
+ssh ubuntu@$IP service cepheus-cep status |grep -q "Cepheus-CEP is running"
+ssh ubuntu@$IP service cepheus-broker status |grep -q "Cepheus-Broker is running"
+
 # Check services are up
 curl $IP:8080/v1/admin/config  -s -S --header "Content-Type: application/json" --header "Accept: application/json"
 curl $IP:8081/v1/updateContext -s -S --header "Content-Type: application/json" --header "Accept: application/json" -d @- <<EOF
