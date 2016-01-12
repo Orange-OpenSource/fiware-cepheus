@@ -21,10 +21,10 @@ import com.orange.cepheus.geo.Geospatial;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.metrics.GaugeService;
 
+import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -33,19 +33,24 @@ import java.util.*;
 /**
  * ComplexEventProcessor implementation using EsperTech Esper CEP
  */
-@Component
 public class EsperEventProcessor implements ComplexEventProcessor {
 
     private static Logger logger = LoggerFactory.getLogger(EsperEventProcessor.class);
 
-    private final EPServiceProvider epServiceProvider;
-    private com.orange.cepheus.cep.model.Configuration configuration;
+    private EPServiceProvider epServiceProvider;
+    private Configuration configuration;
 
     /**
      * Keep a list of statements that declare a variable (create variable),
      * required to properly remove them on updates as Esper does not provide this.
      */
     private HashMap<String, String> variablesByStatementName = new HashMap<>();
+
+    /**
+     * Collect Esper metrics when the Spring Boot metrics are enabled
+     */
+    @Value("${endpoints.metrics.enabled:${endpoints.enabled:false}}")
+    private boolean collectMetrics;
 
     /**
      * This bean is only injected in multi tenant mode.
@@ -59,9 +64,21 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     @Autowired
     private EventSinkListener eventSinkListener;
 
-    public EsperEventProcessor() {
+    /**
+     * Expose Esper statement metrics as Spring Boot metrics
+     */
+    @Autowired
+    private GaugeService gaugeService;
+
+    @PostConstruct
+    public void init() {
         com.espertech.esper.client.Configuration configuration = new com.espertech.esper.client.Configuration();
         Geospatial.registerConfiguration(configuration);
+
+        if (collectMetrics) {
+            logger.warn("Activating Esper metrics, expect performance impacts");
+            configuration.setMetricsReportingEnabled();
+        }
 
         if (tenantScope != null) {
             String provider = tenantScope.getConversationId();
@@ -175,22 +192,6 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     }
 
     /**
-     * Return the list of EPL statements.
-     * @return a list of EPL statements
-     */
-    public List<Statement> getStatements() {
-        List<Statement> statements = new LinkedList<>();
-        for (String statementName : epServiceProvider.getEPAdministrator().getStatementNames()) {
-            EPStatement epStatement = epServiceProvider.getEPAdministrator().getStatement(statementName);
-            if (epStatement != null) {
-                Statement statement = new Statement(epStatement.getName(), epStatement.getText());
-                statements.add(statement);
-            }
-        }
-        return statements;
-    }
-
-    /**
      * Return a list of Attribute for a given even type. This is mainly useful for testing.
      * @param eventTypeName
      * @return
@@ -211,6 +212,37 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             throw new EventTypeNotFoundException("The event type does not exist.");
         }
         return attributes;
+    }
+
+    /**
+     * Return the list of EPL statements.
+     * @return a list of EPL statements
+     */
+    public List<Statement> getStatements() {
+        List<Statement> statements = new LinkedList<>();
+        for (String statementName : epServiceProvider.getEPAdministrator().getStatementNames()) {
+            EPStatement epStatement = epServiceProvider.getEPAdministrator().getStatement(statementName);
+            if (epStatement != null) {
+                Statement statement = new Statement(epStatement.getName(), epStatement.getText());
+                statements.add(statement);
+            }
+        }
+        return statements;
+    }
+
+    /**
+     * Return the list of EPL statements. This is mainly useful for testing.
+     * @return a list of EPL statements
+     */
+    public List<EPStatement> getEPStatements() {
+        List<EPStatement> statements = new LinkedList<>();
+        for (String statementName : epServiceProvider.getEPAdministrator().getStatementNames()) {
+            EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(statementName);
+            if (statement != null) {
+                statements.add(statement);
+            }
+        }
+        return statements;
     }
 
     /**
@@ -292,6 +324,24 @@ public class EsperEventProcessor implements ComplexEventProcessor {
                 statement = epServiceProvider.getEPAdministrator().create(model);
                 statement.addListener(eventSinkListener);
             }
+        }
+
+        // Collect metrics statements if enabled
+        if (collectMetrics) {
+            EPStatement statement = epServiceProvider.getEPAdministrator().createEPL("select * from com.espertech.esper.client.metric.StatementMetric", "STATEMENT_METRIC");
+            statement.addListener((eventBeans, unused) -> {
+                if (eventBeans != null) {
+                    for (EventBean eventBean : eventBeans) {
+                        String statementName = (String)eventBean.get("statementName");
+                        String tenant = (String)eventBean.get("engineURI");
+                        String keyPrefix = "cepheus.statement."+tenant+"."+statementName;
+                        gaugeService.submit(keyPrefix+".cpuTime", (Long)eventBean.get("cpuTime"));
+                        gaugeService.submit(keyPrefix+".wallTime", (Long)eventBean.get("wallTime"));
+                        gaugeService.submit(keyPrefix+".numInput", (Long)eventBean.get("numInput"));
+                        gaugeService.submit(keyPrefix+".numOutputIStream", (Long)eventBean.get("numOutputIStream"));
+                    }
+                }
+            });
         }
     }
 

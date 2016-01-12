@@ -75,6 +75,21 @@ public class EsperEventProcessorTest {
     }
 
     /**
+     * Check that metrics are disabled by default
+     */
+    @Test
+    public void checkNoMetrics() throws ConfigurationException {
+        esperEventProcessor.setConfiguration(getBasicConf());
+
+        // Check that metric statement is inserted !
+        for (EPStatement epStatement : esperEventProcessor.getEPStatements()) {
+            if (epStatement.getName().equals("STATEMENT_METRIC")) {
+                fail("metric are enabled !");
+            }
+        }
+    }
+
+    /**
      * Check that a TestConfiguration exception is thrown when an unknown property 'BAD' is added to a statement
      * @throws ConfigurationException
      */
