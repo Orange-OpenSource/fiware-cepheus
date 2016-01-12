@@ -13,10 +13,9 @@ import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.EventProcessingException;
 import com.orange.cepheus.cep.exception.EventTypeNotFoundException;
-import com.orange.cepheus.cep.model.Attribute;
-import com.orange.cepheus.cep.model.EventType;
+import com.orange.cepheus.cep.model.*;
 import com.orange.cepheus.cep.model.Configuration;
-import com.orange.cepheus.cep.model.Event;
+import com.orange.cepheus.cep.model.EventType;
 import com.orange.cepheus.cep.tenant.TenantScope;
 import com.orange.cepheus.geo.Geospatial;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     private static Logger logger = LoggerFactory.getLogger(EsperEventProcessor.class);
 
     private final EPServiceProvider epServiceProvider;
-    private Configuration configuration;
+    private com.orange.cepheus.cep.model.Configuration configuration;
 
     /**
      * Keep a list of statements that declare a variable (create variable),
@@ -176,6 +175,22 @@ public class EsperEventProcessor implements ComplexEventProcessor {
     }
 
     /**
+     * Return the list of EPL statements.
+     * @return a list of EPL statements
+     */
+    public List<Statement> getStatements() {
+        List<Statement> statements = new LinkedList<>();
+        for (String statementName : epServiceProvider.getEPAdministrator().getStatementNames()) {
+            EPStatement epStatement = epServiceProvider.getEPAdministrator().getStatement(statementName);
+            if (epStatement != null) {
+                Statement statement = new Statement(epStatement.getName(), epStatement.getText());
+                statements.add(statement);
+            }
+        }
+        return statements;
+    }
+
+    /**
      * Return a list of Attribute for a given even type. This is mainly useful for testing.
      * @param eventTypeName
      * @return
@@ -196,21 +211,6 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             throw new EventTypeNotFoundException("The event type does not exist.");
         }
         return attributes;
-    }
-
-    /**
-     * Return the list of EPL statements. This is mainly useful for testing.
-     * @return a list of EPL statements
-     */
-    public List<String> getStatements() {
-        List<String> statements = new LinkedList<>();
-        for (String statementName : epServiceProvider.getEPAdministrator().getStatementNames()) {
-            EPStatement statement = epServiceProvider.getEPAdministrator().getStatement(statementName);
-            if (statement != null) {
-                statements.add(statement.getText());
-            }
-        }
-        return statements;
     }
 
     /**

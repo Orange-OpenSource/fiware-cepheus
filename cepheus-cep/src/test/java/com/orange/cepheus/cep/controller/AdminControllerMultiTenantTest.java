@@ -14,6 +14,7 @@ import com.orange.cepheus.cep.EventMapper;
 import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.PersistenceException;
 import com.orange.cepheus.cep.model.Configuration;
+import com.orange.cepheus.cep.model.Statement;
 import com.orange.cepheus.cep.persistence.Persistence;
 import com.orange.cepheus.cep.tenant.TenantFilter;
 import org.junit.After;
@@ -32,7 +33,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.orange.cepheus.cep.Util.getBasicConf;
 import static com.orange.cepheus.cep.Util.json;
@@ -237,6 +242,33 @@ public class AdminControllerMultiTenantTest {
 
         verify(complexEventProcessor).reset();
         verify(persistence).deleteConfiguration(eq(TenantFilter.tenantIdFromService(tenantService1, tenantServicePath1)));
+    }
+
+    @Test
+    public void checkNoStatement() throws Exception {
+        List<Statement> noStatement = new LinkedList<>();
+        when(complexEventProcessor.getStatements()).thenReturn(noStatement);
+
+        mockMvc.perform(get("/v1/admin/statements")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getStatements() throws Exception {
+        List<Statement> statements = new LinkedList<>();
+        Statement statement1 = new Statement("statement1", "insert into TempSensorAvg select \"OUT1\" as id, avg(temp) as avgTemp, temp_unit as avgTemp_unit from TempSensor.win:time(2 seconds) where TempSensor.id=\"S1\"");
+        statements.add(statement1);
+        Statement statement2 = new Statement("statement2", "ON FenceCross fc MERGE TrackerState ts WHERE fc.id = ts.id WHEN NOT MATCHED THEN INSERT SELECT id, time, location, inside WHEN MATCHED AND fc.inside != ts.inside THEN UPDATE SET inside = fc.inside");
+        statements.add(statement2);
+        when(complexEventProcessor.getStatements()).thenReturn(statements);
+
+        mockMvc.perform(get("/v1/admin/statements")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(jsonPath("$.[0].name").value("statement1"))
+                .andExpect(jsonPath("$.[1].name").value("statement2"));
     }
 
     @Test

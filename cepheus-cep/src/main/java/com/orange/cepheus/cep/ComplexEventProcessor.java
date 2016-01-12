@@ -12,6 +12,9 @@ import com.orange.cepheus.cep.exception.ConfigurationException;
 import com.orange.cepheus.cep.exception.EventProcessingException;
 import com.orange.cepheus.cep.model.Event;
 import com.orange.cepheus.cep.model.Configuration;
+import com.orange.cepheus.cep.model.Statement;
+
+import java.util.List;
 
 /**
  * Represents a Complex Event Processor (CEP)
@@ -41,6 +44,11 @@ public interface ComplexEventProcessor {
      * @return the active configuration or null
      */
     Configuration getConfiguration();
+
+    /**
+     * @return the list of the statements
+     */
+    List<Statement> getStatements();
 
     /**
      * Supply an event to the CEP
