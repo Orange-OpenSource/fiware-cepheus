@@ -11,6 +11,9 @@ fi
 set -e
 set -x
 
+# wait up services
+sleep 20
+
 # Check services are running
 ssh ubuntu@$IP service cepheus-cep status |grep -q "Cepheus-CEP is running"
 ssh ubuntu@$IP service cepheus-broker status |grep -q "Cepheus-Broker is running"
