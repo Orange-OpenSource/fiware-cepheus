@@ -60,6 +60,17 @@ This endpoint removes the current configuration. It will return a `200 Ok` on a 
 Example:
 
     curl -X DELETE http://localhost:8080/v1/admin/config
+    
+**GET v1/admin/statements**
+    
+This endpoint returns the list of the statements as a JSON object with a `200 Ok` status code.
+    
+It can also return a `404 Not found` code, if the list is empty.
+    
+Example:
+    
+    curl -H 'Accept: application/json' http://localhost:8080/v1/admin/statements
+
 
 ### NGSI endpoints
 
