@@ -9,6 +9,7 @@
 package com.orange.cepheus.broker;
 
 import com.orange.ngsi.client.NgsiClient;
+import com.orange.ngsi.model.FiwareHeaders;
 import com.orange.ngsi.model.RegisterContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,11 @@ public class RemoteRegistrations {
          * Will be null once a successful registration is achieved.
          */
         RegisterContext registerContext;
+
+        /**
+         * Keeps the FiwareHeaders for the retry
+         */
+        FiwareHeaders fiwareHeaders;
     }
 
     /**
@@ -63,7 +69,7 @@ public class RemoteRegistrations {
      * @param registerContext the registerContext to send
      * @param localRegistrationId the local registrationId
      */
-    public void registerContext(final RegisterContext registerContext, final String localRegistrationId) {
+    public void registerContext(final RegisterContext registerContext, final String localRegistrationId, final FiwareHeaders fiwareHeaders) {
 
         // When no remote broker is define, don't do anything.
         final String remoteUrl = configuration.getRemoteUrl();
@@ -79,7 +85,11 @@ public class RemoteRegistrations {
         // Update the registerContext with the previous remote registrationId if any
         registerContext.setRegistrationId(previousRemoteRegistrationId);
 
-        configuration.addRemoteHeaders(httpHeaders);
+        if (fiwareHeaders == null) {
+            configuration.addRemoteHeaders(httpHeaders);
+        } else {
+            fiwareHeaders.addToHttpHeaders(httpHeaders);
+        }
 
         ngsiClient.registerContext(remoteUrl, httpHeaders, registerContext).addCallback(
                 result -> {
@@ -91,11 +101,11 @@ public class RemoteRegistrations {
                         logger.debug("successfully registered {} to remote broker ({})", localRegistrationId, result.getRegistrationId());
                     }
                     // On error, keep registerContext for future retry
-                    updateRemoteRegistration(localRegistrationId, remoteRegistrationId, error ? registerContext : null);
+                    updateRemoteRegistration(localRegistrationId, remoteRegistrationId, error ? registerContext : null, fiwareHeaders);
                 },
                 ex -> {
                     logger.warn("failed to register {} to remote broker (will retry later) with error {}", localRegistrationId, ex.toString());
-                    updateRemoteRegistration(localRegistrationId, null, registerContext);
+                    updateRemoteRegistration(localRegistrationId, null, registerContext, fiwareHeaders);
                 });
     }
 
@@ -107,8 +117,9 @@ public class RemoteRegistrations {
     public void registerPendingRemoteRegistrations() {
         registrations.forEach((localRegistrationId, remoteRegistration) -> {
             RegisterContext registerContext = remoteRegistration.registerContext;
+            FiwareHeaders fiwareHeaders = remoteRegistration.fiwareHeaders;
             if (registerContext != null) {
-                registerContext(registerContext, localRegistrationId);
+                registerContext(registerContext, localRegistrationId, fiwareHeaders);
             }
         });
     }
@@ -151,7 +162,7 @@ public class RemoteRegistrations {
      * @param remoteRegistrationId the remote registrationId to update
      * @param registerContext the registerContext to update
      */
-    private synchronized void updateRemoteRegistration(String localRegistrationId, String remoteRegistrationId, RegisterContext registerContext) {
+    private synchronized void updateRemoteRegistration(String localRegistrationId, String remoteRegistrationId, RegisterContext registerContext, FiwareHeaders fiwareHeaders) {
         RemoteRegistration registration = registrations.get(localRegistrationId);
         if (registration == null) {
             registration = new RemoteRegistration();
@@ -159,5 +170,6 @@ public class RemoteRegistrations {
         }
         registration.registrationId = remoteRegistrationId;
         registration.registerContext = registerContext;
+        registration.fiwareHeaders = fiwareHeaders;
     }
 }

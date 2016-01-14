@@ -144,6 +144,15 @@ public class NgsiBaseControllerTest {
     public void checkUpdateContextImplemented() throws Exception {
         mockMvc.perform(post("/i/updateContext")
                 .content(json(jsonConverter, createUpdateContextTempSensor(0)))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON)
+                .header("Fiware-Service", "gateway").header("Fiware-ServicePath", "gateway1").header("X-Auth-Token", "XXXXXX"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void checkUpdateContextImplementedWithNullFiwareHeaders() throws Exception {
+        mockMvc.perform(post("/i/updateContext")
+                .content(json(jsonConverter, createUpdateContextTempSensor(0)))
                 .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -152,12 +161,22 @@ public class NgsiBaseControllerTest {
     public void checkUpdateContextImplementedInXml() throws Exception {
         mockMvc.perform(post("/i/updateContext")
                 .content(xmlmapper.writeValueAsString(createUpdateContextTempSensor(0)))
-                .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
+                .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML)
+                .header("Fiware-Service", "gateway").header("Fiware-ServicePath", "gateway1").header("X-Auth-Token", "XXXXXX"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void checkRegisterContextImplemented() throws Exception {
+        mockMvc.perform(post("/i/registerContext")
+                .content(json(jsonConverter, createRegisterContextTemperature()))
+                .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON)
+                .header("Fiware-Service", "gateway").header("Fiware-ServicePath", "gateway1").header("X-Auth-Token", "XXXXXX"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void checkRegisterContextImplementedWithNullFiwareHeaders() throws Exception {
         mockMvc.perform(post("/i/registerContext")
                 .content(json(jsonConverter, createRegisterContextTemperature()))
                 .contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
@@ -168,7 +187,8 @@ public class NgsiBaseControllerTest {
     public void checkRegisterContextImplementedInXml() throws Exception {
         mockMvc.perform(post("/i/registerContext")
                 .content(xmlmapper.writeValueAsString(createRegisterContextTemperature()))
-                .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
+                .contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML)
+                .header("Fiware-Service", "gateway").header("Fiware-ServicePath", "gateway1").header("X-Auth-Token", "XXXXXX"))
                 .andExpect(status().isOk());
     }
 
@@ -223,14 +243,26 @@ public class NgsiBaseControllerTest {
     @Test
     public void checkQueryContextImplemented() throws Exception {
         mockMvc.perform(
-                post("/i/queryContext").content(json(jsonConverter, createQueryContextTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                post("/i/queryContext").content(json(jsonConverter, createQueryContextTemperature())).contentType(MediaType.APPLICATION_JSON)
+                        .header("Host", "localhost").accept(MediaType.APPLICATION_JSON).header("Fiware-Service", "gateway")
+                        .header("Fiware-ServicePath", "gateway1").header("X-Auth-Token", "XXXXXX"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void checkQueryContextImplementedWithNullFiwareHeaders() throws Exception {
+        mockMvc.perform(
+                post("/i/queryContext").content(json(jsonConverter, createQueryContextTemperature())).contentType(MediaType.APPLICATION_JSON)
+                        .header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void checkQueryContextImplementedInXml() throws Exception {
         mockMvc.perform(
-                post("/i/queryContext").content(xmlmapper.writeValueAsString(createQueryContextTemperature())).contentType(MediaType.APPLICATION_XML).header("Host", "localhost").accept(MediaType.APPLICATION_XML))
+                post("/i/queryContext").content(xmlmapper.writeValueAsString(createQueryContextTemperature())).contentType(MediaType.APPLICATION_XML)
+                        .header("Host", "localhost").accept(MediaType.APPLICATION_XML).header("Fiware-Service", "gateway")
+                        .header("Fiware-ServicePath", "gateway1").header("X-Auth-Token", "XXXXXX"))
                 .andExpect(status().isOk());
     }
 

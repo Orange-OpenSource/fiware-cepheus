@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -61,7 +62,7 @@ public class LocalRegistrations {
      * @param registerContext
      * @return contextRegistrationId
      */
-    public String updateRegistrationContext(RegisterContext registerContext) throws RegistrationException, RegistrationPersistenceException {
+    public String updateRegistrationContext(RegisterContext registerContext, FiwareHeaders fiwareHeaders) throws RegistrationException, RegistrationPersistenceException {
         Duration duration = registrationDuration(registerContext);
         String registrationId = registerContext.getRegistrationId();
 
@@ -105,7 +106,7 @@ public class LocalRegistrations {
         registrations.put(registrationId, registration);
 
         // Forward to remote broker
-        remoteRegistrations.registerContext(registerContext, registrationId);
+        remoteRegistrations.registerContext(registerContext, registrationId, fiwareHeaders);
 
         return registrationId;
     }

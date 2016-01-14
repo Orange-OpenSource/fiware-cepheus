@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -51,14 +50,14 @@ public class NgsiBaseController {
     final public ResponseEntity<UpdateContextResponse> updateContextRequest(@RequestBody final UpdateContext updateContext, HttpServletRequest httpServletRequest) throws Exception {
         ngsiValidation.checkUpdateContext(updateContext);
         registerIntoDispatcher(httpServletRequest);
-        return new ResponseEntity<>(updateContext(updateContext), HttpStatus.OK);
+        return new ResponseEntity<>(updateContext(updateContext, getFiwareHeaders(httpServletRequest)), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/registerContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     final public ResponseEntity<RegisterContextResponse> registerContextRequest(@RequestBody final RegisterContext registerContext, HttpServletRequest httpServletRequest) throws Exception {
         ngsiValidation.checkRegisterContext(registerContext);
         registerIntoDispatcher(httpServletRequest);
-        return new ResponseEntity<>(registerContext(registerContext), HttpStatus.OK);
+        return new ResponseEntity<>(registerContext(registerContext, getFiwareHeaders(httpServletRequest)), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/subscribeContext", method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -86,7 +85,7 @@ public class NgsiBaseController {
     final public ResponseEntity<QueryContextResponse> queryContextRequest(@RequestBody final QueryContext queryContext, HttpServletRequest httpServletRequest) throws Exception {
         ngsiValidation.checkQueryContext(queryContext);
         registerIntoDispatcher(httpServletRequest);
-        return new ResponseEntity<>(queryContext(queryContext), HttpStatus.OK);
+        return new ResponseEntity<>(queryContext(queryContext, getFiwareHeaders(httpServletRequest)), HttpStatus.OK);
     }
 
     @ExceptionHandler({MissingRequestParameterException.class})
@@ -122,11 +121,11 @@ public class NgsiBaseController {
         throw new UnsupportedOperationException("notifyContext");
     }
 
-    protected UpdateContextResponse updateContext(final UpdateContext update) throws Exception {
+    protected UpdateContextResponse updateContext(final UpdateContext update, FiwareHeaders fiwareHeaders) throws Exception {
         throw new UnsupportedOperationException("updateContext");
     }
 
-    protected RegisterContextResponse registerContext(final RegisterContext register) throws Exception {
+    protected RegisterContextResponse registerContext(final RegisterContext register, FiwareHeaders fiwareHeaders) throws Exception {
         throw new UnsupportedOperationException("registerContext");
     }
 
@@ -142,7 +141,7 @@ public class NgsiBaseController {
         throw new UnsupportedOperationException("unsubscribeContext");
     }
 
-    protected QueryContextResponse queryContext(final QueryContext query) throws Exception {
+    protected QueryContextResponse queryContext(final QueryContext query, FiwareHeaders fiwareHeaders) throws Exception {
         throw new UnsupportedOperationException("queryContext");
     }
 
@@ -207,6 +206,23 @@ public class NgsiBaseController {
 
         if (accept != null && accept.contains(MediaType.APPLICATION_JSON_VALUE)) {
             protocolRegistry.registerHost(uri, true);
+        }
+    }
+
+    /**
+     * Extract the Fiware Headers
+     * @param httpServletRequest the request
+     * @return fiwareHeader
+     */
+    private FiwareHeaders getFiwareHeaders(HttpServletRequest httpServletRequest) {
+        String fiwareService = httpServletRequest.getHeader("Fiware-Service");
+        String fiwarePath = httpServletRequest.getHeader("Fiware-ServicePath");
+        String fiwareToken = httpServletRequest.getHeader("X-Auth-Token");
+
+        if (fiwareService==null && fiwarePath==null && fiwareToken==null) {
+            return null;
+        } else {
+            return new FiwareHeaders(fiwareService, fiwarePath, fiwareToken);
         }
     }
 }

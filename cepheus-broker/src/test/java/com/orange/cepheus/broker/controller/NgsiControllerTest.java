@@ -48,9 +48,7 @@ import java.util.concurrent.ExecutionException;
 import static com.orange.cepheus.broker.Util.*;
 import static com.orange.cepheus.broker.Util.createSubscribeContextTemperature;
 import static com.orange.cepheus.broker.Util.createUpdateContextResponseTempSensorAndPressure;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -96,6 +94,9 @@ public class NgsiControllerTest {
     @Mock
     ListenableFuture<NotifyContextResponse> notifyContextResponseListenableFuture;
 
+    @Mock
+    FiwareHeaders fiwareHeaders;
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -107,6 +108,9 @@ public class NgsiControllerTest {
 
     @Captor
     private ArgumentCaptor<EntityId> entityIdArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<HttpHeaders> httpHeaderArgumentCaptor;
 
     @InjectMocks
     @Autowired
@@ -131,6 +135,7 @@ public class NgsiControllerTest {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         when(ngsiClient.getRequestHeaders(any())).thenReturn(httpHeaders);
+
     }
 
     @After
@@ -143,6 +148,7 @@ public class NgsiControllerTest {
         reset(matchedSubscriptions);
         reset(updateContextResponseListenableFuture);
         reset(notifyContextResponseListenableFuture);
+        reset(fiwareHeaders);
     }
 
     @Test
@@ -165,7 +171,7 @@ public class NgsiControllerTest {
         registerContext.getContextRegistrationList().get(0).getEntityIdList().get(0).setId("]|,\\((");
         registerContext.getContextRegistrationList().get(0).getEntityIdList().get(0).setIsPattern(true);
 
-        when(localRegistrations.updateRegistrationContext(any())).thenThrow(new RegistrationException("bad pattern", new RuntimeException()));
+        when(localRegistrations.updateRegistrationContext(any(), any())).thenThrow(new RegistrationException("bad pattern", new RuntimeException()));
 
         mockMvc.perform(post("/v1/registerContext").content(json(mapper, registerContext)).contentType(MediaType.APPLICATION_JSON))
                 .andDo(mvcResult -> System.out.println(mvcResult.getResponse().getContentAsString()))
@@ -178,7 +184,7 @@ public class NgsiControllerTest {
     @Test
     public void postRegisterContextWithPersistenceException() throws Exception {
 
-        when(localRegistrations.updateRegistrationContext(any())).thenThrow(new RegistrationPersistenceException("Failed to save", new RuntimeException()));
+        when(localRegistrations.updateRegistrationContext(any(), any())).thenThrow(new RegistrationPersistenceException("Failed to save", new RuntimeException()));
 
         mockMvc.perform(post("/v1/registerContext").content(json(mapper, createRegisterContextTemperature())).contentType(MediaType.APPLICATION_JSON))
                 .andDo(mvcResult -> System.out.println(mvcResult.getResponse().getContentAsString()))
@@ -191,7 +197,7 @@ public class NgsiControllerTest {
     @Test
     public void postNewRegisterContext() throws Exception {
 
-        when(localRegistrations.updateRegistrationContext(any())).thenReturn("12345678");
+        when(localRegistrations.updateRegistrationContext(any(), any())).thenReturn("12345678");
         ListenableFuture<RegisterContextResponse> responseFuture = Mockito.mock(ListenableFuture.class);
         doNothing().when(responseFuture).addCallback(any(), any());
         when(ngsiClient.registerContext(any(), eq(null), any())).thenReturn(responseFuture);
@@ -272,7 +278,7 @@ public class NgsiControllerTest {
         verify(configuration, atLeastOnce()).addRemoteHeaders(any());
 
         //verify urlProvider
-        verify(ngsiClient, atLeastOnce()).updateContext(eq(urlProvider), any(), updateContextArg.capture());
+        verify(ngsiClient, atLeastOnce()).updateContext(eq(urlProvider), httpHeaderArgumentCaptor.capture(), updateContextArg.capture());
 
         // Check id correspond to the required
         ContextElement contextElement = updateContextArg.getValue().getContextElements().get(0);
@@ -280,6 +286,16 @@ public class NgsiControllerTest {
 
         //check ngsiClient.notify is not called
         verify(ngsiClient, never()).notifyContext(any(), any(), any());
+
+        //check fiwareHeaders.addToHttpHeaders is not called
+        verify(fiwareHeaders, never()).addToHttpHeaders(any());
+
+        //check httpHeader on ngsiClient.updateContext
+        assertEquals(2, httpHeaderArgumentCaptor.getValue().size());
+        assertNull(httpHeaderArgumentCaptor.getValue().get("Fiware-Service"));
+        assertNull(httpHeaderArgumentCaptor.getValue().get("Fiware-ServicePath"));
+        assertNull(httpHeaderArgumentCaptor.getValue().get("X-Auth-Token"));
+
     }
 
     @Test
@@ -305,6 +321,70 @@ public class NgsiControllerTest {
 
         verify(configuration, atLeastOnce()).isRemoteForwardUpdateContext();
         verify(ngsiClient, never()).updateContext(eq("http://orionhost:9999"), any(), any());
+
+        //check fiwareHeaders.addToHttpHeaders is not called
+        verify(fiwareHeaders, never()).addToHttpHeaders(any());
+    }
+
+    @Test
+    public void checkFiwareHeadersForwardingInUpdateContext() throws Exception {
+        // Disable updateContext forwarding to remote broker
+        when(configuration.isRemoteForwardUpdateContext()).thenReturn(true);
+
+        //localRegistrations mock return always without providingApplication
+        when(providingApplication.hasNext()).thenReturn(false);
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+        //subscriptions mock return always without matched subscriptions
+        when(matchedSubscriptions.hasNext()).thenReturn(false);
+        when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/updateContext")
+                .content(json(mapper, createUpdateContextTempSensorAndPressure()))
+                .contentType(MediaType.APPLICATION_JSON).header("Fiware-Service", "gateway")
+                .header("Fiware-ServicePath", "gateway1").header("X-Auth-Token", "XXXXXX"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+
+        verify(configuration, atLeastOnce()).isRemoteForwardUpdateContext();
+        verify(ngsiClient, atLeastOnce()).updateContext(eq("http://orionhost:9999"), httpHeaderArgumentCaptor.capture(), any());
+
+        //check httpHeader on ngsiClient.updateContext
+        assertEquals(5, httpHeaderArgumentCaptor.getValue().size());
+        assertEquals("gateway", httpHeaderArgumentCaptor.getValue().get("Fiware-Service").get(0));
+        assertEquals("gateway1", httpHeaderArgumentCaptor.getValue().get("Fiware-ServicePath").get(0));
+        assertEquals("XXXXXX", httpHeaderArgumentCaptor.getValue().get("X-Auth-Token").get(0));
+    }
+
+    @Test
+    public void checkRemoteFiwareHeadersInUpdateContext() throws Exception {
+        // Disable updateContext forwarding to remote broker
+        when(configuration.isRemoteForwardUpdateContext()).thenReturn(true);
+
+        //localRegistrations mock return always without providingApplication
+        when(providingApplication.hasNext()).thenReturn(false);
+        when(localRegistrations.findProvidingApplication(any(), any())).thenReturn(providingApplication);
+        //subscriptions mock return always without matched subscriptions
+        when(matchedSubscriptions.hasNext()).thenReturn(false);
+        when(subscriptions.findSubscriptions(any(), any())).thenReturn(matchedSubscriptions);
+
+        //ngsiclient mock return always createUpdateContextREsponseTemperature when call updateContext
+        when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
+
+        mockMvc.perform(post("/v1/updateContext")
+                .content(json(mapper, createUpdateContextTempSensorAndPressure()))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+
+        verify(configuration, atLeastOnce()).isRemoteForwardUpdateContext();
+        verify(ngsiClient, atLeastOnce()).updateContext(eq("http://orionhost:9999"), httpHeaderArgumentCaptor.capture(), any());
+
+        //check add remote fiware headers
+        verify(configuration, atLeastOnce()).addRemoteHeaders(any());
+
     }
 
     @Test
@@ -374,6 +454,9 @@ public class NgsiControllerTest {
         ContextElementResponse contextElementResponse = notifyContextArg.getValue().getContextElementResponseList().get(0);
         assertEquals("S1", contextElementResponse.getContextElement().getEntityId().getId());
         assertEquals("200", contextElementResponse.getStatusCode().getCode());
+
+        //check fiwareHeaders.addToHttpHeaders is not called
+        verify(fiwareHeaders, never()).addToHttpHeaders(any());
     }
 
     @Test
@@ -443,6 +526,9 @@ public class NgsiControllerTest {
         ContextElementResponse contextElementResponse = notifyContextArg.getValue().getContextElementResponseList().get(0);
         assertEquals("S1", contextElementResponse.getContextElement().getEntityId().getId());
         assertEquals("200", contextElementResponse.getStatusCode().getCode());
+
+        //check fiwareHeaders.addToHttpHeaders is not called
+        verify(fiwareHeaders, never()).addToHttpHeaders(any());
     }
 
     @Test
@@ -512,6 +598,9 @@ public class NgsiControllerTest {
         ContextElementResponse contextElementResponse = notifyContextArg.getValue().getContextElementResponseList().get(0);
         assertEquals("S1", contextElementResponse.getContextElement().getEntityId().getId());
         assertEquals("200", contextElementResponse.getStatusCode().getCode());
+
+        //check fiwareHeaders.addToHttpHeaders is not called
+        verify(fiwareHeaders, never()).addToHttpHeaders(any());
     }
 
     @Test
@@ -574,6 +663,9 @@ public class NgsiControllerTest {
         //check ngsiClient.notify is never called
         verify(notifyContextResponseListenableFuture, never()).addCallback(any(), any());
         verify(ngsiClient, never()).notifyContext(any(), any(), any());
+
+        //check fiwareHeaders.addToHttpHeaders is not called
+        verify(fiwareHeaders, never()).addToHttpHeaders(any());
     }
 
     @Test
@@ -636,6 +728,9 @@ public class NgsiControllerTest {
         //check ngsiClient.notify is never called
         verify(notifyContextResponseListenableFuture, never()).addCallback(any(), any());
         verify(ngsiClient, never()).notifyContext(any(), any(), any());
+
+        //check fiwareHeaders.addToHttpHeaders is not called
+        verify(fiwareHeaders, never()).addToHttpHeaders(any());
     }
 
     @Test
@@ -697,6 +792,9 @@ public class NgsiControllerTest {
 
         //check ngsiClient.notify is not called
         verify(ngsiClient, never()).notifyContext(any(), any(), any());
+
+        //check fiwareHeaders.addToHttpHeaders is not called
+        verify(fiwareHeaders, never()).addToHttpHeaders(any());
     }
 
     @Test
@@ -758,6 +856,9 @@ public class NgsiControllerTest {
 
         //check ngsiClient.notify is not called
         verify(ngsiClient, never()).notifyContext(any(), any(), any());
+
+        //check fiwareHeaders.addToHttpHeaders is not called
+        verify(fiwareHeaders, never()).addToHttpHeaders(any());
     }
 
     @Test
