@@ -289,7 +289,7 @@ public class EsperEventProcessor implements ComplexEventProcessor {
                     variablesByStatementName.put(hash, model.getCreateVariable().getVariableName());
                 }
 
-                statement = epServiceProvider.getEPAdministrator().create(model);
+                statement = epServiceProvider.getEPAdministrator().create(model, hash);
                 statement.addListener(eventSinkListener);
             }
         }
@@ -326,8 +326,10 @@ public class EsperEventProcessor implements ComplexEventProcessor {
             String variableName = variablesByStatementName.get(statementName);
             if (variableName != null) {
                 Set<String> epStatements = epServiceProvider.getEPAdministrator().getConfiguration().getVariableNameUsedBy(variableName);
-                for (String epStatement : epStatements) {
-                    removeStatement(epStatement);
+                for (String epStatement : new LinkedList<>(epStatements)) { // use a new list to prevent conccurent access
+                    if (!epStatement.equals(statementName)) {
+                        removeStatement(epStatement);
+                    }
                 }
             }
 
