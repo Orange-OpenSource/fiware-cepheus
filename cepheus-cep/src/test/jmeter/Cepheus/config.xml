@@ -40,7 +40,7 @@
         <hudson.model.StringParameterDefinition>
           <name>MODEL2_RAMPUP</name>
           <description>Duration for connecting all devices for MODEL2</description>
-          <defaultValue>25</defaultValue>
+          <defaultValue>250</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>MODEL2_DURATION</name>
@@ -50,7 +50,7 @@
         <hudson.model.StringParameterDefinition>
           <name>MODEL3_RAMPUP</name>
           <description>Duration for connecting all devices for MODEL3</description>
-          <defaultValue>25</defaultValue>
+          <defaultValue>250</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>MODEL3_DURATION</name>
@@ -77,10 +77,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.BatchFile>
-      <command>F:\Applis\apache-jmeter-2.13\bin\jmeter.bat -n -t &quot;F:\Mes documents\git\cepheus\cepheus-cep\src\test\jmeter\TestPlan.jmx&quot; -JHOST=%HOST% -JCEP_PORT=%CEP_PORT% -JBROKER_PORT=%BROKER_PORT% -JMODEL1_RAMPUP=%MODEL1_RAMPUP% -JMODEL1_DURATION=%MODEL1_DURATION% -JMODEL2_RAMPUP=%MODEL2_RAMPUP% -JMODEL2_DURATION=%MODEL2_DURATION% -JMODEL3_RAMPUP=%MODEL3_RAMPUP% -JMODEL3_DURATION=%MODEL3_DURATION%</command>
-    </hudson.tasks.BatchFile>
-    <hudson.tasks.BatchFile>
-      <command>dir</command>
+      <command>F:\Applis\apache-jmeter-2.13\bin\jmeter.bat -n -t &quot;F:\Mes documents\git\cepheus\cepheus-cep\src\test\jmeter\TestPlan_Continous_Integration.jmx&quot; -JHOST=%HOST% -JCEP_PORT=%CEP_PORT% -JBROKER_PORT=%BROKER_PORT% -JMODEL1_RAMPUP=%MODEL1_RAMPUP% -JMODEL1_DURATION=%MODEL1_DURATION% -JMODEL2_RAMPUP=%MODEL2_RAMPUP% -JMODEL2_DURATION=%MODEL2_DURATION% -JMODEL3_RAMPUP=%MODEL3_RAMPUP% -JMODEL3_DURATION=%MODEL3_DURATION%</command>
     </hudson.tasks.BatchFile>
   </builders>
   <publishers>
