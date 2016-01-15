@@ -260,7 +260,7 @@ public class NgsiController extends NgsiBaseController {
             logger.warn("UpdateContext failed for {}: {}", brokerUrl, updateContextResponse.getErrorCode().toString());
         } else {
             updateContextResponse.getContextElementResponses().forEach(contextElementResponse -> {
-                if (contextElementResponse.getStatusCode().getCode().equals(CodeEnum.CODE_200)) {
+                if (contextElementResponse.getStatusCode().getCode().equals(CodeEnum.CODE_200.getLabel())) {
                     logger.debug("UpdateContext completed for {} ", brokerUrl);
                 } else {
                     logger.warn("UpdateContext failed for {}: entityId {} {}", brokerUrl,
@@ -271,7 +271,7 @@ public class NgsiController extends NgsiBaseController {
     }
 
     private void logNotifyContextResponse(NotifyContextResponse notifyContextResponse, String providerUrl) {
-        if (notifyContextResponse.getResponseCode().getCode().equals(CodeEnum.CODE_200)) {
+        if (notifyContextResponse.getResponseCode().getCode().equals(CodeEnum.CODE_200.getLabel())) {
             logger.debug("NotifyContext completed for {} ", providerUrl);
         } else {
             logger.warn("NotifyContext failed for {}: {}", providerUrl, notifyContextResponse.getResponseCode().toString());

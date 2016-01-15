@@ -46,8 +46,8 @@ public class Geospatial {
      * @param longitude
      * @return a point
      */
-    public static Point createPoint(double longitude, double latitude) {
-        return geometryFactory.createPoint(new Coordinate(longitude, latitude));
+    public static Point createPoint(double latitude, double longitude) {
+        return geometryFactory.createPoint(new Coordinate(latitude, longitude));
     }
 
     /**

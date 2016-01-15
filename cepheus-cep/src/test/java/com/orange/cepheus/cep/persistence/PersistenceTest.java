@@ -83,6 +83,12 @@ public class PersistenceTest {
         persistence.loadConfiguration(configurationId);
     }
 
+    @Test(expected=PersistenceException.class)
+    public void loadNullConfigurationThrowException() throws PersistenceException {
+        persistence.saveConfiguration(configurationId, null);
+        persistence.loadConfiguration(configurationId);
+    }
+
     private void clearPersistedConfiguration() {
         File confFile = new File(path);
         if (confFile.exists()) {
