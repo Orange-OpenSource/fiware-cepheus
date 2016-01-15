@@ -76,6 +76,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
                 UpdateContext updateContext = buildUpdateContextRequest(eventBean, eventTypeOut);
                 if (updateContext != null) {
                     for (Broker broker : eventTypeOut.getBrokers()) {
+                        assert broker != null;
                         HttpHeaders httpHeaders = getHeadersForBroker(broker);
                         ngsiClient.updateContext(broker.getUrl(), httpHeaders, updateContext).addCallback(
                                 updateContextResponse ->

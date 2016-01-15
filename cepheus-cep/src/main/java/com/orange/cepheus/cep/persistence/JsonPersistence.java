@@ -60,7 +60,11 @@ public class JsonPersistence implements Persistence {
         logger.info("Load configuration from {}", this.dataPath+filename);
 
         try {
-            return mapper.readValue(new File(this.dataPath+filename), Configuration.class);
+            Configuration configuration = mapper.readValue(new File(this.dataPath+filename), Configuration.class);
+            if (configuration == null) {
+                throw new PersistenceException("Failed to load configuration: empty configuration");
+            }
+            return configuration;
         } catch (IOException e) {
             throw new PersistenceException("Failed to load configuration", e);
         }

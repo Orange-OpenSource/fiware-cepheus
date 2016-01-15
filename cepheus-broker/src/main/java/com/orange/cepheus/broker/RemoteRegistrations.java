@@ -118,7 +118,7 @@ public class RemoteRegistrations {
      * @param localRegistrationId the local registrationId
      * @return the remote registrationId or null
      */
-    public String getRemoteRegistrationId(String localRegistrationId) {
+    public synchronized String getRemoteRegistrationId(String localRegistrationId) {
         RemoteRegistration remoteRegistration = registrations.get(localRegistrationId);
         return remoteRegistration != null ? remoteRegistration.registrationId : null;
     }

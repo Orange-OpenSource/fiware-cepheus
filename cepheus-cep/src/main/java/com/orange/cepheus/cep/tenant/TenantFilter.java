@@ -42,7 +42,7 @@ public class TenantFilter implements Filter {
 
     private static Logger logger = LoggerFactory.getLogger(TenantFilter.class);
 
-    private class BadHeaderException extends Exception {
+    private static class BadHeaderException extends Exception {
         public BadHeaderException(String message) {
             super(message);
         }
@@ -132,7 +132,7 @@ public class TenantFilter implements Filter {
 
         TenantScope.Context tenantMap = tenantContexts.get(tenantId);
         if (tenantMap == null) {
-            synchronized (tenantContexts) {
+            synchronized (this) {
                 tenantMap = tenantContexts.get(tenantId);
                 if (tenantMap == null) {
                     tenantMap = new TenantScope.Context();
