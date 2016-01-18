@@ -15,7 +15,7 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="HOST" elementType="Argument">
             <stringProp name="Argument.name">HOST</stringProp>
-            <stringProp name="Argument.value">${__P(HOST,localhost)}</stringProp>
+            <stringProp name="Argument.value">${__P(HOST,raspberrypi)}</stringProp>
             <stringProp name="Argument.desc">IP or DNS name of the target</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -2527,15 +2527,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         <boolProp name="exclude_checkbox_state">false</boolProp>
       </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
       <hashTree/>
-<<<<<<< HEAD:cepheus-cep/src/test/jmeter/TestPlan.jmx
-<<<<<<< HEAD
-      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
-=======
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
->>>>>>> master
-=======
       <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.TransactionsPerSecondGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Transactions per Second" enabled="true">
->>>>>>> jmeter-integration:cepheus-cep/src/test/jmeter/TestPlan_Continous_Integration.jmx
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
