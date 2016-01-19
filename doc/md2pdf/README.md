@@ -1,4 +1,4 @@
-How to generate a PDF document from a set of Markdown files with Docker ?
+#How to generate a PDF document from a set of Markdown files with Docker ?
 
 Follows the guide: [Fiware markdown to PDF](https://github.com/FiwareULPGC/fiware-markdown-to-pdf#quick-start-guide-with-docker)
 
