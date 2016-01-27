@@ -16,6 +16,7 @@ import com.orange.cepheus.cep.exception.EventProcessingException;
 import com.orange.cepheus.cep.exception.EventTypeNotFoundException;
 import com.orange.cepheus.cep.model.Attribute;
 import com.orange.cepheus.cep.model.Configuration;
+import com.orange.cepheus.cep.model.Statement;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -71,6 +72,21 @@ public class EsperEventProcessorTest {
         assertEquals(2, esperEventProcessor.getEventTypeAttributes("TempSensorAvg").size());
         assertEquals("double", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get("avgTemp").getType());
         assertEquals("string", esperEventProcessor.getEventTypeAttributes("TempSensorAvg").get("avgTemp_unit").getType());
+    }
+
+    /**
+     * Check that metrics are disabled by default
+     */
+    @Test
+    public void checkNoMetrics() throws ConfigurationException {
+        esperEventProcessor.setConfiguration(getBasicConf());
+
+        // Check that metric statement is inserted !
+        for (EPStatement epStatement : esperEventProcessor.getEPStatements()) {
+            if (epStatement.getName().equals("STATEMENT_METRIC")) {
+                fail("metric are enabled !");
+            }
+        }
     }
 
     /**
@@ -160,7 +176,7 @@ public class EsperEventProcessorTest {
         assertEquals("string", attributes.get("avgTemp_unit").getType());
 
         assertEquals(1, esperEventProcessor.getStatements().size());
-        assertEquals(configuration.getStatements().get(0), esperEventProcessor.getStatements().get(0));
+        assertEquals(configuration.getStatements().get(0), esperEventProcessor.getStatements().get(0).getText());
     }
 
     /**
@@ -202,8 +218,8 @@ public class EsperEventProcessorTest {
         esperEventProcessor.setConfiguration(configuration2);
 
         assertEquals(2, esperEventProcessor.getStatements().size());
-        for (String statement : esperEventProcessor.getStatements()) {
-            assertNotEquals("create variable int i = 1", statement);
+        for (Statement statement : esperEventProcessor.getStatements()) {
+            assertNotEquals("create variable int i = 1", statement.getText());
         }
     }
 

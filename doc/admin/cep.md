@@ -126,6 +126,17 @@ The Cepheus-CEP loads its data on startup and saves back data updates to a singl
 The default location of the data file is defined by the `data.file` property.
 This Cepheus-CEP process must have write access rights on this file.
 
+### Metrics and health
+
+You can enable the Spring Boot Actuator `/infos`, `/health` and `/metrics` endpoints with these application properties:
+
+    endpoints.info.enabled=true
+    endpoints.metrics.enabled=true
+    endpoints.health.enabled=true
+
+Metrics will include the metrics for each EPL statement with the following data:
+`cpuTime`, `wallTime`,`numInput` and `numOutputIStream`.
+
 ## User guide
 
 The complete user & programming guide can be found [here](../index.md)

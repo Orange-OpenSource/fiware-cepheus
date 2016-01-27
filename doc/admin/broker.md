@@ -125,6 +125,14 @@ You can either:
 
     java -jar cepheus-broker.jar --spring.config.location=/etc/cepheus/broker.properties
 
+### Metrics and health
+
+You can enable the Spring Boot Actuator `/infos`, `/health` and `/metrics` endpoints with these application properties:
+
+    endpoints.info.enabled=true
+    endpoints.metrics.enabled=true
+    endpoints.health.enabled=true
+
 ## User guide
 
 The complete user & programming guide can be found [here](../index.md)

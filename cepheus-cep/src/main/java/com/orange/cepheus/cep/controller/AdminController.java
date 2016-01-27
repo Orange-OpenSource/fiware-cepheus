@@ -11,6 +11,7 @@ package com.orange.cepheus.cep.controller;
 import com.orange.cepheus.cep.EventMapper;
 import com.orange.cepheus.cep.SubscriptionManager;
 import com.orange.cepheus.cep.exception.PersistenceException;
+import com.orange.cepheus.cep.model.Statement;
 import com.orange.cepheus.cep.tenant.TenantFilter;
 import com.orange.cepheus.cep.tenant.TenantScope;
 import com.orange.ngsi.model.StatusCode;
@@ -31,6 +32,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Controller for management of the CEP
@@ -147,6 +150,18 @@ public class AdminController {
         persistence.deleteConfiguration(configurationId);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/statements", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public synchronized ResponseEntity<List<Statement>> listStatements() {
+
+        List<Statement> statements = complexEventProcessor.getStatements();
+
+        if (statements.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(statements, HttpStatus.OK);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
