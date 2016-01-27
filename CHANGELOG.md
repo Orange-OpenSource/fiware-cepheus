@@ -1,3 +1,18 @@
+# 0.1.4
+
+## Major features
+
+* Monitoring #35
+
+## Minor features
+
+* doc: generate the pdf of the documentation #37
+
+## Bug fixes
+
+* corrected coverity medium defects #38
+* Detection of existing statements is not working #36
+
 # 0.1.3
 
 ## Major features
