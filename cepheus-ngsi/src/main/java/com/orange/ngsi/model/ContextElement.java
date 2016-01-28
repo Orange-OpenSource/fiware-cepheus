@@ -25,6 +25,7 @@ public class ContextElement {
 
     private EntityId entityId;
 
+    @JsonProperty("attributes")
     @JacksonXmlElementWrapper(localName = "contextAttributeList")
     @JacksonXmlProperty(localName = "contextAttribute")
     private List<ContextAttribute> contextAttributeList;
