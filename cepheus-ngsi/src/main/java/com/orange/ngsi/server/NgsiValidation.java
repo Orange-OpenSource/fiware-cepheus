@@ -1,6 +1,8 @@
 package com.orange.ngsi.server;
 
+import com.orange.ngsi.exception.MismatchIdException;
 import com.orange.ngsi.exception.MissingRequestParameterException;
+import com.orange.ngsi.exception.UnsupportedOperationException;
 import com.orange.ngsi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +109,25 @@ public class NgsiValidation {
             }
         }
     }
+    public void checkAppendContextElement(AppendContextElement appendContextElement) throws MissingRequestParameterException {
+        if (nullOrEmpty(appendContextElement.getAttributeList())) {
+            throw new MissingRequestParameterException("contextAttributes", "List<ContextAttribute>");
+        }
+    }
+
+    public void checkUpdateContextElement(UpdateContextElement updateContextElement) throws MissingRequestParameterException {
+        if (nullOrEmpty(updateContextElement.getContextAttributes())) {
+            throw new MissingRequestParameterException("contextAttributes", "List<ContextAttribute>");
+        }
+    }
+
+    public void checkUpdateSubscription(String subscriptionID, UpdateContextSubscription updateContextSubscription) throws MissingRequestParameterException, MismatchIdException {
+        checkUpdateContextSubscription(updateContextSubscription);
+        // Check that subscriptionID parameter is equal to the one given in the message body
+        if (!subscriptionID.equals(updateContextSubscription.getSubscriptionId())) {
+            throw new MismatchIdException(subscriptionID, updateContextSubscription.getSubscriptionId());
+        }
+    }
 
     private void checkContextElementResponse(ContextElementResponse contextElementResponse) throws MissingRequestParameterException {
 
@@ -126,7 +147,7 @@ public class NgsiValidation {
         }
         checkEntityId(contextElement.getEntityId());
         if (nullOrEmpty(contextElement.getContextAttributeList())) {
-            throw new MissingRequestParameterException("contextAttributes", "List<ContextAttribut>");
+            throw new MissingRequestParameterException("contextAttributes", "List<ContextAttribute>");
         }
     }
 

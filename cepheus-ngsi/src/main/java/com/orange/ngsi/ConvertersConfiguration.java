@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.orange.ngsi.model.AppendContextElementResponse;
 import com.orange.ngsi.model.ContextElement;
 import com.orange.ngsi.model.EntityIdMixIn;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +48,7 @@ public class ConvertersConfiguration {
         objectMapper.registerModule(booleanAsString);
 
         objectMapper.addMixIn(ContextElement.class, EntityIdMixIn.class);
+        objectMapper.addMixIn(AppendContextElementResponse.class, EntityIdMixIn.class);
 
         return new MappingJackson2HttpMessageConverter(objectMapper);
     }
