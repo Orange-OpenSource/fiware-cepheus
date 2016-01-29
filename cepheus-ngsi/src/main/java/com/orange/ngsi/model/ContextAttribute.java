@@ -8,6 +8,7 @@
 
 package com.orange.ngsi.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -32,6 +33,7 @@ public class ContextAttribute {
     @JsonProperty("metadatas")
     @JacksonXmlElementWrapper(localName = "metadata")
     @JacksonXmlProperty(localName = "contextMetadata")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<ContextMetadata> metadata;
 
     public ContextAttribute() {
