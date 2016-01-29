@@ -51,14 +51,16 @@ public class Util {
         return updateContext;
     }
 
-    static public UpdateContextResponse createUpdateContextResponseTempSensor() throws URISyntaxException {
+    static public ContextElementResponse createUpdateContextElement() {
         ContextElementResponse contextElementResponse = new ContextElementResponse();
         contextElementResponse.setContextElement(createTemperatureContextElement(0));
         contextElementResponse.setStatusCode(new StatusCode(CODE_200));
+        return contextElementResponse;
+    }
 
+    static public UpdateContextResponse createUpdateContextResponseTempSensor() throws URISyntaxException {
         UpdateContextResponse updateContextResponse = new UpdateContextResponse();
-        updateContextResponse.setErrorCode(new StatusCode(CODE_200));
-        updateContextResponse.setContextElementResponses(Collections.singletonList(contextElementResponse));
+        updateContextResponse.setContextElementResponses(Collections.singletonList(createUpdateContextElement()));
         return updateContextResponse;
     }
 
@@ -161,6 +163,13 @@ public class Util {
         return updateContextSubscriptionResponse;
     }
 
+    static public UnsubscribeContextResponse createUnsubscribeContextSubscriptionResponseTemperature() {
+        UnsubscribeContextResponse unsubscribeContextResponse = new UnsubscribeContextResponse();
+        unsubscribeContextResponse.setStatusCode(new StatusCode(CODE_200));
+        unsubscribeContextResponse.setSubscriptionId("12345678");
+        return unsubscribeContextResponse;
+    }
+
     static public RegisterContext createRegisterContextTemperature() throws URISyntaxException {
         RegisterContext registerContext = new RegisterContext();
 
@@ -201,6 +210,51 @@ public class Util {
         ContextElementResponse contextElementResponse = new ContextElementResponse(createTemperatureContextElement(0), new StatusCode(CODE_200));
         queryContextResponse.setContextElementResponses(Collections.singletonList(contextElementResponse));
         return queryContextResponse;
+    }
+
+    static public AppendContextElement createAppendContextElementTemperature() {
+        AppendContextElement appendContextElement = new AppendContextElement();
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", 15.5);
+        appendContextElement.setAttributeList(Collections.singletonList(contextAttribute));
+        return appendContextElement;
+    }
+
+    static public ContextAttributeResponse createContextAttributeResponseTemperature() {
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", 15.5);
+        ContextAttributeResponse contextAttributeResponse = new ContextAttributeResponse();
+        contextAttributeResponse.setContextAttributeList(Collections.singletonList(contextAttribute));
+        contextAttributeResponse.setStatusCode(new StatusCode(CODE_200));
+        return contextAttributeResponse;
+    }
+
+    static public AppendContextElementResponse createAppendContextElementResponseTemperature() {
+        AppendContextElementResponse appendContextElementResponse = new AppendContextElementResponse();
+        appendContextElementResponse.setContextAttributeResponses(Collections.singletonList(createContextAttributeResponseTemperature()));
+        return appendContextElementResponse;
+    }
+
+    static public UpdateContextElement createUpdateContextElementTemperature() {
+        UpdateContextElement updateContextElement = new UpdateContextElement();
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", 15.5);
+        updateContextElement.setContextAttributes(Collections.singletonList(contextAttribute));
+        return updateContextElement;
+    }
+
+    static public UpdateContextElementResponse createUpdateContextElementResponseTemperature() {
+        UpdateContextElementResponse updateContextElementResponse = new UpdateContextElementResponse();
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", 15.5);
+        ContextAttributeResponse contextAttributeResponse = new ContextAttributeResponse();
+        contextAttributeResponse.setContextAttributeList(Collections.singletonList(contextAttribute));
+        contextAttributeResponse.setStatusCode(new StatusCode(CODE_200));
+        updateContextElementResponse.setContextAttributeResponses(Collections.singletonList(contextAttributeResponse));
+        return updateContextElementResponse;
+    }
+
+    static public UpdateContextAttribute createUpdateContextAttributeTemperature() {
+        UpdateContextAttribute updateContextAttribute = new UpdateContextAttribute();
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", 15.5);
+        updateContextAttribute.setAttribute(contextAttribute);
+        return updateContextAttribute;
     }
 
     static public String json(MappingJackson2HttpMessageConverter mapping, Object o) throws IOException {

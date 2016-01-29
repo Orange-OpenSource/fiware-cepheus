@@ -8,7 +8,9 @@
 
 package com.orange.ngsi.server;
 
+import com.orange.ngsi.exception.MismatchIdException;
 import com.orange.ngsi.exception.MissingRequestParameterException;
+import com.orange.ngsi.exception.UnsupportedOperationException;
 import com.orange.ngsi.model.*;
 import org.junit.Rule;
 import org.junit.Test;
@@ -598,5 +600,49 @@ public class NgsiValidationTest {
         thrown.expect(MissingRequestParameterException.class);
         thrown.expectMessage("attributeExpression");
         ngsiValidation.checkQueryContext(queryContext);
+    }
+
+    @Test
+    public void nullAttributesInAppendContextElement() throws MissingRequestParameterException {
+        AppendContextElement appendContextElement = new AppendContextElement();
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("contextAttributes");
+        ngsiValidation.checkAppendContextElement(appendContextElement);
+    }
+
+    @Test
+    public void emptyAttributesInAppendContextElement() throws MissingRequestParameterException {
+        AppendContextElement appendContextElement = new AppendContextElement();
+        appendContextElement.setAttributeList(Collections.emptyList());
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("contextAttributes");
+        ngsiValidation.checkAppendContextElement(appendContextElement);
+    }
+
+    @Test
+    public void nullAttributesInUpdateContextElement() throws MissingRequestParameterException {
+        UpdateContextElement updateContextElement = new UpdateContextElement();
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("contextAttributes");
+        ngsiValidation.checkUpdateContextElement(updateContextElement);
+    }
+
+    @Test
+    public void emptyAttributesInUpdateContextElement() throws MissingRequestParameterException {
+        UpdateContextElement updateContextElement = new UpdateContextElement();
+        updateContextElement.setContextAttributes(Collections.emptyList());
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("contextAttributes");
+        ngsiValidation.checkUpdateContextElement(updateContextElement);
+    }
+
+    @Test
+    public void differentSubscriptionIDInUpdateSubscription() throws Exception {
+        UpdateContextSubscription updateContextSubscription = new UpdateContextSubscription();
+        EntityId entityId = new EntityId("Room1","Room",false);
+        updateContextSubscription.setSubscriptionId("12345");
+        thrown.expect(MismatchIdException.class);
+        thrown.expectMessage("mismatch id between parameter 54321 and body 12345");
+        ngsiValidation.checkUpdateSubscription("54321", updateContextSubscription);
     }
 }
