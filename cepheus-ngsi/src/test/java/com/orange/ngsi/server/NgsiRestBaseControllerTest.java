@@ -32,12 +32,12 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 /**
  * Tests for the NGSI REST base controller.
- * This class uses the two NotImplementedRESTControllerHelper and FakeRESTControllerHelper classes
+ * This class uses the two NotImplementedRestControllerHelper and FakeRestControllerHelper classes
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
 @WebAppConfiguration
-public class NgsiRESTBaseControllerTest {
+public class NgsiRestBaseControllerTest {
 
     private MockMvc mockMvc;
 

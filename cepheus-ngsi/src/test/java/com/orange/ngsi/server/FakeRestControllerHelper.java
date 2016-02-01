@@ -13,12 +13,11 @@ import com.orange.ngsi.model.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest/i")
-public class FakeRESTControllerHelper extends NgsiRESTBaseController {
+public class FakeRestControllerHelper extends NgsiRestBaseController {
 
     @Override
     protected AppendContextElementResponse appendContextElement(String entityID, AppendContextElement appendContextElement) throws Exception {

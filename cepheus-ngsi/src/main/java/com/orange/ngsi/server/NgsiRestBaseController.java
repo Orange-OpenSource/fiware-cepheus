@@ -30,9 +30,9 @@ import java.util.Optional;
  *  - no support for attributeDomains requests
  *  - only NGSI 10 REST requests are supported
  */
-public class NgsiRESTBaseController {
+public class NgsiRestBaseController {
 
-    private static Logger logger = LoggerFactory.getLogger(NgsiRESTBaseController.class);
+    private static Logger logger = LoggerFactory.getLogger(NgsiRestBaseController.class);
 
     @Autowired
     private NgsiValidation ngsiValidation;

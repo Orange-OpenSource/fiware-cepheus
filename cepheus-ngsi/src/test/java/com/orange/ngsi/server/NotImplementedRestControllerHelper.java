@@ -13,6 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/rest/ni")
-public class NotImplementedRESTControllerHelper extends NgsiRESTBaseController {
+public class NotImplementedRestControllerHelper extends NgsiRestBaseController {
 
 }
