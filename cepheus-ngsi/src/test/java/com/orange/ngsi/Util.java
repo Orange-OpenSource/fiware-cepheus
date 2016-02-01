@@ -51,7 +51,7 @@ public class Util {
         return updateContext;
     }
 
-    static public ContextElementResponse createUpdateContextElement() {
+    static public ContextElementResponse createContextElementResponseTemperature() {
         ContextElementResponse contextElementResponse = new ContextElementResponse();
         contextElementResponse.setContextElement(createTemperatureContextElement(0));
         contextElementResponse.setStatusCode(new StatusCode(CODE_200));
@@ -60,7 +60,7 @@ public class Util {
 
     static public UpdateContextResponse createUpdateContextResponseTempSensor() throws URISyntaxException {
         UpdateContextResponse updateContextResponse = new UpdateContextResponse();
-        updateContextResponse.setContextElementResponses(Collections.singletonList(createUpdateContextElement()));
+        updateContextResponse.setContextElementResponses(Collections.singletonList(createContextElementResponseTemperature()));
         return updateContextResponse;
     }
 

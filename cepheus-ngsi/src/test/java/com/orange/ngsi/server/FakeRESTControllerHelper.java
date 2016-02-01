@@ -32,7 +32,7 @@ public class FakeRESTControllerHelper extends NgsiRESTBaseController {
 
     @Override
     protected ContextElementResponse getContextElement(String entityID) throws Exception {
-        return Util.createUpdateContextElement();
+        return Util.createContextElementResponseTemperature();
     }
 
     @Override

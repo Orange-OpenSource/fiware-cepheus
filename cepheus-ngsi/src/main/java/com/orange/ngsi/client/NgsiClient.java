@@ -154,13 +154,23 @@ public class NgsiClient {
         return requestHeaders;
     }
 
-    private <T,U> ListenableFuture<T> request(String url, HttpHeaders httpHeaders, U body, Class<T> responseType) {
+    /**
+     * Default POST request
+     */
+    protected <T,U> ListenableFuture<T> request(String url, HttpHeaders httpHeaders, U body, Class<T> responseType) {
+        return request(HttpMethod.POST, url, httpHeaders, body, responseType);
+    }
+
+    /**
+     * Make an HTTP request
+     */
+    protected <T,U> ListenableFuture<T> request(HttpMethod method, String url, HttpHeaders httpHeaders, U body, Class<T> responseType) {
         if (httpHeaders == null) {
             httpHeaders = getRequestHeaders(url);
         }
         HttpEntity<U> requestEntity = new HttpEntity<>(body, httpHeaders);
 
-        ListenableFuture<ResponseEntity<T>> future = asyncRestTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
+        ListenableFuture<ResponseEntity<T>> future = asyncRestTemplate.exchange(url, method, requestEntity, responseType);
 
         return new ListenableFutureAdapter<T, ResponseEntity<T>>(future) {
             @Override
