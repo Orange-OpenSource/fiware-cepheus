@@ -25,15 +25,9 @@
             <stringProp name="Argument.desc">Port used by CEP</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="MODEL1_RAMPUP" elementType="Argument">
-            <stringProp name="Argument.name">MODEL1_RAMPUP</stringProp>
-            <stringProp name="Argument.value">${__P(MODEL1_RAMPUP,250)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">Duration for connecting all devices for MODEL1</stringProp>
-          </elementProp>
           <elementProp name="MODEL1_DURATION" elementType="Argument">
             <stringProp name="Argument.name">MODEL1_DURATION</stringProp>
-            <stringProp name="Argument.value">${__P(MODEL1_DURATION,1800)}</stringProp>
+            <stringProp name="Argument.value">${__P(MODEL1_DURATION,2700)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Overall duration of performance test for MODEL1</stringProp>
           </elementProp>
@@ -318,10 +312,10 @@ return &quot;BeanShell executed&quot;;</stringProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">350</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL1_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL1_DURATION}</stringProp>
         <longProp name="ThreadGroup.start_time">1446203175000</longProp>
         <longProp name="ThreadGroup.end_time">1446203175000</longProp>
-        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL1_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
@@ -444,10 +438,10 @@ return &quot;BeanShell executed&quot;;</stringProp>
       <hashTree>
         <kg.apc.jmeter.timers.VariableThroughputTimer guiclass="kg.apc.jmeter.timers.VariableThroughputTimerGui" testclass="kg.apc.jmeter.timers.VariableThroughputTimer" testname="jp@gc - Throughput Shaping Timer" enabled="true">
           <collectionProp name="load_profile">
-            <collectionProp name="-1786068258">
+            <collectionProp name="1445051715">
               <stringProp name="1">1</stringProp>
-              <stringProp name="50547">300</stringProp>
-              <stringProp name="1515111">1800</stringProp>
+              <stringProp name="51508">400</stringProp>
+              <stringProp name="-149746935">${MODEL1_DURATION}</stringProp>
             </collectionProp>
           </collectionProp>
           <stringProp name="TestPlan.comments">Regular rampup from 0 to max load.</stringProp>

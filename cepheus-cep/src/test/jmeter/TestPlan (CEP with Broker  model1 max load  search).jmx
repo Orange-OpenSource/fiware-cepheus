@@ -31,6 +31,12 @@
             <stringProp name="Argument.desc">Port used by Broker</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="MODEL1_DURATION" elementType="Argument">
+            <stringProp name="Argument.name">MODEL1_DURATION</stringProp>
+            <stringProp name="Argument.value">${__P(MODEL1_DURATION,1800)}</stringProp>
+            <stringProp name="Argument.desc">1800</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
         <stringProp name="TestPlan.comments">can be overriden by -Jname arguments on command line</stringProp>
       </Arguments>
@@ -312,7 +318,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">350</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1800</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${MODEL1_DURATION}</stringProp>
         <longProp name="ThreadGroup.start_time">1446203175000</longProp>
         <longProp name="ThreadGroup.end_time">1446203175000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -438,10 +444,15 @@ return &quot;BeanShell executed&quot;;</stringProp>
       <hashTree>
         <kg.apc.jmeter.timers.VariableThroughputTimer guiclass="kg.apc.jmeter.timers.VariableThroughputTimerGui" testclass="kg.apc.jmeter.timers.VariableThroughputTimer" testname="jp@gc - Throughput Shaping Timer" enabled="true">
           <collectionProp name="load_profile">
-            <collectionProp name="-1784006882">
+            <collectionProp name="-1593162954">
               <stringProp name="1">1</stringProp>
-              <stringProp name="50702">350</stringProp>
-              <stringProp name="1515111">1800</stringProp>
+              <stringProp name="49586">200</stringProp>
+              <stringProp name="-149746935">${MODEL1_DURATION}</stringProp>
+            </collectionProp>
+            <collectionProp name="-1938282696">
+              <stringProp name="49777">265</stringProp>
+              <stringProp name="49586">200</stringProp>
+              <stringProp name="1572771">3600</stringProp>
             </collectionProp>
           </collectionProp>
         </kg.apc.jmeter.timers.VariableThroughputTimer>
@@ -1062,12 +1073,10 @@ return &quot;BeanShell executed&quot;;</stringProp>
         <collectionProp name="COMPOSITE_CFG">
           <collectionProp name="">
             <stringProp name="-243013315">jp@gc - Response Times Over Time</stringProp>
-            <stringProp name="-243013315">jp@gc - Response Times Over Time</stringProp>
             <stringProp name="1267279877">jp@gc - Transactions per Second</stringProp>
             <stringProp name="1267279877">jp@gc - Transactions per Second</stringProp>
           </collectionProp>
           <collectionProp name="">
-            <stringProp name="-605883292">CEP Configuration</stringProp>
             <stringProp name="-1549391110">Overall Response Times</stringProp>
             <stringProp name="117711132">Successful Transactions per Second</stringProp>
             <stringProp name="-1517411905">Failed Transactions per Second</stringProp>
