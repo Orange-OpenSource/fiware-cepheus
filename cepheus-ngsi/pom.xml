@@ -20,6 +20,16 @@
                 <compile.source.version>1.7</compile.source.version>
                 <compile.test.version>${java.version}</compile.test.version>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <classifier>java7</classifier>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
