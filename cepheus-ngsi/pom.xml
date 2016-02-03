@@ -12,6 +12,22 @@
 
     <artifactId>cepheus-ngsi</artifactId>
 
+    <profiles>
+        <profile>
+            <id>java7</id>
+            <properties>
+                <!-- Force library to compile Java 1.7, let test code to default version -->
+                <compile.source.version>1.7</compile.source.version>
+                <compile.test.version>${java.version}</compile.test.version>
+            </properties>
+        </profile>
+    </profiles>
+
+    <!-- Compile library and test code default -->
+    <properties>
+        <compile.source.version>${java.version}</compile.source.version>
+        <compile.test.version>${java.version}</compile.test.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -112,10 +128,23 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
-                    </configuration>
+                <configuration>
+                    <source>${compile.source.version}</source>
+                    <target>${compile.source.version}</target>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>process-test-sources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <source>${compile.test.version}</source>
+                            <target>${compile.test.version}</target>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
