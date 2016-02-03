@@ -17,18 +17,15 @@ import com.orange.cepheus.cep.exception.PersistenceException;
 import com.orange.cepheus.cep.exception.TypeNotFoundException;
 import com.orange.cepheus.cep.model.Configuration;
 import com.orange.cepheus.cep.model.Event;
-import com.orange.ngsi.model.CodeEnum;
-import com.orange.ngsi.model.NotifyContext;
-import com.orange.ngsi.model.UpdateAction;
-import com.orange.ngsi.model.UpdateContext;
+import com.orange.ngsi.client.NgsiClient;
+import com.orange.ngsi.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -39,7 +36,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
+import java.util.Collections;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -68,6 +68,9 @@ public class NgsiControllerTest {
 
     @Mock
     ComplexEventProcessor complexEventProcessor;
+
+    @Mock(answer = Answers.RETURNS_MOCKS)
+    NgsiClient ngsiClient;
 
     @InjectMocks
     @Autowired
@@ -149,6 +152,7 @@ public class NgsiControllerTest {
     public void postNotifyContextWithInvalidateSubscriptionId() throws Exception {
 
         when(subscriptionManager.isSubscriptionValid(any())).thenReturn(false);
+        when(subscriptionManager.validateSubscriptionsId()).thenReturn(false);
 
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
 
@@ -161,6 +165,42 @@ public class NgsiControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_470.getShortPhrase()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.details").value("The subscription ID specified 1 does not correspond to an active subscription"));
         ;
+    }
+
+    @Test
+    public void postNotifyContextWithCleanInvalidateSubscriptionId() throws Exception {
+
+        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(false);
+        when(subscriptionManager.validateSubscriptionsId()).thenReturn(true);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        when(ngsiClient.getRequestHeaders(any())).thenReturn(httpHeaders);
+
+        NotifyContext notifyContext = createNotifyContextTempSensor(0);
+
+        mockMvc.perform(post("/v1/notifyContext")
+                .content(json(mapper, notifyContext))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.code").value(CodeEnum.CODE_470.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.reasonPhrase").value(CodeEnum.CODE_470.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.responseCode.details").value("The subscription ID specified 1 does not correspond to an active subscription"));
+        ;
+
+        // Capture unsubscribeContext when CEP check invalid SubscriptionId
+        ArgumentCaptor<HttpHeaders> headersArg = ArgumentCaptor.forClass(HttpHeaders.class);
+
+        //check the originator and the subscriptionId
+        verify(ngsiClient).unsubscribeContext(eq(notifyContext.getOriginator().toString()), headersArg.capture(), eq(notifyContext.getSubscriptionId()));
+
+        // Check headers are valid
+        HttpHeaders headers = headersArg.getValue();
+        assertEquals(MediaType.APPLICATION_JSON, headers.getContentType());
+        assertTrue(headers.getAccept().contains(MediaType.APPLICATION_JSON));
+
     }
 
     @Test

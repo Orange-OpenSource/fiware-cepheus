@@ -14,11 +14,13 @@ import com.orange.cepheus.cep.SubscriptionManager;
 import com.orange.cepheus.cep.exception.EventProcessingException;
 import com.orange.cepheus.cep.exception.TypeNotFoundException;
 import com.orange.cepheus.cep.model.Event;
+import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import com.orange.ngsi.server.NgsiBaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +45,9 @@ public class NgsiController extends NgsiBaseController {
     @Autowired
     public SubscriptionManager subscriptionManager;
 
+    @Autowired
+    public NgsiClient ngsiClient;
+
     @Override
     public NotifyContextResponse notifyContext(final NotifyContext notify) throws EventProcessingException, TypeNotFoundException {
 
@@ -61,6 +66,17 @@ public class NgsiController extends NgsiBaseController {
         } else {
             logger.warn("notifyContext request: invalid subscription id {} / {}", notify.getSubscriptionId(), notify.getOriginator());
             notifyContextResponse.setResponseCode(new StatusCode(CodeEnum.CODE_470, notify.getSubscriptionId()));
+            if (subscriptionManager.validateSubscriptionsId()) {
+                logger.warn("unsubscribeContext request: clean invalid subscription id {} / {}", notify.getSubscriptionId(), notify.getOriginator());
+                String originatorUrl = notify.getOriginator().toString();
+                HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(originatorUrl);
+                ngsiClient.unsubscribeContext(originatorUrl, httpHeaders, notify.getSubscriptionId()).addCallback(
+                        unsubscribeContextResponse ->
+                                logger.debug("unsubscribeContext completed for {}", originatorUrl),
+                        throwable ->
+                                logger.warn("unsubscribeContext failed for {}: {}", originatorUrl, throwable.toString())
+                );
+            }
         }
 
         return notifyContextResponse;

@@ -186,6 +186,11 @@ public class SubscriptionManagerTest {
 
     }
 
+    @Test
+    public void testValidateSubscriptionsId() {
+        Assert.isTrue(subscriptionManager.validateSubscriptionsId());
+    }
+
     private  void callSuccessCallback (ArgumentCaptor<SuccessCallback> successArg) {
         SubscribeContextResponse response = new SubscribeContextResponse();
         SubscribeResponse subscribeResponse = new SubscribeResponse();

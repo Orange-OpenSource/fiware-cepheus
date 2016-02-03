@@ -146,6 +146,15 @@ public class SubscriptionManager {
         return true;
     }
 
+    /**
+     * get the value of the validateSubscriptionsId
+     *
+     * @return the value of validateSubscriptionsId
+     */
+    public boolean validateSubscriptionsId() {
+        return validateSubscriptionsId;
+    }
+
     @PreDestroy
     public void shutdownGracefully() {
 
