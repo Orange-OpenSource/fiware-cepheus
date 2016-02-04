@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static com.orange.ngsi.model.CodeEnum.CODE_200;
 
@@ -634,6 +635,107 @@ public class NgsiValidationTest {
         thrown.expect(MissingRequestParameterException.class);
         thrown.expectMessage("contextAttributes");
         ngsiValidation.checkUpdateContextElement(updateContextElement);
+    }
+
+    @Test
+    public void testUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        UpdateContextAttribute updateContextAttribute = new UpdateContextAttribute();
+        updateContextAttribute.setAttribute(new ContextAttribute("temp", "float", "15.5"));
+        ngsiValidation.checkUpdateContextAttribute("12345678", "temp", Optional.empty(), updateContextAttribute);
+    }
+
+
+    @Test
+    public void testUpdateContextAttributeWithValueID() throws MissingRequestParameterException, MismatchIdException {
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", "15.5");
+        contextAttribute.setMetadata(Collections.singletonList(new ContextMetadata("ID", "string", "DEADBEEF")));
+        UpdateContextAttribute updateContextAttribute = new UpdateContextAttribute();
+        updateContextAttribute.setAttribute(contextAttribute);
+        ngsiValidation.checkUpdateContextAttribute("12345678", "temp", Optional.of("DEADBEEF"), updateContextAttribute);
+    }
+
+    @Test
+    public void nullEntityIDInUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("entityID");
+        ngsiValidation.checkUpdateContextAttribute(null, "temp", Optional.empty(), new UpdateContextAttribute());
+    }
+
+    @Test
+    public void emptyEntityIDInUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("entityID");
+        ngsiValidation.checkUpdateContextAttribute("", "temp", Optional.empty(), new UpdateContextAttribute());
+    }
+
+    @Test
+    public void nullAttributeNameInUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("attributeName");
+        ngsiValidation.checkUpdateContextAttribute("12345678", null, Optional.empty(), new UpdateContextAttribute());
+    }
+
+    @Test
+    public void emptyAttributeNameInUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("attributeName");
+        ngsiValidation.checkUpdateContextAttribute("12345678", "", Optional.empty(), new UpdateContextAttribute());
+    }
+
+    @Test
+    public void nullUpdateContextAttributeInUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("attribute");
+        ngsiValidation.checkUpdateContextAttribute("12345678", "temp", Optional.empty(), null);
+    }
+
+    @Test
+    public void nullContextAttributeInUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("attribute");
+        ngsiValidation.checkUpdateContextAttribute("12345678", "temp", Optional.empty(), new UpdateContextAttribute());
+    }
+
+    @Test
+    public void attributeNameMismatchInUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        ContextAttribute contextAttribute = new ContextAttribute("BADATTR", "float", "15.5");
+        UpdateContextAttribute updateContextAttribute = new UpdateContextAttribute();
+        updateContextAttribute.setAttribute(contextAttribute);
+        thrown.expect(MismatchIdException.class);
+        thrown.expectMessage("BADATTR");
+        ngsiValidation.checkUpdateContextAttribute("12345678", "temp", Optional.empty(), updateContextAttribute);
+    }
+
+    @Test
+    public void nullMetadataInUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", "15.5");
+        UpdateContextAttribute updateContextAttribute = new UpdateContextAttribute();
+        updateContextAttribute.setAttribute(contextAttribute);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("Metadata ID");
+        ngsiValidation.checkUpdateContextAttribute("12345678", "temp", Optional.of("DEADBEEF"), updateContextAttribute);
+    }
+
+    @Test
+    public void emptyMetadataInUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", "15.5");
+        contextAttribute.setMetadata(Collections.emptyList());
+        UpdateContextAttribute updateContextAttribute = new UpdateContextAttribute();
+        updateContextAttribute.setAttribute(contextAttribute);
+        thrown.expect(MissingRequestParameterException.class);
+        thrown.expectMessage("Metadata ID");
+        ngsiValidation.checkUpdateContextAttribute("12345678", "temp", Optional.of("DEADBEEF"), updateContextAttribute);
+    }
+
+    @Test
+    public void mismatchMetadataIDInUpdateContextAttribute() throws MissingRequestParameterException, MismatchIdException {
+        ContextAttribute contextAttribute = new ContextAttribute("temp", "float", "15.5");
+        contextAttribute.setMetadata(Collections.singletonList(new ContextMetadata("ID", "string", "CAFEBABE")));
+        UpdateContextAttribute updateContextAttribute = new UpdateContextAttribute();
+        updateContextAttribute.setAttribute(contextAttribute);
+        thrown.expect(MismatchIdException.class);
+        thrown.expectMessage("DEADBEEF");
+        ngsiValidation.checkUpdateContextAttribute("12345678", "temp", Optional.of("DEADBEEF"), updateContextAttribute);
     }
 
     @Test

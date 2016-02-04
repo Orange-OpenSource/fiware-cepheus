@@ -91,6 +91,7 @@ public class NgsiRestBaseController {
             @RequestBody UpdateContextAttribute updateContextAttribute,
             HttpServletRequest httpServletRequest) throws Exception {
         registerIntoDispatcher(httpServletRequest);
+        ngsiValidation.checkUpdateContextAttribute(entityID, attributeName, Optional.empty(), updateContextAttribute);
         return new ResponseEntity<>(appendContextAttribute(entityID, attributeName, updateContextAttribute), HttpStatus.OK);
     }
 
@@ -104,6 +105,7 @@ public class NgsiRestBaseController {
             @RequestBody UpdateContextAttribute updateContextAttribute,
             HttpServletRequest httpServletRequest) throws Exception {
         registerIntoDispatcher(httpServletRequest);
+        ngsiValidation.checkUpdateContextAttribute(entityID, attributeName, Optional.empty(), updateContextAttribute);
         return new ResponseEntity<>(updateContextAttribute(entityID, attributeName, valueID, updateContextAttribute), HttpStatus.OK);
     }
 

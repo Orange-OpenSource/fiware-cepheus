@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 
 
@@ -118,6 +119,42 @@ public class NgsiValidation {
     public void checkUpdateContextElement(UpdateContextElement updateContextElement) throws MissingRequestParameterException {
         if (nullOrEmpty(updateContextElement.getContextAttributes())) {
             throw new MissingRequestParameterException("contextAttributes", "List<ContextAttribute>");
+        }
+    }
+
+    public void checkUpdateContextAttribute(String entityID, String attributeName, Optional<String> valueID, UpdateContextAttribute updateContextAttribute)
+            throws MissingRequestParameterException, MismatchIdException {
+        if (nullOrEmpty(entityID)) {
+            throw new MissingRequestParameterException("entityID", "string");
+        }
+        if (nullOrEmpty(attributeName)) {
+            throw new MissingRequestParameterException("attributeName", "string");
+        }
+        if (updateContextAttribute == null || updateContextAttribute.getAttribute() == null) {
+            throw new MissingRequestParameterException("attribute", "ContextAttribute");
+        }
+        // Check attribute name matching
+        if (!attributeName.equals(updateContextAttribute.getAttribute().getName())) {
+            throw new MismatchIdException(attributeName, updateContextAttribute.getAttribute().getName());
+        }
+        // Check optional valueID matching
+        if (valueID.isPresent()) {
+            if (nullOrEmpty(valueID.get())) { // tests just emptiness
+                throw new MissingRequestParameterException("valueID", "string");
+            }
+            if (updateContextAttribute.getAttribute().getMetadata() == null) {
+                throw new MissingRequestParameterException("metadata", "Metadata");
+            }
+            // Check Metadata ID exists and equals valueID
+            for (ContextMetadata metadata : updateContextAttribute.getAttribute().getMetadata()) {
+                if ("ID".equals(metadata.getName())) {
+                    if (valueID.get().equals(metadata.getValue())) {
+                        return; // ! \\ Early return !
+                    }
+                    throw new MismatchIdException(valueID.get(), String.valueOf(metadata.getValue()));
+                }
+            }
+            throw new MissingRequestParameterException("ID", "Metadata ID");
         }
     }
 

@@ -89,7 +89,7 @@ public class NgsiRestBaseControllerTest {
     @Test
     public void checkAppendContextAttributeNotImplemented() throws Exception {
         mockMvc.perform(
-                post("/rest/ni/contextEntities/test/attributes/a").content(json(jsonConverter, createUpdateContextAttributeTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                post("/rest/ni/contextEntities/test/attributes/temp").content(json(jsonConverter, createUpdateContextAttributeTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_403.getLabel()));
     }
@@ -97,7 +97,7 @@ public class NgsiRestBaseControllerTest {
     @Test
     public void checkUpdateContextAttributeNotImplemented() throws Exception {
         mockMvc.perform(
-                put("/rest/ni/contextEntities/test/attributes/a").content(json(jsonConverter, createUpdateContextAttributeTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                put("/rest/ni/contextEntities/test/attributes/temp").content(json(jsonConverter, createUpdateContextAttributeTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_403.getLabel()));
     }
@@ -247,7 +247,7 @@ public class NgsiRestBaseControllerTest {
     @Test
     public void checkAppendContextAttributeImplemented() throws Exception {
         mockMvc.perform(
-                post("/rest/i/contextEntities/test/attributes/a").content(json(jsonConverter, createUpdateContextAttributeTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                post("/rest/i/contextEntities/test/attributes/temp").content(json(jsonConverter, createUpdateContextAttributeTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_200.getLabel()));
     }
@@ -255,7 +255,7 @@ public class NgsiRestBaseControllerTest {
     @Test
     public void checkUpdateContextAttributeImplemented() throws Exception {
         mockMvc.perform(
-                put("/rest/i/contextEntities/test/attributes/a").content(json(jsonConverter, createUpdateContextAttributeTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                put("/rest/i/contextEntities/test/attributes/temp").content(json(jsonConverter, createUpdateContextAttributeTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_200.getLabel()));
     }
@@ -271,7 +271,8 @@ public class NgsiRestBaseControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.attributes").isArray())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].name").value("temp"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].type").value("float"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].value").value("15.5"));    }
+                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].value").value("15.5"));
+    }
 
     @Test
     public void checkDeleteContextAttributeImplemented() throws Exception {
