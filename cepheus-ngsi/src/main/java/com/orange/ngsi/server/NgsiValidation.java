@@ -122,7 +122,7 @@ public class NgsiValidation {
         }
     }
 
-    public void checkUpdateContextAttribute(String entityID, String attributeName, Optional<String> valueID, UpdateContextAttribute updateContextAttribute)
+    public void checkUpdateContextAttribute(String entityID, String attributeName, String valueID, UpdateContextAttribute updateContextAttribute)
             throws MissingRequestParameterException, MismatchIdException {
         if (nullOrEmpty(entityID)) {
             throw new MissingRequestParameterException("entityID", "string");
@@ -138,8 +138,8 @@ public class NgsiValidation {
             throw new MismatchIdException(attributeName, updateContextAttribute.getAttribute().getName());
         }
         // Check optional valueID matching
-        if (valueID.isPresent()) {
-            if (nullOrEmpty(valueID.get())) { // tests just emptiness
+        if (valueID != null) {
+            if (nullOrEmpty(valueID)) { // tests just emptiness
                 throw new MissingRequestParameterException("valueID", "string");
             }
             if (updateContextAttribute.getAttribute().getMetadata() == null) {
@@ -148,10 +148,10 @@ public class NgsiValidation {
             // Check Metadata ID exists and equals valueID
             for (ContextMetadata metadata : updateContextAttribute.getAttribute().getMetadata()) {
                 if ("ID".equals(metadata.getName())) {
-                    if (valueID.get().equals(metadata.getValue())) {
+                    if (valueID.equals(metadata.getValue())) {
                         return; // ! \\ Early return !
                     }
-                    throw new MismatchIdException(valueID.get(), String.valueOf(metadata.getValue()));
+                    throw new MismatchIdException(valueID, String.valueOf(metadata.getValue()));
                 }
             }
             throw new MissingRequestParameterException("ID", "Metadata ID");

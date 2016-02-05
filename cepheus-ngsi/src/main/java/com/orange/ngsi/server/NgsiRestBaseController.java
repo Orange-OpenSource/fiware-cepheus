@@ -22,7 +22,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
 
 /**
  * Controller for the NGSI 9/10 convenient REST requests
@@ -91,41 +90,70 @@ public class NgsiRestBaseController {
             @RequestBody UpdateContextAttribute updateContextAttribute,
             HttpServletRequest httpServletRequest) throws Exception {
         registerIntoDispatcher(httpServletRequest);
-        ngsiValidation.checkUpdateContextAttribute(entityID, attributeName, Optional.empty(), updateContextAttribute);
+        ngsiValidation.checkUpdateContextAttribute(entityID, attributeName, null, updateContextAttribute);
         return new ResponseEntity<>(appendContextAttribute(entityID, attributeName, updateContextAttribute), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.PUT,
-            value = {"/contextEntities/{entityID}/attributes/{attributeName}",
-                     "/contextEntities/{entityID}/attributes/{attributeName}/{valueID}"},
+            value = "/contextEntities/{entityID}/attributes/{attributeName}",
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     final public ResponseEntity<StatusCode> updateContextAttribute(@PathVariable String entityID,
             @PathVariable String attributeName,
-            @PathVariable Optional<String> valueID,
             @RequestBody UpdateContextAttribute updateContextAttribute,
             HttpServletRequest httpServletRequest) throws Exception {
         registerIntoDispatcher(httpServletRequest);
-        ngsiValidation.checkUpdateContextAttribute(entityID, attributeName, Optional.empty(), updateContextAttribute);
+        ngsiValidation.checkUpdateContextAttribute(entityID, attributeName, null, updateContextAttribute);
+        return new ResponseEntity<>(updateContextAttribute(entityID, attributeName, updateContextAttribute), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET,
+            value = "/contextEntities/{entityID}/attributes/{attributeName}")
+    final public ResponseEntity<ContextAttributeResponse> getContextAttribute(@PathVariable String entityID,
+            @PathVariable String attributeName,
+            HttpServletRequest httpServletRequest) throws Exception {
+        registerIntoDispatcher(httpServletRequest);
+        return new ResponseEntity<>(getContextAttribute(entityID, attributeName), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE,
+            value = "/contextEntities/{entityID}/attributes/{attributeName}")
+    final public ResponseEntity<StatusCode> deleteContextAttribute(@PathVariable String entityID,
+            @PathVariable String attributeName,
+            HttpServletRequest httpServletRequest) throws Exception {
+        registerIntoDispatcher(httpServletRequest);
+        return new ResponseEntity<>(deleteContextAttribute(entityID, attributeName), HttpStatus.OK);
+    }
+
+    /* Context Attributes Value instances */
+
+    @RequestMapping(method = RequestMethod.PUT,
+            value = "/contextEntities/{entityID}/attributes/{attributeName}/{valueID}",
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    final public ResponseEntity<StatusCode> updateContextAttribute(@PathVariable String entityID,
+            @PathVariable String attributeName,
+            @PathVariable String valueID,
+            @RequestBody UpdateContextAttribute updateContextAttribute,
+            HttpServletRequest httpServletRequest) throws Exception {
+        registerIntoDispatcher(httpServletRequest);
+        ngsiValidation.checkUpdateContextAttribute(entityID, attributeName, valueID, updateContextAttribute);
         return new ResponseEntity<>(updateContextAttribute(entityID, attributeName, valueID, updateContextAttribute), HttpStatus.OK);
     }
 
     @RequestMapping( method = RequestMethod.GET,
-            value = {"/contextEntities/{entityID}/attributes/{attributeName}",
-                     "/contextEntities/{entityID}/attributes/{attributeName}/{valueID}"})
+            value = "/contextEntities/{entityID}/attributes/{attributeName}/{valueID}")
     final public ResponseEntity<ContextAttributeResponse> getContextAttribute(@PathVariable String entityID,
             @PathVariable String attributeName,
-            @PathVariable Optional<String> valueID,
+            @PathVariable String valueID,
             HttpServletRequest httpServletRequest) throws Exception {
         registerIntoDispatcher(httpServletRequest);
         return new ResponseEntity<>(getContextAttribute(entityID, attributeName, valueID), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.DELETE,
-            value = {"/contextEntities/{entityID}/attributes/{attributeName}",
-                     "/contextEntities/{entityID}/attributes/{attributeName}/{valueID}"})
+            value = "/contextEntities/{entityID}/attributes/{attributeName}/{valueID}")
     final public ResponseEntity<StatusCode> deleteContextAttribute(@PathVariable String entityID,
             @PathVariable String attributeName,
-            @PathVariable Optional<String> valueID,
+            @PathVariable String valueID,
             HttpServletRequest httpServletRequest) throws Exception {
         registerIntoDispatcher(httpServletRequest);
         return new ResponseEntity<>(deleteContextAttribute(entityID, attributeName, valueID), HttpStatus.OK);
@@ -135,11 +163,19 @@ public class NgsiRestBaseController {
 
     @RequestMapping(method = RequestMethod.GET,
             value = {"/contextEntityTypes/{typeName}",
-                     "/contextEntityTypes/{typeName}/attributes",
-                     "/contextEntityTypes/{typeName}/attributes/{attributeName}"})
+                    "/contextEntityTypes/{typeName}/attributes"})
     final public ResponseEntity<QueryContextResponse> getContextEntityTypes(
             @PathVariable String typeName,
-            @PathVariable Optional<String> attributeName,
+            HttpServletRequest httpServletRequest) throws Exception {
+        registerIntoDispatcher(httpServletRequest);
+        return new ResponseEntity<>(getContextEntitiesType(typeName), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET,
+            value = "/contextEntityTypes/{typeName}/attributes/{attributeName}")
+    final public ResponseEntity<QueryContextResponse> getContextEntityTypes(
+            @PathVariable String typeName,
+            @PathVariable String attributeName,
             HttpServletRequest httpServletRequest) throws Exception {
         registerIntoDispatcher(httpServletRequest);
         return new ResponseEntity<>(getContextEntitiesType(typeName, attributeName), HttpStatus.OK);
@@ -241,20 +277,37 @@ public class NgsiRestBaseController {
         throw new UnsupportedOperationException("appendContextAttribute");
     }
 
-    protected StatusCode updateContextAttribute(final String entityID, String attributeName, Optional<String> valueID,
+    protected StatusCode updateContextAttribute(final String entityID, String attributeName,
             UpdateContextAttribute updateContextElementRequest) throws Exception {
         throw new UnsupportedOperationException("updateContextAttribute");
     }
 
-    protected ContextAttributeResponse getContextAttribute( String entityID, String attributeName, Optional<String> valueID) throws Exception {
+    protected StatusCode updateContextAttribute(final String entityID, String attributeName, String valueID,
+            UpdateContextAttribute updateContextElementRequest) throws Exception {
+        throw new UnsupportedOperationException("updateContextAttribute");
+    }
+
+    protected ContextAttributeResponse getContextAttribute( String entityID, String attributeName) throws Exception {
         throw new UnsupportedOperationException("getContextAttribute");
     }
 
-    protected StatusCode deleteContextAttribute(String entityID, String attributeName, Optional<String> valueID) throws Exception {
+    protected ContextAttributeResponse getContextAttribute( String entityID, String attributeName, String valueID) throws Exception {
+        throw new UnsupportedOperationException("getContextAttribute");
+    }
+
+    protected StatusCode deleteContextAttribute(String entityID, String attributeName) throws Exception {
         throw new UnsupportedOperationException("deleteContextAttribute");
     }
 
-    protected QueryContextResponse getContextEntitiesType(String typeName, Optional<String> attributeName) throws Exception {
+    protected StatusCode deleteContextAttribute(String entityID, String attributeName, String valueID) throws Exception {
+        throw new UnsupportedOperationException("deleteContextAttribute");
+    }
+
+    protected QueryContextResponse getContextEntitiesType(String typeName) throws Exception {
+        throw new UnsupportedOperationException("getContextEntitiesType");
+    }
+
+    protected QueryContextResponse getContextEntitiesType(String typeName, String attributeName) throws Exception {
         throw new UnsupportedOperationException("getContextEntitiesType");
     }
 
@@ -279,7 +332,7 @@ public class NgsiRestBaseController {
      * Response for request error. NGSI requests require custom responses with 200 OK HTTP response code.
      */
     protected ResponseEntity<Object> errorResponse(String path, StatusCode statusCode) {
-        return new ResponseEntity<>(statusCode, HttpStatus.OK);
+        return new ResponseEntity<Object>(statusCode, HttpStatus.OK);
     }
 
     /**

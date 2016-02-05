@@ -45,22 +45,42 @@ public class FakeRestControllerHelper extends NgsiRestBaseController {
     }
 
     @Override
-    protected StatusCode updateContextAttribute(String entityID, String attributeName, Optional<String> valueID, UpdateContextAttribute updateContextElementRequest) throws Exception {
+    protected StatusCode updateContextAttribute(String entityID, String attributeName, UpdateContextAttribute updateContextElementRequest) throws Exception {
         return new StatusCode(CodeEnum.CODE_200);
     }
 
     @Override
-    protected ContextAttributeResponse getContextAttribute(String entityID, String attributeName, Optional<String> valueID) throws Exception {
+    protected StatusCode updateContextAttribute(String entityID, String attributeName, String valueID, UpdateContextAttribute updateContextElementRequest) throws Exception {
+        return new StatusCode(CodeEnum.CODE_200);
+    }
+
+    @Override
+    protected ContextAttributeResponse getContextAttribute(String entityID, String attributeName) throws Exception {
         return Util.createContextAttributeResponseTemperature();
     }
 
     @Override
-    protected StatusCode deleteContextAttribute(String entityID, String attributeName, Optional<String> valueID) throws Exception {
+    protected ContextAttributeResponse getContextAttribute(String entityID, String attributeName, String valueID) throws Exception {
+        return Util.createContextAttributeResponseTemperature();
+    }
+
+    @Override
+    protected StatusCode deleteContextAttribute(String entityID, String attributeName) throws Exception {
         return new StatusCode(CodeEnum.CODE_200);
     }
 
     @Override
-    protected QueryContextResponse getContextEntitiesType(String typeName, Optional<String> attributeName) throws Exception {
+    protected StatusCode deleteContextAttribute(String entityID, String attributeName, String valueID) throws Exception {
+        return new StatusCode(CodeEnum.CODE_200);
+    }
+
+    @Override
+    protected QueryContextResponse getContextEntitiesType(String typeName) throws Exception {
+        return Util.createQueryContextResponseTemperature();
+    }
+
+    @Override
+    protected QueryContextResponse getContextEntitiesType(String typeName, String attributeName) throws Exception {
         return Util.createQueryContextResponseTemperature();
     }
 
