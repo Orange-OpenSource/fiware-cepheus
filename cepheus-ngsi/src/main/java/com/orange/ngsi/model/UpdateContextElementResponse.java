@@ -28,6 +28,7 @@ public class UpdateContextElementResponse {
     @JsonProperty("contextResponses")
     @JacksonXmlElementWrapper(localName = "contextResponseList")
     @JacksonXmlProperty(localName = "contextAttributeResponse")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     List<ContextAttributeResponse> contextAttributeResponses;
 
     public UpdateContextElementResponse() {

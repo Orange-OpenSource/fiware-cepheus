@@ -50,17 +50,7 @@ public class FakeRestControllerHelper extends NgsiRestBaseController {
     }
 
     @Override
-    protected StatusCode updateContextAttribute(String entityID, String attributeName, String valueID, UpdateContextAttribute updateContextElementRequest) throws Exception {
-        return new StatusCode(CodeEnum.CODE_200);
-    }
-
-    @Override
     protected ContextAttributeResponse getContextAttribute(String entityID, String attributeName) throws Exception {
-        return Util.createContextAttributeResponseTemperature();
-    }
-
-    @Override
-    protected ContextAttributeResponse getContextAttribute(String entityID, String attributeName, String valueID) throws Exception {
         return Util.createContextAttributeResponseTemperature();
     }
 
@@ -70,7 +60,17 @@ public class FakeRestControllerHelper extends NgsiRestBaseController {
     }
 
     @Override
-    protected StatusCode deleteContextAttribute(String entityID, String attributeName, String valueID) throws Exception {
+    protected StatusCode updateContextAttributeValue(String entityID, String attributeName, String valueID, UpdateContextAttribute updateContextElementRequest) throws Exception {
+        return new StatusCode(CodeEnum.CODE_200);
+    }
+
+    @Override
+    protected ContextAttributeResponse getContextAttributeValue(String entityID, String attributeName, String valueID) throws Exception {
+        return Util.createContextAttributeResponseTemperature();
+    }
+
+    @Override
+    protected StatusCode deleteContextAttributeValue(String entityID, String attributeName, String valueID) throws Exception {
         return new StatusCode(CodeEnum.CODE_200);
     }
 

@@ -221,6 +221,7 @@ public class Util {
 
     static public ContextAttributeResponse createContextAttributeResponseTemperature() {
         ContextAttribute contextAttribute = new ContextAttribute("temp", "float", 15.5);
+        contextAttribute.setMetadata(Collections.singletonList(new ContextMetadata("ID", "string", "DEADBEEF")));
         ContextAttributeResponse contextAttributeResponse = new ContextAttributeResponse();
         contextAttributeResponse.setContextAttributeList(Collections.singletonList(contextAttribute));
         contextAttributeResponse.setStatusCode(new StatusCode(CODE_200));
@@ -253,6 +254,7 @@ public class Util {
     static public UpdateContextAttribute createUpdateContextAttributeTemperature() {
         UpdateContextAttribute updateContextAttribute = new UpdateContextAttribute();
         ContextAttribute contextAttribute = new ContextAttribute("temp", "float", 15.5);
+        contextAttribute.setMetadata(Collections.singletonList(new ContextMetadata("ID", "string", "DEADBEEF")));
         updateContextAttribute.setAttribute(contextAttribute);
         return updateContextAttribute;
     }

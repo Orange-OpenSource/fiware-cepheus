@@ -29,6 +29,7 @@ public class AppendContextElementResponse {
     @JsonProperty("contextResponses")
     @JacksonXmlElementWrapper(localName = "contextResponseList")
     @JacksonXmlProperty(localName = "contextAttributeResponse")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<ContextAttributeResponse> contextAttributeResponses;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

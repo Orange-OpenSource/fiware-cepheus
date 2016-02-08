@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.orange.ngsi.TestConfiguration;
 import com.orange.ngsi.model.*;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.annotation.PostConstruct;
+import java.util.Collections;
 
 import static com.orange.ngsi.Util.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -49,7 +51,7 @@ public class NgsiRestBaseControllerTest {
 
     private ObjectMapper xmlmapper = new XmlMapper();
 
-    @Before
+    @PostConstruct
     public void setup() throws Exception {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
@@ -114,6 +116,30 @@ public class NgsiRestBaseControllerTest {
     public void checkDeleteContextAttributeNotImplemented() throws Exception {
         mockMvc.perform(
                 delete("/rest/ni/contextEntities/test/attributes/a").header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_403.getLabel()));
+    }
+
+    @Test
+    public void checkUpdateContextAttributeValueNotImplemented() throws Exception {
+        mockMvc.perform(
+                put("/rest/ni/contextEntities/test/attributes/temp/DEADBEEF").content(json(jsonConverter, createUpdateContextAttributeTemperature())).contentType(MediaType.APPLICATION_JSON).header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_403.getLabel()));
+    }
+
+    @Test
+    public void checkGetContextAttributeValueNotImplemented() throws Exception {
+        mockMvc.perform(
+                get("/rest/ni/contextEntities/test/attributes/temp/DEADBEEF").header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_403.getLabel()));
+    }
+
+    @Test
+    public void checkDeleteContextAttributeValueNotImplemented() throws Exception {
+        mockMvc.perform(
+                delete("/rest/ni/contextEntities/test/attributes/temp/DEADBEEF").header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_403.getLabel()));
     }
@@ -281,6 +307,46 @@ public class NgsiRestBaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_200.getLabel()));
     }
+
+    @Test
+    public void checkUpdateContextAttributeValueImplemented() throws Exception {
+        UpdateContextAttribute updateContextAttribute = createUpdateContextAttributeTemperature();
+        updateContextAttribute.getAttribute().setMetadata(Collections.singletonList(new ContextMetadata("ID", "string", "DEADBEEF")));
+        mockMvc.perform(
+                put("/rest/i/contextEntities/test/attributes/temp/DEADBEEF").content(json(jsonConverter, updateContextAttribute))
+                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_200.getLabel()));
+    }
+
+    @Test
+    public void checkGetContextAttributeValueImplemented() throws Exception {
+        mockMvc.perform(
+                get("/rest/i/contextEntities/test/attributes/temp/DEADBEEF").header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                .andDo(mvcResult -> System.out.println(mvcResult.getResponse().getContentAsString()))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.code").value(CodeEnum.CODE_200.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.reasonPhrase").value(CodeEnum.CODE_200.getShortPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.statusCode.details").value(CodeEnum.CODE_200.getLongPhrase()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].value").value("15.5"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].metadatas").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].metadatas[0].name").value("ID"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].metadatas[0].type").value("string"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.attributes[0].metadatas[0].value").value("DEADBEEF"));
+
+    }
+
+    @Test
+    public void checkDeleteContextAttributeValueImplemented() throws Exception {
+        mockMvc.perform(
+                delete("/rest/i/contextEntities/test/attributes/temp/DEADBEEF").header("Host", "localhost").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(CodeEnum.CODE_200.getLabel()));
+    }
+
 
     @Test
     public void checkGetContextEntitiesTypeImplemented() throws Exception {
