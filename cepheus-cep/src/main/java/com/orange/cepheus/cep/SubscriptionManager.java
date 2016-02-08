@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -135,13 +136,25 @@ public class SubscriptionManager {
 
     /**
      * Check that a given subscription is valid
+     * unsubscribe if is invalid
      *
      * @param subscriptionId the id of subscription
      * @return true if subscription is valid
      */
-    public boolean isSubscriptionValid(String subscriptionId) {
+    public boolean validateSubscriptionId(String subscriptionId, String originatorUrl) {
         if (validateSubscriptionsId) {
-            return subscriptions.isSubscriptionValid(subscriptionId);
+            boolean isValid = subscriptions.isSubscriptionValid(subscriptionId);
+            if (!isValid) {
+                logger.warn("unsubscribeContext request: clean invalid subscription id {} / {}", subscriptionId, originatorUrl);
+                //TODO: add support multi-tenant subscription
+                ngsiClient.unsubscribeContext(originatorUrl, null, subscriptionId).addCallback(
+                        unsubscribeContextResponse ->
+                                logger.debug("unsubscribeContext completed for {}", originatorUrl),
+                        throwable ->
+                                logger.warn("unsubscribeContext failed for {}: {}", originatorUrl, throwable.toString())
+                );
+            }
+            return isValid;
         }
         return true;
     }

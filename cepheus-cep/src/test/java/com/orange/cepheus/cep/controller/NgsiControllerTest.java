@@ -17,18 +17,15 @@ import com.orange.cepheus.cep.exception.PersistenceException;
 import com.orange.cepheus.cep.exception.TypeNotFoundException;
 import com.orange.cepheus.cep.model.Configuration;
 import com.orange.cepheus.cep.model.Event;
-import com.orange.ngsi.model.CodeEnum;
-import com.orange.ngsi.model.NotifyContext;
-import com.orange.ngsi.model.UpdateAction;
-import com.orange.ngsi.model.UpdateContext;
+import com.orange.ngsi.client.NgsiClient;
+import com.orange.ngsi.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -39,7 +36,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.net.URI;
+import java.util.Collections;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -69,6 +69,9 @@ public class NgsiControllerTest {
     @Mock
     ComplexEventProcessor complexEventProcessor;
 
+    @Mock(answer = Answers.RETURNS_MOCKS)
+    NgsiClient ngsiClient;
+
     @InjectMocks
     @Autowired
     private NgsiController ngsiController;
@@ -94,7 +97,7 @@ public class NgsiControllerTest {
     @Test
     public void postNotifyContext() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(true);
         when(eventMapper.eventFromContextElement(any())).thenReturn(event);
         doNothing().when(complexEventProcessor).processEvent(any());
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
@@ -113,7 +116,7 @@ public class NgsiControllerTest {
     @Test
     public void postNotifyContextWithTypeNotFoundException() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(true);
         doThrow(TypeNotFoundException.class).when(eventMapper).eventFromContextElement(any());
 
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
@@ -131,7 +134,7 @@ public class NgsiControllerTest {
     @Test
     public void postNotifyContextWithEventProcessingException() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(true);
         doThrow(EventProcessingException.class).when(eventMapper).eventFromContextElement(any());
 
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
@@ -148,7 +151,7 @@ public class NgsiControllerTest {
     @Test
     public void postNotifyContextWithInvalidateSubscriptionId() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(false);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(false);
 
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
 

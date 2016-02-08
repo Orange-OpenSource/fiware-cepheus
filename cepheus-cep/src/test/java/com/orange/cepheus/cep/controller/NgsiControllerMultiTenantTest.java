@@ -102,7 +102,7 @@ public class NgsiControllerMultiTenantTest {
     @Test
     public void postNotifyContext() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(true);
         when(eventMapper.eventFromContextElement(any())).thenReturn(event);
         doNothing().when(complexEventProcessor).processEvent(any());
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
@@ -116,7 +116,7 @@ public class NgsiControllerMultiTenantTest {
     @Test
     public void postNotifyContextWithTypeNotFoundException() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(true);
         doThrow(TypeNotFoundException.class).when(eventMapper).eventFromContextElement(any());
 
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
@@ -134,7 +134,7 @@ public class NgsiControllerMultiTenantTest {
     @Test
     public void postNotifyContextWithEventProcessingException() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(true);
         doThrow(EventProcessingException.class).when(eventMapper).eventFromContextElement(any());
 
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
@@ -151,7 +151,7 @@ public class NgsiControllerMultiTenantTest {
     @Test
     public void postNotifyContextWithInvalidateSubscriptionId() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(false);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(false);
 
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
 
@@ -169,7 +169,7 @@ public class NgsiControllerMultiTenantTest {
     @Test
     public void postNotifyContextWithBadServicePath() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(true);
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
 
         mockMvc.perform(post("/v1/notifyContext")
@@ -185,7 +185,7 @@ public class NgsiControllerMultiTenantTest {
     @Test
     public void postNotifyContextBadService() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(true);
         NotifyContext notifyContext = createNotifyContextTempSensor(0);
 
         mockMvc.perform(post("/v1/notifyContext")
@@ -201,7 +201,7 @@ public class NgsiControllerMultiTenantTest {
     @Test
     public void postNotifyContextWithTenant() throws Exception {
 
-        when(subscriptionManager.isSubscriptionValid(any())).thenReturn(true);
+        when(subscriptionManager.validateSubscriptionId(any(), any())).thenReturn(true);
         Configuration configuration = getBasicConf();
         mockMvc.perform(post("/v1/admin/config")
                 .header("Fiware-Service", "smartcity")

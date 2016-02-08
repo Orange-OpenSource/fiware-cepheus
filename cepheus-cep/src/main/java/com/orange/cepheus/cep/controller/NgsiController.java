@@ -14,6 +14,7 @@ import com.orange.cepheus.cep.SubscriptionManager;
 import com.orange.cepheus.cep.exception.EventProcessingException;
 import com.orange.cepheus.cep.exception.TypeNotFoundException;
 import com.orange.cepheus.cep.model.Event;
+import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.*;
 import com.orange.ngsi.server.NgsiBaseController;
 import org.slf4j.Logger;
@@ -43,6 +44,9 @@ public class NgsiController extends NgsiBaseController {
     @Autowired
     public SubscriptionManager subscriptionManager;
 
+    @Autowired
+    public NgsiClient ngsiClient;
+
     @Override
     public NotifyContextResponse notifyContext(final NotifyContext notify) throws EventProcessingException, TypeNotFoundException {
 
@@ -51,7 +55,7 @@ public class NgsiController extends NgsiBaseController {
         NotifyContextResponse notifyContextResponse = new NotifyContextResponse();
 
         // Only handle notification if it has a valid subscription
-        if (subscriptionManager.isSubscriptionValid(notify.getSubscriptionId())) {
+        if (subscriptionManager.validateSubscriptionId(notify.getSubscriptionId(), notify.getOriginator().toString())) {
             for (ContextElementResponse response : notify.getContextElementResponseList()) {
                 ContextElement element = response.getContextElement();
                 Event event = eventMapper.eventFromContextElement(element);

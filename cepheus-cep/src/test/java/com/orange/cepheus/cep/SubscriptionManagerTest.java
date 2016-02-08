@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -184,6 +185,46 @@ public class SubscriptionManagerTest {
         // Check that unsubsribe is called
         Assert.notNull(successArg.getValue());
 
+    }
+
+    @Test
+    public void testInvalideSubscription() {
+        // Mock future for unsubscribeContext
+        ListenableFuture<UnsubscribeContextResponse> responseFuture = Mockito.mock(ListenableFuture.class);
+        doNothing().when(responseFuture).addCallback(any(), any());
+        when(ngsiClient.unsubscribeContext(eq("http://iotAgent"), eq(null), eq("9999"))).thenReturn(responseFuture);
+        subscriptionManager.validateSubscriptionId("9999", "http://iotAgent");
+    }
+
+    @Test
+    public void testValideSubscription() {
+        // add configuration
+        // Mock the task scheduler and capture the runnable
+        ArgumentCaptor<Runnable> runnableArg = ArgumentCaptor.forClass(Runnable.class);
+        when(taskScheduler.scheduleWithFixedDelay(runnableArg.capture(), anyLong())).thenReturn(Mockito.mock(ScheduledFuture.class));
+
+        // Mock the response to the subsribeContext
+        ArgumentCaptor<SuccessCallback> successArg = ArgumentCaptor.forClass(SuccessCallback.class);
+        ListenableFuture<SubscribeContextResponse> responseFuture = Mockito.mock(ListenableFuture.class);
+        doNothing().when(responseFuture).addCallback(successArg.capture(), any());
+
+        Configuration configuration = getBasicConf();
+        subscriptionManager.setConfiguration(configuration);
+
+        // Capture the arg of subscription and return the mocked future
+        ArgumentCaptor<String> urlProviderArg = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<SubscribeContext> subscribeContextArg = ArgumentCaptor.forClass(SubscribeContext.class);
+        when(ngsiClient.subscribeContext(urlProviderArg.capture(), eq(null), subscribeContextArg.capture())).thenReturn(responseFuture);
+
+        // Execute scheduled runnable
+        runnableArg.getValue().run();
+
+        // Return the SubscribeContextResponse
+        callSuccessCallback(successArg);
+
+        // check ngsiClient.unsubscribe() is never called
+        verify(ngsiClient, never()).unsubscribeContext(any(), any(), any());
+        subscriptionManager.validateSubscriptionId("12345678", "http://iotAgent");
     }
 
     private  void callSuccessCallback (ArgumentCaptor<SuccessCallback> successArg) {
