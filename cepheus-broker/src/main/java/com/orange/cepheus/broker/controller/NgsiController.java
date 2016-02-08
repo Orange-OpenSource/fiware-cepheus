@@ -33,7 +33,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
- * NGSI Controller : NGSI operation implemented by Cepheus-lightbroker
+ * NGSI standard operations
+ *  - all NGSI-10 operations except /updateContextSubscription
+ *  - none of NGSI-9 operations but /registerContext (used by IoTAgents)
  */
 @RestController
 @RequestMapping(value = {"/v1", "/v1/registry", "/ngsi9", "/NGSI9", "/ngsi10", "/NGSI10"})
@@ -178,6 +180,15 @@ public class NgsiController extends NgsiBaseController {
         subscribeContextResponse.setSubscribeResponse(subscribeResponse);
 
         return subscribeContextResponse;
+    }
+
+    /**
+     * Unsupported, will throw an UnsupportedOperationException
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public UpdateContextSubscriptionResponse updateContextSubscription(final UpdateContextSubscription updateContextSubscription) throws Exception {
+        return super.updateContextSubscription(updateContextSubscription);
     }
 
     @Override

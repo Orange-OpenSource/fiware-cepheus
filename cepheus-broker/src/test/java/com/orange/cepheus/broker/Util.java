@@ -165,6 +165,13 @@ public class Util {
         return subscribeContextResponse;
     }
 
+    static public UpdateContextSubscription createUpdateSubscribeContext() {
+        UpdateContextSubscription updateContextSubscription = new UpdateContextSubscription();
+        updateContextSubscription.setDuration("P3M");
+        updateContextSubscription.setSubscriptionId("12345678");
+        return updateContextSubscription;
+    }
+
     static public RegisterContext createRegisterContextTemperature() throws URISyntaxException {
         RegisterContext registerContext = new RegisterContext();
 
