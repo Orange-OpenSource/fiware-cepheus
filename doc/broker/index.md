@@ -53,7 +53,8 @@ The broker has many limitations due to its simple design compared to a complete 
 - Broker supports all NGGSI-10 standard and convenient operations from the NGSI v1 API except for the 'updateContextSubscriptions' operation.
 - Broker only support the  NGSI-9 `registerContext` operation from the NGSI v1 API for request forwarding.
 - Subscriptions only support `ONCHANGE` as type of notification of `notifyCondition`.
-- Subscriptions do not supportt `throttling`, `restriction` or `condValues`.
+- Subscriptions do not support `throttling`, `restriction` or `condValues`.
+- Subscriptions will send the whole set of updated context elements in the payload notification, there is no filtering.
 - If multiple NGSI providers register the same Context Entities, only the first provider will get the forwarded `queryContext` or `updateContext` requests.
 - When a `queryContext` or `updateContext` request contains references to multiple Context Entities, the request is forwarded only to the Context Provider of the first Context Entity.
 - Broker does not keep the any value of Context Entities, all requests will get forwarded to a Context Provider or the remote Broker.

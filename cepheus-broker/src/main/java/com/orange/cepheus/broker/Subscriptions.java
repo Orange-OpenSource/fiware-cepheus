@@ -127,7 +127,7 @@ public class Subscriptions {
         return subscriptions.values().stream()
                 .filter(filterExpired)
                 .filter(subscription -> subscription.getSubscribeContext().getEntityIdList().stream().filter(filterEntityId).findFirst().isPresent()
-                        && (noAttributes || subscription.getSubscribeContext().getAttributeList().containsAll(searchAttributes))).iterator();
+                        && (noAttributes || !Collections.disjoint(subscription.getSubscribeContext().getAttributeList(), searchAttributes))).iterator();
 
     }
 
