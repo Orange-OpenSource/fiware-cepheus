@@ -50,7 +50,8 @@ The subscriptions are persisted in a Sqlite database.
 
 The broker has many limitations due to its simple design compared to a complete broker implementation.
 
-- Broker only supports `registerContext`, `updateContext`, `queryContext`, `subscribeContext`, `unsubscribeContext` and `notifyContext` operations from NGSI v1 API (json formated).
+- Broker supports all NGGSI-10 standard and convenient operations from the NGSI v1 API except for the 'updateContextSubscriptions' operation.
+- Broker only support the  NGSI-9 `registerContext` operation from the NGSI v1 API for request forwarding.
 - Subscriptions only support `ONCHANGE` as type of notification of `notifyCondition`.
 - Subscriptions do not supportt `throttling`, `restriction` or `condValues`.
 - If multiple NGSI providers register the same Context Entities, only the first provider will get the forwarded `queryContext` or `updateContext` requests.
