@@ -230,32 +230,27 @@ public class SubscriptionsTest {
     }
 
     @Test
-    public void testFindEntyIdAndAttributes() throws Exception {
-        // Insert 2 subscriptions only temp2 attr
-        for (String n : new String[]{"A", "B"}) {
-            subscriptions.addSubscription(createSubscribeContext(n, "string", false, "http://" + n, "temp2"));
-        }
-        // Insert 1 subscription with both temp2 & temp3 attrs
-        for (String n : new String[]{"C"}) {
-            SubscribeContext subscribeContext = createSubscribeContext(n, "string", false, "http://" + n, "temp" + n);
-            List<String> attrs = new LinkedList<>();
-            attrs.add("temp2");
-            attrs.add("temp3");
-            subscribeContext.setAttributeList(attrs);
-            subscriptions.addSubscription(subscribeContext);
-        }
-        // Insert 2 subscriptions only temp3
-        for (String n : new String[]{"D", "E"}) {
-            subscriptions.addSubscription(createSubscribeContext(n, "string", false, "http://" + n, "temp3"));
-        }
+    public void testPartialAttributesMatch() throws Exception {
+        SubscribeContext subscribeContext = createSubscribeContext("A", "string", false, "http://A" , "");
+        subscribeContext.setAttributeList(Arrays.asList("temp", "humidity"));
+        subscriptions.addSubscription(subscribeContext);
 
-        // Find only entity with temp2 and temp3
-        EntityId searchedEntityId = new EntityId(".*", "string", true);
-        Set<String> attributes = new HashSet<>();
-        Collections.addAll(attributes, "temp2", "temp3");
-        Iterator<Subscription> it = subscriptions.findSubscriptions(searchedEntityId, attributes);
+        // Find http://A matching temp
+        Iterator<Subscription> it = subscriptions.findSubscriptions(new EntityId("A", "string", false), new HashSet<>(Arrays.asList("temp")));
         assertTrue(it.hasNext());
-        assertEquals("http://C", it.next().getSubscribeContext().getReference().toString());
+        assertEquals("http://A", it.next().getSubscribeContext().getReference().toString());
+        assertFalse(it.hasNext());
+
+        // Find http://A matching humidity and temp
+        it = subscriptions.findSubscriptions(new EntityId("A", "string", false), new HashSet<>(Arrays.asList("humidity", "temp")));
+        assertTrue(it.hasNext());
+        assertEquals("http://A", it.next().getSubscribeContext().getReference().toString());
+        assertFalse(it.hasNext());
+
+        // Find http://A matching humidity
+        it = subscriptions.findSubscriptions(new EntityId("A", "string", false), new HashSet<>(Arrays.asList("humidity", "pressure")));
+        assertTrue(it.hasNext());
+        assertEquals("http://A", it.next().getSubscribeContext().getReference().toString());
         assertFalse(it.hasNext());
     }
 
