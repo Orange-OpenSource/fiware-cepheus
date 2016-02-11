@@ -28,19 +28,9 @@
           <defaultValue>8081</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>MODEL1_RAMPUP</name>
-          <description>Duration for connecting all devices for MODEL1</description>
-          <defaultValue>250</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
           <name>MODEL1_DURATION</name>
           <description>Overall duration of performance test for MODEL1</description>
           <defaultValue>600</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>MODEL2_RAMPUP</name>
-          <description>Duration for connecting all devices for MODEL2</description>
-          <defaultValue>250</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>MODEL2_DURATION</name>
@@ -48,14 +38,19 @@
           <defaultValue>300</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>MODEL3_RAMPUP</name>
-          <description>Duration for connecting all devices for MODEL3</description>
-          <defaultValue>250</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
           <name>MODEL3_DURATION</name>
           <description>Overall duration of performance test for MODEL3</description>
           <defaultValue>300</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SCENARIO1_RAMPUP</name>
+          <description>Duration for connecting all devices for SCENARIO1</description>
+          <defaultValue>250</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SCENARIO2_RAMPUP</name>
+          <description>Duration for connecting all devices for SCENARIO2</description>
+          <defaultValue>25</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -77,7 +72,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.BatchFile>
-      <command>F:\Applis\apache-jmeter-2.13\bin\jmeter.bat -n -t &quot;F:\Mes documents\git\cepheus\cepheus-cep\src\test\jmeter\TestPlan_Continous_Integration.jmx&quot; -JHOST=%HOST% -JCEP_PORT=%CEP_PORT% -JBROKER_PORT=%BROKER_PORT% -JMODEL1_RAMPUP=%MODEL1_RAMPUP% -JMODEL1_DURATION=%MODEL1_DURATION% -JMODEL2_RAMPUP=%MODEL2_RAMPUP% -JMODEL2_DURATION=%MODEL2_DURATION% -JMODEL3_RAMPUP=%MODEL3_RAMPUP% -JMODEL3_DURATION=%MODEL3_DURATION%</command>
+      <command>F:\Applis\apache-jmeter-2.13\bin\jmeter.bat -n -t &quot;F:\Mes documents\git\cepheus\cepheus-cep\src\test\jmeter\TestPlan_Continous_Integration.jmx&quot; -JHOST=%HOST% -JCEP_PORT=%CEP_PORT% -JBROKER_PORT=%BROKER_PORT% -JMODEL1_DURATION=%MODEL1_DURATION% -JMODEL2_DURATION=%MODEL2_DURATION% -JMODEL3_DURATION=%MODEL3_DURATION% -JSCENARIO1_RAMPUP=%SCENARIO1_RAMPUP% -JSCENARIO2_RAMPUP=%SCENARIO2_RAMPUP%</command>
     </hudson.tasks.BatchFile>
   </builders>
   <publishers>

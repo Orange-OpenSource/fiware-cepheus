@@ -31,23 +31,11 @@
             <stringProp name="Argument.desc">Port used by Broker</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="MODEL1_RAMPUP" elementType="Argument">
-            <stringProp name="Argument.name">MODEL1_RAMPUP</stringProp>
-            <stringProp name="Argument.value">${__P(MODEL1_RAMPUP,250)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">Duration for connecting all devices for MODEL1</stringProp>
-          </elementProp>
           <elementProp name="MODEL1_DURATION" elementType="Argument">
             <stringProp name="Argument.name">MODEL1_DURATION</stringProp>
-            <stringProp name="Argument.value">${__P(MODEL1_DURATION,2700)}</stringProp>
+            <stringProp name="Argument.value">${__P(MODEL1_DURATION,600)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Overall duration of performance test for MODEL1</stringProp>
-          </elementProp>
-          <elementProp name="MODEL2_RAMPUP" elementType="Argument">
-            <stringProp name="Argument.name">MODEL2_RAMPUP</stringProp>
-            <stringProp name="Argument.value">${__P(MODEL2_RAMPUP,250)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">Duration for connecting all devices for MODEL2</stringProp>
           </elementProp>
           <elementProp name="MODEL2_DURATION" elementType="Argument">
             <stringProp name="Argument.name">MODEL2_DURATION</stringProp>
@@ -55,16 +43,22 @@
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Overall duration of performance test for MODEL2</stringProp>
           </elementProp>
-          <elementProp name="MODEL3_RAMPUP" elementType="Argument">
-            <stringProp name="Argument.name">MODEL3_RAMPUP</stringProp>
-            <stringProp name="Argument.value">${__P(MODEL3_RAMPUP,250)}</stringProp>
-            <stringProp name="Argument.desc">Duration for connecting all devices for MODEL3</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="MODEL3_DURATION" elementType="Argument">
             <stringProp name="Argument.name">MODEL3_DURATION</stringProp>
             <stringProp name="Argument.value">${__P(MODEL3_DURATION,300)}</stringProp>
             <stringProp name="Argument.desc">Overall duration of performance test for MODEL3</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="SCENARIO1_RAMPUP" elementType="Argument">
+            <stringProp name="Argument.name">SCENARIO1_RAMPUP</stringProp>
+            <stringProp name="Argument.value">${__P(SCENARIO1_RAMPUP,250)}</stringProp>
+            <stringProp name="Argument.desc">Duration for connecting all devices for SCENARIO1</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="SCENARIO2_RAMPUP" elementType="Argument">
+            <stringProp name="Argument.name">SCENARIO2_RAMPUP</stringProp>
+            <stringProp name="Argument.value">${__P(SCENARIO2_RAMPUP,25)}</stringProp>
+            <stringProp name="Argument.desc">Duration for connecting all devices for SCENARIO2</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -347,14 +341,15 @@ return &quot;BeanShell executed&quot;;</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">350</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL1_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO1_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446203175000</longProp>
         <longProp name="ThreadGroup.end_time">1446203175000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL1_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
@@ -367,6 +362,18 @@ return &quot;BeanShell executed&quot;;</stringProp>
             </elementProp>
           </collectionProp>
           <stringProp name="TestPlan.comments">0.1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO1_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
@@ -425,32 +432,45 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP Only - Model2" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP Only - Model2" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1500</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL2_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO1_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446203175000</longProp>
         <longProp name="ThreadGroup.end_time">1446203175000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL2_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="Throughput" elementType="Argument">
               <stringProp name="Argument.name">Throughput</stringProp>
-              <stringProp name="Argument.value">9000</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
               <stringProp name="Argument.desc">Req/mn</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
           <stringProp name="TestPlan.comments">0.1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO1_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
@@ -509,32 +529,45 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP Only - Model3" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP Only - Model3" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1500</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL3_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO1_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446203175000</longProp>
         <longProp name="ThreadGroup.end_time">1446203175000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL3_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="Throughput" elementType="Argument">
               <stringProp name="Argument.name">Throughput</stringProp>
-              <stringProp name="Argument.value">9000</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
               <stringProp name="Argument.desc">Req/mn</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
           <stringProp name="TestPlan.comments">0.1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO1_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
@@ -593,32 +626,45 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP with Broker - Model1" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP with Broker - Model1" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1500</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL1_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO1_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446203175000</longProp>
         <longProp name="ThreadGroup.end_time">1446203175000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL1_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="Throughput" elementType="Argument">
               <stringProp name="Argument.name">Throughput</stringProp>
-              <stringProp name="Argument.value">9000</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
               <stringProp name="Argument.desc">Req/mn</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
           <stringProp name="TestPlan.comments">0.1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO1_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
@@ -677,32 +723,45 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP with Broker - Model2" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP with Broker - Model2" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1500</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL2_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO1_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446203175000</longProp>
         <longProp name="ThreadGroup.end_time">1446203175000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL2_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="Throughput" elementType="Argument">
               <stringProp name="Argument.name">Throughput</stringProp>
-              <stringProp name="Argument.value">9000</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
               <stringProp name="Argument.desc">Req/mn</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
           <stringProp name="TestPlan.comments">0.1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO1_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
@@ -761,32 +820,45 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP with Broker - Model3" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 1 - CEP with Broker - Model3" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Contrôleur Boucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1500</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL3_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO1_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446203175000</longProp>
         <longProp name="ThreadGroup.end_time">1446203175000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL3_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <stringProp name="TestPlan.comments">A lot of devices, few requests</stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (Low)" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="Throughput" elementType="Argument">
               <stringProp name="Argument.name">Throughput</stringProp>
-              <stringProp name="Argument.value">9000</stringProp>
+              <stringProp name="Argument.value">6000</stringProp>
               <stringProp name="Argument.desc">Req/mn</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
           <stringProp name="TestPlan.comments">0.1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO1_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
@@ -845,7 +917,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP Only - Model1" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP Only - Model1" enabled="true">
         <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -853,12 +925,13 @@ return &quot;BeanShell executed&quot;;</stringProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">100</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL1_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO2_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446652410000</longProp>
         <longProp name="ThreadGroup.end_time">1446652410000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL1_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
@@ -870,7 +943,19 @@ return &quot;BeanShell executed&quot;;</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
-          <stringProp name="TestPlan.comments">100 req/s (shared betweeen all sensors/thread)</stringProp>
+          <stringProp name="TestPlan.comments">1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO2_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
@@ -929,7 +1014,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP Only - Model2" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP Only - Model2" enabled="true">
         <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -937,12 +1022,13 @@ return &quot;BeanShell executed&quot;;</stringProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">100</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL2_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO2_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446652410000</longProp>
         <longProp name="ThreadGroup.end_time">1446652410000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL2_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
@@ -954,7 +1040,19 @@ return &quot;BeanShell executed&quot;;</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
-          <stringProp name="TestPlan.comments">100 req/s (shared betweeen all sensors/thread)</stringProp>
+          <stringProp name="TestPlan.comments">1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO2_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
@@ -1013,7 +1111,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP Only - Model3" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP Only - Model3" enabled="true">
         <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -1021,12 +1119,13 @@ return &quot;BeanShell executed&quot;;</stringProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">100</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL3_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO2_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446652410000</longProp>
         <longProp name="ThreadGroup.end_time">1446652410000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL3_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
@@ -1038,7 +1137,19 @@ return &quot;BeanShell executed&quot;;</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
-          <stringProp name="TestPlan.comments">100 req/s (shared betweeen all sensors/thread)</stringProp>
+          <stringProp name="TestPlan.comments">1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO2_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target CEP" enabled="true">
@@ -1097,7 +1208,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP with Broker - Model1" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP with Broker - Model1" enabled="true">
         <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -1105,12 +1216,13 @@ return &quot;BeanShell executed&quot;;</stringProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">100</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL1_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO2_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446652410000</longProp>
         <longProp name="ThreadGroup.end_time">1446652410000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL1_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
@@ -1122,7 +1234,19 @@ return &quot;BeanShell executed&quot;;</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
-          <stringProp name="TestPlan.comments">100 req/s (shared betweeen all sensors/thread)</stringProp>
+          <stringProp name="TestPlan.comments">1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO2_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
@@ -1181,7 +1305,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP with Broker - Model2" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP with Broker - Model2" enabled="true">
         <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -1189,12 +1313,13 @@ return &quot;BeanShell executed&quot;;</stringProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">100</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL2_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO2_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446652410000</longProp>
         <longProp name="ThreadGroup.end_time">1446652410000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL2_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
@@ -1206,7 +1331,19 @@ return &quot;BeanShell executed&quot;;</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
-          <stringProp name="TestPlan.comments">100 req/s (shared betweeen all sensors/thread)</stringProp>
+          <stringProp name="TestPlan.comments">1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO2_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
@@ -1265,7 +1402,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP with Broker - Model3" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Scenario 2 - CEP with Broker - Model3" enabled="true">
         <stringProp name="TestPlan.comments">Few devices, lots of requests</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -1273,12 +1410,13 @@ return &quot;BeanShell executed&quot;;</stringProp>
           <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">100</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${MODEL3_RAMPUP}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${SCENARIO2_RAMPUP}</stringProp>
         <longProp name="ThreadGroup.start_time">1446652410000</longProp>
         <longProp name="ThreadGroup.end_time">1446652410000</longProp>
         <boolProp name="ThreadGroup.scheduler">true</boolProp>
         <stringProp name="ThreadGroup.duration">${MODEL3_DURATION}</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
       </ThreadGroup>
       <hashTree>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Throughput (High)" enabled="true">
@@ -1290,7 +1428,19 @@ return &quot;BeanShell executed&quot;;</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
-          <stringProp name="TestPlan.comments">100 req/s (shared betweeen all sensors/thread)</stringProp>
+          <stringProp name="TestPlan.comments">1 req/s per sensor/thread</stringProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Rampup duration" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="Rampup_duration" elementType="Argument">
+              <stringProp name="Argument.name">Rampup_duration</stringProp>
+              <stringProp name="Argument.value">${SCENARIO2_RAMPUP}</stringProp>
+              <stringProp name="Argument.desc">In seconds</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">4 sensors (threads) per seconds (20 in 5s)</stringProp>
         </Arguments>
         <hashTree/>
         <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="Target Broker" enabled="true">
@@ -1396,21 +1546,10 @@ return &quot;BeanShell executed&quot;;</stringProp>
       <hashTree/>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model1: Normal" enabled="true"/>
       <hashTree>
-        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="false">
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Compteur de débit constant" enabled="true">
           <stringProp name="throughput">${Throughput}</stringProp>
-          <intProp name="calcMode">4</intProp>
-          <stringProp name="TestPlan.comments">Throughput for each sensor (one sensor=one thread).</stringProp>
+          <intProp name="calcMode">2</intProp>
         </ConstantThroughputTimer>
-        <hashTree/>
-        <kg.apc.jmeter.timers.VariableThroughputTimer guiclass="kg.apc.jmeter.timers.VariableThroughputTimerGui" testclass="kg.apc.jmeter.timers.VariableThroughputTimer" testname="jp@gc - Throughput Shaping Timer" enabled="true">
-          <collectionProp name="load_profile">
-            <collectionProp name="-1786068258">
-              <stringProp name="1">1</stringProp>
-              <stringProp name="50547">300</stringProp>
-              <stringProp name="1515111">1800</stringProp>
-            </collectionProp>
-          </collectionProp>
-        </kg.apc.jmeter.timers.VariableThroughputTimer>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -1748,12 +1887,11 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </DebugSampler>
         <hashTree/>
       </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model2: 50% of error requests" enabled="false"/>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model2: 50% of error requests" enabled="true"/>
       <hashTree>
-        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Compteur de débit constant" enabled="true">
           <stringProp name="throughput">${Throughput}</stringProp>
-          <intProp name="calcMode">4</intProp>
-          <stringProp name="TestPlan.comments">Throughput for each sensor (one sensor=one thread).</stringProp>
+          <intProp name="calcMode">2</intProp>
         </ConstantThroughputTimer>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
@@ -2092,12 +2230,11 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </DebugSampler>
         <hashTree/>
       </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model3: 50% of big requests" enabled="false"/>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Model3: 50% of big requests" enabled="true"/>
       <hashTree>
-        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Constant Throughput Timer" enabled="true">
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Compteur de débit constant" enabled="true">
           <stringProp name="throughput">${Throughput}</stringProp>
-          <intProp name="calcMode">4</intProp>
-          <stringProp name="TestPlan.comments">Throughput for each sensor (one sensor=one thread).</stringProp>
+          <intProp name="calcMode">2</intProp>
         </ConstantThroughputTimer>
         <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="updateContext" enabled="true">
@@ -2363,7 +2500,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -2396,7 +2533,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         <stringProp name="filename">SummaryReport.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
-      <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="jp@gc - PerfMon Metrics Collector" enabled="true">
+      <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="jp@gc - PerfMon Metrics Collector" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -2445,7 +2582,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </collectionProp>
       </kg.apc.jmeter.perfmon.PerfMonCollector>
       <hashTree/>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ResponseTimesOverTimeGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Response Times Over Time" enabled="true">
+      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ResponseTimesOverTimeGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Response Times Over Time" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -2527,7 +2664,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         <boolProp name="exclude_checkbox_state">false</boolProp>
       </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
       <hashTree/>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.TransactionsPerSecondGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Transactions per Second" enabled="true">
+      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.TransactionsPerSecondGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Transactions per Second" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -2559,7 +2696,7 @@ return &quot;BeanShell executed&quot;;</stringProp>
         </objProp>
         <stringProp name="filename"></stringProp>
         <longProp name="interval_grouping">1000</longProp>
-        <boolProp name="graph_aggregated">false</boolProp>
+        <boolProp name="graph_aggregated">true</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
         <stringProp name="start_offset"></stringProp>
@@ -2609,16 +2746,14 @@ return &quot;BeanShell executed&quot;;</stringProp>
         <boolProp name="exclude_checkbox_state">false</boolProp>
         <collectionProp name="COMPOSITE_CFG">
           <collectionProp name="">
-            <stringProp name="-243013315">jp@gc - Response Times Over Time</stringProp>
-            <stringProp name="-243013315">jp@gc - Response Times Over Time</stringProp>
             <stringProp name="1267279877">jp@gc - Transactions per Second</stringProp>
             <stringProp name="1267279877">jp@gc - Transactions per Second</stringProp>
+            <stringProp name="245914917">jp@gc - Active Threads Over Time</stringProp>
           </collectionProp>
           <collectionProp name="">
-            <stringProp name="-605883292">CEP Configuration</stringProp>
-            <stringProp name="-1549391110">Overall Response Times</stringProp>
             <stringProp name="117711132">Successful Transactions per Second</stringProp>
             <stringProp name="-1517411905">Failed Transactions per Second</stringProp>
+            <stringProp name="2133254370">Overall Active Threads</stringProp>
           </collectionProp>
         </collectionProp>
       </kg.apc.jmeter.vizualizers.CompositeResultCollector>
