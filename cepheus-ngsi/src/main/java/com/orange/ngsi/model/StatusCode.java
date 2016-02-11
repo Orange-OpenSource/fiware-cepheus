@@ -11,10 +11,12 @@ package com.orange.ngsi.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 /**
  * Created by pborscia on 04/06/2015.
  */
+@JacksonXmlRootElement(localName = "statusCode")
 public class StatusCode {
 
     private String code;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Orange
+ * Copyright (C) 2016 Orange
  *
  * This software is distributed under the terms and conditions of the 'GNU GENERAL PUBLIC LICENSE
  * Version 2' license which can be found in the file 'LICENSE.txt' in this package distribution or
@@ -9,42 +9,27 @@
 package com.orange.ngsi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * Context Entity
+ * Response to GET /contextEntities/{entityID}/attributes/{attributeName}
  */
-public class ContextElement {
-
-    private EntityId entityId;
+public class ContextAttributeResponse {
 
     @JsonProperty("attributes")
     @JacksonXmlElementWrapper(localName = "contextAttributeList")
     @JacksonXmlProperty(localName = "contextAttribute")
     private List<ContextAttribute> contextAttributeList;
 
-    public ContextElement() {
-    }
+    private StatusCode statusCode;
 
-    public EntityId getEntityId() {
-        return entityId;
-    }
-
-    public void setEntityId(EntityId entityId) {
-        this.entityId = entityId;
+    public ContextAttributeResponse() {
     }
 
     public List<ContextAttribute> getContextAttributeList() {
-        if (contextAttributeList == null) {
-            return Collections.emptyList();
-        }
         return contextAttributeList;
     }
 
@@ -52,11 +37,19 @@ public class ContextElement {
         this.contextAttributeList = contextAttributeList;
     }
 
+    public StatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(StatusCode statusCode) {
+        this.statusCode = statusCode;
+    }
+
     @Override
     public String toString() {
-        return "ContextElement{" +
-                "entityId=" + entityId +
-                ", contextAttributeList=" + contextAttributeList +
+        return "ContextAttributeResponse{" +
+                "contextAttributeList=" + contextAttributeList +
+                ", statusCode=" + statusCode +
                 '}';
     }
 }

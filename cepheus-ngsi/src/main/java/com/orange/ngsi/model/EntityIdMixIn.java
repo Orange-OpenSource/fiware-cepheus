@@ -8,13 +8,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Mixin annotations for the JSON (de)serialization for ContextElement
+ * Mixin annotation for the JSON (de)serialization for ContextElement/AppendContextElementResponse
  */
-public class ContextElementMixIn {
+public class EntityIdMixIn {
 
+    // Mix EntityId properties in its parent class for JSON only
     @JsonUnwrapped
     EntityId entityId;
-
-    @JsonProperty("attributes")
-    List<ContextAttribute> contextAttributeList;
 }
