@@ -33,7 +33,7 @@ public class ContextAttribute {
     @JsonProperty("metadatas")
     @JacksonXmlElementWrapper(localName = "metadata")
     @JacksonXmlProperty(localName = "contextMetadata")
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<ContextMetadata> metadata;
 
     public ContextAttribute() {
