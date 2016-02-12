@@ -11,11 +11,12 @@ fi
 set -e
 set -x
 
+# wait up services
+sleep 20
+
 # Check services are running
-#ssh ubuntu@$IP service cepheus-cep status |grep -q "Cepheus-CEP is running"
-#ssh ubuntu@$IP service cepheus-broker status |grep -q "Cepheus-Broker is running"
-ssh ubuntu@$IP ps -efd |grep -q "cepheus-cep.jar"
-ssh ubuntu@$IP ps -efd |grep -q "cepheus-broker.jar"
+ssh ubuntu@$IP service cepheus-cep status |grep -q "Cepheus-CEP is running"
+ssh ubuntu@$IP service cepheus-broker status |grep -q "Cepheus-Broker is running"
 
 # Check services are up
 curl $IP:8080/v1/admin/config  -s -S --header "Content-Type: application/json" --header "Accept: application/json"
