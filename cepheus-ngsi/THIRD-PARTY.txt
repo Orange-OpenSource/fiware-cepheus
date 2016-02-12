@@ -1,10 +1,10 @@
-This document contains the list of Third Party Software included with
-cepheus-ngsi, along with the license information.
+This document contains the list of Third Party Software
+along with the license information.
 
 Third Party Software may impose additional restrictions and it is the
 user's responsibility to ensure that they have met the licensing
-requirements of cepheus-ngsi and the relevant license of the Third Party
-Software they are using.
+requirements of the relevant license of the Third Party Software they
+are using.
 
 Apache HttpComponents
 Site: https://hc.apache.org/
@@ -24,7 +24,7 @@ License: Apache License 2.0
 
 Junit
 Site: http://junit.org
-License: Common Public License 1.0
+License: Eclipse Public License - v 1.0
 
 Logback
 Site: http://logback.qos.ch
