@@ -148,7 +148,6 @@ public class NgsiRestController extends NgsiRestBaseController {
         UpdateContextResponse updateContextResponse = ngsiController.updateContext(updateContext);
 
         // Transform an UpdateContextResponse to a AppendContextElementResponse...
-        AppendContextElementResponse appendContextElementResponse = new AppendContextElementResponse();
         if (updateContextResponse.getErrorCode() != null) {
             return updateContextResponse.getErrorCode();
         }
@@ -197,7 +196,6 @@ public class NgsiRestController extends NgsiRestBaseController {
         UpdateContextResponse updateContextResponse = ngsiController.updateContext(updateContext);
 
         // Transform an UpdateContextResponse to a AppendContextElementResponse...
-        AppendContextElementResponse appendContextElementResponse = new AppendContextElementResponse();
         if (updateContextResponse.getErrorCode() != null) {
             return updateContextResponse.getErrorCode();
         }
