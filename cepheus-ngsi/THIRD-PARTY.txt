@@ -1,0 +1,46 @@
+This document contains the list of Third Party Software
+along with the license information.
+
+Third Party Software may impose additional restrictions and it is the
+user's responsibility to ensure that they have met the licensing
+requirements of the relevant license of the Third Party Software they
+are using.
+
+Apache HttpComponents
+Site: https://hc.apache.org/
+License: Apache License 2.0
+
+Hamcrest
+Site: http://hamcrest.org
+License: BSD 3-clause "New" or "Revised" License
+
+FasterXML Jackson
+Site: https://github.com/FasterXML/jackson-core/wiki
+License: Apache License 2.0
+
+Jayway JsonPath
+Site: https://github.com/jayway/JsonPath
+License: Apache License 2.0
+
+Junit
+Site: http://junit.org
+License: Eclipse Public License - v 1.0
+
+Logback
+Site: http://logback.qos.ch
+License: Apache License 2.0
+
+Mockito
+Site: http://site.mockito.org
+License: MIT License
+
+Slf4j
+Site: http://www.slf4j.org
+License: MIT License
+
+Spring spring-framework
+Site: http://projects.spring.io/spring-framework/
+License: Apache License 2.0
+
+woodstox-core-asl
+License: Apache License 2.0
