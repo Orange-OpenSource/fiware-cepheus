@@ -1,7 +1,14 @@
 # FIWARE NGSI API
 
 This project is a java implementation of the [NGSI v1 API](http://telefonicaid.github.io/fiware-orion/api/v1/)
+and part of the Fiware-Cepheus project under the GPLv2 License.
+
 This implementation supports java 7 and java 8.
+
+## Note
+
+This library will move to [Orange-OpenSource/fiware-ngsi-api](https://github.com/Orange-OpenSource/fiware-ngsi-api)
+under the Apache Licence Version 2 to ease its reuse by other FIWARE projects.
 
 ## Usage
 
