@@ -18,7 +18,7 @@ under the Apache Licence Version 2 to ease its reuse by other FIWARE projects.
 <dependency>
     <groupId>com.orange.cepheus</groupId>
     <artifactId>cepheus-ngsi</artifactId>
-    <version>0.1.5-SNAPSHOT</version>
+    <version>0.1.6-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -29,7 +29,7 @@ For java 7, you must add the classifier:
    <groupId>com.orange.cepheus</groupId>
    <artifactId>cepheus-ngsi</artifactId>
    <classifier>java7</classifier>
-   <version>0.1.5-SNAPSHOT</version>
+   <version>0.1.6-SNAPSHOT</version>
 </dependency>
 ```
 
