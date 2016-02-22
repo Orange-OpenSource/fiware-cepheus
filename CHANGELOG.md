@@ -1,3 +1,19 @@
+# 0.1.5
+
+## Major features
+
+* REST NGSI10 support #39
+
+## Minor features
+
+* fix: add licenses headers #47
+
+## Bug fixes
+
+* broker: fix notifications with subset of attributes #46
+* cep: clean subscription #44
+
+
 # 0.1.4
 
 ## Major features
