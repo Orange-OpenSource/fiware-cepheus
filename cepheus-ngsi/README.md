@@ -18,7 +18,7 @@ under the Apache Licence Version 2 to ease its reuse by other FIWARE projects.
 <dependency>
     <groupId>com.orange.cepheus</groupId>
     <artifactId>cepheus-ngsi</artifactId>
-    <version>0.1.5-SNAPSHOT</version>
+    <version>0.1.5</version>
 </dependency>
 ```
 
@@ -29,7 +29,7 @@ For java 7, you must add the classifier:
    <groupId>com.orange.cepheus</groupId>
    <artifactId>cepheus-ngsi</artifactId>
    <classifier>java7</classifier>
-   <version>0.1.5-SNAPSHOT</version>
+   <version>0.1.5</version>
 </dependency>
 ```
 
@@ -37,7 +37,7 @@ For java 7, you must add the classifier:
 
 If you don't have `maven` installed on your machine, you can still download the standalone JAR using `wget` or any browser:
 
-    wget -O cepheus-ngsi.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-ngsi&v=LATEST"
+    wget -O cepheus-ngsi.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=com.orange.cepheus&a=cepheus-ngsi&v=LATEST"
 
 ## Client
 The implementation provides the NgsiClient class for the standard operations and NgsiRestClient for the convenient operations.
