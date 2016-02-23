@@ -8,7 +8,6 @@
     <packaging>pom</packaging>
     <version>0.1.6-SNAPSHOT</version>
     <modules>
-        <module>cepheus-ngsi</module>
         <module>cepheus-cep</module>
         <module>cepheus-broker</module>
     </modules>
@@ -28,6 +27,16 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.orange.fiware</groupId>
+                <artifactId>ngsi-client</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.orange.fiware</groupId>
+                <artifactId>ngsi-server</artifactId>
+                <version>0.1.0-SNAPSHOT</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>

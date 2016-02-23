@@ -14,9 +14,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>cepheus-ngsi</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.orange.fiware</groupId>
+            <artifactId>ngsi-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.orange.fiware</groupId>
+            <artifactId>ngsi-server</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

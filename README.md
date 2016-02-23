@@ -20,11 +20,12 @@ It was renamed to a more generic name (using the convention of other FIWARE Gene
 ## Overall description
 
 Fiware-Cepheus provides NGSI-compatible gateway level components.
-This project contains two Spring Boot applications and a common library :
+This project contains two Spring Boot applications:
 
 * cepheus-cep: A CEP (Complex Event Processor) engine.
 * cepheus-broker: A light broker (NGSI forwarding-only).
-* cepheus-ngsi : a client/server NGSI library.
+
+NGSI v1 implementation is provided by the [Orange-OpenSource/fiware-ngsi-api](https://github.com/Orange-OpenSource/fiware-ngsi-api) library.
 
 ## Quick instructions
 
