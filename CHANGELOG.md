@@ -1,3 +1,15 @@
+# 0.1.6
+
+## Major features
+
+* move to fiware-ngsi-api library
+
+## Minor features
+
+* align badges for FIWARE Projects
+
+## Bug fixes
+
 # 0.1.5
 
 ## Major features
