@@ -27,13 +27,13 @@ If you have `maven`, you can run the following command:
 
     mvn dependency:get -DgroupId=com.orange.cepheus -DartifactId=cepheus-broker -Dversion=XXXX -Dtransitive=false
 
-where `XXXX` is the version you want, like `0.1.6-SNAPSHOT` or `LATEST`.
+where `XXXX` is the version you want, like `0.1.6` or `LATEST`.
 
 ### Download from [Sonatype Central repository](http://central.sonatype.org/) using wget
 
 If you don't have `maven` installed on your machine, you can still download the standalone JAR using `wget` or any browser:
 
-    wget -O cepheus-broker.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-broker&v=LATEST"
+    wget -O cepheus-broker.jar "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=com.orange.cepheus&a=cepheus-broker&v=LATEST"
 
 ## Running
 
@@ -53,7 +53,7 @@ The Cepheus-Broker is also provided in a preconfigured Debian package to ease de
 
 Download the Debian package from [Sonatype Central repository](http://central.sonatype.org/) using `wget`:
 
-    wget -O cepheus-broker.deb "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.orange.cepheus&a=cepheus-broker&v=LATEST&p=deb"
+    wget -O cepheus-broker.deb "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=com.orange.cepheus&a=cepheus-broker&v=LATEST&p=deb"
 
 ### Installing
 
