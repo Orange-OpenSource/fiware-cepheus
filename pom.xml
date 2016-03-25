@@ -19,6 +19,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <ngsi-api.version>0.1.0</ngsi-api.version>
         <jackson-annotations-version>2.6.0</jackson-annotations-version>
         <spring-boot-version>1.2.3.RELEASE</spring-boot-version>
         <jacoco.dataPath>${project.basedir}/target/jacoco.exec</jacoco.dataPath>
@@ -30,12 +31,12 @@
             <dependency>
                 <groupId>com.orange.fiware</groupId>
                 <artifactId>ngsi-client</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
+                <version>${ngsi-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.orange.fiware</groupId>
                 <artifactId>ngsi-server</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
+                <version>${ngsi-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
