@@ -1,3 +1,17 @@
+# 0.1.7
+
+# Minor features
+
+* Update fiware-ngsi-api dependency to 0.1.1
+
+*Warning:* Starting with this release, Cepheus Broker and CEP use JSON by default instead of XML for NGSI v1.
+If a host initiates a NGSI exchange with Broker or CEP using XML, Cepheus components will keep communicating using XML.
+XML support is now deprecated and will be removed in a future version of Fiware Cepheus.
+
+# Bug fixes
+
+* Fixes compatibility with Orion 1.0.0 and above #51 (by using JSON as default NGSI format)
+
 # 0.1.6
 
 ## Major features
