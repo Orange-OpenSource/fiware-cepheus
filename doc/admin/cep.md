@@ -26,7 +26,7 @@ If you have `maven`, you can run the following command:
 
     mvn dependency:get -DgroupId=com.orange.cepheus -DartifactId=cepheus-cep -Dversion=XXXX -Dtransitive=false
 
-where `XXXX` is the version you want, like `0.1.7-SNAPSHOT` or `LATEST`.
+where `XXXX` is the version you want, like `0.1.8-SNAPSHOT` or `LATEST`.
 
 ### Download from [Sonatype Central repository](http://central.sonatype.org/) using wget
 
