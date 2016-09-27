@@ -38,7 +38,7 @@ Here is an example:
             { "name":"unit", "type":"string" }
           ]
         }
-      ]
+      ],
       "brokers":[
         {
           "url":"http://orion.fiware.org:3000",
