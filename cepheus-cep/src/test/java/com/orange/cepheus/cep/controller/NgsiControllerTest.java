@@ -233,8 +233,8 @@ public class NgsiControllerTest {
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value(CodeEnum.CODE_472.getLabel()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.reasonPhrase")
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value(CodeEnum.CODE_472.getLabel()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.reasonPhrase")
                         .value(CodeEnum.CODE_472.getShortPhrase()));
     }
     
