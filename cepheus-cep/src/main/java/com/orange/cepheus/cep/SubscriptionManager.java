@@ -288,7 +288,7 @@ public class SubscriptionManager {
         EntityId entityId = new EntityId(eventType.getId(), eventType.getType(), eventType.isPattern());
         subscribeContext.setEntityIdList(Collections.singletonList(entityId));
         subscribeContext.setAttributeList(eventType.getAttributes().stream().map(Attribute::getName).collect(Collectors.toList()));
-        subscribeContext.setReference(hostURI);
+        subscribeContext.setReference(hostURI.resolve("/ngsi10/notifyContext"));
         subscribeContext.setDuration(subscriptionDuration);
         return subscribeContext;
     }
