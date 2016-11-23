@@ -125,7 +125,7 @@ public class NgsiController extends NgsiBaseController {
                 HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(providerUrl);
                 logger.debug("=> notifyContext to {} with Content-Type {}", providerUrl, httpHeaders.getContentType());
 
-                ngsiClient.notifyContext(providerUrl, httpHeaders, notifyContext).addCallback(
+                ngsiClient.notifyContextCustomURL(providerUrl, httpHeaders, notifyContext).addCallback(
                                 notifyContextResponse -> logNotifyContextResponse(notifyContextResponse, providerUrl),
                         throwable -> logger.warn("NotifyContext failed for {}", providerUrl, throwable));
             }

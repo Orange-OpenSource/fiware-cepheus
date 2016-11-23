@@ -327,7 +327,7 @@ public class NgsiControllerTest {
         when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
 
         //ngsiClient mock return always CODE_200
-        when(ngsiClient.notifyContext(any(), any(), any())).thenReturn(notifyContextResponseListenableFuture);
+        when(ngsiClient.notifyContextCustomURL(any(), any(), any())).thenReturn(notifyContextResponseListenableFuture);
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))
@@ -368,7 +368,7 @@ public class NgsiControllerTest {
         ArgumentCaptor<NotifyContext> notifyContextArg = ArgumentCaptor.forClass(NotifyContext.class);
         verify(notifyContextResponseListenableFuture, atLeastOnce()).addCallback(any(), any());
         String urlReference = subscribeContext.getReference().toString();
-        verify(ngsiClient, atLeastOnce()).notifyContext(eq(urlReference), any(), notifyContextArg.capture());
+        verify(ngsiClient, atLeastOnce()).notifyContextCustomURL(eq(urlReference), any(), notifyContextArg.capture());
         // Check id and status correspond to the required
         assertEquals(1, notifyContextArg.getValue().getContextElementResponseList().size());
         ContextElementResponse contextElementResponse = notifyContextArg.getValue().getContextElementResponseList().get(0);
@@ -396,7 +396,7 @@ public class NgsiControllerTest {
         when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
 
         //ngsiClient mock return always CODE_200
-        when(ngsiClient.notifyContext(any(), any(), any())).thenReturn(notifyContextResponseListenableFuture);
+        when(ngsiClient.notifyContextCustomURL(any(), any(), any())).thenReturn(notifyContextResponseListenableFuture);
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))
@@ -437,7 +437,7 @@ public class NgsiControllerTest {
         ArgumentCaptor<NotifyContext> notifyContextArg = ArgumentCaptor.forClass(NotifyContext.class);
         verify(notifyContextResponseListenableFuture, atLeastOnce()).addCallback(any(), any());
         String urlReference = subscribeContext.getReference().toString();
-        verify(ngsiClient, atLeastOnce()).notifyContext(eq(urlReference), any(), notifyContextArg.capture());
+        verify(ngsiClient, atLeastOnce()).notifyContextCustomURL(eq(urlReference), any(), notifyContextArg.capture());
         // Check id and status correspond to the required
         assertEquals(1, notifyContextArg.getValue().getContextElementResponseList().size());
         ContextElementResponse contextElementResponse = notifyContextArg.getValue().getContextElementResponseList().get(0);
@@ -465,7 +465,7 @@ public class NgsiControllerTest {
         when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
 
         //ngsiClient mock return always CODE_200
-        when(ngsiClient.notifyContext(any(), any(), any())).thenReturn(notifyContextResponseListenableFuture);
+        when(ngsiClient.notifyContextCustomURL(any(), any(), any())).thenReturn(notifyContextResponseListenableFuture);
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))
@@ -506,7 +506,7 @@ public class NgsiControllerTest {
         ArgumentCaptor<NotifyContext> notifyContextArg = ArgumentCaptor.forClass(NotifyContext.class);
         verify(notifyContextResponseListenableFuture, atLeastOnce()).addCallback(any(), any());
         String urlReference = subscribeContext.getReference().toString();
-        verify(ngsiClient, atLeastOnce()).notifyContext(eq(urlReference), any(), notifyContextArg.capture());
+        verify(ngsiClient, atLeastOnce()).notifyContextCustomURL(eq(urlReference), any(), notifyContextArg.capture());
         // Check id and status correspond to the required
         assertEquals(1, notifyContextArg.getValue().getContextElementResponseList().size());
         ContextElementResponse contextElementResponse = notifyContextArg.getValue().getContextElementResponseList().get(0);
@@ -535,7 +535,7 @@ public class NgsiControllerTest {
         when(ngsiClient.updateContext(any(), any(), any())).thenReturn(updateContextResponseListenableFuture);
 
         //ngsiClient mock return always CODE_200
-        when(ngsiClient.notifyContext(any(), any(), any())).thenReturn(notifyContextResponseListenableFuture);
+        when(ngsiClient.notifyContextCustomURL(any(), any(), any())).thenReturn(notifyContextResponseListenableFuture);
 
         mockMvc.perform(post("/v1/updateContext")
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))
