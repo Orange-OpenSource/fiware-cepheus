@@ -82,7 +82,7 @@ public class EventSinkListener implements StatementAwareUpdateListener {
                                 updateContextResponse ->
                                     logger.debug("UpdateContext completed for {}", broker.getUrl()),
                                 throwable ->
-                                    logger.warn("UpdateContext failed for {}: {}", broker.getUrl(), throwable.toString())
+                                    logger.warn("UpdateContext failed for {}", broker.getUrl(), throwable)
                         );
                     }
                 }

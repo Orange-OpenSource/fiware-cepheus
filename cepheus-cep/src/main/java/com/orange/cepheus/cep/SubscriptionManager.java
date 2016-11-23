@@ -151,7 +151,7 @@ public class SubscriptionManager {
                         unsubscribeContextResponse ->
                                 logger.debug("unsubscribeContext completed for {}", originatorUrl),
                         throwable ->
-                                logger.warn("unsubscribeContext failed for {}: {}", originatorUrl, throwable.toString())
+                                logger.warn("unsubscribeContext failed for {}", originatorUrl, throwable)
                 );
             }
             return isValid;
@@ -256,7 +256,7 @@ public class SubscriptionManager {
                 logger.warn("Error during subscription for {}: {}", provider.getUrl(), error.getErrorCode());
             }
         }, throwable -> {
-            logger.warn("Error during subscription for {}: {}", provider.getUrl(), throwable.toString());
+            logger.warn("Error during subscription for {}", provider.getUrl(), throwable);
         });
     }
 
@@ -274,7 +274,7 @@ public class SubscriptionManager {
 
             ngsiClient.unsubscribeContext(provider.getUrl(), null, provider.getSubscriptionId()).addCallback(
                     response -> logger.debug("Unsubribe response for {}: {}", subscriptionID, response.getStatusCode().getCode()),
-                    throwable -> logger.debug("Error during unsubscribe for {}: {}", subscriptionID, throwable.toString()));
+                    throwable -> logger.debug("Error during unsubscribe for {}", subscriptionID, throwable));
 
             // Reset provider subscription data
             provider.setSubscriptionDate(null);

@@ -100,7 +100,7 @@ public class NgsiController extends NgsiBaseController {
                 logger.debug("=> updateContext forwarded to remote broker {} with Content-Type {}", brokerUrl, httpHeaders.getContentType());
                 ngsiClient.updateContext(brokerUrl, httpHeaders, update)
                         .addCallback(updateContextResponse -> logUpdateContextResponse(updateContextResponse, brokerUrl),
-                                throwable -> logger.warn("UpdateContext failed for {}: {}", brokerUrl, throwable.toString()));
+                                throwable -> logger.warn("UpdateContext failed for {}: {}", brokerUrl, throwable.getMessage(), throwable));
             }
         }
 
@@ -127,7 +127,7 @@ public class NgsiController extends NgsiBaseController {
 
                 ngsiClient.notifyContext(providerUrl, httpHeaders, notifyContext).addCallback(
                                 notifyContextResponse -> logNotifyContextResponse(notifyContextResponse, providerUrl),
-                        throwable -> logger.warn("NotifyContext failed for {}: {}", providerUrl, throwable.toString()));
+                        throwable -> logger.warn("NotifyContext failed for {}", providerUrl, throwable));
             }
         }
 
