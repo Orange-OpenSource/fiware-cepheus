@@ -1,3 +1,20 @@
+# 0.1.8
+
+# Major features
+
+* Broker will now require subscription requests to provide the complete URL for notifications.
+  Previous behavior was to append the standard `/ngsi10/notifyContext` to the URL which is not done anymore.
+  This allows applications to receive notifications with custom URL paths and parameters.
+
+# Minor features
+
+* Update to ngsi-api library 0.1.2
+
+# Bug fixes
+
+* print stacktrace on errors #56
+* fix crash when parsing updateContext in JSON #57
+
 # 0.1.7
 
 # Minor features
