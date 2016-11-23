@@ -233,15 +233,15 @@ public class NgsiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.id").value("S1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.type").value("TempSensor"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].name").value("temp"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].type").value("float"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].value").value("15.5"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].name").value("pressure"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].type").value("int"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value("1015"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value("15.5"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].name").value("pressure"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].type").value("int"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].value").value("1015"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
 
         verify(configuration, atLeastOnce()).isRemoteForwardUpdateContext();
 
@@ -301,7 +301,7 @@ public class NgsiControllerTest {
                 .content(json(mapper, createUpdateContextTempSensorAndPressure()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
 
         verify(configuration, atLeastOnce()).isRemoteForwardUpdateContext();
         verify(ngsiClient, never()).updateContext(eq("http://orionhost:9999"), any(), any());
@@ -334,15 +334,15 @@ public class NgsiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.id").value("S1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.type").value("TempSensor"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].name").value("temp"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].type").value("float"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].value").value("15.5"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].name").value("pressure"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].type").value("int"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value("1015"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value("15.5"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].name").value("pressure"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].type").value("int"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].value").value("1015"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
 
         //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
         verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
@@ -403,15 +403,15 @@ public class NgsiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.id").value("S1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.type").value("TempSensor"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].name").value("temp"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].type").value("float"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].value").value("15.5"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].name").value("pressure"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].type").value("int"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value("1015"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value("15.5"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].name").value("pressure"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].type").value("int"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].value").value("1015"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
 
         //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
         verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
@@ -472,15 +472,15 @@ public class NgsiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.id").value("S1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.type").value("TempSensor"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].name").value("temp"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].type").value("float"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].value").value("15.5"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].name").value("pressure"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].type").value("int"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value("1015"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value("15.5"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].name").value("pressure"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].type").value("int"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].value").value("1015"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
 
         //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
         verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
@@ -542,15 +542,15 @@ public class NgsiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.id").value("S1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.type").value("TempSensor"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].name").value("temp"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].type").value("float"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].value").value("15.5"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].name").value("pressure"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].type").value("int"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value("1015"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value("15.5"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].name").value("pressure"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].type").value("int"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].value").value("1015"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
 
         //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
         verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
@@ -604,15 +604,15 @@ public class NgsiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.id").value("S1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.type").value("TempSensor"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].name").value("temp"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].type").value("float"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].value").value("15.5"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].name").value("pressure"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].type").value("int"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value("1015"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value("15.5"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].name").value("pressure"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].type").value("int"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].value").value("1015"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
 
         //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
         verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
@@ -658,15 +658,15 @@ public class NgsiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.id").value("S1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.type").value("TempSensor"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].name").value("temp"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].type").value("float"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].value").value("15.5"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].name").value("pressure"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].type").value("int"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value("1015"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value("15.5"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].name").value("pressure"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].type").value("int"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].value").value("1015"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
 
         //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
         verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
@@ -719,15 +719,15 @@ public class NgsiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.errorCode").doesNotExist())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.id").value("S1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.type").value("TempSensor"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].name").value("temp"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].type").value("float"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[0].value").value("15.5"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].name").value("pressure"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].type").value("int"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].contextElement.attributes[1].value").value("1015"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.contextElementResponses[0].statusCode.code").value("200"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.id").value("S1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.type").value("TempSensor"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].name").value("temp"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].type").value("float"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[0].value").value("15.5"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].name").value("pressure"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].type").value("int"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].contextElement.attributes[1].value").value("1015"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.contextResponses[0].statusCode.code").value("200"));
 
         //Capture attributes (Set<String> searchAttributes) when findProvidingApplication is called on localRegistrations Set<String> searchAttributes
         verify(localRegistrations).findProvidingApplication(entityIdArgumentCaptor.capture(), attributeArgumentCaptor.capture());
