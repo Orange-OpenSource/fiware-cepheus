@@ -197,7 +197,7 @@ public class SubscriptionManagerTest {
     }
 
     @Test
-    public void testValideSubscription() {
+    public void testValidSubscription() {
         // add configuration
         // Mock the task scheduler and capture the runnable
         ArgumentCaptor<Runnable> runnableArg = ArgumentCaptor.forClass(Runnable.class);
