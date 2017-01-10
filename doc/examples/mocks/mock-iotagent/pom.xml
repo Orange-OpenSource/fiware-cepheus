@@ -20,8 +20,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.orange.cepheus</groupId>
-            <artifactId>cepheus-ngsi</artifactId>
+            <groupId>com.orange.fiware</groupId>
+            <artifactId>ngsi-server</artifactId>
             <version>0.1.3</version>
         </dependency>
         <dependency>
