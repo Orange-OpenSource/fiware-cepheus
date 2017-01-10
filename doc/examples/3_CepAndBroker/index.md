@@ -57,10 +57,10 @@ to make the average show up quickly in the logs.
 
 ## Testing the setup
 
-In a first terminal, launch Cepheus-Broker:
+In a first terminal, launch Cepheus-Broker (disabling remote broker forwarding):
 
     cd cepheus-broker
-    mvn spring-boot:run --remote.url=""
+    mvn spring-boot:run -Dremote.url=
 
 Default configuration should launch it on port :8081 on your machine.
 
@@ -85,6 +85,9 @@ Then the script sending temperatures updates to Cepheus-Broker that sends notifi
 Go back to the terminal where you launched first the LB then after the CEP. You should see tempertures as "EventIn" beeing logged in CEP logs.
 
 After a few seconds, the "EventOut" logs will show the CEP triggering the average temperature for each floor.
+
+Note: You should see warning in the Cepheus-Broker logs warning about not having set an remote broker:
+"No remote.url parameter defined to forward updateContext" as we used `-Dremove.url=` to disable forwarding.
 
 ## Next step
 
