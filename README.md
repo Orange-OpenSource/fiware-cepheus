@@ -1,5 +1,7 @@
 # FIWARE Cepheus
 
+[![Join the chat at https://gitter.im/Orange-OpenSource/fiware-cepheus](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Orange-OpenSource/fiware-cepheus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/Orange-OpenSource/fiware-cepheus.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/fiware-cepheus)
 [![Coverity Scan Status](https://scan.coverity.com/projects/5913/badge.svg)](https://scan.coverity.com/projects/5913)
 [![Coverage Status](https://coveralls.io/repos/Orange-OpenSource/fiware-cepheus/badge.svg?branch=master&service=github)](https://coveralls.io/github/Orange-OpenSource/fiware-cepheus?branch=master)
