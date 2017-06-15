@@ -3,8 +3,8 @@
 FROM java:8-jre
 MAINTAINER FIWARE Cepheus Team
 
-ENV CEPHEUS_VERSION 1.0.0-SNAPSHOT
-ENV CEPHEUS_REPO snapshots
+ENV CEPHEUS_VERSION 1.0.0
+ENV CEPHEUS_REPO releases
 
 # Install Supervisor
 RUN apt-get update && apt-get install -y supervisor wget
