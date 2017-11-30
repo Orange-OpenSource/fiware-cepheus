@@ -8,18 +8,33 @@
 
 package com.orange.cepheus.cep;
 
-import com.orange.cepheus.cep.model.Configuration;
-import com.orange.cepheus.cep.model.Provider;
-import com.orange.ngsi.client.NgsiClient;
-import com.orange.ngsi.model.SubscribeContext;
-import com.orange.ngsi.model.SubscribeContextResponse;
-import com.orange.ngsi.model.SubscribeResponse;
-import com.orange.ngsi.model.UnsubscribeContextResponse;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.RETURNS_SMART_NULLS;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static com.orange.cepheus.cep.Util.getBasicConf;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpHeaders;
@@ -30,15 +45,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.SuccessCallback;
 
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-import static com.orange.cepheus.cep.Util.*;
+import com.orange.cepheus.cep.model.Configuration;
+import com.orange.cepheus.cep.model.Provider;
+import com.orange.ngsi.client.NgsiClient;
+import com.orange.ngsi.model.SubscribeContext;
+import com.orange.ngsi.model.SubscribeContextResponse;
+import com.orange.ngsi.model.SubscribeResponse;
+import com.orange.ngsi.model.UnsubscribeContextResponse;
 
 /**
  * Tests for SubscriptionManager
@@ -53,6 +66,9 @@ public class SubscriptionManagerTest {
 
     @Mock
     NgsiClient ngsiClient = Mockito.mock(NgsiClient.class, RETURNS_SMART_NULLS);
+
+    @Mock
+    Configuration configuration;
 
     @Autowired
     @InjectMocks
@@ -235,4 +251,16 @@ public class SubscriptionManagerTest {
         response.setSubscribeResponse(subscribeResponse);
         successArg.getValue().onSuccess(response);
     }
+
+    //Setting Provider Fiware ServiceName and Fiware ServicePath
+    @Test
+    public void testGetHeadersForProvider() {
+
+    	Provider provider = new Provider();
+    	provider.setUrl("http://localhost:1026/");
+    	provider.setServiceName("Abc");
+    	provider.setServicePath("/");
+    	when(ngsiClient.getRequestHeaders(provider.getUrl())).thenReturn(new HttpHeaders());
+    	subscriptionManager.getHeadersForProvider(provider);
+	}
 }
