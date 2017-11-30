@@ -8,10 +8,10 @@
 
 package com.orange.cepheus.cep.model;
 
+import java.time.Instant;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
-
-import java.time.Instant;
 
 /**
  * Provider defines the URL of one of the providers of a EventTypeIn.
@@ -22,7 +22,6 @@ public class Provider {
      * URL of the provider
      */
     private String url;
-
     /**
      * Date of last successful subscription.
      * Used by the SubscriptionManager to track valid subscriptions
@@ -38,6 +37,17 @@ public class Provider {
     private String subscriptionId;
 
     /**
+     * Fiware specific service name (optional)
+     */
+    //Added servicename and service path variable
+    private String serviceName;
+
+    /**
+     * Fiware specific service path (optional)
+     */
+    private String servicePath;
+
+    /**
      * Constructor used by Jackson for deserialization
      * @param url the URL of the provider
      */
@@ -45,20 +55,27 @@ public class Provider {
         this.url = url;
     }
 
-    /**
+    public Provider(){
+
+    }
+
+	/**
      * Used by Jackson for serialization
      * @return the URL of the provider
      */
-    @JsonValue
+   /* @JsonValue
     public String toString() {
         return this.url;
     }
+*/
+
 
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+
+	public void setUrl(String url) {
         this.url = url;
     }
 
@@ -77,4 +94,22 @@ public class Provider {
     public void setSubscriptionId(String subscriptionId) {
         this.subscriptionId = subscriptionId;
     }
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	public String getServicePath() {
+		return servicePath;
+	}
+
+	public void setServicePath(String servicePath) {
+		this.servicePath = servicePath;
+	}
+
+
 }
