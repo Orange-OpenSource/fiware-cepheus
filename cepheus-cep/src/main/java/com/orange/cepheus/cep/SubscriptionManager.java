@@ -48,7 +48,9 @@ import java.util.stream.Collectors;
 public class SubscriptionManager {
 
     private static Logger logger = LoggerFactory.getLogger(SubscriptionManager.class);
-
+    
+    private Configuration configuration;
+    private HttpHeaders httpHeaders = null;
     /**
      * Inner class for concurrent subscriptions tracking using a RW lock.
      */
