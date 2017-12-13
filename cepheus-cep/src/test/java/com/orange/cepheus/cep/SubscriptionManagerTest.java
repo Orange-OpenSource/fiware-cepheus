@@ -255,12 +255,12 @@ public class SubscriptionManagerTest {
     //Setting Provider Fiware ServiceName and Fiware ServicePath
     @Test
     public void testGetHeadersForProvider() {
-
-    	Provider provider = new Provider();
-    	provider.setUrl("http://localhost:1026/");
-    	provider.setServiceName("Abc");
-    	provider.setServicePath("/");
-    	when(ngsiClient.getRequestHeaders(provider.getUrl())).thenReturn(new HttpHeaders());
-    	subscriptionManager.getHeadersForProvider(provider);
-	}
+        
+        Provider provider = new Provider();
+        provider.setUrl("http://localhost:1026/");
+        provider.setServiceName("Abc");
+        provider.setServicePath("/");
+        when(ngsiClient.getRequestHeaders(provider.getUrl())).thenReturn(new HttpHeaders());
+        subscriptionManager.getHeadersForProvider(provider);
+        }
 }
