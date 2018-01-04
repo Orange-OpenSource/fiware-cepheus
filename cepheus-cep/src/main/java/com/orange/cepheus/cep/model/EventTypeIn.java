@@ -38,10 +38,10 @@ public class EventTypeIn extends EventType {
         this.providers = providers;
     }
 
-    public void addProvider(String providerUrl) {
+    public void addProvider(Provider provider) {
         if (providers == null) {
             providers = new HashSet<>();
         }
-        providers.add(new Provider(providerUrl));
+        providers.add(provider);
     }
 }
