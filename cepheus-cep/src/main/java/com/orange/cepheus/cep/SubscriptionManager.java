@@ -50,7 +50,7 @@ public class SubscriptionManager {
     private static Logger logger = LoggerFactory.getLogger(SubscriptionManager.class);
     
     private Configuration configuration;
-    private HttpHeaders httpHeaders = null;
+    private HttpHeaders httpHeaders;
     /**
      * Inner class for concurrent subscriptions tracking using a RW lock.
      */
@@ -245,12 +245,11 @@ public class SubscriptionManager {
      */
     private void subscribeProvider(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
         logger.debug("Subscribe to {} for {}", provider.getUrl(), subscribeContext.toString());
-       
-        //added code for checking provider service name and service path
+      
           if (StringUtils.isNotEmpty(provider.getServiceName())|| StringUtils.isNotEmpty(provider.getServicePath())) {
                   httpHeaders = getHeadersForProvider(provider);
               }
-        // change httpheader value from null
+        
         ngsiClient.subscribeContext(provider.getUrl(), httpHeaders, subscribeContext).addCallback(subscribeContextResponse -> {
             SubscribeError error = subscribeContextResponse.getSubscribeError();
             if (error == null) {
@@ -280,7 +279,6 @@ public class SubscriptionManager {
 
             // Don't wait for result, remove immediately from subscriptions list
             subscriptions.removeSubscription(subscriptionID);
-            //change null to httpheader
             ngsiClient.unsubscribeContext(provider.getUrl(), httpHeaders, provider.getSubscriptionId()).addCallback(
                     response -> logger.debug("Unsubribe response for {}: {}", subscriptionID, response.getStatusCode().getCode()),
                     throwable -> logger.debug("Error during unsubscribe for {}", subscriptionID, throwable));
@@ -342,19 +340,11 @@ public class SubscriptionManager {
 
         return newSubscriptions;
     }
-    // added code for setting provider httpHeader
+   
     public HttpHeaders getHeadersForProvider(Provider provider) {
        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(provider.getUrl());
-       if (provider.getServiceName() != null) {
-           httpHeaders.add("Fiware-Service", provider.getServiceName());
-       } else if (configuration.getService() != null) {
-           httpHeaders.add("Fiware-Service", configuration.getService());
-       }
-       if (provider.getServicePath() != null) {
-           httpHeaders.add("Fiware-ServicePath", provider.getServicePath());
-       } else if (configuration.getServicePath() != null) {
-           httpHeaders.add("Fiware-ServicePath", configuration.getServicePath());
-       }
+       httpHeaders.add("Fiware-Service", provider.getServiceName());
+       httpHeaders.add("Fiware-ServicePath", provider.getServicePath());
        return httpHeaders;
    }
 }
