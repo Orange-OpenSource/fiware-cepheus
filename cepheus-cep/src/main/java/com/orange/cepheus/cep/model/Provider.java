@@ -50,7 +50,7 @@ public class Provider {
      * Constructor used by Jackson for deserialization
      * @param url the URL of the provider
      */
-    Provider(String url) {
+    public Provider(String url) {
         this.url = url;
     }
 	
