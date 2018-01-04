@@ -39,7 +39,6 @@ public class Provider {
     /**
      * Fiware specific service name (optional)
      */
-    //Added servicename and service path variable
     private String serviceName;
 
     /**
@@ -54,18 +53,9 @@ public class Provider {
     Provider(String url) {
         this.url = url;
     }
+	
     public Provider(){
     }
-
-    /**
-     * Used by Jackson for serialization
-     * @return the URL of the provider
-     */
-    /*@JsonValue
-    public String toString() {
-        return this.url;
-    }
-    */
 
     public String getUrl() {
         return url;
