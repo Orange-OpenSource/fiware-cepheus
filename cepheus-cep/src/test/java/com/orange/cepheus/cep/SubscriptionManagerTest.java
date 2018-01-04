@@ -11,6 +11,7 @@ package com.orange.cepheus.cep;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
@@ -38,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -60,15 +62,13 @@ import com.orange.ngsi.model.UnsubscribeContextResponse;
 @SpringApplicationConfiguration(classes = Application.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SubscriptionManagerTest {
-
+    static boolean flag=true;
+    
     @Mock
     TaskScheduler taskScheduler;
 
     @Mock
     NgsiClient ngsiClient = Mockito.mock(NgsiClient.class, RETURNS_SMART_NULLS);
-
-    @Mock
-    Configuration configuration;
 
     @Autowired
     @InjectMocks
@@ -252,15 +252,55 @@ public class SubscriptionManagerTest {
         successArg.getValue().onSuccess(response);
     }
 
-    //Setting Provider Fiware ServiceName and Fiware ServicePath
     @Test
-    public void testGetHeadersForProvider() {
-        
-        Provider provider = new Provider();
-        provider.setUrl("http://localhost:1026/");
-        provider.setServiceName("Abc");
-        provider.setServicePath("/");
-        when(ngsiClient.getRequestHeaders(provider.getUrl())).thenReturn(new HttpHeaders());
-        subscriptionManager.getHeadersForProvider(provider);
+   public void setConfigurationOKheader() throws Exception {
+
+        // Mock the task scheduler and capture the runnable
+        flag=false;
+        ArgumentCaptor<Runnable> runnableArg = ArgumentCaptor.forClass(Runnable.class);
+        when(taskScheduler.scheduleWithFixedDelay(runnableArg.capture(), anyLong())).thenReturn(Mockito.mock(ScheduledFuture.class));
+
+        // Mock the response to the subsribeContext
+        ArgumentCaptor<SuccessCallback> successArg = ArgumentCaptor.forClass(SuccessCallback.class);
+        ListenableFuture<SubscribeContextResponse> responseFuture = Mockito.mock(ListenableFuture.class);
+        doNothing().when(responseFuture).addCallback(successArg.capture(), any());
+        HttpHeaders httpHeader = new HttpHeaders();
+        httpHeader.setContentType(MediaType.APPLICATION_JSON);
+        httpHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        Configuration configuration = getBasicConf();
+        subscriptionManager.setConfiguration(configuration);
+
+        // Capture the arg of subscription and return the mocked future
+        ArgumentCaptor<String> urlProviderArg = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<HttpHeaders> headersArg = ArgumentCaptor.forClass(HttpHeaders.class);
+        ArgumentCaptor<SubscribeContext> subscribeContextArg = ArgumentCaptor.forClass(SubscribeContext.class);
+        when(ngsiClient.getRequestHeaders(any())).thenReturn(httpHeader);
+        when(ngsiClient.subscribeContext(urlProviderArg.capture(), headersArg.capture(), subscribeContextArg.capture())).thenReturn(responseFuture);
+
+        // Execute scheduled runnable
+        runnableArg.getValue().run();
+
+        // Return the SubscribeContextResponse
+        callSuccessCallback(successArg);
+
+        SubscribeContext subscribeContext = subscribeContextArg.getValue();
+        assertEquals("S.*", subscribeContext.getEntityIdList().get(0).getId());
+        assertEquals("TempSensor", subscribeContext.getEntityIdList().get(0).getType());
+        assertEquals(true, subscribeContext.getEntityIdList().get(0).getIsPattern());
+        assertEquals("temp", subscribeContext.getAttributeList().get(0));
+        assertEquals("PT1H", subscribeContext.getDuration());
+        assertEquals("http://iotAgent", urlProviderArg.getValue());
+        HttpHeaders headers = headersArg.getValue();
+        assertEquals(MediaType.APPLICATION_JSON, headers.getContentType());
+        assertTrue(headers.getAccept().contains(MediaType.APPLICATION_JSON));
+        assertEquals("SN", headers.getFirst("Fiware-Service"));
+        assertEquals("SP", headers.getFirst("Fiware-ServicePath"));
+
+        Set<Provider> providers = configuration.getEventTypeIns().get(0).getProviders();
+        for(Provider provider: providers) {
+            assertEquals("12345678", provider.getSubscriptionId());
+            assertNotNull(provider.getSubscriptionDate());
         }
+    }
 }
