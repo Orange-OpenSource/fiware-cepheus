@@ -62,7 +62,6 @@ import com.orange.ngsi.model.UnsubscribeContextResponse;
 @SpringApplicationConfiguration(classes = Application.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class SubscriptionManagerTest {
-    static boolean flag=true;
     
     @Mock
     TaskScheduler taskScheduler;
@@ -256,7 +255,6 @@ public class SubscriptionManagerTest {
    public void setConfigurationOKheader() throws Exception {
 
         // Mock the task scheduler and capture the runnable
-        flag=false;
         ArgumentCaptor<Runnable> runnableArg = ArgumentCaptor.forClass(Runnable.class);
         when(taskScheduler.scheduleWithFixedDelay(runnableArg.capture(), anyLong())).thenReturn(Mockito.mock(ScheduledFuture.class));
 
