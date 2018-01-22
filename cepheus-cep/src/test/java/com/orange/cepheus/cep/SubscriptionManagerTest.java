@@ -266,7 +266,7 @@ public class SubscriptionManagerTest {
         httpHeader.setContentType(MediaType.APPLICATION_JSON);
         httpHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-        Configuration configuration = getBasicConf();
+        Configuration configuration = getBasicConfWithService();
         subscriptionManager.setConfiguration(configuration);
 
         // Capture the arg of subscription and return the mocked future
