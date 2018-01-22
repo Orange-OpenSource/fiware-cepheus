@@ -21,7 +21,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static com.orange.cepheus.cep.Util.getBasicConf;
+import static com.orange.cepheus.cep.Util.*;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Set;
