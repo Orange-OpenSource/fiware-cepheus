@@ -96,7 +96,7 @@ public class EventSinkListenerTest {
         attributes.add(new ContextAttribute("avgTemp", "double", 10.25));
         attributes.add(new ContextAttribute("avgTemp_unit","string","celcius"));
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
-        eventSinkListener.update(beans, null, statement, provider);
+        eventSinkListener.update(beans, any(), statement, provider);
 
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
@@ -147,7 +147,7 @@ public class EventSinkListenerTest {
         attributes.add(new ContextAttribute("id", "string", null)); // null => when statement does not indicate id
         attributes.add(new ContextAttribute("avgTemp", "double", 10.25));
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
-        eventSinkListener.update(beans, null, statement, provider);
+        eventSinkListener.update(beans, any(), statement, provider);
 
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
@@ -171,7 +171,7 @@ public class EventSinkListenerTest {
         attributes.add(new ContextAttribute("id", "string", null)); // null => when statement does not indicate id
         attributes.add(new ContextAttribute("avgTemp", "double", 10.25));
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
-        eventSinkListener.update( null, beans, statement, provider);
+        eventSinkListener.update( any(), beans, statement, provider);
 
         verify(ngsiClient, never()).updateContext(any(), any(), any());
     }
@@ -188,7 +188,7 @@ public class EventSinkListenerTest {
         List<ContextAttribute> attributes = new LinkedList<>();
         attributes.add(new ContextAttribute("id", "string", "OUT1"));
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
-        eventSinkListener.update(beans, null, statement, provider);
+        eventSinkListener.update(beans, any(), statement, provider);
 
         verify(ngsiClient, never()).updateContext(any(), any(), any());
     }
