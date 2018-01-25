@@ -171,7 +171,7 @@ public class EventSinkListenerTest {
         attributes.add(new ContextAttribute("id", "string", null)); // null => when statement does not indicate id
         attributes.add(new ContextAttribute("avgTemp", "double", 10.25));
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
-        eventSinkListener.update(null, beans, statement, provider);
+        eventSinkListener.update( null, beans, statement, provider);
 
         verify(ngsiClient, never()).updateContext(any(), any(), any());
     }
