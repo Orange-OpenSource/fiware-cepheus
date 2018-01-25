@@ -15,9 +15,7 @@ import com.orange.cepheus.cep.model.Provider;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.SubscribeContext;
-import com.orange.ngsi.model.SubscribeContextResponse;
 import com.orange.ngsi.model.SubscribeError;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.util.concurrent.ListenableFuture;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.URI;
@@ -49,8 +46,6 @@ public class SubscriptionManager {
 
     private static Logger logger = LoggerFactory.getLogger(SubscriptionManager.class);
     
-    private Configuration configuration;
-    private HttpHeaders httpHeaders;
     /**
      * Inner class for concurrent subscriptions tracking using a RW lock.
      */
@@ -245,12 +240,8 @@ public class SubscriptionManager {
      */
     private void subscribeProvider(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
         logger.debug("Subscribe to {} for {}", provider.getUrl(), subscribeContext.toString());
-      
-          if (StringUtils.isNotEmpty(provider.getServiceName())|| StringUtils.isNotEmpty(provider.getServicePath())) {
-                  httpHeaders = getHeadersForProvider(provider);
-              }
         
-        ngsiClient.subscribeContext(provider.getUrl(), httpHeaders, subscribeContext).addCallback(subscribeContextResponse -> {
+        ngsiClient.subscribeContext(provider.getUrl(), getHeadersForProvider(provider), subscribeContext).addCallback(subscribeContextResponse -> {
             SubscribeError error = subscribeContextResponse.getSubscribeError();
             if (error == null) {
                 String subscriptionId = subscribeContextResponse.getSubscribeResponse().getSubscriptionId();
@@ -279,7 +270,7 @@ public class SubscriptionManager {
 
             // Don't wait for result, remove immediately from subscriptions list
             subscriptions.removeSubscription(subscriptionID);
-            ngsiClient.unsubscribeContext(provider.getUrl(), httpHeaders, provider.getSubscriptionId()).addCallback(
+            ngsiClient.unsubscribeContext(provider.getUrl(), getHeadersForProvider(provider), provider.getSubscriptionId()).addCallback(
                     response -> logger.debug("Unsubribe response for {}: {}", subscriptionID, response.getStatusCode().getCode()),
                     throwable -> logger.debug("Error during unsubscribe for {}", subscriptionID, throwable));
 
@@ -342,9 +333,16 @@ public class SubscriptionManager {
     }
    
     public HttpHeaders getHeadersForProvider(Provider provider) {
-       HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(provider.getUrl());
-       httpHeaders.add("Fiware-Service", provider.getServiceName());
-       httpHeaders.add("Fiware-ServicePath", provider.getServicePath());
-       return httpHeaders;
-   }
+        String serviceName = provider.getServiceName();
+        String servicePath = provider.getServicePath();
+       
+        if (serviceName == null || serviceName.isEmpty() || servicePath == null || servicePath.isEmpty()) {
+            return null;
+        }
+        
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(provider.getUrl());
+        httpHeaders.add("Fiware-Service", provider.getServiceName());
+        httpHeaders.add("Fiware-ServicePath", provider.getServicePath());
+        return httpHeaders;
+    }
 }
