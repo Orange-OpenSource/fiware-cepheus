@@ -96,7 +96,7 @@ public class EventSinkListenerTest {
         attributes.add(new ContextAttribute("avgTemp", "double", 10.25));
         attributes.add(new ContextAttribute("avgTemp_unit","string","celcius"));
         EventBean[]beans = {buildEventBean("TempSensorAvg", attributes)};
-       // eventSinkListener.update(beans, null, statement, provider);
+        eventSinkListener.update(beans, null, statement, provider);
 
         // Capture updateContext when postUpdateContextRequest is called on updateContextRequest,
         ArgumentCaptor<UpdateContext> updateContextArg = ArgumentCaptor.forClass(UpdateContext.class);
