@@ -14,10 +14,11 @@ This is the code repository for the Fiware-Cepheus project.
 This project is part of [FIWARE](http://www.fiware.org) under the IoT Data Edge Consolidation GE project.
 Check also the [FIWARE Catalogue entry for Cepheus](http://catalogue.fiware.org/enablers/iot-data-edge-consolidation-ge-cepheus)
 
-### Renaming
+## Status
 
-The previous name of the project was "EspR4FastData".
-It was renamed to a more generic name (using the convention of other FIWARE Generic Enablers).
+The current project is in *maintenance* mode: This means that no new features will be added, nor issues fixed by the original team.
+
+Feel free however to fork the project and contribute issues and pull requests if you feel the community can benefit of your work. We will gladely review changes and merge any viable contributions.
 
 ## Overall description
 
@@ -28,6 +29,11 @@ This project contains two Spring Boot applications:
 * cepheus-broker: A light broker (NGSI forwarding-only).
 
 NGSI v1 implementation is provided by the [Orange-OpenSource/fiware-ngsi-api](https://github.com/Orange-OpenSource/fiware-ngsi-api) library.
+
+### Renaming
+
+The previous name of the project was "EspR4FastData".
+It was renamed to a more generic name (using the convention of other FIWARE Generic Enablers).
 
 ## Quick instructions
 
