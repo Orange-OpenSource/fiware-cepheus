@@ -1,23 +1,33 @@
+# 1.0.1
+
+## Major features
+
+* The Provider configuration of the CEP changed to add custom `Fiware-ServiceName` and `Fiware-ServicePath` headers
+
+# 1.0.0
+
+Bump the version to indicate the 1.0.0 milestone is reached (project considered _production ready_).
+
 # 0.1.8
 
-# Major features
+## Major features
 
 * Broker will now require subscription requests to provide the complete URL for notifications.
   Previous behavior was to append the standard `/ngsi10/notifyContext` to the URL which is not done anymore.
   This allows applications to receive notifications with custom URL paths and parameters.
 
-# Minor features
+## Minor features
 
 * Update to ngsi-api library 0.1.2
 
-# Bug fixes
+## Bug fixes
 
 * print stacktrace on errors #56
 * fix crash when parsing updateContext in JSON #57
 
 # 0.1.7
 
-# Minor features
+## Minor features
 
 * Update fiware-ngsi-api dependency to 0.1.1
 
@@ -25,7 +35,7 @@
 If a host initiates a NGSI exchange with Broker or CEP using XML, Cepheus components will keep communicating using XML.
 XML support is now deprecated and will be removed in a future version of Fiware Cepheus.
 
-# Bug fixes
+## Bug fixes
 
 * Fixes compatibility with Orion 1.0.0 and above #51 (by using JSON as default NGSI format)
 
@@ -56,7 +66,6 @@ XML support is now deprecated and will be removed in a future version of Fiware 
 * broker: fix notifications with subset of attributes #46
 * cep: clean subscription #44
 
-
 # 0.1.4
 
 ## Major features
@@ -85,7 +94,6 @@ XML support is now deprecated and will be removed in a future version of Fiware 
 
 ## Bug fixes
 
-
 # 0.1.2
 
 ## Major features
@@ -101,7 +109,6 @@ XML support is now deprecated and will be removed in a future version of Fiware 
 * CEP: support long type #28
 * NGSI: fix error response format #27
 * fix data persistence location for debian #22
-
 
 # 0.1.1
 
