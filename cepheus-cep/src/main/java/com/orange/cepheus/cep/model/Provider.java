@@ -36,22 +36,25 @@ public class Provider {
      */
     @JsonIgnore
     private String subscriptionId;
+    /**
+     * Fiware specific service name (optional)
+     */
+    private String serviceName;
+
+    /**
+     * Fiware specific service path (optional)
+     */
+    private String servicePath;
 
     /**
      * Constructor used by Jackson for deserialization
      * @param url the URL of the provider
      */
-    Provider(String url) {
+    public Provider(String url) {
         this.url = url;
     }
-
-    /**
-     * Used by Jackson for serialization
-     * @return the URL of the provider
-     */
-    @JsonValue
-    public String toString() {
-        return this.url;
+	
+    public Provider(){
     }
 
     public String getUrl() {
@@ -76,5 +79,21 @@ public class Provider {
 
     public void setSubscriptionId(String subscriptionId) {
         this.subscriptionId = subscriptionId;
+    }
+    
+    public String getServiceName() {
+	return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public String getServicePath() {
+        return servicePath;
+    }
+	
+    public void setServicePath(String servicePath) {
+        this.servicePath = servicePath;
     }
 }

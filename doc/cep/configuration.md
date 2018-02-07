@@ -23,7 +23,11 @@ Here is an example:
         { "name":"floor", "type":"string" }
       ]
       "providers":[
-        "http://localhost:8081"
+        { 
+          "url":"http://"http://localhost:8081",
+          "serviceName": "tenant",
+          "servicePath": "test/example",
+        }
       ]
     }
   ],
@@ -72,7 +76,7 @@ Each Context Entity must be defined by:
  - `type`: the type of the Context Entity, mandatory.
  - `isPattern`: if the `id` is a pattern, optional, default: `false`.
  - `attributes`: the list of Context Attributes to match, mandatory, cannot be empty.
- - `providers` : the list of URL to Context Provider to subscribe for this Context Entity, optional.
+ - `providers` : the list of URL to Context Provider to subscribe for this Context Entity.
 
 Each Context Attributes is defined by:
 
@@ -88,6 +92,12 @@ Each Context Metadata is defined by:
 - `type`: the type of the metadata, mandatory.
           Only simple types are supported for now : `string`, `double`, `float`, `int`, `bool`.
 - `jsonpath`: a jsonpath to allow accessing the value inside a "complex" object, optional.
+
+Each Providers is defined by:
+
+- `url`: the URL to the provider, mandatory.
+- `serviceName`: the value of the `Fiware-Service` HTTP header, optional.
+- `servicePath`: the value of the `Fiware-ServicePath` HTTP header, optional.
 
 ### Outgoing events
 

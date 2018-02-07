@@ -25,7 +25,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.URI;
@@ -46,7 +45,7 @@ import java.util.stream.Collectors;
 public class SubscriptionManager {
 
     private static Logger logger = LoggerFactory.getLogger(SubscriptionManager.class);
-
+    
     /**
      * Inner class for concurrent subscriptions tracking using a RW lock.
      */
@@ -241,8 +240,8 @@ public class SubscriptionManager {
      */
     private void subscribeProvider(Provider provider, SubscribeContext subscribeContext, Subscriptions subscriptions) {
         logger.debug("Subscribe to {} for {}", provider.getUrl(), subscribeContext.toString());
-
-        ngsiClient.subscribeContext(provider.getUrl(), null, subscribeContext).addCallback(subscribeContextResponse -> {
+        
+        ngsiClient.subscribeContext(provider.getUrl(), getHeadersForProvider(provider), subscribeContext).addCallback(subscribeContextResponse -> {
             SubscribeError error = subscribeContextResponse.getSubscribeError();
             if (error == null) {
                 String subscriptionId = subscribeContextResponse.getSubscribeResponse().getSubscriptionId();
@@ -271,8 +270,7 @@ public class SubscriptionManager {
 
             // Don't wait for result, remove immediately from subscriptions list
             subscriptions.removeSubscription(subscriptionID);
-
-            ngsiClient.unsubscribeContext(provider.getUrl(), null, provider.getSubscriptionId()).addCallback(
+            ngsiClient.unsubscribeContext(provider.getUrl(), getHeadersForProvider(provider), provider.getSubscriptionId()).addCallback(
                     response -> logger.debug("Unsubribe response for {}: {}", subscriptionID, response.getStatusCode().getCode()),
                     throwable -> logger.debug("Error during unsubscribe for {}", subscriptionID, throwable));
 
@@ -332,5 +330,19 @@ public class SubscriptionManager {
         });
 
         return newSubscriptions;
+    }
+   
+    public HttpHeaders getHeadersForProvider(Provider provider) {
+        String serviceName = provider.getServiceName();
+        String servicePath = provider.getServicePath();
+       
+        if (serviceName == null || serviceName.isEmpty() || servicePath == null || servicePath.isEmpty()) {
+            return null;
+        }
+        
+        HttpHeaders httpHeaders = ngsiClient.getRequestHeaders(provider.getUrl());
+        httpHeaders.add("Fiware-Service", provider.getServiceName());
+        httpHeaders.add("Fiware-ServicePath", provider.getServicePath());
+        return httpHeaders;
     }
 }
