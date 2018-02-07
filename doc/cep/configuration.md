@@ -93,7 +93,7 @@ Each Context Metadata is defined by:
           Only simple types are supported for now : `string`, `double`, `float`, `int`, `bool`.
 - `jsonpath`: a jsonpath to allow accessing the value inside a "complex" object, optional.
 
-Each Brokers is defined by:
+Each Providers is defined by:
 
 - `url`: the URL to the provider, mandatory.
 - `serviceName`: the value of the `Fiware-Service` HTTP header, optional.
