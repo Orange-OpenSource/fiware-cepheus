@@ -23,7 +23,11 @@ Here is an example:
         { "name":"floor", "type":"string" }
       ]
       "providers":[
-        "http://localhost:8081"
+        { 
+          "url":"http://"http://localhost:8081",
+          "serviceName": "tenant",
+          "servicePath": "test/example",
+        }
       ]
     }
   ],
@@ -73,6 +77,8 @@ Each Context Entity must be defined by:
  - `isPattern`: if the `id` is a pattern, optional, default: `false`.
  - `attributes`: the list of Context Attributes to match, mandatory, cannot be empty.
  - `providers` : the list of URL to Context Provider to subscribe for this Context Entity, optional.
+ - `serviceName`: the value of the `Fiware-Service` HTTP header, optional.
+ - `servicePath`: the value of the `Fiware-ServicePath` HTTP header, optional.
 
 Each Context Attributes is defined by:
 
