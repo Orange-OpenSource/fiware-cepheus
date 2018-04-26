@@ -17,16 +17,16 @@ Here is an example:
         {
           "name":"temperature", "type":"double",
           "metadata": [
-            { "name":"unit", "type":"string" }
+            { "name":"unit", "type":"string" }
           ]
         },
         { "name":"floor", "type":"string" }
-      ]
+      ],
       "providers":[
         { 
-          "url":"http://"http://localhost:8081",
+          "url":"http://localhost:8081",
           "serviceName": "tenant",
-          "servicePath": "test/example",
+          "servicePath": "test/example"
         }
       ]
     }
@@ -39,7 +39,7 @@ Here is an example:
         {
           "name":"temperature", "type":"double",
           "metadata": [
-            { "name":"unit", "type":"string" }
+            { "name":"unit", "type":"string" }
           ]
         }
       ],
