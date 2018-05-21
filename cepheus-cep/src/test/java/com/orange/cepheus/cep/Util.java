@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import static com.orange.cepheus.cep.SubscriptionManagerTest.*;
 import static com.orange.ngsi.model.CodeEnum.CODE_200;
 
 /**
@@ -39,13 +38,7 @@ public class Util {
 
         // eventIN 1
         EventTypeIn eventTypeIn = new EventTypeIn("S.*", "TempSensor", true);
-        Provider provider = new Provider("http://iotAgent");
-        if(flag==false)
-        {
-        provider.setServiceName("SN");
-        provider.setServicePath("SP");
-        }
-        eventTypeIn.addProvider(provider);
+        eventTypeIn.addProvider("http://iotAgent");
         Attribute attr = new Attribute("temp", "double");
         attr.setMetadata(Collections.singleton(new Metadata("unit", "string")));
         eventTypeIn.addAttribute(attr);
