@@ -96,4 +96,13 @@ public class Provider {
     public void setServicePath(String servicePath) {
         this.servicePath = servicePath;
     }
+	
+    @Override
+    public boolean equals(Object obj) {
+        Provider p=(Provider)obj;
+        if(this.url.equals(p.getUrl())&& this.serviceName.equals(p.getServiceName()) && this.servicePath.equals(p.getServicePath())) {
+            return true;
+        }
+        return false;
+    }
 }
