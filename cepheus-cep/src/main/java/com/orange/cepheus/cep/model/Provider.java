@@ -96,13 +96,41 @@ public class Provider {
     public void setServicePath(String servicePath) {
         this.servicePath = servicePath;
     }
-	
+    
+        @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result	+ ((serviceName == null) ? 0 : serviceName.hashCode());
+        result = prime * result	+ ((servicePath == null) ? 0 : servicePath.hashCode());
+        result = prime * result + ((url == null) ? 0 : url.hashCode());
+        return result;
+    }
+
     @Override
-    public boolean equals(Object obj) {
-        Provider p=(Provider)obj;
-        if(this.url.equals(p.getUrl())&& this.serviceName.equals(p.getServiceName()) && this.servicePath.equals(p.getServicePath())) {
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        }
-        return false;
+        if (o == null)
+            return false;
+        if (!(o instanceof Provider))
+           return false;
+        Provider provider = (Provider) o;
+        if (serviceName == null) {
+            if (provider.serviceName != null)
+                return false;
+        } else if (!serviceName.equals(provider.serviceName))
+            return false;
+        if (servicePath == null) {
+            if (provider.servicePath != null)
+                return false;
+        } else if (!servicePath.equals(provider.servicePath))
+            return false;
+        if (url == null) {
+            if (provider.url != null)
+                return false;
+        } else if (!url.equals(provider.url))
+            return false;
+        return true;
     }
 }
