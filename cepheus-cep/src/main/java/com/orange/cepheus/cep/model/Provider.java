@@ -96,4 +96,13 @@ public class Provider {
     public void setServicePath(String servicePath) {
         this.servicePath = servicePath;
     }
+         
+    public boolean hasSameOrigin(Provider otherProvider) {
+       if(otherProvider.url!=null && !otherProvider.url.isEmpty())
+    	{
+    	    return url.equals(otherProvider.url) && servicePath.equals(otherProvider.servicePath) && serviceName.equals(otherProvider.serviceName);
+    	}
+    	return false;
+    }   
+	
 }
