@@ -97,15 +97,17 @@ public class Provider {
         this.servicePath = servicePath;
     }
          
-    public boolean hasSameOrigin(Provider otherProvider) {
-		if (otherProvider.url != null && !otherProvider.url.isEmpty()) {
-			return url.equals(otherProvider.url)
-					&& (servicePath == null || servicePath
-							.equals(otherProvider.servicePath))
-					&& (serviceName == null || serviceName
-							.equals(otherProvider.serviceName));
+   public boolean hasSameOrigin(Provider otherProvider) {
+		if (otherProvider != null) {
+			if (otherProvider.url != null && !otherProvider.url.isEmpty()) {
+				return url.equals(otherProvider.url)
+						&& (servicePath == null || servicePath
+								.equals(otherProvider.servicePath))
+						&& (serviceName == null || serviceName
+								.equals(otherProvider.serviceName));
+			}
 		}
 		return false;
-	} 
+	}
 	
 }
