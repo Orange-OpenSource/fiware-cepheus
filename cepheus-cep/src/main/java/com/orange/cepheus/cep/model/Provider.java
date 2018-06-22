@@ -98,11 +98,14 @@ public class Provider {
     }
          
     public boolean hasSameOrigin(Provider otherProvider) {
-       if(otherProvider.url!=null && !otherProvider.url.isEmpty())
-    	{
-    	    return url.equals(otherProvider.url) && servicePath.equals(otherProvider.servicePath) && serviceName.equals(otherProvider.serviceName);
-    	}
-    	return false;
-    }   
+		if (otherProvider.url != null && !otherProvider.url.isEmpty()) {
+			return url.equals(otherProvider.url)
+					&& (servicePath == null || servicePath
+							.equals(otherProvider.servicePath))
+					&& (serviceName == null || serviceName
+							.equals(otherProvider.serviceName));
+		}
+		return false;
+	} 
 	
 }
