@@ -97,17 +97,30 @@ public class Provider {
         this.servicePath = servicePath;
     }
          
-   public boolean hasSameOrigin(Provider otherProvider) {
+    public boolean hasSameOrigin(Provider otherProvider) {
 		if (otherProvider != null) {
 			if (otherProvider.url != null && !otherProvider.url.isEmpty()) {
 				return url.equals(otherProvider.url)
-						&& (servicePath == null || servicePath
-								.equals(otherProvider.servicePath))
-						&& (serviceName == null || serviceName
-								.equals(otherProvider.serviceName));
+						&& checkEquality(servicePath, otherProvider.servicePath)
+						&& checkEquality(serviceName, otherProvider.serviceName);
 			}
 		}
 		return false;
 	}
-	
+    /**
+     * Checking for values of two strings  
+     * @param new_val (new_provider's attribute) 
+     * @param old_val (old provider's attribute )
+     * @return true if both strings are either equal or null 
+     * @return false if strings are not equal
+     */
+     public static boolean checkEquality(String new_val, String old_val) {
+		if (new_val == null && old_val == null) {				//Check whether both Strings are null
+			return true;
+		} else if (new_val == null || old_val == null) {			//Check whether one of the String is null
+			return false;
+		} else {
+			return new_val.equals(old_val);					//Check if both strings are equal
+		}
+        }
 }
