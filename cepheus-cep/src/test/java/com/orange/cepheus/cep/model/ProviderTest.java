@@ -133,3 +133,4 @@ public class ProviderTest {
 		boolean checkTest = Provider.checkEquality(a, b);
 		assertFalse(checkTest);
 	}
+}	
