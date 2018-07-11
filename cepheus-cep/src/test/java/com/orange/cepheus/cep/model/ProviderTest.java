@@ -12,7 +12,7 @@ public class ProviderTest {
 		Provider provider = new Provider("http://sameUrl");
 		provider.setServiceName("SN");
 		provider.setServicePath("SP");
-		
+
 		Provider pr = new Provider("http://sameUrl");
 		pr.setServiceName("SN");
 		pr.setServicePath("SP");
@@ -25,7 +25,7 @@ public class ProviderTest {
 		Provider provider = new Provider("http://sameUrl");
 		provider.setServiceName("SN");
 		provider.setServicePath("SP");
-		
+
 		Provider pr = new Provider("http://diffUrl");
 		pr.setServiceName("SN");
 		pr.setServicePath("SP");
@@ -38,7 +38,7 @@ public class ProviderTest {
 		Provider provider = new Provider("http://sameUrl");
 		provider.setServiceName("SN");
 		provider.setServicePath("SP");
-		
+
 		Provider pr = new Provider("http://sameUrl");
 		pr.setServiceName("SN1");
 		pr.setServicePath("SP");
@@ -51,7 +51,7 @@ public class ProviderTest {
 		Provider provider = new Provider("http://sameUrl");
 		provider.setServiceName("SN");
 		provider.setServicePath("SP");
-		
+
 		Provider pr = new Provider("http://sameUrl");
 		pr.setServiceName("SN");
 		pr.setServicePath("SP1");
@@ -64,32 +64,32 @@ public class ProviderTest {
 		Provider provider = new Provider();
 		provider.setServiceName("SN");
 		provider.setServicePath("SP");
-		
+
 		Provider pr = new Provider("http://sameUrl");
 		pr.setServiceName("SN");
 		pr.setServicePath("SP1");
 		boolean checkTest = pr.hasSameOrigin(provider);
 		assertFalse(checkTest);
 	}
-	
+
 	@Test
 	public void testHasSameOriginServiceNameNull() {
 		Provider provider = new Provider("http://sameUrl");
 		provider.setServiceName("SN");
 		provider.setServicePath("SP");
-		
+
 		Provider pr = new Provider("http://sameUrl");
 		pr.setServicePath("SP");
 		boolean checkTest = pr.hasSameOrigin(provider);
 		assertFalse(checkTest);
 	}
-	
+
 	@Test
 	public void testHasSameOriginServicePathNull() {
 		Provider provider = new Provider("http://sameUrl");
 		provider.setServiceName("SN");
 		provider.setServicePath("SP");
-		
+
 		Provider pr = new Provider("http://sameUrl");
 		pr.setServiceName("SN");
 		boolean checkTest = pr.hasSameOrigin(provider);
@@ -101,18 +101,18 @@ public class ProviderTest {
 		Provider provider = new Provider("");
 		provider.setServiceName("SN");
 		provider.setServicePath("SP");
-		
+
 		Provider pr = new Provider("http://sameUrl");
 		pr.setServiceName("SN");
 		pr.setServicePath("SP1");
 		boolean checkTest = pr.hasSameOrigin(provider);
 		assertFalse(checkTest);
 	}
-	
+
 	@Test
 	public void testHasObjectNull() {
 		Provider provider = new Provider();
-	
+
 		Provider pr = null;
 		boolean checkTest = provider.hasSameOrigin(pr);
 		assertFalse(checkTest);
