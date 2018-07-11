@@ -310,7 +310,7 @@ public class SubscriptionManager {
                 oldEventTypeIn.getProviders().forEach(oldProvider -> {
 
                     Optional<Provider> optionalProvider =
-                            newEventTypeIn.getProviders().stream().filter(p -> p.getUrl().equals(oldProvider.getUrl())).findFirst();
+                            newEventTypeIn.getProviders().stream().filter(p -> p.hasSameOrigin(oldProvider)).findFirst();
                     if (optionalProvider.isPresent()) {
                         Provider provider = optionalProvider.get();
 

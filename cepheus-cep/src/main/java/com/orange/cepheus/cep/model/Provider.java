@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * Provider defines the URL of one of the providers of a EventTypeIn.
@@ -96,4 +97,17 @@ public class Provider {
     public void setServicePath(String servicePath) {
         this.servicePath = servicePath;
     }
+    
+    public boolean hasSameOrigin(Provider otherProvider) {
+		if (otherProvider != null) {
+			if (otherProvider.url != null && !otherProvider.url.isEmpty()) {
+				return url.equals(otherProvider.url)
+						&& (Objects.equals(servicePath,
+								otherProvider.servicePath))
+						&& (Objects.equals(serviceName,
+								otherProvider.serviceName));
+			}
+		}
+		return false;
+	}
 }
