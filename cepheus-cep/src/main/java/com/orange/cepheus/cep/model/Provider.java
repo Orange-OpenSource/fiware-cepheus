@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * Provider defines the URL of one of the providers of a EventTypeIn.
