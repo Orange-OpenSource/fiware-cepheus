@@ -271,7 +271,7 @@ public class SubscriptionManager {
             // Don't wait for result, remove immediately from subscriptions list
             subscriptions.removeSubscription(subscriptionID);
             ngsiClient.unsubscribeContext(provider.getUrl(), getHeadersForProvider(provider), provider.getSubscriptionId()).addCallback(
-                    response -> logger.debug("Unsubribe response for {}: {}", subscriptionID, response.getStatusCode().getCode()),
+                    response -> logger.debug("Unsubscribe response for {}: {}", subscriptionID, response.getStatusCode().getCode()),
                     throwable -> logger.debug("Error during unsubscribe for {}", subscriptionID, throwable));
 
             // Reset provider subscription data
@@ -293,7 +293,7 @@ public class SubscriptionManager {
 
     /**
      * Migrate subscriptions from previous configuration to the new configuration
-     * @param configuration the new configuration where the subscriptions must be insterted
+     * @param configuration the new configuration where the subscriptions must be inserted
      * @return the list of id of the migrated subscriptions
      */
     private Subscriptions migrateSubscriptions(Configuration configuration) {
