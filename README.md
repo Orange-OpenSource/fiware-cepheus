@@ -11,8 +11,7 @@
 
 This is the code repository for the Fiware-Cepheus project.
 
-This project is part of [FIWARE](http://www.fiware.org) under the IoT Data Edge Consolidation GE project.
-Check also the [FIWARE Catalogue entry for Cepheus](http://catalogue.fiware.org/enablers/iot-data-edge-consolidation-ge-cepheus)
+This project was part of [FIWARE](http://www.fiware.org) under the IoT Data Edge Consolidation GE project.
 
 ## Status
 
@@ -96,5 +95,4 @@ FIWARE Cepheus is licensed under the [GNU General Public License Version 2](LICE
 
 ## Support
 
-Ask your programming questions using [Stackoverflow](http://stackoverflow.com/questions/tagged/fiware) and your general questions on [FIWARE Q&A](https://ask.fiware.org/questions/).
-In both cases please use the tags `fiware` and `fiware-cepheus`.
+Use the issue tracker of this project for any issues or questions related to the project.
