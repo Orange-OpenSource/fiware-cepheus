@@ -12,6 +12,7 @@ import com.orange.cepheus.cep.model.Attribute;
 import com.orange.cepheus.cep.model.Configuration;
 import com.orange.cepheus.cep.model.EventTypeIn;
 import com.orange.cepheus.cep.model.Provider;
+import com.orange.cepheus.cep.tenant.TenantFilter;
 import com.orange.ngsi.client.NgsiClient;
 import com.orange.ngsi.model.EntityId;
 import com.orange.ngsi.model.SubscribeContext;
@@ -110,6 +111,9 @@ public class SubscriptionManager {
     private ScheduledFuture scheduledFuture;
 
     private URI hostURI;
+    
+    @Autowired(required=false)
+    TenantFilter tenantFilter;
 
     /**
      * Update subscription to new provider of the incoming events defined in the Configuration
@@ -126,6 +130,14 @@ public class SubscriptionManager {
 
         // Keep a reference to configuration for next migration
         eventTypeIns = configuration.getEventTypeIns();
+        
+        if(tenantFilter!=null){
+            for (EventTypeIn eventType : configuration.getEventTypeIns()) {
+                for (Provider provider : eventType.getProviders()) {
+                	tenantFilter.getClientProviderMap().put(provider.getServiceName()+provider.getServicePath(), configuration.getService()+configuration.getServicePath());
+                }
+            }
+        }
 
         // TODO : send unsubscribeContext with removedEventTypesIn
 

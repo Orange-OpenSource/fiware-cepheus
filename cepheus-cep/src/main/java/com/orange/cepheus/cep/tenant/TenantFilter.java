@@ -52,6 +52,14 @@ public class TenantFilter implements Filter {
      * Map of all the context for each tenant, key: tenantId, a concatenation of service and servicePath
      */
     private final ConcurrentMap<String, TenantScope.Context> tenantContexts = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, String> clientProviderMap = new ConcurrentHashMap<>();
+	
+    /**
+    * @return the clientProviderMap
+    */
+    public ConcurrentMap<String, String> getClientProviderMap() {
+	return clientProviderMap;
+    }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -76,7 +84,7 @@ public class TenantFilter implements Filter {
             String servicePath = getServicePath(httpServletRequest);
 
             // Associate the tenant context to the current thread
-            TenantScope.storeTenantContext(getTenantContext(service, servicePath));
+            TenantScope.storeTenantContext(getTenantContext(service, servicePath, httpServletRequest));
 
             // Continue request
             filterChain.doFilter(servletRequest, servletResponse);
@@ -147,6 +155,42 @@ public class TenantFilter implements Filter {
                 }
             }
         }
+        return tenantMap;
+    }
+    
+    /**
+     * Return a tenant context for the given service / servicePath
+     * @param service
+     * @param servicePath
+	 * @param httpServletRequest
+     * @return a tenant context
+     * @throws BadHeaderException 
+     */
+    private TenantScope.Context getTenantContext(String service, String servicePath, HttpServletRequest httpServletRequest) throws BadHeaderException {
+        String tenantId = tenantIdFromService(service, servicePath);
+
+        TenantScope.Context tenantMap = null;
+        if (!httpServletRequest.getRequestURI().startsWith("/v1/admin")) {
+        		tenantMap = tenantContexts.get(clientProviderMap.get(tenantId));
+       }else{
+    	   tenantMap = tenantContexts.get(tenantId);
+           if (tenantMap == null) {
+               synchronized (this) {
+                   tenantMap = tenantContexts.get(tenantId);
+                   if (tenantMap == null) {
+                       tenantMap = new TenantScope.Context();
+                       tenantMap.put(TENANT_ID, tenantId);
+                       if (!DEFAULT_SERVICE.equals(service)) {
+                           tenantMap.put(FIWARE_SERVICE, service);
+                       }
+                       if (!DEFAULT_SERVICE_PATH.equals(servicePath)) {
+                           tenantMap.put(FIWARE_SERVICE_PATH, servicePath);
+                       }
+                       tenantContexts.put(tenantId, tenantMap);
+                   }
+               }
+           }
+       }
         return tenantMap;
     }
 
