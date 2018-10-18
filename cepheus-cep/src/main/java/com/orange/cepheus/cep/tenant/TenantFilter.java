@@ -53,6 +53,13 @@ public class TenantFilter implements Filter {
      */
     private final ConcurrentMap<String, TenantScope.Context> tenantContexts = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, String> clientProviderMap = new ConcurrentHashMap<>();
+	
+    /**
+    * @return the clientProviderMap
+    */
+    public ConcurrentMap<String, String> getClientProviderMap() {
+	return clientProviderMap;
+    }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
