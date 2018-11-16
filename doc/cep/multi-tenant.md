@@ -11,18 +11,18 @@ Fiware-Service : <Service_Name>
 Fiware-Servicepath: <Subservice_Name>
 ```
 
-Note: Subtenant must start with the / character.
+Note: ```Subtenant``` must start with the ```/``` character.
 
 Cepheus-CEP is designed to provide every tenant a dedicated share of the instance including its data, configuration, user management, tenant individual functionality and non-functional properties.
 
-For Cepheus-CEP to work in multi-tenant way a user need to enable multi-tenanancy by uncommenting ```spring.profiles.active=multi-tenant``` in application.properties(for build from source)/cep.properties(for Debian package), this feature is disabled by default.
+For Cepheus-CEP to work in ```multi-tenant``` way a user need to enable multi-tenanancy by uncommenting ```spring.profiles.active=multi-tenant``` in application.properties(for build from source)/cep.properties(for Debian package), this feature is disabled by default.
 
 By enabling this, user can send different configuration for different tenant. Name of file will be obtained by ```cep-<Fiware-Service>-<Fiware-ServicePath>``` provided in request Header.
 
 <a name="multi_01"></a>
 ![multi-tenancy configuration](multi_01.png)
 
-The way multi-tenancy is defined in Cepheus-CEP is to have a one-to-one mapping between Orion and Cepheus-CEP tenants e.g., if tenant ```testservice``` exists on Orion(at servicename field in providers), then it should exist on Cepheus-CEP(at request header as Fiware-Service).
+The way multi-tenancy is defined in Cepheus-CEP is to have a ```one-to-one``` mapping between Orion and Cepheus-CEP tenants e.g., if tenant ```testservice``` exists on Orion(at servicename field in providers), then it should exist on Cepheus-CEP(at request header as Fiware-Service).
 
 Sample Config file for Cepheus CEP:
 
