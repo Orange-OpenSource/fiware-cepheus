@@ -71,5 +71,5 @@ Whenever Cepheus-CEP receive notifyContext from orion(as In-Event) for any chang
 
 ### Current Limitation
 * The incompatibility between multi-tenancy of Cepheus and serviceName/servicePath defined in providers, i.e., this will not work if we use different tenant in Cepheus CEP and orion.
-* The outstanding bugs when using multi tenancy with Orion, mainly #73 and #64.
+* The outstanding bugs when using multi tenancy with Orion, mainly https://github.com/Orange-OpenSource/fiware-cepheus/issues/73 and https://github.com/Orange-OpenSource/fiware-cepheus/issues/64.
 * Not yet "production ready".
