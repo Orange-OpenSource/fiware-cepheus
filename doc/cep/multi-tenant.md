@@ -11,7 +11,7 @@ Fiware-Service : <Service_Name>
 Fiware-Servicepath: <Subservice_Name>
 ```
 
-Note: ```Subtenant``` must start with the ```/``` character.
+**Note**: ```Subtenant``` must start with the ```/``` character.
 
 Cepheus-CEP is designed to provide every tenant a dedicated share of the instance including its data, configuration, user management, tenant individual functionality and non-functional properties.
 
@@ -57,7 +57,7 @@ Fiware-ServicePath: /testservicepath
 }
 ```
 
-Note: ```serviceName/servicePath``` of orion and ```Fiware-Service/Fiware-ServicePath``` of Cepheus-CEP should be same for processing of events. serviceName/servicePath of the orion and Fiware-Service/Fiware-ServicePath of Cepheus-CEP are mapped at the time of subscription.
+**Note**: ```serviceName/servicePath``` of orion and ```Fiware-Service/Fiware-ServicePath``` of Cepheus-CEP should be same for processing of events. serviceName/servicePath of the orion and Fiware-Service/Fiware-ServicePath of Cepheus-CEP are mapped at the time of subscription.
 
 On sending this configuration, Cepheus-CEP saves the configuration as a configuration file locally named as ```cep-testservice-testservicepath```. Then it subscribe to orion for the given serviceName and servicePath(given in provider section). 
 
