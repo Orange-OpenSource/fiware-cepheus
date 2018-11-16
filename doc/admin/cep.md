@@ -126,6 +126,21 @@ The Cepheus-CEP loads its data on startup and saves back data updates to a singl
 The default location of the data file is defined by the `data.file` property.
 This Cepheus-CEP process must have write access rights on this file.
 
+### Multi-Tenancy
+
+Cepheus-CEP comes with the ```multi-tenancy``` feature by which user can send multiple config file based on different ```tenants```. Cepheus-CEP provide every tenant a dedicated share of the instance including its data, configuration, user management, tenant individual functionality and non-functional properties.
+
+You can enable ```multi-tenancy``` feature of Cepheus CEP by uncommenting ```spring.profiles.active=multi-tenant``` in:
+* the src/main/resources/application.properties file when building from the source or
+* an external configuration like /etc/cepheus/cep.properties from the Debian package.
+
+```
+# Optional multi-tenancy profile
+spring.profiles.active=multi-tenant
+```
+
+**Note**: This feature is ```disabled``` by default and is **not** yet **"production ready"**.
+
 ### Metrics and health
 
 You can enable the Spring Boot Actuator `/infos`, `/health` and `/metrics` endpoints with these application properties:
