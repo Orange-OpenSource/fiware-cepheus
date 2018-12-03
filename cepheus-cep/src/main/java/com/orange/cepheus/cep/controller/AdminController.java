@@ -144,9 +144,9 @@ public class AdminController {
         if (tenantFilter != null) {
             tenantFilter.removeTenant(configurationId);
         }
-        // Retrieve the configuration
+	//Retrieve the configuration
         final Configuration configuration = complexEventProcessor.getConfiguration();
-        // Unsubscribe from Provider of the configuration
+        //Unsubscribe from Provider of the configuration
 	if (configuration != null) {
 	    subscriptionManager.unsubscribe(configuration);
         }
