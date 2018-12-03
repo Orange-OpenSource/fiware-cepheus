@@ -258,6 +258,22 @@ public class SubscriptionManager {
             logger.warn("Error during subscription for {}", provider.getUrl(), throwable);
         });
     }
+    
+    /**
+     * Unsubscribe from Provider of the configuration that is being deleted
+     * @param configuration the configuration that is being deleted
+     */
+    public void unsubscribe(Configuration configuration){
+    	List<EventTypeIn> eventTypeIns = Collections.emptyList();
+        eventTypeIns = configuration.getEventTypeIns();
+        for (EventTypeIn eventType : eventTypeIns) {
+            for (Provider provider : eventType.getProviders()) {
+	        if (provider != null) {
+		    unsubscribeProvider(provider);
+		}
+            }
+	}
+    }
 
     /**
      * Unsubscribe from a provider
