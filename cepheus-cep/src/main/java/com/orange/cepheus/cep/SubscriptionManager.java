@@ -264,17 +264,15 @@ public class SubscriptionManager {
      * @param configuration the configuration that is being deleted
      */
     public void unsubscribe(Configuration configuration){
-    	
     	List<EventTypeIn> eventTypeIns = Collections.emptyList();
         eventTypeIns = configuration.getEventTypeIns();
-        
         for (EventTypeIn eventType : eventTypeIns) {
-        	for (Provider provider : eventType.getProviders()) {
-				if (provider != null) {
-					unsubscribeProvider(provider);
-				}
-        	}
-        }
+            for (Provider provider : eventType.getProviders()) {
+	        if (provider != null) {
+		    unsubscribeProvider(provider);
+		}
+            }
+	}
     }
 
     /**
